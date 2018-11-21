@@ -4,6 +4,8 @@ import { Base64 }     from 'js-base64'
 import * as api       from '../middleware/api'
 import { getUUID }    from '../utils/utils'
 
+import { LIST_ORDER_PREV, LIST_ORDER_NEXT } from '../constants/Constants'
+
 /*                      */
 /*  Content - Boards    */
 /*                      */
@@ -43,7 +45,7 @@ export const getBoards = (startBoardId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getBoardList", "params": [startBoardId, limit]},
+      json: {"id": getUUID(false), "method": "content_getBoardList", "params": [startBoardId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -381,7 +383,7 @@ export const getPttOpLogList = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getPttOplogList", "params": [logId, limit, 1]},
+      json: {"id": getUUID(false), "method": "ptt_getPttOplogList", "params": [logId, limit, LIST_ORDER_PREV]},
     }
   }
 }
@@ -401,7 +403,7 @@ export const getPttMeOpLog = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getMeOplogList", "params": [logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "me_getMeOplogList", "params": [logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }

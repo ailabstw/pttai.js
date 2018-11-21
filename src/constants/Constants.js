@@ -70,3 +70,4 @@ export const LIST_ORDER_NEXT        = 2
 
 export const MESSAGE_TYPE_TEXT      = 1
 export const MESSAGE_TYPE_INVITE    = 2
+
