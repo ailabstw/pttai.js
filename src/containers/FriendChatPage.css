@@ -1,0 +1,13 @@
+.root {
+    border: 1px solid #A9A9A9;
+    height: 100%;
+
+    width: 100%;
+    max-height: 100%;
+
+    position: relative;
+    background-color: #FFF;
+
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,187 @@
+.root {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 7px;
+    overflow: visible;
+}
+
+.list-item {
+    width: calc(50% - 14px);
+    height: 94px;
+	padding: 15px 10px 15px 24px;
+    margin: 7px 7px;
+	font-size: 16px;
+    background-color: #FFF;
+    line-height: 30px;
+    border: 0.5px solid #A3A3A3;
+    border-radius: 4px;
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.16);
+
+    position: relative;
+    float: left;
+    overflow:hidden;
+}
+
+@media (max-width: 480px) {
+  .list-item {
+    width: calc(100% - 42px);
+    float: none;
+    margin: 7px auto;
+  }
+}
+
+.list-item > a {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+}
+
+.list-item a:hover {
+    text-decoration: none;
+}
+
+.list-item:hover {
+    background-color: #EFEFEF;
+    cursor: pointer;
+}
+
+.list-item a:focus {
+    outline: none;
+}
+
+.list-item-label-green {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 14px;
+    height: 94px;
+    background: linear-gradient(272deg, #799b58, #8baa6a 29%, #8cab6c);
+}
+
+.list-item-label-yellow {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 14px;
+    height: 94px;
+    background: linear-gradient(to left, #eead00, #eeb66e);
+}
+
+.list-item-title {
+    height: 30px;
+    width: 100%;
+    padding: 0px 5px;
+    color: #000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    line-height: 20px;
+}
+
+.list-item-title-unread {
+    height: 30px;
+    width: 100%;
+    padding: 0px 5px;
+    color: #000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    line-height: 20px;
+    font-weight: bold;
+}
+
+.list-item-meta {
+    width: 100%;
+    color:#808080;
+    padding: 0px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: visible;
+    font-weight: lighter;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+    display: flex;
+    flex-direction: row;
+}
+
+.list-item-space {
+    width: 33%;
+}
+
+.list-item-time {
+    width: 33%;
+}
+
+.list-item-author {
+    width: 100%;
+    height: 30px;
+    color: #808080;
+    padding: 0px 5px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-weight: lighter;
+    font-size: 14px;
+    text-align: center;
+    line-height: 20px;
+}
+
+.spinner-item {
+    padding: 0.5ex 0;
+    font-size: 20px;
+    color: #aaa;
+    text-align: center;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;  /* make scrollbar transparent */
+}
+
+.plus-button {
+    margin: auto;
+    margin-top: 16px;
+    width: 25px;
+    height: 25px;
+    background-size: 25px 25px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_add@2x.png');
+}
+
+.list-item-edit-button {
+    width: 33%;
+    position: relative;
+}
+
+.list-item-ellipsis {
+    width: 20px;
+    height: 16px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-size: 15px 4px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_action@2x.png');
+}
+
+.list-item-ellipsis:active, .list-item-ellipsis:hover {
+    width: 20px;
+    height: 16px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-size: 15px 4px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_action_hover@2x.png');
+}

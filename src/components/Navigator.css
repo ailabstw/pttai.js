@@ -1,0 +1,232 @@
+.root {
+    height: 42px;
+    min-height: 42px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    border-left:  1px solid #A9A9A9;
+    border-right: 1px solid #A9A9A9;
+
+    background: #A4A4A4;
+}
+
+.content {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.content-selected .content-block {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 42px;
+    color: #000;
+}
+
+.content-selected .content-block:hover {
+    color: #000;
+    text-decoration: none;
+}
+
+.content-not-selected .content-block {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 42px;
+    color: #fff;
+}
+
+.content-not-selected .content-block:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.content-not-selected:hover {
+    /*background-color: #79975b;*/
+    background-image: linear-gradient(to left, #9a9797, #8A8787 93%, #7B7878);
+}
+
+.content-selected {
+    width: 50%;
+    height: 100%;
+    text-align: center;
+    line-height: 42px;
+    background-color: #FFF;
+    color: #000;
+}
+
+.content-not-selected {
+    width: 50%;
+    height: 100%;
+    text-align: center;
+    line-height: 42px;
+    background-color: #92AA73;
+    color: #fff;
+
+    -moz-box-shadow:inset 0px 0px 15px 0px #7d8575;
+    -webkit-box-shadow:inset 0px 0px 15px 0px #7d8575;
+    box-shadow:inset 0px 0px 15px 0px #7d8575;
+
+    background-image: linear-gradient(to left, #a4a4a4, #a2a2a2 93%, #9a9797);
+}
+
+
+
+
+
+.tabs {
+  list-style: none;
+  width: 100%;
+  padding-inline-start: 0px;
+}
+
+.tabs li {
+    /* Makes a horizontal row */
+    float: left;
+
+    /*    So the psueudo elements can be  */
+    /*    abs. positioned inside          */
+    position: relative;
+    width: 50%;
+}
+.tabs a {
+    /*    Make them block level           */
+    /*    and only as wide as they need   */
+    float: left;
+    padding: 0px 40px;
+    text-decoration: none;
+
+    /* Default colors */
+    color: black;
+    background: #A4A4A4;
+
+    /* Only round the top corners */
+    -webkit-border-top-left-radius: 15px;
+    -webkit-border-top-right-radius: 15px;
+    -moz-border-radius-topleft: 15px;
+    -moz-border-radius-topright: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 42px;
+    color: #fff;
+}
+.tabs a:hover {
+    color: #fff;
+    text-decoration: none;
+    /*background: #B9B6B6;*/
+}
+.tabs li:first-child a {
+    /* Only round the top corners */
+    -webkit-border-top-left-radius: 0px;
+    -webkit-border-top-right-radius: 15px;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-topright: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 15px;
+}
+.tabs li:last-child a {
+    /* Only round the top corners */
+    -webkit-border-top-left-radius: 15px;
+    -webkit-border-top-right-radius: 0px;
+    -moz-border-radius-topleft: 15px;
+    -moz-border-radius-topright: 0px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 0px;
+}
+.tabs .active {
+    /* Highest, active tab is on top */
+    z-index: 3;
+}
+.tabs .active a {
+    /* Colors when tab is active */
+    background: white;
+    color: black;
+
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 42px;
+    color: #000;
+}
+.tabs .active a:hover {
+    color: #000;
+}
+.tabs li:before, .tabs li:after,
+.tabs li a:before, .tabs li a:after {
+    /*  All pseudo elements are        */
+    /*  abs. positioned and on bottom  */
+    position: absolute;
+    bottom: 0;
+}
+
+/* Only the first, last, and active
+   tabs need pseudo elements at all */
+.tabs li:last-child:after,   .tabs li:last-child a:after,
+.tabs li:first-child:before, .tabs li:first-child a:before,
+.tabs .active:after,   .tabs .active:before,
+.tabs .active a:after, .tabs .active a:before {
+    content: "";
+}
+.tabs .active:before, .tabs .active:after {
+    background: white;
+
+    /* Squares below circles */
+    z-index: 1;
+}
+
+/* Squares */
+.tabs li:before, .tabs li:after {
+    width: 10px;
+    height: 10px;
+    background-image: #A4A4A4;
+}
+.tabs li:before {
+    left: -10px;
+}
+.tabs li:after {
+    right: -10px;
+}
+.tabs li:first-child:before, .tabs li:last-child:after {
+    width: 0px;
+    height: 0px;
+}
+
+/* Circles */
+.tabs li a:after, .tabs li a:before {
+    width: 20px;
+    height: 20px;
+    /* Circles are circular */
+    -webkit-border-radius: 10px;
+    -moz-border-radius:    10px;
+    border-radius:         10px;
+    background-image:      #A4A4A4; /*linear-gradient(to left, #a4a4a4, #a2a2a2 93%, #9a9797);*/
+
+    /* Circles over squares */
+    z-index: 2;
+}
+.tabs .active a:after, .tabs .active a:before {
+    background-image: linear-gradient(to left, #a4a4a4, #a2a2a2 93%, #9a9797);
+}
+.tabs li:last-child a:after, .tabs li:first-child a:before {
+    width: 0px;
+    height: 0px;
+}
+
+/* First and last tabs have different
+   outside color needs */
+.tabs li:first-child.active a:before,
+.tabs li:last-child.active a:after {
+    background-image: linear-gradient(to left, #a4a4a4, #a2a2a2 93%, #9a9797);
+}
+.tabs li a:before {
+    left: -20px;
+}
+.tabs li a:after {
+    right: -20px;
+}

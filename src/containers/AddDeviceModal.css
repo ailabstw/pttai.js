@@ -1,0 +1,142 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+}
+
+.top-bar {
+    width: 100%;
+    height: 110px;
+    min-height: 110px;
+    background-color: #4e474e;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    z-index: 10;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.prev-button {
+    width: 105px;
+    min-width: 30px;
+    height: 100%;
+    margin: auto;
+    margin-left: 10px;
+    cursor: pointer;
+    background-size: 19px 14px;
+    background-position: 10px 50%;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon_back_white@2x.png');
+}
+
+.title {
+    flex-grow: 1;
+    height: 90px;
+    color: #FFF;
+    text-align: center;
+    line-height: 90px;
+
+    font-size: 20px;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+
+    overflow: hidden;
+}
+
+.null-space {
+    width: 105px;
+    min-width: 105px;
+}
+
+.content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: #000;
+    padding: 20px 20px;
+    overflow-y: scroll;
+}
+
+.content-title {
+    font-weight: bolder;
+    text-align: center;
+}
+
+.qr-code {
+    width: 300px;
+    min-width: 250px;
+    height: 300px;
+    background-color: #fff;
+    padding: 25px;
+    margin: auto;
+}
+
+.node-id {
+    width: 250px;
+    height: 100%;
+    min-width: 150px;
+    margin: 5px auto 5px auto;
+}
+
+.expiration {
+    text-align: center;
+    margin: 5px auto;
+    width: 100%;
+}
+
+.copy-button {
+    border-radius: 7px;
+    font-weight: lighter;
+    line-height: 41px;
+    border: none;
+
+    padding: 2px 0;
+    margin: 0.5ex;
+    font-size: 1rem;
+    width: 100%;
+    max-height: 100%;
+    height: 45px;
+
+    background-color: #7EB349;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
+
+}
+
+.copy-button:focus {
+    outline: none;
+}
+
+.copy-button:active {
+    background-color: #6E8D45;
+}
+
+.text-value {
+    width: 100%;
+    margin: 15px auto;
+}
+
+.text-value input {
+    width: 100%;
+    font-weight: lighter;
+    padding: 2px 5px;
+    color: #A3A3A3;
+}
+
+.text-value:focus {
+    outline: none;
+}
+
+.helper-text {
+    width: calc(100% - 10px);
+    margin: 5px;
+    text-align: left;
+    font-weight: lighter;
+}

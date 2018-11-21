@@ -1,0 +1,130 @@
+.root {
+    height: 110px;
+    min-height: 110px;
+    background-color: #4D474E;
+    position:relative;
+    z-index:1;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.content {
+    width: 100%;
+    height: 110px;
+    max-width: 554px;
+    padding: 21px;
+
+    display: flex;
+    flex-direction: row;
+
+    z-index: 2;
+}
+
+.profile-picture {
+    min-width: 68px;
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-picture img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+}
+
+.mask {
+    top: 0px;
+    left: 0px;
+    height: 70px;
+    width: 70px;
+    position: absolute;
+    background: radial-gradient(circle, transparent 29px, #4C474E 32px);
+}
+
+.profile-description {
+    max-width: calc(100% - 68px - 38px - 38px);
+    padding: 0px 20px;
+    flex-grow: 1;
+}
+
+.profile-description .name {
+    height: 37px;
+    line-height: 37px;
+    color: #FFF;
+    font-size: 30px;
+    cursor: pointer;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.profile-latest {
+    cursor: pointer;
+    min-width: 38px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-image: url('/images/btn_latest@2x.png');
+    background-repeat: no-repeat;
+}
+
+.profile-latest-active:hover {
+    cursor: pointer;
+    min-width: 38px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-image: url('/images/btn_latest_new_hover@2x.png');
+    background-repeat: no-repeat;
+}
+
+.profile-latest-active {
+    cursor: pointer;
+    min-width: 38px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-image: url('/images/btn_latest_new@2x.png');
+    background-repeat: no-repeat;
+}
+
+.profile-latest:hover {
+    cursor: pointer;
+    min-width: 38px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-image: url('/images/btn_latest_hover@2x.png');
+    background-repeat: no-repeat;
+}
+
+.profile-qr-code {
+    cursor: pointer;
+    min-width: 38px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-image: url('/images/btn_setting@2x.png');
+    background-repeat: no-repeat;
+}
+
+.profile-qr-code:hover {
+    cursor: pointer;
+    min-width: 38px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-image: url('/images/btn_setting_hover@2x.png');
+    background-repeat: no-repeat;
+}
+
+label {
+    padding: 0px;
+    background: transparent;
+    display: table;
+    color: transparent;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}

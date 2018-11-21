@@ -1,0 +1,251 @@
+.root {
+    width: 100%;
+    overflow: visible;
+    position: relative;
+}
+
+
+.list-item {
+    width: 100%;
+    height: 100px;
+    padding: 10px 10px;
+    font-size: 16px;
+    background-color: #FFF;
+    line-height: 30px;
+    border-bottom: 1px solid #A9A9A9;
+    position: relative;
+}
+
+.list-item > a {
+    width: 100%;
+    height: 100%;
+}
+
+.no-content-message {
+    margin-top: 30px;
+    text-align: center;
+    color: #B8B8B8;
+    font-size: 16px;
+}
+
+.list-item-author {
+    min-width: 70px;
+    color: #808080;
+    text-align: center;
+    padding: 0px 10px 0px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item-author-pic img {
+    width: 50px;
+    height: 50px;
+}
+
+.list-item-main {
+    width: 80%;
+    padding: 2px 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.list-item-title {
+    width: 80%;
+    color: #000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    font-size: 16px;
+    height: 25px;
+    line-height: 25px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    color: #484848;
+}
+
+.list-item-time {
+    height: 25px;
+    min-width: fit-content;
+    font-size: 13px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 25px;
+    letter-spacing: normal;
+    margin-left: auto;
+    color: #b1b1b1;
+}
+
+.list-item-meta {
+    width: 8%;
+    min-width: 25px;
+    color: #FFF;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item-circle {
+    height: 10px;
+    width: 10px;
+    min-width: 10px;
+    margin: 10px auto auto auto;
+    background-color: #f82900;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.list-item-circle-white {
+    height: 0px;
+    width: 0px;
+    min-width: 10px;
+    margin: auto;
+    display: inline-block;
+}
+
+.list-item-content {
+    margin-top: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #545454;
+}
+
+.list-item-content-unread {
+    margin-top: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #545454;
+}
+
+.spinner-item {
+    padding: 0.5ex 0;
+    font-size: 20px;
+    color: #aaa;
+}
+
+.list-item a {
+    display: flex;
+    flex-direction: row;
+    text-decoration: none;
+}
+
+.list-item a:hover {
+    text-decoration: none;
+}
+
+.list-item:hover {
+    background-color: #EFEFEF;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+
+.list-item-ellipsis {
+    margin: auto;
+    cursor: pointer;
+    width: 35px;
+    height: 50px;
+    background-size: 15px 4px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_action@2x.png');
+}
+
+.list-item-ellipsis:hover {
+    background-image: url('/images/icon_action_hover@2x.png');
+}
+
+.list-item {
+    padding: 5px;
+    font-size: 16px;
+    background-color: #FFF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid #A9A9A9;
+    position: relative;
+}
+
+.list-item-menu-slider {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 40px;
+    height: 100%;
+    background: #FFF;
+    transition: 0.4s;
+    border-left: 1px solid #A9A9A9;
+
+    display: flex;
+    flex-direction: row;
+    vertical-align: middle;
+}
+
+.list-item-menu {
+    position: absolute;
+    right: -200px;
+    top: 0px;
+    width: 40px;
+    height: 100%;
+    background: #FFF;
+    transition: 0.4s;
+    border-left: 1px solid #A9A9A9;
+    display: flex;
+    flex-direction: row;
+    vertical-align: middle;
+}
+
+.list-item-menu-item {
+    width: 100px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    display: table;
+
+    width: 40px;
+    background-color: #d46c6c;
+
+    height: 100%;
+}
+
+.list-item-menu-item-text {
+    height: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    color: #ffffff;
+    font-size: 13px;
+}

@@ -1,0 +1,54 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.message {
+    min-height: 40px;
+    margin-bottom:10px;
+    text-align: center;
+    overflow-y: scroll;
+}
+
+.action-section {
+    flex-basis: 50px;
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    align-items: center;
+    width: 80%;
+}
+
+.close {
+    height: 40px;
+    margin: auto auto 0px auto;
+    border-radius: 7px;
+    background-color: #A9A9A9;
+    width: 40%;
+    color: #FFF;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.confirm {
+    height: 40px;
+    margin: auto auto 0px auto;
+    border-radius: 7px;
+    background-color: #8AB158;
+    width: 40%;
+    color: #FFF;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}

@@ -1,0 +1,310 @@
+.root {
+    height: 100%;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFF;
+    padding: 10px 10px 10px 10px;
+    position: relative;
+    text-align: center;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.sign-up {
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+}
+
+.profile-title {
+    font-weight: bold;
+    margin: 10px auto;
+}
+
+.profile-input {
+    width: 80%;
+    height: 45px;
+    margin: 15px auto;
+}
+
+.profile-input-name {
+    color: #000;
+    font-size: 18px;
+    font-weight: lighter;
+    padding: 5px;
+    height: 45px;
+
+    background-color: #FFF;
+    width: 100%;
+
+    margin-bottom: 5px;
+    border: 1px solid #A9A9A9;
+    outline: none;
+}
+
+.profile-input-name:focus {
+    outline: none;
+}
+
+.signup-action {
+    flex-basis: 50px;
+    display: flex;
+    flex-direction: row;
+    margin: 15px auto;
+    width: 80%;
+    text-align: center;
+}
+
+.close-button {
+    padding: 0.5ex 0;
+    margin: 0.5ex;
+    font-size: 1rem;
+    width: 40%;
+    max-height: 100%;
+    height: 45px;
+
+    border-radius: 10px;
+    background-color: #A6A6A6;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.submit-button {
+    font-size: 1rem;
+    width: 100%;
+    max-height: 100%;
+    height: 45px;
+
+    border-radius: 7px;
+    background-color: #7eb349;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
+}
+
+.submit-button:focus {
+    outline: none;
+}
+
+.overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(105, 105, 105, 0.5);
+}
+
+.divider {
+    width: 100%;
+    height: 10px;
+    border-bottom: 1px solid #707070;;
+    text-align: center;
+    position: relative;
+    margin: 0px 0px 10px 0px;
+}
+
+.divider span {
+    position: absolute;
+    top: -2px;
+    left: calc(50% - 14px);
+    font-size: 15px;
+    background-color: #ffffff;
+    color: #707070;
+    padding: 2px 10px;
+}
+
+.sign-in {
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+}
+
+.signin-action {
+    flex-basis: 50px;
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    width: 80%;
+    text-align: center;
+}
+
+.signin-button {
+    font-size: 1rem;
+    width: 100%;
+    max-height: 100%;
+    height: 45px;
+
+    border-radius: 7px;
+    background-color: #88b9d5;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
+}
+
+.signin-button:focus {
+    outline: none;
+}
+
+.submodal-top-bar {
+    width: 100%;
+    height: 110px;
+    min-height: 110px;
+    background-color: #4e474e;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    z-index: 10;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.submodal-prev-button {
+    width: 105px;
+    min-width: 30px;
+    height: 100%;
+    margin: auto;
+    margin-left: 10px;
+    cursor: pointer;
+    background-size: 19px 14px;
+    background-position: 10px 50%;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon_back_white@2x.png');
+}
+
+.submodal-title {
+    flex-grow: 1;
+    height: 100%;
+    color: #FFF;
+    line-height: 90px;
+    text-align: center;
+    vertical-align: middle;
+
+    font-size: 20px;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+
+    overflow: hidden;
+}
+
+.submodal-null-space {
+    width: 105px;
+    min-width: 105px;
+}
+
+
+.submodal-qr-code-scanner-container {
+    min-width: 280px;
+    position: relative;
+    width: 70%;
+    margin: 10px auto;
+}
+
+.submodal-qr-code-scanner-container:before{
+    content: "";
+    display: block;
+    padding-top: 100%;  /* initial ratio of 1:1*/
+}
+
+.submodal-qr-code-scanner {
+    position:  absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: 1px solid #FFF;
+    background-color: #000;
+    display: flex;
+}
+
+.submodal-qr-code-text {
+    position: absolute;
+    width: 100%;
+    align-self: flex-end;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+    bottom: 5px;
+    z-index: 10;
+}
+
+.submodal-paste-area-node-id {
+    height: 5px;
+    width: 70%;
+    min-width: 280px;
+    height: 80px;
+    margin: 10px auto;
+}
+
+.submodal-paste-area-node-id textarea {
+    width: 100%;
+    height: 80px;
+    min-height: 80px;
+    max-height: 80px;
+    border: 1px solid #a3a3a3;
+    border-radius: 3px;
+    word-wrap: break-word;
+    background-color: #ffffff;
+    text-decoration: none;
+    color: #000;
+    padding: 5px 10px;
+    line-height: 23px;
+}
+
+::-webkit-input-placeholder {
+    text-align:left;
+}
+
+input:-moz-placeholder {
+    text-align:left;
+}
+
+.submodal-paste-area-node-id textarea:focus {
+    text-decoration: none;
+    outline: none;
+}
+
+.submodal-paste-area-node-id textarea:focus {
+    outline: none;
+}
+
+
+.submodal-action-section {
+    min-height: 60px;
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    width: 280px;
+    text-align: center;
+}
+
+.submodal-submit-button {
+    padding: 0.5ex 0;
+    margin: 0.5ex;
+    font-size: 1rem;
+    width: 100%;
+    max-height: 100%;
+    height: 45px;
+
+    border-radius: 10px;
+    background-color: #7EB349;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
+}

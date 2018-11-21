@@ -1,0 +1,66 @@
+html {
+    height: 100%;
+    overflow: -moz-scrollbars-none;
+}
+
+body {
+    font-family: sans-serif;
+    background-color: #EFEFEF;
+    height: inherit;
+}
+
+body > div, body > div > div {
+    height: inherit;
+}
+
+body.ReactModal__Body--open {
+    overflow: hidden;
+}
+
+/*--------------------*/
+/* CSS for all Modals */
+/*--------------------*/
+.ReactModal__Overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(105, 105, 105, 0.5);
+
+    opacity: 0;
+    transition: opacity 300ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open {
+    opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+    opacity: 0;
+}
+
+/*------------------------------------------*/
+/* These modals switch between other modals */
+/*------------------------------------------*/
+.MultiDeviceModal__Overlay.ReactModal__Overlay,
+.AddDeviceModal__Overlay.ReactModal__Overlay,
+.AddDeviceScannerModal__Overlay.ReactModal__Overlay,
+.ShowOpLogModal__Overlay.ReactModal__Overlay {
+    z-index: 10;
+    opacity: 0.5;
+    transition: opacity 0ms ease-in-out;
+}
+.MultiDeviceModal__Overlay.ReactModal__Overlay--after-open,
+.AddDeviceModal__Overlay.ReactModal__Overlay--after-open,
+.AddDeviceScannerModal__Overlay.ReactModal__Overlay--after-open,
+.ShowOpLogModal__Overlay.ReactModal__Overlay--after-open {
+    opacity: 1;
+}
+.MultiDeviceModal__Overlay.ReactModal__Overlay--before-close,
+.AddDeviceModal__Overlay.ReactModal__Overlay--before-close,
+.AddDeviceScannerModal__Overlay.ReactModal__Overlay--before-close,
+.ShowOpLogModal__Overlay.ReactModal__Overlay--before-close {
+    opacity: 0;
+}
