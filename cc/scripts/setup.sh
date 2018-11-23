@@ -3,6 +3,8 @@
 scriptDIR=$(cd `dirname $0` && pwd)
 projDIR=`dirname "$scriptDIR"`
 
+pip install virtualenv
+
 eval $projDIR/scripts/init_cookiecutter.sh;
 
 npm install;

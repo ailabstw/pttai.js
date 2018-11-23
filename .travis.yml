@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "11"
+os:
+  - osx
+cache:
+  directories:
+    - node_modules
+install:
+  - ./scripts/setup.sh
+script:
+  - npm run build
+  - npm test

@@ -3,6 +3,9 @@ Pttai.js
 
 This is the repo for web-frontend of ptt.ai.
 
+[![Travis](https://travis-ci.org/ailabstw/pttai.js.svg?branch=master)](https://travis-ci.org/ailabstw/pttai.js)
+
+
 Development setup is based on https://github.com/chhsiao1981/cc_frontend_template.git
 
 Install
