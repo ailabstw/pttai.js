@@ -7,5 +7,6 @@ cache:
   directories:
     - node_modules
 script:
+  - ./scripts/setup.sh
   - npm run build
   - npm test
