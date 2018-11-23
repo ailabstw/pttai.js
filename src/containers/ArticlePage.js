@@ -63,17 +63,10 @@ class ArticlePage extends PureComponent {
     const { actions: {doArticlePage}, match: {params}, myId} = this.props
 
     function onDownload (data) {
-      var binary = '';
-      var bytes = new Uint8Array( data );
-      var len = bytes.byteLength;
-      for (var i = 0; i < len; i++) {
-          binary += String.fromCharCode( bytes[ i ] );
-      }
-      var b64 = window.btoa( binary )
-      var url = 'data:' + iframeParams.fileType + ';base64,' + b64
       const link = document.createElement('a');
-      link.href = url
+      link.href = URL.createObjectURL(new Blob([data]));
       link.setAttribute('download', iframeParams.fileName);
+
       document.body.appendChild(link);
       link.click();
     }
