@@ -6,7 +6,8 @@ os:
 cache:
   directories:
     - node_modules
-script:
+install:
   - ./scripts/setup.sh
+script:
   - npm run build
   - npm test
