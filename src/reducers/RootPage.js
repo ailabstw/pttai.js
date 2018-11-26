@@ -102,7 +102,7 @@ export const getUserInfo = (myId, callBackFunc) => {
               let info     = userInfo.result
               let metaInfo = userMetaInfo.filter((meta) => !meta.error)
               let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
-              if (!userNameResult || serverUtils.b64decode(userNameResult.N) === DEFAULT_USER_NAME) {
+              if (!userNameResult || !userNameResult.N || serverUtils.b64decode(userNameResult.N) === DEFAULT_USER_NAME) {
                 dispatch(getAllKeyInfo())
                   .then(( keyInfo ) => {
                     let deviceJoinKeyInfo   = keyInfo.find((key) => key.key === 'deviceJoinKey').value
