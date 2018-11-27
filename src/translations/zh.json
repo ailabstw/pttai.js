@@ -78,7 +78,7 @@
     "board-action-modal.action3": "取消",
     "alert-component.action1": "取消",
     "alert-component.action2": "確認",
-    "board-list-component.board-type": "[個板] ",
+    "board-list-component.board-type": "[個板] {name}",
     "comment-reply-list-component.action": "刪除",
     "article-list-component.action": "刪除",
     "article-list-component.empty": "(無內容)",

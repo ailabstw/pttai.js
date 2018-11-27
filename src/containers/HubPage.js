@@ -79,6 +79,7 @@ class HubPage extends PureComponent {
       <div className={styles['root']}>
         <HubComponent
           userId={userId}
+          userName={userName}
           boardList={boardList}
           isLoading={isLoading}
           createBoardAction={openBoardActionModule}

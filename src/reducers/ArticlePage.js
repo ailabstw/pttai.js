@@ -528,7 +528,7 @@ export const _deleteComment = (state, action) => {
   const {myId, data: { commentId }} = action
 
   let commentContentsList = state.getIn([myId, 'commentContentsList'], Immutable.List())
-  commentContentsList = commentContentsList.filter(each => { return each.subContentId !== commentId })
+  commentContentsList = commentContentsList.filter(each => { return each.get('subContentId') !== commentId })
 
   return state.setIn([myId, 'commentContentsList'], commentContentsList)
 }

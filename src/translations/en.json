@@ -78,7 +78,7 @@
     "board-action-modal.action3": "Cancel",
     "alert-component.action1": "Cancel",
     "alert-component.action2": "Confirm",
-    "board-list-component.board-type": "[Private] ",
+    "board-list-component.board-type": "[Private] {name}",
     "comment-reply-list-component.action": "Delete",
     "article-list-component.action": "Delete",
     "article-list-component.empty": "(No content)",
