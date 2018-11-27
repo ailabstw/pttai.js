@@ -26,7 +26,7 @@ class BoardListComponent extends PureComponent {
   }
 
   render() {
-    const { userId, listData, isLoading, createBoard } = this.props
+    const { userId, userName, listData, isLoading, createBoard } = this.props
 
     let boardType  = (board) => {
       if (board.BoardType === constants.BOARD_TYPE_PERSONAL) {
@@ -57,11 +57,13 @@ class BoardListComponent extends PureComponent {
                   (item.BoardType === constants.BOARD_TYPE_PERSONAL)?(
                     <FormattedMessage
                       id="board-list-component.board-type"
-                      defaultMessage="[Personal] "
+                    defaultMessage="[Personal] {name}"
+                      values={{name: userName}}
                     />
-                  ):(null)
+                  ):(
+                    item.creatorName
+                  )
                 }
-                {item.creatorName}
               </div>
               <div className={styles['list-item-meta']}>
                 <div className={styles['list-item-space']}>
