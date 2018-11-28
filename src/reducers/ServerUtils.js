@@ -393,7 +393,7 @@ export const getPttMasterOpLog = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getMasterOplogList", "params": [logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "me_getMasterOplogList", "params": [logId, limit, 2]},
     }
   }
 }

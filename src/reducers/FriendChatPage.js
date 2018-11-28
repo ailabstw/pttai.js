@@ -330,7 +330,7 @@ const postprocessPostMessage = (myId, userId, userName, userImg, result, message
       CreatorID:      userId,
       CreatorName:    userName,
       CreatorImg:     userImg,
-      Status:         null,
+      Status:         0,
       Buf:            message,
   }
 

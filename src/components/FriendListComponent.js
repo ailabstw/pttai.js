@@ -4,7 +4,8 @@ import { Link }                   from 'react-router-dom'
 import { FormattedMessage }       from 'react-intl'
 
 import AlertComponent             from '../components/AlertComponent'
-import { isUnRead }               from '../utils/utils'
+import { isUnRead,
+         getStatusClass }         from '../utils/utils'
 import { epoch2ReadFormat }       from '../utils/utilDatetime'
 
 import * as constants             from '../constants/Constants'
@@ -85,6 +86,10 @@ class FriendListComponent extends PureComponent {
                     <div className={styles['list-item-author']}>
                       <div className={styles['list-item-author-pic']}>
                         <img src={item.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
+                      </div>
+                      <div title={constants.STATUS_ARRAY[item.FriendStatus]} className={styles['list-item-author-status']}>
+                        <div className={styles['list-item-author-status-circle-' + getStatusClass(item.FriendStatus)]}>
+                        </div>
                       </div>
                     </div>
                     <div className={styles['list-item-main']}>
