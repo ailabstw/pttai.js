@@ -174,6 +174,45 @@
     flex-direction: row;
 }
 
+.comment-status {
+    height: 10px;
+    min-width: 10px;
+    margin: auto auto 15px auto;
+}
+
+.comment-status:hover {
+    cursor: default;
+}
+
+.comment-status-pre-alive {
+    background-color: #ffc107;
+    opacity: 0.5;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+}
+.comment-status-alive {
+    background-color: #28a745;
+    opacity: 0.5;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+}
+.comment-status-failed {
+    background-color: #bbb;
+    opacity: 0.5;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+}
+.comment-status-post-failed {
+    background-color: #212529;
+    opacity: 0.5;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+}
+
 .comment-manage {
     min-width: 40px;
     min-height: 35px;

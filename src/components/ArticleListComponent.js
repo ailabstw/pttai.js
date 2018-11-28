@@ -5,7 +5,7 @@ import { FormattedMessage }         from 'react-intl'
 import ReactDOM                     from 'react-dom'
 
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
-import { isUnRead }                         from '../utils/utils'
+import { isUnRead, getStatusClass }         from '../utils/utils'
 import * as serverUtils                     from '../reducers/ServerUtils'
 import * as constants                       from '../constants/Constants'
 
@@ -130,7 +130,7 @@ class ArticleListComponent extends PureComponent {
                   return (
                     <div className={styles['list-item']} key={listData.length - index} onClick={(e) => this.onListItemClick(e, index)}>
                       <Link to={itemLink}>
-                        <div className={styles['list-item-blocker']}></div>
+                        <div hidden className={styles['list-item-blocker']}></div>
                         <div className={styles['list-item-author']}>
                           <div className={styles['list-item-author-pic']}>
                             <img src={item.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Creator Profile'}/>
@@ -154,6 +154,9 @@ class ArticleListComponent extends PureComponent {
                         </div>
                         <div className={styles['list-item-meta']}>
                           <span className={styles['list-item-circle']}>{item.NPush || 0}</span>
+                          <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-status']}>
+                            <div className={styles['list-item-status-' + getStatusClass(item.Status)]}></div>
+                          </div>
                         </div>
                       </Link>
                       {/*

@@ -482,6 +482,7 @@ const postprocessAddComment = (myId, boardId, articleId, commentId, comment, use
       articleId:          articleId,
       contentType:        1, /* Comment is 1 */
       commentType:        null,
+      status:             0,
       creatorId:          userId,
       creatorName:        userName,
       creatorImg:         userImg,

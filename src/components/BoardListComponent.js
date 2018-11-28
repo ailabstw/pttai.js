@@ -3,7 +3,7 @@ import { Link }                   from "react-router-dom";
 import { BeatLoader }             from 'react-spinners';
 import { FormattedMessage }       from 'react-intl';
 
-import { isUnRead }                         from '../utils/utils'
+import { isUnRead, getStatusClass }         from '../utils/utils'
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import * as constants                       from '../constants/Constants'
 
@@ -49,8 +49,13 @@ class BoardListComponent extends PureComponent {
           <div className={styles['list-item']} key={index}>
             <div className={styles['list-item-label' + boardType(item)]}></div>
             <Link to={`/board/${encodeURIComponent(item.ID)}`}>
-              <div className={isUnRead(item.ArticleCreateTS.T, item.LastSeen.T)? styles['list-item-title-unread']: styles['list-item-title'] }>
-                {item.Title}
+              <div className={styles['list-item-title-wrapper']}>
+                <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-board-status']}>
+                  <div className={styles['list-item-board-status-' + getStatusClass(item.Status)]}></div>
+                </div>
+                <div className={isUnRead(item.ArticleCreateTS.T, item.LastSeen.T)? styles['list-item-title-unread']: styles['list-item-title'] }>
+                  {item.Title}
+                </div>
               </div>
               <div className={styles['list-item-author']}>
                 {

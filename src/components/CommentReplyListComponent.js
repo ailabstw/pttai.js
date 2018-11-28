@@ -3,8 +3,9 @@ import $                        from 'jquery'
 import { FormattedMessage }     from 'react-intl'
 import { ClipLoader }           from 'react-spinners'
 
-import styles         from './CommentReplyListComponent.css'
-import AlertComponent from '../components/AlertComponent'
+import styles               from './CommentReplyListComponent.css'
+import AlertComponent       from '../components/AlertComponent'
+import { getStatusClass }   from '../utils/utils'
 
 import * as constants from '../constants/Constants'
 
@@ -183,6 +184,9 @@ class CommentReplyListComponent extends PureComponent {
                         </div>
                       )
                     }
+                    <div title={constants.STATUS_ARRAY[item.status]} className={styles['comment-status']}>
+                      <div className={styles['comment-status-' + getStatusClass(item.status)]}></div>
+                    </div>
                     <div className={styles['comment-manage']}>
                     {
                       (item.contentBlockArray[0] === "(本文已被刪除)" || item.creatorId !== userId) ? (

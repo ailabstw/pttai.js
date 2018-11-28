@@ -251,7 +251,7 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
 
   const newBoard = {
       ID:               result.ID,
-      Status:           null,
+      Status:           0,
       Title:            name,
       creatorName:      userName,
       ArticleCreateTS:  utils.emptyTimeStamp(),
