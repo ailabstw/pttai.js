@@ -71,3 +71,31 @@ export const LIST_ORDER_NEXT        = 2
 export const MESSAGE_TYPE_TEXT      = 1
 export const MESSAGE_TYPE_INVITE    = 2
 
+export const STATUS_ARRAY = [
+    'StatusInvalid',
+    'StatusInit',
+    'StatusInternalSync',
+    'StatusInternalPending',
+    'StatusPending',
+    'StatusSync',
+    'StatusToBeSynced',
+    'StatusAlive',
+    'StatusFailed',
+    // Putting intenal-deleted after alive.
+    // Because it's the competition between update-object and pending-delete, which does not affect the new-object, and no dead-lock for pending-delete (referring to new-object).
+    'StatusInternalDeleted',
+    'StatusInternalRevoke',
+    'StatusInternalTransfer',
+    'StatusInternalMigrate',
+    'StatusInternalTerminal',
+    'StatusPendingDeleted',
+    'StatusPendingRevoke',
+    'StatusPendingTransfer',
+    'StatusPendingMigrate',
+    'StatusPendingTerminal',
+    'StatusDeleted',
+    'StatusRevoked',
+    'StatusTransferred',
+    'StatusMigrated',
+    'StatusTerminal',
+]

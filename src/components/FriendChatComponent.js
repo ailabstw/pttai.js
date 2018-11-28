@@ -9,6 +9,7 @@ import { doesCrossDay,
          epoch2MessageTimeFormat,
          epoch2MessageDateFormat,
          expiredFormat           } from '../utils/utilDatetime'
+import { getStatusClass }          from '../utils/utils'
 
 import AlertComponent              from '../components/AlertComponent'
 import * as constants              from '../constants/Constants'
@@ -319,8 +320,12 @@ class FriendChatComponent extends PureComponent {
                         <div key={messageList.length - index}>
                           {divider}
                           <div className={styles['user-message-item']}>
-                            <div className={styles['user-message-time']}>
-                              {epoch2MessageTimeFormat(message.CreateTS.T)}
+                            <div className={styles['user-message-meta']}>
+                              <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
+                                <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]}>
+                                </div>
+                              </div>
+                              <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
                             </div>
                             {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
@@ -353,7 +358,13 @@ class FriendChatComponent extends PureComponent {
                                 <div className={styles['message-content']}>{messageObj.value}</div>
                               )
                             }
-                            <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+                            <div className={styles['message-meta']}>
+                              <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
+                                <div className={styles['message-status-circle-' + getStatusClass(message.Status)]}>
+                                </div>
+                              </div>
+                              <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+                            </div>
                           </div>
                         </div>
                       )

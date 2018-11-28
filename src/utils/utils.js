@@ -174,3 +174,18 @@ export const newCanvasSize = (w, h, rotation) => {
     }
     return [h * s + w * c,h * c + w * s];
 }
+
+export const getStatusClass = (status) => {
+
+  let statusClass = 'pre-alive'
+  if (status < 7) {
+    statusClass = 'pre-alive'
+  } else if (status === 7) {
+    statusClass = 'alive'
+  } else if (status === 8) {
+    statusClass = 'failed'
+  } else {
+    statusClass = 'post-failed'
+  }
+  return statusClass
+}
