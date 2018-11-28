@@ -194,7 +194,7 @@
 }
 
 .user-message-status-circle-pre-alive, .message-status-circle-pre-alive {
-    background-color: #bbb;
+    background-color: #ffc107;
     opacity: 0.5;
     border-radius: 50%;
     width: 100%;
