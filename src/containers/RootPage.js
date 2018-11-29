@@ -130,7 +130,7 @@ class RootPage extends PureComponent {
         },
         /* For op log modal */
         tabs: [
-          constants.SHOW_PTT_MASTER_TAB,
+          //constants.SHOW_PTT_MASTER_TAB,
           constants.SHOW_PTT_ME_TAB,
           constants.SHOW_PTT_PEERS_TAB,
         ]
