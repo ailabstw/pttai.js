@@ -63,7 +63,7 @@ const postprocessGetBoardInfo = (myId, result) => {
 
   const boardInfo = {
       ID:               result.ID,
-      Status:           result.Status,
+      Status:           result.S,
       Title:            result.Title,
       LastSeen:         result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
       UpdateTS:         result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp(),
@@ -210,7 +210,7 @@ const postprocessGetArticleContent = (myId, result, blockId, usersInfo) => {
       contentType:        each.ct,
       commentType:        each.mt,
       creatorId:          each.CID,
-      status:             each.Status,
+      status:             each.S,
       creatorName:        userName,
       creatorImg:         userImg,
     }
@@ -304,7 +304,7 @@ const postprocessGetCommentContent = (myId, result, latestSubContentId, usersInf
       contentType:        each.ct,
       commentType:        each.mt,
       creatorId:          each.CID,
-      status:             each.Status,
+      status:             each.S,
       creatorName:        userName,
       creatorImg:         userImg,
     }

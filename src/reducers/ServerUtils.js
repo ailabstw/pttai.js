@@ -149,7 +149,7 @@ export const getArticles = (boardId, startArticleId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getArticleList", "params": [boardId, startArticleId, limit, 1]},
+      json: {"id": getUUID(false), "method": "content_getArticleList", "params": [boardId, startArticleId, limit, LIST_ORDER_PREV]},
     }
   }
 }
@@ -264,7 +264,7 @@ export const getMessageList = (chatId, startMessageId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"friend_getMessageList", "params":[chatId, startMessageId, limit, 1]},
+      json: {"id": getUUID(false), "method":"friend_getMessageList", "params":[chatId, startMessageId, limit, LIST_ORDER_PREV]},
     }
   }
 }
@@ -393,7 +393,7 @@ export const getPttMasterOpLog = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_getMasterOplogList", "params": [logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "me_getMasterOplogList", "params": [logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -423,7 +423,7 @@ export const getContentBoardOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getBoardOplogList", "params": [boardId, logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "content_getBoardOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -433,7 +433,7 @@ export const getContentCommentOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getCommentOplogList", "params": [boardId, logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "content_getCommentOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -443,7 +443,7 @@ export const getContentMasterOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getMasterOplogList", "params": [boardId, logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "content_getMasterOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -453,7 +453,7 @@ export const getContentMemberOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getMemberOplogList", "params": [boardId, logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "content_getMemberOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -463,7 +463,7 @@ export const getFriendFriendOpLog = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getFriendOplogList", "params": [logId, limit, 2]},
+      json: {"id": getUUID(false), "method": "friend_getFriendOplogList", "params": [logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }

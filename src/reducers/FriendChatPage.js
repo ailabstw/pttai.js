@@ -207,7 +207,7 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, latestMessageId
       myId,
       myClass,
       type: APPEND_MESSAGES,
-      data: { messages: messageList.slice(0, matchIndex).reverse(), noMessage: false }
+      data: { messages: messageList.reverse(), noMessage: false }
     }
   }
 }
@@ -301,10 +301,13 @@ export const _appendMessages = (state, action) => {
 
   const {myId, data: { messages, noMessage }} = action
 
-  let messageList = state.getIn([myId, 'messageList'], Immutable.List())
+  let messageList = state.getIn([myId, 'messageList'], Immutable.List()).toJS()
+
+  let matchStartIndex = messageList.findIndex((each) => each.MessageID === messages[0].MessageID)
+  let matchEndIndex   = messageList.findIndex((each) => each.MessageID === messages[messages.length-1].MessageID)
 
   state = state.setIn([myId, 'noMessage'], noMessage)
-  return state.setIn([myId, 'messageList'], messageList.concat(messages))
+  return state.setIn([myId, 'messageList'], Immutable.List(messageList.slice(0, matchStartIndex)).concat(Immutable.List(messages)).concat(Immutable.List(messageList.slice(matchEndIndex + 1))))
 }
 
 /*                        */
