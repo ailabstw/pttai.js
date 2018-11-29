@@ -254,7 +254,7 @@ const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBloc
   }, {})
 
   let messageList = []
-  messageBlockList.map((each, index) => {
+  messageBlockList.forEach((each, index) => {
 
     if (index === 0 || each.error) {
       return
@@ -377,7 +377,7 @@ export const _addMessage = (state, action) => {
 
   const {myId, data: { message, noMessage }} = action
 
-  if (!message || message.ID || message.ArticleID ) {
+  if (!message || !message.ID || !message.ArticleID ) {
     return state
   }
 
