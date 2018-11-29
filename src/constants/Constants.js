@@ -31,7 +31,7 @@ export const NUM_MEMBER_PER_REQ     = 100
 export const NUM_ARTICLE_PER_REQ    = 50
 export const NUM_NEWS_PER_REQ       = 20
 export const NUM_CONTENT_PER_REQ    = 100
-export const NUM_MESSAGE_PER_REQ    = 100
+export const NUM_MESSAGE_PER_REQ    = 30
 export const NUM_OPLOG_PER_REQ      = 100
 
 export const MAX_USER_IMG_SIZE      = 32000

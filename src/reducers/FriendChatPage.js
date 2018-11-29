@@ -50,11 +50,15 @@ export const getFriend = (myId, friendId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getFriend(friendId))
       .then(({response: {result}, type, error, query}) => {
+        if (error) {
+          console.warn('getFriend got error': error)
+        } else {
           let creatorIds = [result.FID]
           dispatch(serverUtils.getUsersInfo(creatorIds))
             .then((usersInfo) => {
               dispatch(postprocessGetFriend(myId, result, usersInfo))
             })
+        }
       })
   }
 }
@@ -121,7 +125,12 @@ function getMessagesContent (chatId, messageIds, subContentIds) {
                 if (error) {
                   return { 'error': true, 'key':'messageBlock', 'value': error }
                 } else {
-                  return { 'error': false, 'key':'messageBlock', 'value': result[0] }
+                  if (result && result.length > 0) {
+                    return { 'error': false, 'key':'messageBlock', 'value': result[0] }
+                  } else {
+                    console.warn('getMessageBlockList for messageId = ', messageIds[index], ' return empty result :', result)
+                    return { 'error': true, 'key':'messageBlock', 'value': {} }
+                  }
                 }
               })
     })
@@ -135,14 +144,15 @@ export const getMessageList = (myId, chatId, latestMessageId, limit) => {
     }
     dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
       .then(({response: {result}, type, error, query}) => {
-          let messageIds    = result.map(each => each.ID).filter(each => each)
-          let subContentIds = result.map(each => each.ContentBlockID).filter(each => each)
-          let creatorIds    = result.map(each => each.CreatorID).filter(each => each)
+          let validResult   = (result && result.length > 0) ? result.filter(each => each).filter(each => (each.ID && each.BlockID && each.CreatorID)) : []
+          let messageIds    = validResult.map(each => each.ID)
+          let subContentIds = validResult.map(each => each.BlockID)
+          let creatorIds    = validResult.map(each => each.CreatorID)
           dispatch(getMessagesContent(chatId, messageIds, subContentIds))
             .then((messageBlockList) => {
               dispatch(serverUtils.getUsersInfo(creatorIds))
                 .then((usersInfo) => {
-                  dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, latestMessageId,  messageBlockList, result, usersInfo))
+                  dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, latestMessageId,  messageBlockList, validResult, usersInfo))
                   if (latestMessageId === EMPTY_ID) {
                     dispatch(postprocessSetFinshLoading(myId))
                   }
@@ -154,14 +164,17 @@ export const getMessageList = (myId, chatId, latestMessageId, limit) => {
 
 const postprocessGetMessageList = (myId, creatorIds, messageIds, latestMessageId, messageBlockList, result, usersInfo) => {
 
-  messageBlockList = messageBlockList.map(block => block.value)
-
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
-  let messageList = messageBlockList.map((each, index) => {
+  let messageList = []
+  messageBlockList.forEach((each, index) => {
+
+    if (each.error) {
+      return
+    }
 
     let userId      = creatorIds[index]
     let userNameMap = usersInfo['userName'] || {}
@@ -170,18 +183,18 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, latestMessageId
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
-    return {
-      ID:             each.ID,
+    messageList.push({
+      ID:             each.value.ID,
       MessageID:      messageIds[index],
-      ArticleID:      each.AID,
+      ArticleID:      each.value.AID,
       CreateTS:       result[index].CreateTS ? result[index].CreateTS: utils.emptyTimeStamp(),
       UpdateTS:       result[index].UpdateTS ? result[index].UpdateTS: utils.emptyTimeStamp(),
       CreatorID:      creatorIds[index],
       CreatorName:    userName,
       CreatorImg:     userImg,
-      Status:         each.S,
-      Buf:            serverUtils.b64decode(each.B),
-    }
+      Status:         each.value.S,
+      Buf:            serverUtils.b64decode(each.value.B),
+    })
   })
 
   console.log('doFriendChatPage.postprocessGetMessageList: messageList:', messageList)
@@ -217,14 +230,15 @@ export const getMoreMessageList = (myId, chatId, startMessageId, limit) => {
     dispatch(preprocessSetStartLoading(myId))
     dispatch(serverUtils.getMessageList(chatId, startMessageId, limit))
       .then(({response: {result}, type, error, query}) => {
-          let messageIds    = result.map(each => each.ID).filter(each => each)
-          let subContentIds = result.map(each => each.ContentBlockID).filter(each => each)
-          let creatorIds    = result.map(each => each.CreatorID).filter(each => each)
+          let validResult   = (result && result.length > 0) ? result.filter(each => each).filter(each => (each.ID && each.BlockID && each.CreatorID)) : []
+          let messageIds    = result.map(each => each.ID)
+          let subContentIds = result.map(each => each.BlockID)
+          let creatorIds    = result.map(each => each.CreatorID)
           dispatch(getMessagesContent(chatId, messageIds, subContentIds))
             .then((messageBlockList) => {
               dispatch(serverUtils.getUsersInfo(creatorIds))
                 .then((usersInfo) => {
-                  dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, result, usersInfo))
+                  dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, usersInfo))
                   dispatch(postprocessSetFinshLoading(myId))
                 })
             })
@@ -234,19 +248,17 @@ export const getMoreMessageList = (myId, chatId, startMessageId, limit) => {
 
 const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
 
-  messageBlockList = messageBlockList.map(block => block.value)
-  messageBlockList = messageBlockList.slice(1)
-
-  messageIds = messageIds.slice(1)
-  creatorIds = creatorIds.slice(1)
-  result     = result.slice(1)
-
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
-  let messageList = messageBlockList.map((each, index) => {
+  let messageList = []
+  messageBlockList.map((each, index) => {
+
+    if (index === 0 || each.error) {
+      return
+    }
 
     let userId      = creatorIds[index]
     let userNameMap = usersInfo['userName'] || {}
@@ -255,18 +267,19 @@ const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBloc
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
-    return {
-      ID:             each.ID, /* messageID */
+
+    messageList.push({
+      ID:             each.value.ID, /* messageID */
       MessageID:      messageIds[index],
-      ArticleID:      each.AID,
+      ArticleID:      each.value.AID,
       CreateTS:       result[index].CreateTS ? result[index].CreateTS : utils.emptyTimeStamp(),
       UpdateTS:       result[index].UpdateTS ? result[index].UpdateTS : utils.emptyTimeStamp(),
       CreatorID:      creatorIds[index],
       CreatorName:    userName,
       CreatorImg:     userImg,
-      Status:         each.S,
-      Buf:            serverUtils.b64decode(each.B),
-    }
+      Status:         each.value.S,
+      Buf:            serverUtils.b64decode(each.value.B),
+    })
   })
 
   console.log('doFriendChatPage.postprocessGetMoreMessageList: messageList:', messageList)
@@ -301,13 +314,25 @@ export const _appendMessages = (state, action) => {
 
   const {myId, data: { messages, noMessage }} = action
 
-  let messageList = state.getIn([myId, 'messageList'], Immutable.List()).toJS()
+  if (!messages || messages.length <= 0) {
+    return state
+  }
 
+  let messageList     = state.getIn([myId, 'messageList'], Immutable.List()).toJS()
   let matchStartIndex = messageList.findIndex((each) => each.MessageID === messages[0].MessageID)
   let matchEndIndex   = messageList.findIndex((each) => each.MessageID === messages[messages.length-1].MessageID)
 
+  if (matchStartIndex === -1) {
+    matchStartIndex = messageList.length
+  }
+  if (matchEndIndex === -1) {
+    matchEndIndex = messageList.length
+  }
+
   state = state.setIn([myId, 'noMessage'], noMessage)
-  return state.setIn([myId, 'messageList'], Immutable.List(messageList.slice(0, matchStartIndex)).concat(Immutable.List(messages)).concat(Immutable.List(messageList.slice(matchEndIndex + 1))))
+  state = state.setIn([myId, 'messageList'], Immutable.List(messageList.slice(0, matchStartIndex)).concat(Immutable.List(messages)).concat(Immutable.List(messageList.slice(matchEndIndex + 1))))
+
+  return state
 }
 
 /*                        */
@@ -349,10 +374,17 @@ const postprocessPostMessage = (myId, userId, userName, userImg, result, message
 
 
 export const _addMessage = (state, action) => {
+
   const {myId, data: { message, noMessage }} = action
 
+  if (!message || message.ID || message.ArticleID ) {
+    return state
+  }
+
   state = state.setIn([myId, 'noMessage'], noMessage)
-  return state.updateIn([myId, 'messageList'], arr => arr.push(Immutable.Map(message)))
+  state = state.updateIn([myId, 'messageList'], arr => arr.push(Immutable.Map(message)))
+
+  return state
 }
 
 export const clearData = (myId) => {
