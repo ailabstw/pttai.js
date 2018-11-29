@@ -30,43 +30,75 @@ function getAllOpLogs(dispatch, myId, tabs, params) {
         switch(item) {
             case constants.SHOW_PTT_MASTER_TAB:
               return dispatch(serverUtils.getPttMasterOpLog(EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_PTT_MASTER_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_PTT_MASTER_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_PTT_MASTER_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_PTT_ME_TAB:
               return dispatch(serverUtils.getPttMeOpLog(EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_PTT_ME_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_PTT_ME_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_PTT_ME_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_CONTENT_BOARD_TAB:
               return dispatch(serverUtils.getContentBoardOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_CONTENT_BOARD_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_CONTENT_BOARD_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_CONTENT_BOARD_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_CONTENT_COMMENT_TAB:
               return dispatch(serverUtils.getContentCommentOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_CONTENT_COMMENT_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_CONTENT_COMMENT_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_CONTENT_COMMENT_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_CONTENT_MASTER_TAB:
               return dispatch(serverUtils.getContentMasterOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_CONTENT_MASTER_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_CONTENT_MASTER_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_CONTENT_MASTER_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_CONTENT_MEMBER_TAB:
               return dispatch(serverUtils.getContentMemberOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_CONTENT_MEMBER_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_CONTENT_MEMBER_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_CONTENT_MEMBER_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_FRIEND_FRIEND_TAB:
               return dispatch(serverUtils.getFriendFriendOpLog(EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_FRIEND_FRIEND_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_FRIEND_FRIEND_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_FRIEND_FRIEND_TAB, 'value':res.result }
+                                }
                               })
             case constants.SHOW_PTT_PEERS_TAB:
               return dispatch(serverUtils.getPeers())
-                              .then(({response: map, type, query, error}) => {
-                                return { 'type':constants.SHOW_PTT_PEERS_TAB, 'value':map.result }
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_PTT_PEERS_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_PTT_PEERS_TAB, 'value':res.result }
+                                }
                               })
             default:
               return null
@@ -87,7 +119,10 @@ export const getOpLogs = (myId, tabs, params) => {
 const postprocessGetOpLogs = (myId, maps) => {
 
   const opLogs = maps.reduce((accumulator, currentValue) => {
-    if (currentValue.type === constants.SHOW_PTT_PEERS_TAB) {
+
+    if (currentValue.error) {
+      return accumulator
+    } else if (currentValue.type === constants.SHOW_PTT_PEERS_TAB) {
       accumulator[currentValue.type] = currentValue.value
     } else {
       accumulator[currentValue.type] = currentValue.value.map((item) => item['O'])//.map(serverUtils.deserialize)
