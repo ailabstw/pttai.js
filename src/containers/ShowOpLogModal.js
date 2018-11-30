@@ -19,11 +19,18 @@ class ShowOpLogModal extends PureComponent {
       tab: props.modalInput.tabs[0],
       opLog: {},
     };
+    this.refreshPageInterval = null
   }
 
   componentWillMount() {
     const { actions: { doShowOpLogModal }, modalInput: { tabs, params }, myId } = this.props
     doShowOpLogModal.getOpLogs(myId, tabs, params)
+
+    this.refreshPageInterval = setInterval(() => doShowOpLogModal.getOpLogs(myId, tabs, params), constants.REFRESH_INTERVAL);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.refreshPageInterval)
   }
 
   render() {
