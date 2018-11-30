@@ -55,7 +55,7 @@ export const joinBoard = (boardUrl) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_joinBoard", "params": [boardUrl]},
+      json: {"id": getUUID(false), "method": "me_joinBoard", "params": [boardUrl]},
     }
   }
 }
@@ -85,7 +85,7 @@ export const getMemberList = (boardId, starUserId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getMemberList", "params": [boardId, starUserId, limit]},
+      json: {"id": getUUID(false), "method": "content_getMemberList", "params": [boardId, starUserId, limit, LIST_ORDER_PREV]},
     }
   }
 }

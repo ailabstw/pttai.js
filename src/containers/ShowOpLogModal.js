@@ -135,7 +135,7 @@ class ShowOpLogModal extends PureComponent {
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Peer Type</div>
-                        <div className={styles['op-value']}>{item.T}</div>
+                        <div title={item.T} className={styles['op-value']}>{constants.PEER_TYPE_ARRAY[item.T]}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>User ID</div>
@@ -162,15 +162,19 @@ class ShowOpLogModal extends PureComponent {
                         <div className={styles['op-value-index']}>Index {index}</div>
                       </div>
                       <div className={styles['item']}>
+                        <div className={styles['op-title']}>Version</div>
+                        <div className={styles['op-value']}>{item.V}</div>
+                      </div>
+                      <div className={styles['item']}>
                         <div className={styles['op-title']}>ID</div>
                         <div className={styles['op-value']}>{item.ID}</div>
                       </div>
                       <div className={styles['item']}>
-                        <div className={styles['op-title']}>Doer ID</div>
-                        <div className={styles['op-value']}>{item.DID}</div>
+                        <div className={styles['op-title']}>Creator ID</div>
+                        <div className={styles['op-value']}>{item.CID}</div>
                       </div>
                       <div className={styles['item']}>
-                        <div className={styles['op-title']}>Create Time</div>
+                        <div className={styles['op-title']}>Create TS</div>
                         <div className={styles['op-value']}>{JSON.stringify(item.CT)}</div>
                       </div>
                       <div className={styles['item']}>
@@ -179,14 +183,14 @@ class ShowOpLogModal extends PureComponent {
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Op</div>
-                        <div className={styles['op-value']}>{item.O}</div>
+                        <div title={item.O} className={styles['op-value']}>{constants.OP_TYPE_ARRAY[item.O]}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Data</div>
                         <div className={styles['op-value']}>{JSON.stringify(item.D)}</div>
                       </div>
                       <div className={styles['item']}>
-                        <div className={styles['op-title']}>Update Time</div>
+                        <div className={styles['op-title']}>Update TS</div>
                         <div className={styles['op-value']}>{JSON.stringify(item.UT)}</div>
                       </div>
                       <div className={styles['item']}>

@@ -71,6 +71,78 @@ export const LIST_ORDER_NEXT        = 2
 export const MESSAGE_TYPE_TEXT      = 1
 export const MESSAGE_TYPE_INVITE    = 2
 
+export const PEER_TYPE_ARRAY = [
+    'PeerTypeErr',
+    'PeerTypeRemoved',
+    'PeerTypeRandom',
+    'PeerTypeMember',
+    'PeerTypeImportant',
+    'PeerTypeMe'
+]
+
+export const OP_TYPE_ARRAY = [
+    'JoinMsg',
+    'JoinAckChallengeMsg',
+
+    'JoinEntityMsg',
+    'ApproveJoinMsg',
+
+    'JoinAlreadyRegisteredMsg',
+    'JoinAckAlreadyRegistedMsg',
+
+    'AddOpKeyOplogMsg', // 7
+    'AddOpKeyOplogsMsg',
+    'AddPendingOpKeyOplogMsg',
+    'AddPendingOpKeyOplogsMsg',
+
+    'SyncOpKeyOplogMsg',
+    'SyncOpKeyOplogAckMsg',
+    'SyncPendingOpKeyOplogMsg',
+    'SyncPendingOpKeyOplogAckMsg',
+
+    'SyncCreateOpKeyMsg',
+    'SyncCreateOpKeyAckMsg',
+
+    // master
+    'AddMasterOplogMsg', // 17
+    'AddMasterOplogsMsg',
+
+    'AddPendingMasterOplogMsg',
+    'AddPendingMasterOplogsMsg',
+
+    'SyncMasterOplogMsg',
+    'SyncMasterOplogAckMsg',
+    'SyncMasterOplogNewOplogsMsg',
+    'SyncMasterOplogNewOplogsAckMsg',
+
+    'SyncPendingMasterOplogMsg',
+    'SyncPendingMasterOplogAckMsg',
+
+    // member
+    'AddMemberOplogMsg', // 27
+    'AddMemberOplogsMsg',
+
+    'AddPendingMemberOplogMsg',
+    'AddPendingMemberOplogsMsg',
+
+    'SyncMemberOplogMsg',
+    'SyncMemberOplogAckMsg',
+    'SyncMemberOplogNewOplogsMsg',
+    'SyncMemberOplogNewOplogsAckMsg',
+
+    'SyncPendingMemberOplogMsg',
+    'SyncPendingMemberOplogAckMsg',
+
+    // peer
+    'IdentifyPeerMsg', // 37
+    'IdentifyPeerAckMsg',
+
+    'BoardLastSeenMsg',
+    'ArticleLastSeenMsg',
+
+    'NMsg',
+]
+
 export const STATUS_ARRAY = [
     'StatusInvalid',
     'StatusInit',

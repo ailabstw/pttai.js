@@ -206,7 +206,7 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, latestMessageId
       myId,
       myClass,
       type: SET_DATA,
-      data: { noMessage: true }
+      data: { messageList: [], noMessage: true }
     }
   } else if (matchIndex === -1) {
     return {
@@ -362,7 +362,7 @@ const postprocessPostMessage = (myId, userId, userName, userImg, result, message
       Buf:            message,
   }
 
-  console.log('doFriendChatPage.postprocessPostMessage: newMessage:', result)
+  console.log('doFriendChatPage.postprocessPostMessage: newMessage:', newMessage)
 
   return {
     myId,
