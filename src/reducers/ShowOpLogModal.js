@@ -100,6 +100,15 @@ function getAllOpLogs(dispatch, myId, tabs, params) {
                                   return { 'error': false, 'type':constants.SHOW_PTT_PEERS_TAB, 'value':res.result }
                                 }
                               })
+            case constants.SHOW_LAST_ANNOUNCE_P2P_TAB:
+              return dispatch(serverUtils.getLastAnnounceP2PTS())
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_LAST_ANNOUNCE_P2P_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_LAST_ANNOUNCE_P2P_TAB, 'value':res.result }
+                                }
+                              })
             default:
               return null
         }
@@ -123,6 +132,8 @@ const postprocessGetOpLogs = (myId, maps) => {
     if (currentValue.error) {
       return accumulator
     } else if (currentValue.type === constants.SHOW_PTT_PEERS_TAB) {
+      accumulator[currentValue.type] = currentValue.value
+    } else if (currentValue.type === constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
       accumulator[currentValue.type] = currentValue.value
     } else {
       accumulator[currentValue.type] = currentValue.value.map((item) => item['O'])//.map(serverUtils.deserialize)

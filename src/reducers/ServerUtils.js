@@ -488,6 +488,16 @@ export const getFriendFriendOpLog = (logId, limit) => {
   }
 }
 
+export const getLastAnnounceP2PTS = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "ptt_getLastAnnounceP2PTS", "params": []},
+    }
+  }
+}
+
 /*                */
 /*  Multi-device  */
 /*                */

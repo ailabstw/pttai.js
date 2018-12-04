@@ -9,6 +9,7 @@ import * as doShowOpLogModal    from '../reducers/ShowOpLogModal'
 import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
 import DropdownComponent        from '../components/DropdownComponent'
+import { epoch2FullTimeFormat } from '../utils/utilDatetime'
 
 import styles from './ShowOpLogModal.css'
 
@@ -91,6 +92,10 @@ class ShowOpLogModal extends PureComponent {
             title   = 'ptt peers'
             fTitle  = 'Ptt Peers'
             break;
+          case constants.SHOW_LAST_ANNOUNCE_P2P_TAB:
+            title   = 'last p2p'
+            fTitle  = 'Ptt Last Annouce p2p'
+            break;
           default:
             break;
       }
@@ -130,7 +135,12 @@ class ShowOpLogModal extends PureComponent {
               <div className={styles['content-title']}>{dropdownList.find( i => i.id === tab ).fullTitle}</div>
               <div className={styles['oplog-list']}>
               {
-                tab === constants.SHOW_PTT_PEERS_TAB ? opLog.map((item, index) => {
+                tab === constants.SHOW_LAST_ANNOUNCE_P2P_TAB ?
+                  (
+                    <div>
+                      {epoch2FullTimeFormat(opLog.T)}
+                    </div>
+                  ) : tab === constants.SHOW_PTT_PEERS_TAB ? opLog.map((item, index) => {
                   return (
                     <div className={styles['oplog-item']} key={index}>
                       <div className={styles['item-index']}>
