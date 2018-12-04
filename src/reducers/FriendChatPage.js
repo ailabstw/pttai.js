@@ -1,12 +1,15 @@
 import Immutable        from 'immutable'
 import { createDuck }   from 'redux-duck'
+import LRU              from 'lru-cache'
 
 import * as utils       from './utils'
 import * as serverUtils from './ServerUtils'
 
 import {  EMPTY_ID,
           DEFAULT_USER_NAME,
-          DEFAULT_USER_IMAGE }   from '../constants/Constants'
+          DEFAULT_USER_IMAGE,
+          NUM_MESSAGE_PER_REQ,
+          NUM_CACHE_MESSAGE }   from '../constants/Constants'
 
 export const myClass = 'FRIEND_CHAT_PAGE'
 
@@ -137,9 +140,9 @@ function getMessagesContent (chatId, messageIds, subContentIds) {
   )
 }
 
-export const getMessageList = (myId, chatId, latestMessageId, limit) => {
+export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
   return (dispatch, getState) => {
-    if (latestMessageId === EMPTY_ID) {
+    if (isFirstFetch) {
       dispatch(preprocessSetStartLoading(myId))
     }
     dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
@@ -152,8 +155,8 @@ export const getMessageList = (myId, chatId, latestMessageId, limit) => {
             .then((messageBlockList) => {
               dispatch(serverUtils.getUsersInfo(creatorIds))
                 .then((usersInfo) => {
-                  dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, latestMessageId,  messageBlockList, validResult, usersInfo))
-                  if (latestMessageId === EMPTY_ID) {
+                  dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, isFirstFetch,  messageBlockList, validResult, usersInfo))
+                  if (isFirstFetch) {
                     dispatch(postprocessSetFinshLoading(myId))
                   }
                 })
@@ -162,7 +165,7 @@ export const getMessageList = (myId, chatId, latestMessageId, limit) => {
   }
 }
 
-const postprocessGetMessageList = (myId, creatorIds, messageIds, latestMessageId, messageBlockList, result, usersInfo) => {
+const postprocessGetMessageList = (myId, creatorIds, messageIds, isFirstFetch, messageBlockList, result, usersInfo) => {
 
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
@@ -199,21 +202,21 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, latestMessageId
 
   console.log('doFriendChatPage.postprocessGetMessageList: messageList:', messageList)
 
-  let matchIndex = messageList.findIndex((each) => each.MessageID === latestMessageId)
+  //let matchIndex = messageList.findIndex((each) => each.MessageID === latestMessageId)
 
-  if (messageList.length === 0 && latestMessageId === EMPTY_ID) {
+  if (messageList.length === 0 && isFirstFetch) {
     return {
       myId,
       myClass,
       type: SET_DATA,
-      data: { messageList: [], noMessage: true }
+      data: { friendMessages: { lru: null, offset: 0, messageList: [] }, noMessage: true }
     }
-  } else if (matchIndex === -1) {
+  } else if (messageList.length === 0 && !isFirstFetch) {
     return {
       myId,
       myClass,
       type: SET_DATA,
-      data: { messageList: messageList.reverse(), noMessage: false }
+      data: {}
     }
   } else {
     return {
@@ -305,32 +308,100 @@ export const _prependMessages = (state, action) => {
 
   const {myId, data: { messages }} = action
 
-  let messageList = state.getIn([myId, 'messageList'], Immutable.List())
+  let messageList = state.getIn([myId, 'friendMessages', 'messageList'], Immutable.List())
+  let oriOffset   = state.getIn([myId, 'friendMessages', 'offset'], 0)
 
-  return state.setIn([myId, 'messageList'], Immutable.List(messages).concat(messageList))
+  state = state.setIn([myId, 'friendMessages', 'offset'], oriOffset + messages.length)
+  state = state.setIn([myId, 'friendMessages', 'messageList'], Immutable.List(messages).concat(messageList))
+  return state
 }
 
 export const _appendMessages = (state, action) => {
 
+  /* merge the newly fetched messages to existing message list */
   const {myId, data: { messages, noMessage }} = action
 
   if (!messages || messages.length <= 0) {
     return state
   }
 
-  let messageList     = state.getIn([myId, 'messageList'], Immutable.List()).toJS()
-  let matchStartIndex = messageList.findIndex((each) => each.MessageID === messages[0].MessageID)
-  let matchEndIndex   = messageList.findIndex((each) => each.MessageID === messages[messages.length-1].MessageID)
+  let friendMessages  = state.getIn([myId, 'friendMessages'], Immutable.Map()).toJS()
+  let messageList     = friendMessages.messageList || []
+  let lruCache        = friendMessages.lru || new LRU(NUM_CACHE_MESSAGE)
+  let offset          = friendMessages.offset || 0
 
-  if (matchStartIndex === -1) {
-    matchStartIndex = messageList.length
-  }
-  if (matchEndIndex === -1) {
-    matchEndIndex = messageList.length
+  let resultMessageList  = []
+  if (messageList.length === 0) {
+    /* append message */
+    messages.forEach((message, index) => {
+      resultMessageList.push(message)
+      lruCache.set(message.ID, { index: index - offset, message: message })
+    })
+  } else {
+    /* 1. find earlist start node and save to local lru */
+    let localLRU     = new LRU(NUM_MESSAGE_PER_REQ)
+
+    let startMessage = null
+    let earlistTS    = 2147483648 /* year 2038 */
+    messages.forEach((message, index) => {
+      localLRU.set(message.ID, message)
+      if (lruCache.get(message.ID) && lruCache.get(message.ID).message.UpdateTS.T < earlistTS) {
+        startMessage  = lruCache.get(message.ID)
+        earlistTS     = startMessage.message.UpdateTS.T
+      }
+    })
+    /* 2. start merge  */
+    let oriIndex    = startMessage ? startMessage.index : messageList.length - offset
+    let newIndex    = 0
+    let mergeIndex  = oriIndex
+
+    let oriList    = messageList.slice(0, offset + oriIndex)
+    let mergedList = []
+
+    while(messageList.length > offset + oriIndex || messages.length > newIndex){
+      if (messageList.length > offset + oriIndex && messages.length > newIndex) {
+        let oriMessage = messageList[offset + oriIndex]
+        let newMessage = messages[newIndex]
+        /* both left */
+        if (oriMessage.UpdateTS.T <= newMessage.UpdateTS.T) {
+          if (!localLRU.get(oriMessage.ID)) {
+            mergedList.push(oriMessage)
+            lruCache.set(oriMessage.ID, { index: mergeIndex, message: oriMessage })
+            mergeIndex += 1
+          }
+          oriIndex += 1
+        } else {
+          mergedList.push(newMessage)
+          lruCache.set(newMessage.ID, { index: mergeIndex, message: newMessage })
+          mergeIndex += 1
+          newIndex += 1
+        }
+      } else if (messageList.length > offset + oriIndex) {
+        /* only ori */
+        let oriMessage = messageList[offset + oriIndex]
+        if (!localLRU.get(oriMessage.ID)) {
+          mergedList.push(oriMessage)
+          lruCache.set(oriMessage.ID, { index: mergeIndex, message: oriMessage })
+          mergeIndex += 1
+        }
+        oriIndex += 1
+      } else {
+        /* only new */
+        let newMessage = messages[newIndex]
+        mergedList.push(newMessage)
+        lruCache.set(newMessage.ID, { index: mergeIndex, message: newMessage })
+        mergeIndex += 1
+        newIndex += 1
+      }
+    }
+    resultMessageList = oriList.concat(mergedList)
+    localLRU.reset()
   }
 
   state = state.setIn([myId, 'noMessage'], noMessage)
-  state = state.setIn([myId, 'messageList'], Immutable.List(messageList.slice(0, matchStartIndex)).concat(Immutable.List(messages)).concat(Immutable.List(messageList.slice(matchEndIndex + 1))))
+  state = state.setIn([myId, 'friendMessages', 'offset'], offset)
+  state = state.setIn([myId, 'friendMessages', 'lru'], lruCache)
+  state = state.setIn([myId, 'friendMessages', 'messageList'], Immutable.List(resultMessageList))
 
   return state
 }
@@ -381,8 +452,17 @@ export const _addMessage = (state, action) => {
     return state
   }
 
+  let friendMessages  = state.getIn([myId, 'friendMessages'], Immutable.Map()).toJS()
+
+  let lruCache        = friendMessages.lru || new LRU(NUM_CACHE_MESSAGE)
+  let offset          = friendMessages.offset || 0
+  let messageList     = friendMessages.messageList || []
+
+  lruCache.set(message.ID, { index: messageList.length - offset, message: message })
+
   state = state.setIn([myId, 'noMessage'], noMessage)
-  state = state.updateIn([myId, 'messageList'], arr => arr.push(Immutable.Map(message)))
+  state = state.setIn([myId, 'friendMessages', 'lru'], lruCache)
+  state = state.updateIn([myId, 'friendMessages', 'messageList'], arr => arr.push(Immutable.Map(message)))
 
   return state
 }
@@ -398,7 +478,7 @@ const postprocessClearData = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { messageList: [], friendData: {} }
+    data: { friendMessages: { offset: 0, messageList: [] }, friendData: {} }
   }
 }
 

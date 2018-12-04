@@ -21,6 +21,7 @@
     "js-base64": "^2.4.5",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.10",
+    "lru-cache": "^5.1.1",
     "moment": "^2.22.2",
     "node-uuid": "^1.4.8",
     "normalize.css": "^8.0.0",
