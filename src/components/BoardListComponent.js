@@ -54,7 +54,7 @@ class BoardListComponent extends PureComponent {
                   <div className={styles['list-item-board-status-' + getStatusClass(item.Status)]}></div>
                 </div>
                 <div className={isUnRead(item.ArticleCreateTS.T, item.LastSeen.T)? styles['list-item-title-unread']: styles['list-item-title'] }>
-                  {item.Title}
+                  {item.Title} {constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'? '': '(' + constants.JOIN_STATUS_ARRAY[item.joinStatus].slice(10) + ')'}
                 </div>
               </div>
               <div className={styles['list-item-author']}>
