@@ -23,14 +23,9 @@ class FriendChatPage extends PureComponent {
   }
 
   getLatestMessage() {
-    const { myId, friendChatPage, actions: {doFriendChatPage}, match: {params} } = this.props
+    const { myId, actions: {doFriendChatPage}, match: {params} } = this.props
 
-    let me = friendChatPage.get(myId, Immutable.Map())
-
-    let messageList       = me.get('messageList', Immutable.List()).toJS()
-    let latestMessageId   = (messageList.length > 0) ? messageList[messageList.length - 1].MessageID : constants.EMPTY_ID
-
-    doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), latestMessageId, constants.NUM_MESSAGE_PER_REQ)
+    doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), false, constants.NUM_MESSAGE_PER_REQ)
     doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
   }
 
@@ -39,7 +34,7 @@ class FriendChatPage extends PureComponent {
 
     doFriendChatPage.initParams(myId, params)
     doFriendChatPage.getFriend(myId, decodeURIComponent(params.friendId))
-    doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), constants.EMPTY_ID, constants.NUM_MESSAGE_PER_REQ)
+    doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), true, constants.NUM_MESSAGE_PER_REQ)
     doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
 
     this.refreshPageInterval = setInterval(this.getLatestMessage, constants.REFRESH_INTERVAL);
@@ -69,7 +64,8 @@ class FriendChatPage extends PureComponent {
 
     let me = friendChatPage.get(myId, Immutable.Map())
     let friendData          = me.get('friendData',  Immutable.Map()).toJS()
-    let messageList         = me.get('messageList', Immutable.List()).toJS()
+    let messageList         = me.getIn(['friendMessages', 'messageList'], Immutable.List()).toJS()
+
     let boardList           = me.get('boardList', Immutable.List()).toJS()
     let isLoading           = me.get('isLoading', false)
     let noMessage           = me.get('noMessage', false)

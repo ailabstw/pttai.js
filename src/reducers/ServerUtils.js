@@ -255,6 +255,16 @@ export const markFriendSeen = (chatId) => {
   }
 }
 
+export const getFriendRequest = (entityID) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method":"me_getFriendRequests", "params":[entityID]},
+    }
+  }
+}
+
 /*           */
 /*  Message  */
 /*           */

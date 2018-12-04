@@ -79,7 +79,6 @@ class FriendListComponent extends PureComponent {
               const summaryObj = JSON.parse(item.Summary)
 
               let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
-
               return (
                 <div className={styles['list-item']} key={index} onClick={(e) => this.onListItemClick(e, index)}>
                   <Link to={friendLink}>
@@ -95,7 +94,7 @@ class FriendListComponent extends PureComponent {
                     <div className={styles['list-item-main']}>
                       <div className={styles['list-item-header']}>
                         <div className={styles['list-item-title']}>
-                          {item.Name}
+                          {item.Name} {constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'? '': '(' + constants.JOIN_STATUS_ARRAY[item.joinStatus].slice(10) + ')'}
                         </div>
                         <div className={styles['list-item-time']}>
                           {

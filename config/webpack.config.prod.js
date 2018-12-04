@@ -27,6 +27,8 @@ const es6_srcs = [
   paths.appNodeModules + '/decamelize',
   paths.appNodeModules + '/query-string',
   paths.appNodeModules + '/strict-uri-encode',
+  paths.appNodeModules + '/lru-cache',
+  paths.appNodeModules + '/yallist',
 ]
 
 // Webpack uses `publicPath` to determine where the app is being served from.
