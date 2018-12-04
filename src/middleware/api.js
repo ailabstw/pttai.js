@@ -16,7 +16,7 @@ export const API_TYPES = [REQUEST, SUCCESS, FAILURE]
 
 const callApi = (endpoint, { query, method = 'get', params, files, json }, isWithCredentials=true) => {
   // XXX hack for adding jsonrpc method info into endpoint
-  if (method === 'post') {
+  if (method === 'post' && json) {
     endpoint = endpoint + json['method'].replace('_', '/')
   }
 

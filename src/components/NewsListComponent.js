@@ -8,6 +8,8 @@ import { epoch2FullDate,
          epoch2ReadFormat }     from '../utils/utilDatetime'
 import { isUnRead }             from '../utils/utils'
 
+import * as constants           from '../constants/Constants'
+
 
 class NewsListComponent extends PureComponent {
   constructor(props) {
@@ -57,7 +59,7 @@ class NewsListComponent extends PureComponent {
                   <Link to={itemLink}>
                     <div className={styles['list-item-author']}>
                       <div className={styles['list-item-author-pic']}>
-                        <img src={item.CreatorImg} alt={'Creator Profile'}/>
+                        <img src={item.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Creator Profile'}/>
                       </div>
                       <div title={item.CreatorName} className={styles['list-item-author-name']}>
                         {item.CreatorName}
