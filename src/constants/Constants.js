@@ -173,3 +173,10 @@ export const STATUS_ARRAY = [
     'StatusMigrated',
     'StatusTerminal',
 ]
+
+export const JOIN_STATUS_ARRAY = [
+    'JoinStatusPending',
+    'JoinStatusRequested',
+    'JoinStatusWaitAccepted',
+    'JoinStatusAccepted',
+]
