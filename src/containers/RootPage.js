@@ -133,6 +133,7 @@ class RootPage extends PureComponent {
           //constants.SHOW_PTT_MASTER_TAB,
           constants.SHOW_PTT_ME_TAB,
           constants.SHOW_PTT_PEERS_TAB,
+          constants.SHOW_LAST_ANNOUNCE_P2P_TAB,
         ]
       })
       doModalContainer.openModal(constants.SETTING_MENU_MODAL)
