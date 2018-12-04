@@ -60,6 +60,16 @@ export const joinBoard = (boardUrl) => {
   }
 }
 
+export const getBoardRequest = (entityID) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method":"me_getBoardRequests", "params":[entityID]},
+    }
+  }
+}
+
 export const markBoard = (boardId) => {
   return {
     [api.CALL_API]: {

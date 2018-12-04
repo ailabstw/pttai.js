@@ -37,16 +37,19 @@ export const getBoardList = (myId, limit) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getBoards(EMPTY_ID, limit))
       .then(({response: {result}, type, query, error}) => {
-        let creatorIds = result.map((each) => each.C)
-        dispatch(serverUtils.getUsersInfo(creatorIds))
-          .then((usersInfo) => {
-            dispatch(postprocessGetBoardList(myId, result, usersInfo))
+        dispatch(serverUtils.getBoardRequest(EMPTY_ID))
+          .then(({response: reqResult, type, query, error}) => {
+            let creatorIds = result.map((each) => each.C)
+            dispatch(serverUtils.getUsersInfo(creatorIds))
+              .then((usersInfo) => {
+                dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
+              })
           })
       })
   }
 }
 
-const postprocessGetBoardList = (myId, result, usersInfo) => {
+const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
 
   result = result.map((each) => {
     return {
@@ -55,7 +58,8 @@ const postprocessGetBoardList = (myId, result, usersInfo) => {
     }
   })
 
-  result = result.map(serverUtils.deserialize)
+  result    = result.map(serverUtils.deserialize)
+  reqResult = reqResult.map(serverUtils.deserialize)
 
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
@@ -66,7 +70,7 @@ const postprocessGetBoardList = (myId, result, usersInfo) => {
 
     let userId      = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
-    let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
     return {
       BoardType:        each.BT,
@@ -78,8 +82,44 @@ const postprocessGetBoardList = (myId, result, usersInfo) => {
       LastSeen:         each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
       CreatorID:        each.CreatorID,
       creatorName:      userName,
+      joinStatus:       3,
     }
   })
+
+  let joinReqs = reqResult.map((eachJoin) => {
+    return {
+      CreatorID: eachJoin.C,
+      NodeID:    eachJoin.n,
+      Name:      eachJoin.N,
+      Status:    eachJoin.S,
+    }
+  })
+
+  joinReqs.forEach((join, index) => {
+    let joinBoardIndex = boardList.findIndex((e) => e.ID === join.CreatorID)
+    if ( joinBoardIndex >= 0) {
+      boardList[joinBoardIndex].joinStatus = join.Status
+    } else {
+
+      let userId      = EMPTY_ID
+      let userNameMap = usersInfo['userName'] || {}
+      let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+
+      boardList.push({
+        BoardType:        0,
+        ID:               EMPTY_ID,
+        Status:           0,
+        Title:            join.Name,
+        ArticleCreateTS:  utils.emptyTimeStamp(),
+        UpdateTS:         utils.emptyTimeStamp(),
+        LastSeen:         utils.emptyTimeStamp(),
+        CreatorID:        join.CreatorID,
+        creatorName:      userName,
+        joinStatus:       join.Status,
+      })
+    }
+  })
+
 
   console.log('doHubPage.postprocessGetBoardList: boardList:', boardList)
 
@@ -136,7 +176,7 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
 
     let userId      = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
-    let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
     return {
       ID:               each.ID,
@@ -146,6 +186,7 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
       ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
       LastSeen:         each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
       UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
+      joinStatus:       3,
     }
   })
 
@@ -187,13 +228,16 @@ export const setBoardName = (myId, boardId, name) => {
       .then(({response: {result}, type, query, error}) => {
           dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
             .then(({response: {result}, type, query, error}) => {
-              let creatorIds = result.map((each) => each.C)
-              dispatch(serverUtils.getUsersInfo(creatorIds))
-                .then((usersInfo) => {
-                  dispatch(postprocessGetBoardList(myId, result, usersInfo))
+              dispatch(serverUtils.getBoardRequest(EMPTY_ID))
+                .then(({response: reqResult, type, query, error}) => {
+                  let creatorIds = result.map((each) => each.C)
+                  dispatch(serverUtils.getUsersInfo(creatorIds))
+                    .then((usersInfo) => {
+                      dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
+                    })
                 })
             })
-    })
+      })
   }
 }
 
@@ -257,6 +301,7 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
       ArticleCreateTS:  utils.emptyTimeStamp(),
       UpdateTS:         utils.emptyTimeStamp(),
       LastSeen:         utils.emptyTimeStamp(),
+      joinStatus:       3,
   }
 
   console.log('doHubPage.postprocessCreateBoard: newBoard:', newBoard)
@@ -315,6 +360,7 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
       LastSeen:         utils.emptyTimeStamp(),
       CreateTS:         utils.emptyTimeStamp(),
       UpdateTS:         utils.emptyTimeStamp(),
+      joinStatus:       0,
   }
 
   console.log('doHubPage.postprocessJoinBoard: joinedBoard:', joinedBoard)
