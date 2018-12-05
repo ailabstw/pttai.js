@@ -118,71 +118,68 @@
     background-image: url('/images/btn_add_hover@2x.png');
 }
 
-.action-section {
-    min-height: 60px;
+.submodal-action-section {
     display: flex;
-    flex-direction: row;
-    margin: auto auto 20px auto;
-    width: 280px;
-    text-align: center;
-    padding-bottom: 10px;
-}
-
-.submodal-qr-code-scanner-container {
-    min-width: 280px;
-    position: relative;
-    width: 70%;
-    margin: 10px auto;
-}
-
-.submodal-qr-code-scanner-container:before{
-    content: "";
-    display: block;
-    padding-top: 100%;  /* initial ratio of 1:1*/
-}
-
-.submodal-qr-code-scanner {
-    position:  absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    border: 1px solid #FFF;
-    background-color: #000;
-    display: flex;
-}
-
-.submodal-qr-code-text {
-    position: absolute;
+    flex-direction: column;
+    margin: auto;
     width: 100%;
-    align-self: flex-end;
+    height: 100%;
     text-align: center;
-    margin-bottom: 10px;
-    color: #FFFFFF;
-    z-index: 10;
+    padding: 20px 10px;
 }
 
-.submodal-paste-area-node-id {
-    height: 5px;
-    width: 70%;
-    min-width: 280px;
-    height: 95px;
-    margin: 10px auto;
+.submodal-join-board-button {
+    padding: 0px;
+    margin: 5px;
+    font-size: 1rem;
+    width: 50%;
+    max-height: 100%;
+    min-width: 200px;
+    height: 45px;
+
+    border-radius: 10px;
+    background-color: #88B9D5;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
 }
 
-.submodal-paste-area-node-id textarea {
-    width: 100%;
-    height: 95px;
-    min-height: 95px;
-    max-height: 95px;
-    border: 1px solid #a3a3a3;
-    border-radius: 3px;
-    word-wrap: break-word;
-    background-color: #ffffff;
-    text-decoration: none;
-    color: #000;
-    padding: 10px;
-    line-height: 23px;
+.submodal-create-board-button {
+    padding: 0px;
+    margin: 5px;
+    font-size: 1rem;
+    width: 50%;
+    max-height: 100%;
+    min-width: 200px;
+    height: 45px;
+
+    border-radius: 10px;
+    background-color: #7EB349;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
+}
+
+.submodal-close-button {
+    padding: 0px;
+    margin: 5px;
+    font-size: 1rem;
+    width: 50%;
+    max-height: 100%;
+    min-width: 200px;
+    height: 45px;
+
+    border-radius: 10px;
+    background-color: #A9A9A9;
+    color: #FFF;
+    font-weight: lighter;
+
+    margin: auto;
+    cursor: pointer;
 }
 
 ::-webkit-input-placeholder {
@@ -191,13 +188,4 @@
 
 input:-moz-placeholder {
     text-align:left;
-}
-
-.submodal-paste-area-node-id textarea:focus {
-    text-decoration: none;
-    outline: none;
-}
-
-.submodal-paste-area-node-id textarea:focus {
-    outline: none;
 }
