@@ -111,9 +111,10 @@ class ManageBoardModal extends PureComponent {
       onModalSwitch(constants.SHOW_OP_LOG_MODAL, {
         tabs: [
           constants.SHOW_CONTENT_BOARD_TAB,
-          constants.SHOW_CONTENT_COMMENT_TAB,
           constants.SHOW_CONTENT_MASTER_TAB,
           constants.SHOW_CONTENT_MEMBER_TAB,
+          constants.SHOW_CONTENT_OPKEY_TAB,
+          constants.SHOW_CONTENT_PEERS_TAB,
         ],
         params: {
           boardId: boardId,

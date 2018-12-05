@@ -43,14 +43,6 @@ class ShowOpLogModal extends PureComponent {
 
     const { tab } = this.state
 
-    // const pttMasterStatus       = (tab === constants.SHOW_PTT_MASTER_TAB)?      '-active':''
-    // const pttMeStatus           = (tab === constants.SHOW_PTT_ME_TAB)?          '-active':''
-    // const contentBoardStatus    = (tab === constants.SHOW_CONTENT_BOARD_TAB)?   '-active':''
-    // const contentCommentStatus  = (tab === constants.SHOW_CONTENT_COMMENT_TAB)? '-active':''
-    // const contentMasterStatus   = (tab === constants.SHOW_CONTENT_MASTER_TAB)?  '-active':''
-    // const contentMemberStatus   = (tab === constants.SHOW_CONTENT_MEMBER_TAB)?  '-active':''
-    // const friendFriendStatus    = (tab === constants.SHOW_FRIEND_FRIEND_TAB)?   '-active':''
-
     let me      = showOpLogModal.get(myId, Immutable.Map())
     let opLogs  = me.get('opLogs', Immutable.Map()).toJS()
     let opLog   = opLogs[tab]? opLogs[tab]: []
@@ -72,9 +64,9 @@ class ShowOpLogModal extends PureComponent {
             title   = 'board'
             fTitle  = 'Content Board Op-Log'
             break;
-          case constants.SHOW_CONTENT_COMMENT_TAB:
-            title   = 'comment'
-            fTitle  = 'Content Comment Op-Log'
+          case constants.SHOW_CONTENT_OPKEY_TAB:
+            title   = 'opkey'
+            fTitle  = 'Content Opkey Op-Log'
             break;
           case constants.SHOW_CONTENT_MASTER_TAB:
             title   = 'master'
@@ -86,11 +78,31 @@ class ShowOpLogModal extends PureComponent {
             break;
           case constants.SHOW_FRIEND_FRIEND_TAB:
             title   = 'friend'
-            fTitle  = 'Friend Op-Log'
+            fTitle  = 'Friend Friend Op-Log'
+            break;
+          case constants.SHOW_FRIEND_MASTER_TAB:
+            title   = 'master'
+            fTitle  = 'Friend Master Op-Log'
+            break;
+          case constants.SHOW_FRIEND_MEMBER_TAB:
+            title   = 'member'
+            fTitle  = 'Friend Member Op-Log'
+            break;
+          case constants.SHOW_FRIEND_OPKEY_TAB:
+            title   = 'opkey'
+            fTitle  = 'Friend Opkey Op-Log'
             break;
           case constants.SHOW_PTT_PEERS_TAB:
             title   = 'ptt peers'
             fTitle  = 'Ptt Peers'
+            break;
+          case constants.SHOW_CONTENT_PEERS_TAB:
+            title   = 'peers'
+            fTitle  = 'Content Board Peers'
+            break;
+          case constants.SHOW_FRIEND_PEERS_TAB:
+            title   = 'peers'
+            fTitle  = 'Friend peers'
             break;
           case constants.SHOW_LAST_ANNOUNCE_P2P_TAB:
             title   = 'last p2p'
@@ -137,10 +149,13 @@ class ShowOpLogModal extends PureComponent {
               {
                 tab === constants.SHOW_LAST_ANNOUNCE_P2P_TAB ?
                   (
-                    <div>
-                      {epoch2FullTimeFormat(opLog.T)}
+                    <div className={styles['oplog-item']}>
+                      <div className={styles['item']}>
+                        <div className={styles['op-title']}>Connect Time</div>
+                        <div className={styles['op-value']}>{epoch2FullTimeFormat(opLog.T)}</div>
+                      </div>
                     </div>
-                  ) : tab === constants.SHOW_PTT_PEERS_TAB ? opLog.map((item, index) => {
+                  ) : tab.indexOf('_PEERS_TAB') !== -1 ? opLog.map((item, index) => {
                   return (
                     <div className={styles['oplog-item']} key={index}>
                       <div className={styles['item-index']}>
@@ -160,15 +175,15 @@ class ShowOpLogModal extends PureComponent {
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>IP</div>
-                        <div className={styles['op-value']}>{item.Addr.IP}</div>
+                        <div className={styles['op-value']}>{item.Addr ? item.Addr.IP : 'null'}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Port</div>
-                        <div className={styles['op-value']}>{item.Addr.Port}</div>
+                        <div className={styles['op-value']}>{item.Addr ? item.Addr.Port : 'null'}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Zone</div>
-                        <div className={styles['op-value']}>{item.Addr.Zone}</div>
+                        <div className={styles['op-value']}>{item.Addr ? item.Addr.Zone : 'null'}</div>
                       </div>
                     </div>
                   )

@@ -438,6 +438,26 @@ export const getPeers = () => {
   }
 }
 
+export const getContentPeers = (entityID) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "content_getPeers", "params": [entityID]},
+    }
+  }
+}
+
+export const getFriendPeers = (entityID) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_getPeers", "params": [entityID]},
+    }
+  }
+}
+
 export const getContentBoardOpLog = (boardId, logId, limit) => {
   return {
     [api.CALL_API]: {
@@ -448,12 +468,12 @@ export const getContentBoardOpLog = (boardId, logId, limit) => {
   }
 }
 
-export const getContentCommentOpLog = (boardId, logId, limit) => {
+export const getContentOpkeyOpLog = (boardId, logId, limit) => {
   return {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getCommentOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
+      json: {"id": getUUID(false), "method": "content_getOpKeyOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
@@ -478,12 +498,42 @@ export const getContentMemberOpLog = (boardId, logId, limit) => {
   }
 }
 
-export const getFriendFriendOpLog = (logId, limit) => {
+export const getFriendFriendOpLog = (entityId, logId, limit) => {
   return {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getFriendOplogList", "params": [logId, limit, LIST_ORDER_NEXT]},
+      json: {"id": getUUID(false), "method": "friend_getFriendOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+    }
+  }
+}
+
+export const getFriendMasterOpLog = (entityId, logId, limit) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_getMasterOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+    }
+  }
+}
+
+export const getFriendMemberOpLog = (entityId, logId, limit) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_getMemberOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+    }
+  }
+}
+
+export const getFriendOpKeyOpLog = (entityId, logId, limit) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_getOpKeyOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
     }
   }
 }
