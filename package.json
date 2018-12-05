@@ -23,7 +23,6 @@
     "lodash": "^4.17.10",
     "lru-cache": "^5.1.1",
     "moment": "^2.22.2",
-    "node-uuid": "^1.4.8",
     "normalize.css": "^8.0.0",
     "papaparse": "^4.5.0",
     "qrcode.react": "^0.8.0",
@@ -45,17 +44,19 @@
     "redux-thunk": "^2.3.0",
     "slick-carousel": "^1.8.1",
     "superagent": "^3.8.3",
-    "superagent-bluebird-promise": "^4.2.0"
+    "superagent-bluebird-promise": "^4.2.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "jest": "^23.6.0",
+    "less": "^3.0.4",
+    "less-loader": "^4.1.0",
     "react-hot-loader": "^4.2.0",
     "react-scripts": "^1.1.4",
     "redux-devtools": "^3.4.1",
     "redux-devtools-dock-monitor": "^1.1.3",
     "redux-devtools-log-monitor": "^1.4.0",
-    "redux-logger": "^3.0.6",
-    "less": "^3.0.4",
-    "less-loader": "^4.1.0"
+    "redux-logger": "^3.0.6"
   },
   "scripts": {
     "start": "react-scripts start",

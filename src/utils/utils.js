@@ -1,4 +1,4 @@
-import uuid from 'node-uuid'
+import uuidv4 from 'uuid/v4'
 import Immutable from 'immutable'
 import camelCase from 'camelcase'
 import decamelize from 'decamelize'
@@ -10,7 +10,7 @@ const GLOBAL_IDS = new Set()
 export const getUUID = (isCheck=true) => {
   let theID = ''
   while(true) {
-    theID = uuid.v4()
+    theID = uuidv4()
     if(!isCheck) break
 
     if(GLOBAL_IDS.has(theID))
