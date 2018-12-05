@@ -253,6 +253,7 @@ const postprocessGetDeviceInfo = (myId, result) => {
       IP:         device.IP,
       NodeName:   device.N,
       NodeID:     device.NID,
+      NodeType:   device.NT,
       Status:     device.S,
       TCP:        device.TCP,
       UDP:        device.UDP,
