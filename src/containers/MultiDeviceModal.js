@@ -101,20 +101,20 @@ class MultiDeviceModal extends PureComponent {
               isOpen={menuIsOpen}
               onRequestClose={this.onMenuClose}
               contentLabel="Multi Device Menu Modal">
-                <div className={styles['sub-modal-action-section']}>
-                  <button className={styles['sub-modal-join-board-button']} onClick={openAddDevice}>
+                <div className={styles['submodal-action-section']}>
+                  <button className={styles['submodal-join-board-button']} onClick={openAddDevice}>
                     <FormattedMessage
                       id="multi-device-modal.add-menu1"
                       defaultMessage="Add Device"
                     />
                   </button>
-                  <button className={styles['sub-modal-create-board-button']} onClick={openAddDeviceScanner}>
+                  <button className={styles['submodal-create-board-button']} onClick={openAddDeviceScanner}>
                     <FormattedMessage
                       id="multi-device-modal.add-menu2"
                       defaultMessage="Sync Device"
                     />
                   </button>
-                  <button className={styles['sub-modal-close-button']} onClick={this.onMenuClose}>
+                  <button className={styles['submodal-close-button']} onClick={this.onMenuClose}>
                     <FormattedMessage
                       id="multi-device-modal.add-menu3"
                       defaultMessage="Cancel"
