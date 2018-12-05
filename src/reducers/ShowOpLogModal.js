@@ -55,15 +55,6 @@ function getAllOpLogs(dispatch, myId, tabs, params) {
                                   return { 'error': false, 'type':constants.SHOW_CONTENT_BOARD_TAB, 'value':res.result }
                                 }
                               })
-            case constants.SHOW_CONTENT_COMMENT_TAB:
-              return dispatch(serverUtils.getContentCommentOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
-                              .then(({ response: res }) => {
-                                if (res.error) {
-                                  return { 'error': true, 'type':constants.SHOW_CONTENT_COMMENT_TAB, 'value':res.error.message }
-                                } else {
-                                  return { 'error': false, 'type':constants.SHOW_CONTENT_COMMENT_TAB, 'value':res.result }
-                                }
-                              })
             case constants.SHOW_CONTENT_MASTER_TAB:
               return dispatch(serverUtils.getContentMasterOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
                               .then(({ response: res }) => {
@@ -82,13 +73,49 @@ function getAllOpLogs(dispatch, myId, tabs, params) {
                                   return { 'error': false, 'type':constants.SHOW_CONTENT_MEMBER_TAB, 'value':res.result }
                                 }
                               })
+            case constants.SHOW_CONTENT_OPKEY_TAB:
+              return dispatch(serverUtils.getContentOpkeyOpLog(params.boardId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_CONTENT_OPKEY_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_CONTENT_OPKEY_TAB, 'value':res.result }
+                                }
+                              })
             case constants.SHOW_FRIEND_FRIEND_TAB:
-              return dispatch(serverUtils.getFriendFriendOpLog(EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
+              return dispatch(serverUtils.getFriendFriendOpLog(params.friendId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
                               .then(({ response: res }) => {
                                 if (res.error) {
                                   return { 'error': true, 'type':constants.SHOW_FRIEND_FRIEND_TAB, 'value':res.error.message }
                                 } else {
                                   return { 'error': false, 'type':constants.SHOW_FRIEND_FRIEND_TAB, 'value':res.result }
+                                }
+                              })
+            case constants.SHOW_FRIEND_MASTER_TAB:
+              return dispatch(serverUtils.getFriendMasterOpLog(params.friendId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_FRIEND_MASTER_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_FRIEND_MASTER_TAB, 'value':res.result }
+                                }
+                              })
+            case constants.SHOW_FRIEND_MEMBER_TAB:
+              return dispatch(serverUtils.getFriendMemberOpLog(params.friendId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_FRIEND_MEMBER_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_FRIEND_MEMBER_TAB, 'value':res.result }
+                                }
+                              })
+            case constants.SHOW_FRIEND_OPKEY_TAB:
+              return dispatch(serverUtils.getFriendOpKeyOpLog(params.friendId, EMPTY_ID, constants.NUM_OPLOG_PER_REQ))
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_FRIEND_OPKEY_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_FRIEND_OPKEY_TAB, 'value':res.result }
                                 }
                               })
             case constants.SHOW_PTT_PEERS_TAB:
@@ -98,6 +125,24 @@ function getAllOpLogs(dispatch, myId, tabs, params) {
                                   return { 'error': true, 'type':constants.SHOW_PTT_PEERS_TAB, 'value':res.error.message }
                                 } else {
                                   return { 'error': false, 'type':constants.SHOW_PTT_PEERS_TAB, 'value':res.result }
+                                }
+                              })
+            case constants.SHOW_CONTENT_PEERS_TAB:
+              return dispatch(serverUtils.getContentPeers(params.boardId))
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_CONTENT_PEERS_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_CONTENT_PEERS_TAB, 'value':res.result }
+                                }
+                              })
+            case constants.SHOW_FRIEND_PEERS_TAB:
+              return dispatch(serverUtils.getFriendPeers(params.friendId))
+                              .then(({ response: res }) => {
+                                if (res.error) {
+                                  return { 'error': true, 'type':constants.SHOW_FRIEND_PEERS_TAB, 'value':res.error.message }
+                                } else {
+                                  return { 'error': false, 'type':constants.SHOW_FRIEND_PEERS_TAB, 'value':res.result }
                                 }
                               })
             case constants.SHOW_LAST_ANNOUNCE_P2P_TAB:
@@ -131,7 +176,7 @@ const postprocessGetOpLogs = (myId, maps) => {
 
     if (currentValue.error) {
       return accumulator
-    } else if (currentValue.type === constants.SHOW_PTT_PEERS_TAB) {
+    } else if (currentValue.type.indexOf('_PEERS_TAB') !== -1) {
       accumulator[currentValue.type] = currentValue.value
     } else if (currentValue.type === constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
       accumulator[currentValue.type] = currentValue.value
@@ -141,7 +186,7 @@ const postprocessGetOpLogs = (myId, maps) => {
     return accumulator
   },{})
 
-  console.log('doShowOpLogModal.postprocessGetOpLogs: opLogs:', opLogs)
+  console.log('doShowOpLogModal.postprocessGetOpLogs: opLogs:', maps, opLogs)
 
   return {
     myId,

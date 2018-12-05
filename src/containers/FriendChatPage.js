@@ -54,7 +54,7 @@ class FriendChatPage extends PureComponent {
   }
 
   render() {
-    const { myId, friendChatPage, actions: {doFriendChatPage}, match: {params}, match } = this.props
+    const { myId, friendChatPage, actions: {doFriendChatPage, doModalContainer}, match: {params}, match } = this.props
 
     let userId   = getRoot(this.props).getIn(['userInfo','userId'])
     let userName = getRoot(this.props).getIn(['userInfo','userName'])
@@ -88,6 +88,22 @@ class FriendChatPage extends PureComponent {
       doFriendChatPage.joinBoard(myId, boardJoinKey, callBackFunc)
     }
 
+    let onOpenOPLogModal = () => {
+      doModalContainer.setInput({
+        tabs: [
+          constants.SHOW_FRIEND_FRIEND_TAB,
+          constants.SHOW_FRIEND_MASTER_TAB,
+          constants.SHOW_FRIEND_MEMBER_TAB,
+          constants.SHOW_FRIEND_OPKEY_TAB,
+          constants.SHOW_FRIEND_PEERS_TAB,
+        ],
+        params: {
+          friendId: friendData.ID,
+        },
+      })
+      doModalContainer.openModal(constants.SHOW_OP_LOG_MODAL)
+    }
+
     return (
       <div className={styles['root']}>
         <FriendChatBar />
@@ -103,6 +119,7 @@ class FriendChatPage extends PureComponent {
           onJoinBoard={onJoinBoard}
           onMessageAdded={onMessageAdded}
           onGetMoreMessages={onGetMoreMessages}
+          onOpenOPLogModal={onOpenOPLogModal}
           />
       </div>
     )
