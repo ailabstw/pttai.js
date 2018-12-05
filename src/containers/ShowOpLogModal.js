@@ -137,8 +137,11 @@ class ShowOpLogModal extends PureComponent {
               {
                 tab === constants.SHOW_LAST_ANNOUNCE_P2P_TAB ?
                   (
-                    <div>
-                      {epoch2FullTimeFormat(opLog.T)}
+                    <div className={styles['oplog-item']}>
+                      <div className={styles['item']}>
+                        <div className={styles['op-title']}>Connect Time</div>
+                        <div className={styles['op-value']}>{epoch2FullTimeFormat(opLog.T)}</div>
+                      </div>
                     </div>
                   ) : tab === constants.SHOW_PTT_PEERS_TAB ? opLog.map((item, index) => {
                   return (
@@ -160,15 +163,15 @@ class ShowOpLogModal extends PureComponent {
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>IP</div>
-                        <div className={styles['op-value']}>{item.Addr.IP}</div>
+                        <div className={styles['op-value']}>{item.Addr ? item.Addr.IP : 'null'}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Port</div>
-                        <div className={styles['op-value']}>{item.Addr.Port}</div>
+                        <div className={styles['op-value']}>{item.Addr ? item.Addr.Port : 'null'}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Zone</div>
-                        <div className={styles['op-value']}>{item.Addr.Zone}</div>
+                        <div className={styles['op-value']}>{item.Addr ? item.Addr.Zone : 'null'}</div>
                       </div>
                     </div>
                   )
