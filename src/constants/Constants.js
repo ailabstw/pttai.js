@@ -35,6 +35,9 @@ export const NUM_MESSAGE_PER_REQ    = 30
 export const NUM_OPLOG_PER_REQ      = 100
 
 export const NUM_CACHE_MESSAGE      = 100
+export const NUM_CACHE_ARTILCE      = 100
+export const NUM_CACHE_COMMENT      = 100
+
 
 export const MAX_USER_IMG_SIZE      = 32000
 export const MAX_USER_IMG_WIDTH     = 256
