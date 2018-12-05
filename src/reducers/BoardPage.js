@@ -1,13 +1,13 @@
 import Immutable                from 'immutable';
 import { createDuck }           from 'redux-duck'
 import { API_ROOT2 }            from 'config'
+import LRU                      from 'lru-cache'
 
 import * as utils               from './utils'
 import * as serverUtils         from './ServerUtils'
 
 import * as constants           from '../constants/Constants'
-import { EMPTY_ID,
-         DEFAULT_USER_NAME,
+import { DEFAULT_USER_NAME,
          DEFAULT_USER_IMAGE }   from '../constants/Constants'
 
 export const myClass = 'BOARD_PAGE'
@@ -154,19 +154,19 @@ const postprocessDeleteBoard = (myId, boardId) => {
 /*  Get Article List   */
 /*                     */
 
-export const getArticleList = (myId, boardId, latestArticleId, limit) => {
+export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
   return (dispatch, getState) => {
-    if (latestArticleId === constants.EMPTY_ID) {
+    if (isFirstFetch) {
       dispatch(preprocessSetStartLoading(myId))
     }
-    dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, limit))
+    dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, limit, constants.LIST_ORDER_PREV))
       .then(({response: {result}, type, query, error}) => {
         let creatorIds = result.map(each => each.CreatorID)
         let articleIds = result.map(each => each.ID)
         let cBlockIds  = result.map(each => each.ContentBlockID)
         dispatch(serverUtils.getUsersInfo(creatorIds))
           .then((usersInfo) => {
-            dispatch(postprocessGetArticleList(myId, result, latestArticleId, usersInfo))
+            dispatch(postprocessGetArticleList(myId, result, isFirstFetch, usersInfo))
           })
         let articleInfos = []
         for (let i = 0; i < articleIds.length; i++) {
@@ -179,7 +179,7 @@ export const getArticleList = (myId, boardId, latestArticleId, limit) => {
           .then(({response: summariesResult, type, query, error}) => {
             let summaries = summariesResult.result
             dispatch(postprocessGetSummaries(myId, summaries))
-            if (latestArticleId === constants.EMPTY_ID) {
+            if (isFirstFetch) {
               dispatch(postprocessSetFinshLoading(myId))
             }
           })
@@ -187,7 +187,7 @@ export const getArticleList = (myId, boardId, latestArticleId, limit) => {
   }
 }
 
-const postprocessGetArticleList = (myId, result, latestArticleId, usersInfo) => {
+const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
 
   result = result.map(serverUtils.deserialize)
 
@@ -227,21 +227,21 @@ const postprocessGetArticleList = (myId, result, latestArticleId, usersInfo) => 
 
   console.log('doBoardPage.postprocessGetArticleList: articleList:', articleList)
 
-  let matchIndex = articleList.findIndex((each) => each.ID === latestArticleId)
+  // let matchIndex = articleList.findIndex((each) => each.ID === latestArticleId)
 
-  if (articleList.length === 0 && latestArticleId === EMPTY_ID) {
+  if (articleList.length === 0 && isFirstFetch) {
     return {
       myId,
       myClass,
       type: SET_DATA,
-      data: { noArticle: true }
+      data: { boardArticles: { lru: null, offset: 0, articleList: [] }, noArticle: true }
     }
-  } else if (matchIndex === -1) {
+  } else if (articleList.length === 0 && !isFirstFetch) {
     return {
       myId,
       myClass,
       type: SET_DATA,
-      data: { articleList: articleList.reverse(), noArticle: false }
+      data: {}
     }
   } else {
     return {
@@ -277,7 +277,7 @@ export const _insertSummaries = (state, action) => {
 export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
   return (dispatch, getState) => {
     dispatch(preprocessSetStartLoading(myId))
-    dispatch(serverUtils.getArticles(boardId, startArticleId, limit))
+    dispatch(serverUtils.getArticles(boardId, startArticleId, limit, constants.LIST_ORDER_PREV))
       .then(({response: {result}, type, query, error}) => {
         let creatorIds = result.map(each => each.CreatorID)
         let articleIds = result.map(each => each.ID)
@@ -364,25 +364,103 @@ export const _prependArticles = (state, action) => {
 
   const {myId, data: { articles }} = action
 
-  let articleList = state.getIn([myId, 'articleList'], Immutable.List())
+  let articleList = state.getIn([myId, 'boardArticles', 'articleList'], Immutable.List())
+  let oriOffset   = state.getIn([myId, 'boardArticles', 'offset'], 0)
 
-  return state.setIn([myId, 'articleList'], Immutable.List(articles).concat(articleList))
+  state = state.setIn([myId, 'boardArticles', 'offset'], oriOffset + articles.length)
+  state = state.setIn([myId, 'boardArticles', 'articleList'], Immutable.List(articles).concat(articleList))
+
+  return state
 }
 
 export const _appendArticles = (state, action) => {
 
+  /* merge the newly fetched artilces to existing artilce list */
   const {myId, data: { articles, noArticle }} = action
 
-  let articleList = state.getIn([myId, 'articleList'], Immutable.List())
+  if (!articles || articles.length <= 0) {
+    return state
+  }
 
-  let matchIndex = articleList.length
-  if (articles.length > 0) {
-    matchIndex = articleList.toJS().findIndex((each) => each.ID === articles[0].ID)
+  let boardArticles   = state.getIn([myId, 'boardArticles'], Immutable.Map()).toJS()
+  let articleList     = boardArticles.articleList || []
+  let lruCache        = boardArticles.lru || new LRU(constants.NUM_CACHE_ARTILCE)
+  let offset          = boardArticles.offset || 0
+
+  let resultArticleList  = []
+  if (articleList.length === 0) {
+    /* append message */
+    articles.forEach((article, index) => {
+      resultArticleList.push(article)
+      lruCache.set(article.ID, { index: index - offset, article: article })
+    })
+  } else {
+    /* 1. find earlist start node and save to local lru */
+    let localLRU     = new LRU(constants.NUM_ARTICLE_PER_REQ)
+
+    let startArticle = null
+    let earlistTS    = 2147483648 /* year 2038 */
+    articles.forEach((article, index) => {
+      localLRU.set(article.ID, article)
+      if (lruCache.get(article.ID) && lruCache.get(article.ID).article.UpdateTS.T < earlistTS) {
+        startArticle  = lruCache.get(article.ID)
+        earlistTS     = startArticle.article.UpdateTS.T
+      }
+    })
+    /* 2. start merge  */
+    let oriIndex    = startArticle ? startArticle.index : articleList.length - offset
+    let newIndex    = 0
+    let mergeIndex  = oriIndex
+
+    let oriList    = articleList.slice(0, offset + oriIndex)
+    let mergedList = []
+
+    while(articleList.length > offset + oriIndex || articles.length > newIndex){
+      if (articleList.length > offset + oriIndex && articles.length > newIndex) {
+        let oriArticle = articleList[offset + oriIndex]
+        let newArticle = articles[newIndex]
+        /* both left */
+        if (oriArticle.UpdateTS.T <= newArticle.UpdateTS.T) {
+          if (!localLRU.get(oriArticle.ID)) {
+            mergedList.push(oriArticle)
+            lruCache.set(oriArticle.ID, { index: mergeIndex, article: oriArticle })
+            mergeIndex += 1
+          }
+          oriIndex += 1
+        } else {
+          mergedList.push(newArticle)
+          lruCache.set(newArticle.ID, { index: mergeIndex, article: newArticle })
+          mergeIndex += 1
+          newIndex += 1
+        }
+      } else if (articleList.length > offset + oriIndex) {
+        /* only ori */
+        let oriArticle = articleList[offset + oriIndex]
+        if (!localLRU.get(oriArticle.ID)) {
+          mergedList.push(oriArticle)
+          lruCache.set(oriArticle.ID, { index: mergeIndex, article: oriArticle })
+          mergeIndex += 1
+        }
+        oriIndex += 1
+      } else {
+        /* only new */
+        let newArticle = articles[newIndex]
+        mergedList.push(newArticle)
+        lruCache.set(newArticle.ID, { index: mergeIndex, article: newArticle })
+        mergeIndex += 1
+        newIndex += 1
+      }
+    }
+    resultArticleList = oriList.concat(mergedList)
+    localLRU.reset()
   }
 
   state = state.setIn([myId, 'noArticle'], noArticle)
+  state = state.setIn([myId, 'boardArticles', 'offset'], offset)
+  state = state.setIn([myId, 'boardArticles', 'lru'], lruCache)
+  state = state.setIn([myId, 'boardArticles', 'articleList'], Immutable.List(resultArticleList))
 
-  return state.setIn([myId, 'articleList'], articleList.slice(0, matchIndex).concat(articles))
+  return state
 }
 
 /*                         */
@@ -433,9 +511,23 @@ export const _addArticle = (state, action) => {
 
   const {myId, data:{article, noArticle}} = action
 
-  let articleList = state.getIn([myId, 'articleList'], Immutable.List())
+  if (!article || !article.ID || !article.BoardID ) {
+    return state
+  }
+
+  let boardArticles  = state.getIn([myId, 'boardArticles'], Immutable.Map()).toJS()
+
+  let lruCache        = boardArticles.lru || new LRU(constants.NUM_CACHE_ARTILCE)
+  let offset          = boardArticles.offset || 0
+  let articleList     = boardArticles.articleList || []
+
+  lruCache.set(article.ID, { index: articleList.length - offset, article: article })
+
   state = state.setIn([myId, 'noArticle'], noArticle)
-  return state.setIn([myId, 'articleList'], articleList.push(Immutable.Map(article)))
+  state = state.setIn([myId, 'boardArticles', 'lru'], lruCache)
+  state = state.updateIn([myId, 'boardArticles', 'articleList'], arr => arr.push(Immutable.Map(article)))
+
+  return state
 }
 
 export const deleteArticle = (myId, boardId, articleId) => {
@@ -462,9 +554,9 @@ const postprocessDeleteArticle = (myId, boardId, articleId) => {
 export const _deteleArticle = (state, action) => {
   const {myId, data:{articleId}} = action
 
-  let articleList = state.getIn([myId, 'articleList'], Immutable.List())
+  let articleList = state.getIn([myId, 'boardArticles', 'articleList'], Immutable.List())
   articleList = articleList.filter(each => { return each.get('ID') !== articleId })
-  return state.setIn([myId, 'articleList'], articleList)
+  return state.setIn([myId, 'boardArticles', 'articleList'], articleList)
 }
 
 export const clearData = (myId) => {
@@ -478,7 +570,7 @@ const postprocessClearData = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { articleList: [], allArticlesLoaded: false }
+    data: { boardArticles: { lru: null, offset: 0, articleList: [] }, allArticlesLoaded: false }
   }
 }
 

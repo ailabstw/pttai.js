@@ -1,6 +1,7 @@
 import Immutable        from 'immutable';
 import { createDuck }   from 'redux-duck'
 import { API_ROOT2 }    from 'config'
+import LRU              from 'lru-cache'
 
 import * as utils       from './utils'
 import * as serverUtils from './ServerUtils'
@@ -307,6 +308,8 @@ const postprocessGetCommentContent = (myId, result, latestSubContentId, usersInf
       status:             each.S,
       creatorName:        userName,
       creatorImg:         userImg,
+      createTS:           each.CT ? each.CT : utils.emptyTimeStamp(),
+      updateTS:           each.UT ? each.UT : utils.emptyTimeStamp(),
     }
   })
 
@@ -314,11 +317,15 @@ const postprocessGetCommentContent = (myId, result, latestSubContentId, usersInf
 
   if (latestSubContentId === constants.EMPTY_ID) {
     /* get initial comments */
+    let lruCache = new LRU(constants.NUM_CACHE_COMMENT)
+    commentContentsList.forEach((comment, index) => {
+      lruCache.set(comment.subContentId, { index: index, comment: comment })
+    })
     return {
       myId,
       myClass,
       type: SET_DATA,
-      data: { commentContentsList: commentContentsList }
+      data: { commentContents: { lru: lruCache, commentContentsList: commentContentsList }}
     }
   } else {
     /* get latest comments */
@@ -326,26 +333,89 @@ const postprocessGetCommentContent = (myId, result, latestSubContentId, usersInf
       myId,
       myClass,
       type: APPEND_COMMENT,
-      data: { commentContents: commentContentsList.reverse() }
+      data: { comments: commentContentsList.reverse() }
     }
   }
 }
 
 export const _appendComment = (state, action) => {
 
-  const {myId, data: { commentContents }} = action
+  const {myId, data: { comments }} = action
 
-  let commentContentsList = state.getIn([myId, 'commentContentsList'], Immutable.List())
+  let commentContents     = state.getIn([myId, 'commentContents'], Immutable.Map()).toJS()
+  let commentContentsList = commentContents.commentContentsList || []
+  let lruCache            = commentContents.lru || new LRU(constants.NUM_CACHE_COMMENT)
 
-  let matchIndex = commentContentsList.length
-  if (commentContents.length > 0) {
-    matchIndex = commentContentsList.toJS().findIndex((each) => each.subContentId === commentContents[0].subContentId)
+  let resultCommentList  = []
+  if (commentContentsList.length === 0) {
+    /* append comments */
+    comments.forEach((comment, index) => {
+      resultCommentList.push(comment)
+      lruCache.set(comment.subContentId, { index: index, comment: comment })
+    })
+  } else {
+    /* 1. find earlist start comment and save to local lru */
+    let localLRU     = new LRU(constants.NUM_CONTENT_PER_REQ)
+    let startComment = null
+    let earlistTS    = 2147483648 /* year 2038 */
+    comments.forEach((comment, index) => {
+      localLRU.set(comment.subContentId, comment)
+      if (lruCache.get(comment.subContentId) && lruCache.get(comment.subContentId).comment.updateTS.T < earlistTS) {
+        startComment  = lruCache.get(comment.subContentId)
+        earlistTS     = startComment.comment.updateTS.T
+      }
+    })
+    /* 2. start merge  */
+    let oriIndex    = startComment ? startComment.index : commentContentsList.length
+    let newIndex    = 0
+    let mergeIndex  = oriIndex
+    let oriList     = commentContentsList.slice(0, oriIndex)
+    let mergedList = []
+
+    while(commentContentsList.length > oriIndex || comments.length > newIndex){
+      if (commentContentsList.length > oriIndex && comments.length > newIndex) {
+        let oriComment = commentContentsList[oriIndex]
+        let newComment = comments[newIndex]
+        /* both left */
+        if (oriComment.updateTS.T <= newComment.updateTS.T) {
+          if (!localLRU.get(oriComment.subContentId)) {
+            mergedList.push(oriComment)
+            lruCache.set(oriComment.subContentId, { index: mergeIndex, comment: oriComment })
+            mergeIndex += 1
+          }
+          oriIndex += 1
+        } else {
+          mergedList.push(newComment)
+          lruCache.set(newComment.subContentId, { index: mergeIndex, comment: newComment })
+          mergeIndex += 1
+          newIndex += 1
+        }
+      } else if (commentContentsList.length > oriIndex) {
+        /* only ori */
+        let oriComment = commentContentsList[oriIndex]
+        if (!localLRU.get(oriComment.subContentId)) {
+          mergedList.push(oriComment)
+          lruCache.set(oriComment.subContentId, { index: mergeIndex, comment: oriComment })
+          mergeIndex += 1
+        }
+        oriIndex += 1
+      } else {
+        /* only new */
+        let newComment = comments[newIndex]
+        mergedList.push(newComment)
+        lruCache.set(newComment.subContentId, { index: mergeIndex, comment: newComment })
+        mergeIndex += 1
+        newIndex += 1
+      }
+    }
+    resultCommentList = oriList.concat(mergedList)
+    localLRU.reset()
   }
-  if (matchIndex === -1) {
-    matchIndex = commentContentsList.length
-  }
 
-  return state.setIn([myId, 'commentContentsList'], commentContentsList.slice(0, matchIndex).concat(commentContents))
+  state = state.setIn([myId, 'commentContents', 'lru'], lruCache)
+  state = state.setIn([myId, 'commentContents', 'commentContentsList'], Immutable.List(resultCommentList))
+
+  return state
 }
 
 export const getMoreComments = (myId, boardId, articleId, startSubContentId, limit) => {
@@ -402,6 +472,8 @@ const postprocessGetMoreComments = (myId, result, startSubContentId, usersInfo) 
       creatorId:          each.CID,
       creatorName:        userName,
       creatorImg:         userImg,
+      createTS:           each.CT ? each.CT : utils.emptyTimeStamp(),
+      updateTS:           each.UT ? each.UT : utils.emptyTimeStamp(),
     }
   })
 
@@ -419,7 +491,7 @@ const postprocessGetMoreComments = (myId, result, startSubContentId, usersInfo) 
       myId,
       myClass,
       type: APPEND_COMMENT,
-      data: { commentContents: commentContentsList }
+      data: { comments: commentContentsList }
     }
   }
 }
@@ -486,6 +558,8 @@ const postprocessAddComment = (myId, boardId, articleId, commentId, comment, use
       creatorId:          userId,
       creatorName:        userName,
       creatorImg:         userImg,
+      createTS:           utils.emptyTimeStamp(),
+      updateTS:           utils.emptyTimeStamp(),
   }
 
   console.log('doArticlePage.postprocessAddComment: newComment:', newComment)
@@ -501,7 +575,16 @@ const postprocessAddComment = (myId, boardId, articleId, commentId, comment, use
 export const _addComment = (state, action) => {
   const {myId, data: { comment }} = action
 
-  return state.updateIn([myId, 'commentContentsList'], arr => arr.push(Immutable.Map(comment)))
+  let commentContents     = state.getIn([myId, 'commentContents'], Immutable.Map()).toJS()
+  let commentContentsList = commentContents.commentContentsList || []
+  let lruCache            = commentContents.lru
+
+  lruCache.set(comment.subContentId, { index: commentContentsList.length, comment: comment })
+
+  state = state.setIn([myId, 'commentContents', 'lru'], lruCache)
+  state = state.updateIn([myId, 'commentContents', 'commentContentsList'], arr => arr.push(Immutable.Map(comment)))
+
+  return state
 }
 
 export const deleteComment = (myId, boardId, articleId, commentId, mediaId) => {
@@ -545,10 +628,12 @@ const postprocessClearData = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { articleContentsList: [],
-            commentContentsList: [],
-            allArticleLoaded: false,
-            allCommentsLoaded: false }
+    data: {
+      articleContentsList: [],
+      commentContents:  { lru: null, commentContentsList: [] },
+      allArticleLoaded: false,
+      allCommentsLoaded: false
+    }
   }
 }
 

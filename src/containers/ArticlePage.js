@@ -53,7 +53,8 @@ class ArticlePage extends PureComponent {
 
     let me = articlePage.get(myId, Immutable.Map())
 
-    let commentContentsList = me.get('commentContentsList', Immutable.List()).toJS()
+    let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
+    let commentContentsList = commentContents.commentContentsList || []
     let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
 
     doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), latestSubContentId, 0, constants.NUM_CONTENT_PER_REQ)
@@ -164,7 +165,8 @@ class ArticlePage extends PureComponent {
       let me                    = articlePage.get(myId, Immutable.Map())
       let boardId               = me.get('boardId', '')
       let articleId             = me.get('articleId', '')
-      let commentContentsList   = me.get('commentContentsList', Immutable.List()).toJS()
+      let commentContents       = me.get('commentContents', Immutable.Map()).toJS()
+      let commentContentsList   = commentContents.commentContentsList || []
       let startContentId        = commentContentsList.length > 0 ? commentContentsList[commentContentsList.length-1].subContentId : constants.EMPTY_ID
 
       doArticlePage.getMoreComments(myId, boardId, articleId, startContentId, constants.NUM_CONTENT_PER_REQ)
@@ -221,7 +223,8 @@ class ArticlePage extends PureComponent {
     let boardInfo           = me.get('boardInfo', Immutable.Map()).toJS()
     let articleInfo         = me.get('articleInfo', Immutable.Map()).toJS()
     let articleContentsList = me.get('articleContentsList', Immutable.List()).toJS()
-    let commentContentsList = me.get('commentContentsList', Immutable.List()).toJS()
+    let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
+    let commentContentsList = commentContents.commentContentsList || []
 
     let deleteArticle = () => {
       doArticlePage.deleteArticle(myId, boardId, articleId)

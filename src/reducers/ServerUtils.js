@@ -154,12 +154,12 @@ export const getArticle = (boardId, articleId) => {
   }
 }
 
-export const getArticles = (boardId, startArticleId, limit) => {
+export const getArticles = (boardId, startArticleId, limit, listOrder=LIST_ORDER_NEXT) => {
   return {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getArticleList", "params": [boardId, startArticleId, limit, LIST_ORDER_PREV]},
+      json: {"id": getUUID(false), "method": "content_getArticleList", "params": [boardId, startArticleId, limit, listOrder]},
     }
   }
 }
