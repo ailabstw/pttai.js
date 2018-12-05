@@ -64,6 +64,10 @@
     cursor: default;
 }
 
+.board-name:hover {
+    cursor: pointer;
+}
+
 .search {
     line-height: 30px;
     padding: 10px 20px;

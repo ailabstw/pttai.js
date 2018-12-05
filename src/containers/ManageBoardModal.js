@@ -157,7 +157,7 @@ class ManageBoardModal extends PureComponent {
               <div className={styles['prev-arrow']}>
                 <div className={styles['prev-arrow-icon']} onClick={onModalClose}></div>
               </div>
-              <div className={styles['modal-title']} onClick={onOpenOPLogModal}>
+              <div hidden className={styles['modal-title']}>
                 {name}
               </div>
               <div hidden className={styles['search']} onClick={onDelete}>

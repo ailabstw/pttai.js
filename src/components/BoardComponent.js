@@ -7,14 +7,15 @@ import * as constants             from '../constants/Constants'
 
 class BoardComponent extends PureComponent {
   render() {
-    const { boardInfo, match, userId, articleList, articleSummaries, isLoading, noArticle, allArticlesLoaded, onGetMoreArticles, createArticleAction, manageBoardAction, deleteArticleAction } = this.props
+    const { boardInfo, match, userId, articleList, articleSummaries, isLoading, noArticle, allArticlesLoaded, onGetMoreArticles, createArticleAction, manageBoardAction, deleteArticleAction, onOpenOPLogModal } = this.props
 
     return (
       <div className={styles['root']}>
         <BoardBar
           userId={userId}
           boardInfo={boardInfo}
-          manageBoardAction={manageBoardAction} />
+          manageBoardAction={manageBoardAction}
+          onOpenOPLogModal={onOpenOPLogModal} />
         <ArticleListComponent
           match={match}
           boardId={boardInfo.ID}

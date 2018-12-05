@@ -6,7 +6,7 @@ import styles from './BoardBar.css'
 
 class BoardBar extends PureComponent {
   render() {
-    const { boardInfo, userId, manageBoardAction } = this.props
+    const { boardInfo, userId, manageBoardAction, onOpenOPLogModal } = this.props
     return (
       <div className={styles['root']}>
         <div className={styles['content']}>
@@ -21,7 +21,7 @@ class BoardBar extends PureComponent {
                     </div>
                 </Link>
             </div>
-            <div title={boardInfo.Title} className={styles['board-name']}>
+            <div title={boardInfo.Title} className={styles['board-name']} onClick={onOpenOPLogModal}>
               {boardInfo.Title}
             </div>
             <div className={styles['search']}>
