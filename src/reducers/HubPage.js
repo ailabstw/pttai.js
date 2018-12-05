@@ -120,9 +120,6 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
     }
   })
 
-
-  console.log('doHubPage.postprocessGetBoardList: boardList:', boardList)
-
   return {
     myId,
     myClass,
@@ -189,8 +186,6 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
       joinStatus:       3,
     }
   })
-
-  console.log('doHubPage.postprocessGetMoreBoards: boardList:', boardList)
 
   if (boardList.length === 0) {
     return {
@@ -304,8 +299,6 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
       joinStatus:       3,
   }
 
-  console.log('doHubPage.postprocessCreateBoard: newBoard:', newBoard)
-
   return {
     myId,
     myClass,
@@ -363,8 +356,6 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
       joinStatus:       0,
   }
 
-  console.log('doHubPage.postprocessJoinBoard: joinedBoard:', joinedBoard)
-
   return {
     myId,
     myClass,
@@ -406,9 +397,7 @@ export const _deleteBoard = (state, action) => {
 /*             */
 
 
-const preprocessSetStartLoading = (myId) => {
-  console.log('doHubPage.preprocessSetStartLoading')
-
+export const preprocessSetStartLoading = (myId) => {
   return {
     myId,
     myClass,
@@ -417,9 +406,7 @@ const preprocessSetStartLoading = (myId) => {
   }
 }
 
-const postprocessSetFinshLoading = (myId) => {
-  console.log('doHubPage.postprocessSetFinshLoading')
-
+export const postprocessSetFinshLoading = (myId) => {
   return {
     myId,
     myClass,

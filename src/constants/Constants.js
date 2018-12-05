@@ -82,6 +82,13 @@ export const LIST_ORDER_NEXT        = 2
 export const MESSAGE_TYPE_TEXT      = 1
 export const MESSAGE_TYPE_INVITE    = 2
 
+export const ENTITY_TYPE_ARRAY = [
+    'EntityTypeInvalid',
+    'EntityTypePersonal',
+    'EntityTypePrivate',
+    'EntityTypePublic'
+]
+
 export const PEER_TYPE_ARRAY = [
     'PeerTypeErr',
     'PeerTypeRemoved',
@@ -195,4 +202,10 @@ export const NODE_TYPE_ARRAY = [
     'NodeTypeMobile',
     'NodeTypeDesktop',
     'NodeTypeServer',
+]
+
+export const IMG_TYPE_ARRAY = [
+    'ImgTypeJPEG',
+    'ImgTypeGIF',
+    'ImgTypePNG'
 ]

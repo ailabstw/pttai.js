@@ -41,6 +41,7 @@
     "react-spinners": "^0.3.2",
     "redux": "^4.0.0",
     "redux-duck": "^1.0.2",
+    "redux-testkit": "^1.0.6",
     "redux-thunk": "^2.3.0",
     "slick-carousel": "^1.8.1",
     "superagent": "^3.8.3",
@@ -56,7 +57,8 @@
     "redux-devtools": "^3.4.1",
     "redux-devtools-dock-monitor": "^1.1.3",
     "redux-devtools-log-monitor": "^1.4.0",
-    "redux-logger": "^3.0.6"
+    "redux-logger": "^3.0.6",
+    "redux-mock-store": "^1.5.3"
   },
   "scripts": {
     "start": "react-scripts start",
