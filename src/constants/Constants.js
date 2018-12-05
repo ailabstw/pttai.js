@@ -189,3 +189,10 @@ export const JOIN_STATUS_ARRAY = [
     'JoinStatusWaitAccepted',
     'JoinStatusAccepted',
 ]
+
+export const NODE_TYPE_ARRAY = [
+    'NodeTypeUnknown',
+    'NodeTypeMobile',
+    'NodeTypeDesktop',
+    'NodeTypeServer',
+]

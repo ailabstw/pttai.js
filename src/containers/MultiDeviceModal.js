@@ -4,7 +4,7 @@ import { bindActionCreators }   from 'redux'
 import { FormattedMessage }     from 'react-intl'
 import Modal                    from 'react-modal'
 
-import { epoch2FullDate } from '../utils/utilDatetime'
+import { epoch2FullTimeFormat } from '../utils/utilDatetime'
 
 import * as doMultiDeviceModal  from '../reducers/MultiDeviceModal'
 import * as constants           from '../constants/Constants'
@@ -47,7 +47,7 @@ class MultiDeviceModal extends PureComponent {
     let openAddDeviceScanner = function() {
       onModalSwitch(constants.ADD_DEVICE_SCANNER_MODAL, {device:device, keyInfo: keyInfo })
     }
-
+    console.log('sammui:', device)
     return (
       <div>
         <Modal
@@ -75,15 +75,33 @@ class MultiDeviceModal extends PureComponent {
               device.data.map((item, index) => {
                 return (
                   <div className={styles['device-item']} key={index}>
-                    <div className={styles['device-item-name']}>
-                      ID ( {item.NodeID.substring(0,8)} )
+                    <div className={styles['item-index']}>
+                      <div className={styles['op-value-index']}>{(index + 1) + '. ' + item.NodeName}</div>
                     </div>
-                    <div title={epoch2FullDate(item.CreateTime.T)} className={styles['device-item-start-date']}>
-                      <FormattedMessage
-                        id="multi-device-modal.device-content1"
-                        defaultMessage="Start Date"
-                      />
-                      {' '+ epoch2FullDate(item.CreateTime.T)}
+                    <div className={styles['item']}>
+                      <div className={styles['op-title']}>Node ID</div>
+                      <div className={styles['op-value']}>{item.NodeID}</div>
+                    </div>
+                    <div className={styles['item']}>
+                      <div className={styles['op-title']}>Node Type</div>
+                      <div className={styles['op-value']}>{constants.NODE_TYPE_ARRAY[item.NodeType]}</div>
+                    </div>
+                    <div className={styles['item']}>
+                      <div className={styles['op-title']}>Status</div>
+                      <div className={styles['op-value']}>{constants.STATUS_ARRAY[item.Status]}</div>
+                    </div>
+                    <div className={styles['item']}>
+                      <div className={styles['op-title']}>User ID</div>
+                      <div className={styles['op-value']}>{item.userID}</div>
+                    </div>
+                    <div className={styles['item']}>
+                      <div className={styles['op-title']}>
+                        <FormattedMessage
+                          id="multi-device-modal.device-content1"
+                          defaultMessage="Start Date"
+                        />
+                      </div>
+                      <div title={epoch2FullTimeFormat(item.CreateTime.T)} className={styles['op-value']}>{epoch2FullTimeFormat(item.CreateTime.T)}</div>
                     </div>
                   </div>
                 )

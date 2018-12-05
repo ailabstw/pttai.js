@@ -99,7 +99,7 @@ class RootPage extends PureComponent {
     let keyInfo     = me.get('keyInfo',         Immutable.Map()).toJS()
     let deviceInfo  = me.get('deviceInfo',      Immutable.List()).toJS()
     let latest      = me.get('latestArticles',  Immutable.List()).toJS()
-    console.log('sammui latest:', latest)
+
     let latestHasUnread = latest.length > 0? isUnRead(latest[0].UpdateTS.T,latest[0].LastSeen.T):false;
 
     let onEditNameSubmit = (name) => {

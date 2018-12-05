@@ -93,6 +93,22 @@ class BoardPage extends PureComponent {
       doModalContainer.openModal(constants.MANAGE_BOARD_MODAL)
     }
 
+    let onOpenOPLogModal = () => {
+      doModalContainer.setInput({
+        tabs: [
+          constants.SHOW_CONTENT_BOARD_TAB,
+          constants.SHOW_CONTENT_MASTER_TAB,
+          constants.SHOW_CONTENT_MEMBER_TAB,
+          constants.SHOW_CONTENT_OPKEY_TAB,
+          constants.SHOW_CONTENT_PEERS_TAB,
+        ],
+        params: {
+          boardId: boardId,
+        },
+      })
+      doModalContainer.openModal(constants.SHOW_OP_LOG_MODAL)
+    }
+
     let onGetMoreArticles = (startArticleId) => {
       doBoardPage.getMoreArticles(myId, boardId, startArticleId, constants.NUM_ARTICLE_PER_REQ)
     }
@@ -111,6 +127,7 @@ class BoardPage extends PureComponent {
           onGetMoreArticles={onGetMoreArticles}
           createArticleAction={openCreateArticleModal}
           manageBoardAction={openManageBoardModal}
+          onOpenOPLogModal={onOpenOPLogModal}
           deleteArticleAction={(articleId) => doBoardPage.deleteArticle(myId, boardInfo.ID, articleId)} />
       </div>
     )
