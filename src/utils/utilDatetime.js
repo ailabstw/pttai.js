@@ -180,7 +180,7 @@ export const expiredFormat = (updateTS_T, period) => {
 
   let result = ''
 
-  if (!updateTS_T) {
+  if (!updateTS_T || !period) {
     if (language === 'zh') {
       result = '日期錯誤'
     } else {
