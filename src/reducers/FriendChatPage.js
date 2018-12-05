@@ -478,7 +478,7 @@ const postprocessClearData = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { friendMessages: { offset: 0, messageList: [] }, friendData: {} }
+    data: { friendMessages: { lru: null, offset: 0, messageList: [] }, friendData: {} }
   }
 }
 

@@ -21,14 +21,9 @@ class BoardPage extends PureComponent {
   }
 
   getLatestArticle() {
-    const { myId, boardPage, actions: {doBoardPage}, match: {params} } = this.props
+    const { myId, actions: {doBoardPage}, match: {params} } = this.props
 
-    let me = boardPage.get(myId, Immutable.Map())
-
-    let articleList     = me.get('articleList', Immutable.List()).toJS()
-    let latestMessageId = (articleList.length > 0) ? articleList[articleList.length - 1].ID : constants.EMPTY_ID
-
-    doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), latestMessageId, constants.NUM_ARTICLE_PER_REQ)
+    doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), false, constants.NUM_ARTICLE_PER_REQ)
   }
 
   componentWillMount() {
@@ -36,7 +31,7 @@ class BoardPage extends PureComponent {
 
     doBoardPage.initParams(myId, params)
     doBoardPage.getBoardInfo(myId, decodeURIComponent(params.boardId))
-    doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), constants.EMPTY_ID, constants.NUM_ARTICLE_PER_REQ)
+    doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), true, constants.NUM_ARTICLE_PER_REQ)
 
     this.refreshPageInterval = setInterval(this.getLatestArticle, constants.REFRESH_INTERVAL);
   }
@@ -67,7 +62,7 @@ class BoardPage extends PureComponent {
 
     let boardId           = me.get('boardId',     '')
     let boardInfo         = me.get('boardInfo', Immutable.Map()).toJS()
-    let articleList       = me.get('articleList', Immutable.List()).toJS()
+    let articleList       = me.getIn(['boardArticles','articleList'], Immutable.List()).toJS()
     let articleSummaries  = me.get('articleSummaries', Immutable.Map()).toJS()
     let isLoading         = me.get('isLoading',   false)
     let noArticle         = me.get('noArticle', false)
