@@ -157,7 +157,7 @@
 }
 
 .list-item-content > div > ol, .list-item-content > div > ul {
-    margin-top: -5px;
+    margin-top: -20px;
 }
 
 .list-item-content > div > ol > li, .list-item-content > div > ul > li {
