@@ -177,7 +177,7 @@
 .comment-status {
     height: 10px;
     min-width: 10px;
-    margin: auto auto 15px auto;
+    margin: auto;
 }
 
 .comment-status:hover {
