@@ -4,9 +4,9 @@ import { doesCrossDay,
 
 test('test doesCrossDay()', () => {
 
-    let Dec5th              = 1543939200
-    let OneSecBeforeDec5th  = 1543939199
-    let OneSecAfterDec5th   = 1543939201
+    let Dec5th              = moment("12/5/2018 0:00", "M/D/YYYY H:mm").valueOf();
+    let OneSecBeforeDec5th  = moment("12/5/2018 0:00", "M/D/YYYY H:mm").valueOf() - 1
+    let OneSecAfterDec5th   = moment("12/5/2018 0:00", "M/D/YYYY H:mm").valueOf() + 1
 
     expect(doesCrossDay(Dec5th, OneSecBeforeDec5th)).toBe(true);
     expect(doesCrossDay(OneSecBeforeDec5th, Dec5th)).toBe(true);
