@@ -19,7 +19,7 @@ import createBoardModal   from './CreateBoardModal'
 import manageBoardModal   from './ManageBoardModal'
 import showOpLogModal     from './ShowOpLogModal'
 
-const reducers = combineReducers({
+export const reducers = combineReducers({
   app,
   modal,
   createBoardModal,

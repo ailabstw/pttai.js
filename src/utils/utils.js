@@ -1,4 +1,4 @@
-import uuid from 'node-uuid'
+import uuidv4 from 'uuid/v4'
 import Immutable from 'immutable'
 import camelCase from 'camelcase'
 import decamelize from 'decamelize'
@@ -10,7 +10,7 @@ const GLOBAL_IDS = new Set()
 export const getUUID = (isCheck=true) => {
   let theID = ''
   while(true) {
-    theID = uuid.v4()
+    theID = uuidv4()
     if(!isCheck) break
 
     if(GLOBAL_IDS.has(theID))
@@ -108,23 +108,28 @@ export const isUnRead = (updateTS, lastSeen) => {
 }
 
 export const dataURLtoFile = (dataurl, filename) => {
-    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+
     while(n--){
         u8arr[n] = bstr.charCodeAt(n);
     }
+
     return new File([u8arr], filename, {type:mime});
 }
 
 export const bytesToSize = (bytes) => {
-   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+   let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
    if (bytes === 0) return '0 Byte';
-   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+
+   let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+
    return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
 
 export const isWhitespace = (ch) => {
-  var whiteSpace = false
+  let whiteSpace = false
   if ((ch === ' ') || (ch === '\t') || (ch === '\n')) {
     whiteSpace = true;
   }
@@ -163,16 +168,21 @@ export const getOrientation = (file, callback) => {
 }
 
 export const newCanvasSize = (w, h, rotation) => {
+
+    /* normalize image size by rotation */
     let rads = rotation * Math.PI / 180;
+
     let c = Math.cos(rads);
     let s = Math.sin(rads);
+
     if (s < 0) {
         s = -s;
     }
     if (c < 0) {
         c = -c;
     }
-    return [h * s + w * c,h * c + w * s];
+
+    return [h * s + w * c, h * c + w * s];
 }
 
 export const getStatusClass = (status) => {
@@ -180,10 +190,16 @@ export const getStatusClass = (status) => {
   let statusClass = 'pre-alive'
 
   if (status !== 0 && !status) {
-    return 'failed'
+    /* null or undefined */
+    return 'invalid'
   }
 
-  if (status < 7) {
+  if (status > 23 || status < 0 || !Number.isInteger(status)) {
+    /* invalid */
+    return 'invalid'
+  }
+
+  if (status >= 0 && status < 7) {
     statusClass = 'pre-alive'
   } else if (status === 7) {
     statusClass = 'alive'

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { connect }              from 'react-redux'
 import { bindActionCreators }   from 'redux'
-import uuid                     from 'node-uuid'
+import uuidv4                   from 'uuid/v4'
 import Quill                    from 'quill'
 import Delta                    from 'quill-delta'
 import { FormattedMessage }     from 'react-intl'
@@ -90,7 +90,7 @@ class PttaiEditor extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      id:           `editor-${ uuid.v4() }`,
+      id:           `editor-${ uuidv4() }`,
       editor:       {},
       htmlContent:  props.initHtmlArray ? props.initHtmlArray.join('') : '',
       attachedObjs: [],
