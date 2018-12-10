@@ -9,10 +9,12 @@ import { CALL_API,
 
 const callMockApi = (mockdata, endpoint, { query, method = 'get', params, files, json }, isWithCredentials=true) => {
 
+    let resultData = json['method'] && mockdata && mockdata[json['method']] ? mockdata[json['method']] : []
+
     return new Promise(function(resolve, reject) {
       if (true) {
         resolve({
-            result: mockdata[json['method']]
+            result: resultData
         });
       } else {
         reject({});
