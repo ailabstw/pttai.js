@@ -63,8 +63,8 @@ class ArticleComponent extends PureComponent {
           </div>
         ): (
           <div className={styles['main-content']}
-               //onMouseDown={this.handleLongPress}
-               //onMouseUp={this.handleLongPressRelease}
+               onMouseDown={this.handleLongPress}
+               onMouseUp={this.handleLongPressRelease}
                >
             <div className={styles['author']}>
               <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'}/>
