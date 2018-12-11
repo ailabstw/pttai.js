@@ -215,6 +215,8 @@ class EditArticleModal extends PureComponent {
               <div title={title} className={styles['title-text']}>
                 <div className={styles['title-input']}>{title}</div>
               </div>
+              <div className={styles['prev-arrow']}>
+              </div>
             </div>
             <div id='edit-article-modal-main-section'
                  className={styles['main-section']}
