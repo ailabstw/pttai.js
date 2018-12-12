@@ -110,7 +110,7 @@ class ArticleListComponent extends PureComponent {
                 ):(null)
               }
               {
-                listData.map((item, index) => {
+                listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
                   //let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
                   let itemLink = (sliderInIndex === -1)? '/board/' + encodeURIComponent(boardId) + '/article/' + encodeURIComponent(item.ID):false
                   let summary = item.PreviewText || (summaryData[item.ID]? serverUtils.b64decode(summaryData[item.ID].B[0]): <FormattedMessage id="article-list-component.empty" defaultMessage="(No content)"/>)

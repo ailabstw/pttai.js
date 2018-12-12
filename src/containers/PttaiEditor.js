@@ -93,7 +93,6 @@ class PttaiEditor extends PureComponent {
     this.state = {
       id:           `editor-${ uuidv4() }`,
       editor:       {},
-      initHtmlArray: props.initHtmlArray ? props.initHtmlArray : [],
       htmlContent:  props.initHtmlArray ? props.initHtmlArray.join('') : '',
       attachedObjs: [],
       selection:    { index: 0, length: 0 },
@@ -115,7 +114,7 @@ class PttaiEditor extends PureComponent {
   }
 
   mountQuill() {
-    const { id, htmlContent, initHtmlArray } = this.state
+    const { id, htmlContent } = this.state
 
     let that    = this
     let editor  = new Quill(`#${id}`, {});
@@ -225,49 +224,7 @@ class PttaiEditor extends PureComponent {
     });
 
     if (htmlContent !== '') {
-      //editor.root.innerHTML = htmlContent
-
-      initHtmlArray.reverse().forEach((arr) => {
-        let currentIdx = 0
-        if (arr.indexOf('<p><ifram') === 0) {
-
-          let iframeDiv = $('.' + constants.IFRAME_CLASS_NAME)
-           const fileInfo = {
-                fileId:     iframeDiv.data().id,
-                fileClass:  iframeDiv.data().class,
-                fileName:   iframeDiv.data().name,
-                fileSize:   iframeDiv.data().size,
-            }
-
-            /* This is the attachment html element to show in editor */
-            const attachmentHTML = `<div class="${fileInfo.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
-                                      <div class="attachment-icon" style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
-                                      </div>
-                                      <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
-                                        <div class="attachment-title" title="${fileInfo.fileName}" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                                          ${fileInfo.fileName}
-                                        </div>
-                                        <div class="attachment-size" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;">
-                                          ${bytesToSize(fileInfo.fileSize)}
-                                        </div>
-                                      </div>
-                                    </div>`;
-
-            /* Insert as an iframe element */
-            editor.insertEmbed(0, 'attachment', {
-              id:     iframeDiv.data().id,
-              class:  iframeDiv.data().class,
-              name:   iframeDiv.data().name,
-              size:   iframeDiv.data().size,
-              type:   iframeDiv.data().type,
-              value:  attachmentHTML,
-            });
-
-        } else {
-          editor.clipboard.dangerouslyPasteHTML(currentIdx, arr, 'user');
-        }
-      })
-      //editor.clipboard.dangerouslyPasteHTML(0, htmlContent, 'user');
+      editor.root.innerHTML = htmlContent
     }
 
     return editor;
