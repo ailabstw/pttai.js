@@ -5,7 +5,6 @@ import uuidv4                   from 'uuid/v4'
 import Quill                    from 'quill'
 import Delta                    from 'quill-delta'
 import { FormattedMessage }     from 'react-intl'
-import $                        from 'jquery'
 
 import AlertComponent           from '../components/AlertComponent'
 import { dataURLtoFile,
