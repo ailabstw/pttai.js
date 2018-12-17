@@ -1,7 +1,6 @@
 import React                from 'react'
 import ReactDom             from 'react-dom'
-import { Provider,
-         connect }          from 'react-redux'
+import { Provider }         from 'react-redux'
 import { mount, unmount }   from 'enzyme'
 
 import HubPage              from './HubPage'

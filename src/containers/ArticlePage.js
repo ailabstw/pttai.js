@@ -233,7 +233,7 @@ class ArticlePage extends PureComponent {
       this.props.history.push('/board/' + boardId)
     }
 
-    let openEditArticleSubmit = (reducedArticleArray, attachments) => {
+    let openEditArticleSubmit = (title, reducedArticleArray, attachments) => {
       doArticlePage.createArticleWithAttachments(myId, userName, userImg, boardId, articleId, reducedArticleArray, attachments)
       doArticlePage.markArticle(myId, boardId, articleId);
 
