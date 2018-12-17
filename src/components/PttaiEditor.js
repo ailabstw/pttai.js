@@ -1,6 +1,4 @@
 import React, { PureComponent } from 'react'
-import { connect }              from 'react-redux'
-import { bindActionCreators }   from 'redux'
 import uuidv4                   from 'uuid/v4'
 import Quill                    from 'quill'
 import Delta                    from 'quill-delta'
@@ -133,6 +131,82 @@ class PttaiEditor extends PureComponent {
     this.mountQuill         = this.mountQuill.bind(this)
     this.attachmentUpload   = this.attachmentUpload.bind(this)
     this.handleChange       = this.handleChange.bind(this)
+    this.onDelete           = this.onDelete.bind(this)
+    this.onSubmit           = this.onSubmit.bind(this)
+  }
+
+  onDelete() {
+
+    const { onDeleteArticle } = this.props
+
+    let that = this
+    this.setState({
+      showAlert: true,
+      alertData: {
+        message: (
+            <FormattedMessage
+              id="alert.message1"
+              defaultMessage="Are you sure you want to delete?"
+            />),
+        onConfirm: () => {
+          that.setState({showAlert: false})
+          onDeleteArticle()
+        },
+        onClose: () => that.setState({showAlert: false})
+      }
+    })
+  }
+
+  onSubmit() {
+
+    const { onSubmitArticle } = this.props
+    const { htmlArray, title, attachedObjs } = this.state
+
+    if (isEmpty(htmlArray) || !title || title.replace(/\s+/g, '') === '') {
+      let that = this
+      this.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+              id="alert.message10"
+              defaultMessage="Title or content cannot be empty"
+            />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
+    } else {
+      /*                                              */
+      /* Start submitting article:                    */
+      /*                                              */
+      /* Replace data-url with attachement ID an      */
+      /*  data-url will be replaced back after upload */
+      /*                                              */
+
+      let reducedHtmlArray = htmlArray.map((each) => {
+        let replaced = each
+        attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
+        return replaced
+      })
+
+      if ((JSON.stringify(reducedHtmlArray).length - 2)*3.032 > constants.MAX_ARTICLE_SIZE) {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+            <FormattedMessage
+              id="alert.message16"
+              defaultMessage="Max content is {MAX_ARTICLE_SIZE} characters"
+              values={{ MAX_ARTICLE_SIZE: constants.MAX_ARTICLE_SIZE }}
+            />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        onSubmitArticle(title, reducedHtmlArray, attachedObjs)
+      }
+    }
   }
 
   onTitleChange(e) {
@@ -534,78 +608,11 @@ class PttaiEditor extends PureComponent {
 
   render() {
 
-    const { onDeleteArticle, onSubmitArticle, isEdit, intl } = this.props
-    const { editor, showAlert, alertData, selection, htmlArray, attachedObjs, title } = this.state
-    let sel = Object.keys(editor).length > 0? editor.getSelection(): null
+    const { isEdit, intl } = this.props
+    const { editor, showAlert, alertData, selection, title } = this.state
     const placeholder = intl.formatMessage({id: 'create-article-modal.placeholder'});
 
-    let onDelete = () => {
-      let that = this
-      this.setState({
-        showAlert: true,
-        alertData: {
-          message: (
-              <FormattedMessage
-                id="alert.message1"
-                defaultMessage="Are you sure you want to delete?"
-              />),
-          onConfirm: () => {
-            that.setState({showAlert: false})
-            onDeleteArticle()
-          },
-          onClose: () => that.setState({showAlert: false})
-        }
-      })
-    }
-
-    let onSubmit = function() {
-
-      if (isEmpty(htmlArray) || !title || title.replace(/\s+/g, '') === '') {
-        let that = this
-        this.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message10"
-                defaultMessage="Title or content cannot be empty"
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else {
-        /*                                              */
-        /* Start submitting article:                    */
-        /*                                              */
-        /* Replace data-url with attachement ID an      */
-        /*  data-url will be replaced back after upload */
-        /*                                              */
-
-        let reducedHtmlArray = htmlArray.map((each) => {
-          let replaced = each
-          attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
-          return replaced
-        })
-
-        if ((JSON.stringify(reducedHtmlArray).length - 2)*3.032 > constants.MAX_ARTICLE_SIZE) {
-          let that = this
-          this.setState({
-            showAlert: true,
-            alertData: {
-              message: (
-              <FormattedMessage
-                id="alert.message16"
-                defaultMessage="Max content is {MAX_ARTICLE_SIZE} characters"
-                values={{ MAX_ARTICLE_SIZE: constants.MAX_ARTICLE_SIZE }}
-              />),
-              onConfirm: () => that.setState({showAlert: false})
-            }
-          })
-        } else {
-          onSubmitArticle(title, reducedHtmlArray, attachedObjs)
-        }
-      }
-    }
+    let sel = Object.keys(editor).length > 0? editor.getSelection(): null
 
     return (
       <div id='edit-article-modal-main-section'
@@ -647,9 +654,9 @@ class PttaiEditor extends PureComponent {
             </label>
           </div>
           {
-            isEdit ? (<div className={styles['delete-button']} onClick={onDelete}></div>) : null
+            isEdit ? (<div className={styles['delete-button']} onClick={this.onDelete}></div>) : null
           }
-          <div className={styles['submit-button']} onClick={onSubmit}></div>
+          <div className={styles['submit-button']} onClick={this.onSubmit}></div>
         </div>
         <AlertComponent show={showAlert} alertData={alertData}/>
       </div>

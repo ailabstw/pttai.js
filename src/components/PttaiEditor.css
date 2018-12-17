@@ -114,12 +114,6 @@
     background-image: url('/images/btn_confirm_hover@2x.png');
 }
 
-:global(.ql-container) {
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-}
-
 :global(.ql-editor) {
     height: 100%;
     /*width: 100%;*/

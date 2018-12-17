@@ -11,7 +11,7 @@ import styles                       from './CreateArticleModal.css'
 class CreateArticleModal extends PureComponent {
 
   render() {
-    const { intl, onModalSubmit, modal: { currentModal }, onModalClose }   = this.props
+    const { onModalSubmit, modal: { currentModal }, onModalClose } = this.props
 
     return (
       <Modal
