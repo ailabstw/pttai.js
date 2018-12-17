@@ -4,7 +4,9 @@ import { bindActionCreators }   from 'redux'
 import uuidv4                   from 'uuid/v4'
 import Quill                    from 'quill'
 import Delta                    from 'quill-delta'
-import { FormattedMessage }     from 'react-intl'
+import { injectIntl,
+         FormattedMessage }     from 'react-intl'
+import $                        from 'jquery'
 
 import AlertComponent           from '../components/AlertComponent'
 import { dataURLtoFile,
@@ -13,11 +15,9 @@ import { dataURLtoFile,
          newCanvasSize,
          getOrientation }       from '../utils/utils'
 
-import * as doPttaiEditor     from '../reducers/PttaiEditor'
 import * as constants         from '../constants/Constants'
 
 import styles                 from './PttaiEditor.css'
-import '../../node_modules/quill/dist/quill.bubble.css'
 
 const EDITOR_INPUT_ID     = 'pttai-editor-input'
 const IMAGE_CLASS_PREFIX  = 'pttai-editor-img-'
@@ -86,16 +86,39 @@ function html2Array(html) {
   return result
 }
 
+function isEmpty(htmlArray) {
+
+  if (!htmlArray || htmlArray.length === 0) {
+    return true
+  }
+
+  let html = htmlArray.reduce((acc, each) => {
+    let cleanEach = each.replace(/<p>/g,'')
+    cleanEach = cleanEach.replace(/<\/p>/g,'')
+    cleanEach = cleanEach.replace(/<br>/g,'')
+    cleanEach = cleanEach.trim().replace(/\s\s+/g, ' ');
+    return acc + cleanEach
+  }, '')
+
+  html = html.replace(/\s\s+/g, ' ')
+
+  return html === ''
+}
+
 class PttaiEditor extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
       id:           `editor-${ uuidv4() }`,
       editor:       {},
+      title:        props.articleTitle,
+      htmlArray:    props.initHtmlArray || [],
       htmlContent:  props.initHtmlArray ? props.initHtmlArray.join('') : '',
       attachedObjs: [],
       selection:    { index: 0, length: 0 },
       showAlert:    false,
+      titleChanged:   false,
+      contentChanged: false,
       alertData: {
         message:    '',
         onClose:    null,
@@ -103,13 +126,95 @@ class PttaiEditor extends PureComponent {
       },
     }
 
+    this.onTitleChange      = this.onTitleChange.bind(this);
+    this.onInputEnter       = this.onInputEnter.bind(this);
+    this.onPrevPageClick    = this.onPrevPageClick.bind(this)
+    this.onContentClick     = this.onContentClick.bind(this)
     this.mountQuill         = this.mountQuill.bind(this)
     this.attachmentUpload   = this.attachmentUpload.bind(this)
     this.handleChange       = this.handleChange.bind(this)
   }
 
+  onTitleChange(e) {
+    this.setState({ title:e.target.value })
+  }
+
+  onPrevPageClick() {
+    const { onCloseArticle, isEdit } = this.props
+    const { contentChanged, title, htmlArray } = this.state
+
+    if (isEdit) {
+      if (contentChanged) {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+                <FormattedMessage
+                  id="alert.message14"
+                  defaultMessage="You have edited the article, are you sure you want to leave?"
+                />),
+            onConfirm: () => {
+              that.setState({showAlert: false})
+              onCloseArticle()
+            },
+            onClose: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        onCloseArticle()
+      }
+    } else {
+      if (!isEmpty(htmlArray) || title || title.replace(/\s+/g, '') !== '') {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+                <FormattedMessage
+                  id="alert.message9"
+                  defaultMessage="You have unfinished article, are you sure you want to leave?"
+                />),
+            onConfirm: () => {
+              that.setState({showAlert: false})
+              onCloseArticle()
+            },
+            onClose: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        onCloseArticle()
+      }
+    }
+  }
+
+  onContentClick(e) {
+    const { htmlArray } = this.state
+
+    /* focus editor when modal is clicked */
+    if (e.target.id !== 'edit-article-modal-main-section') {
+      return
+    } else if (isEmpty(htmlArray)){
+      e.target.children[0].children[0].children[0].focus()
+    }
+  }
+
   componentDidMount() {
     this.setState({ editor: this.mountQuill() });
+
+    document.addEventListener("keydown", this.onInputEnter, false);
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.onInputEnter, false);
+  }
+
+  onInputEnter(e) {
+    /* focus editor when press enter or tab */
+    if ((e.which === 13 || e.which === 9) && $(':focus').is('input')) {
+        $('.' + constants.PTT_EDITOR_CLASS_NAME).focus();
+        e.preventDefault()
+    }
   }
 
   mountQuill() {
@@ -230,8 +335,7 @@ class PttaiEditor extends PureComponent {
   }
 
   handleChange(html, htmlArray) {
-    this.setState({ htmlContent: html })
-    this.props.onChange(htmlArray)
+    this.setState({ htmlContent: html, htmlArray: htmlArray, contentChanged: true })
   }
 
   attachmentUpload(e) {
@@ -320,10 +424,10 @@ class PttaiEditor extends PureComponent {
 
         that.setState({
           selection:  newRange,
-          editor:     editor
+          editor:     editor,
+          attachedObjs: attachedObjs,
+          contentChanged: true,
         })
-
-        that.props.onInsertAttachment(attachedObjs)
     }
 
     imgReader.onloadend = function () {
@@ -419,10 +523,10 @@ class PttaiEditor extends PureComponent {
 
             that.setState({
               selection:  newRange,
-              editor:     editor
+              editor:     editor,
+              attachedObjs: attachedObjs,
+              contentChanged: true,
             })
-
-            that.props.onInsertAttachment(attachedObjs)
         }
       })
     }
@@ -430,26 +534,122 @@ class PttaiEditor extends PureComponent {
 
   render() {
 
-    const { editor, showAlert, alertData, selection } = this.state
+    const { onDeleteArticle, onSubmitArticle, isEdit, intl } = this.props
+    const { editor, showAlert, alertData, selection, htmlArray, attachedObjs, title } = this.state
     let sel = Object.keys(editor).length > 0? editor.getSelection(): null
+    const placeholder = intl.formatMessage({id: 'create-article-modal.placeholder'});
+
+    let onDelete = () => {
+      let that = this
+      this.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+              <FormattedMessage
+                id="alert.message1"
+                defaultMessage="Are you sure you want to delete?"
+              />),
+          onConfirm: () => {
+            that.setState({showAlert: false})
+            onDeleteArticle()
+          },
+          onClose: () => that.setState({showAlert: false})
+        }
+      })
+    }
+
+    let onSubmit = function() {
+
+      if (isEmpty(htmlArray) || !title || title.replace(/\s+/g, '') === '') {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message10"
+                defaultMessage="Title or content cannot be empty"
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        /*                                              */
+        /* Start submitting article:                    */
+        /*                                              */
+        /* Replace data-url with attachement ID an      */
+        /*  data-url will be replaced back after upload */
+        /*                                              */
+
+        let reducedHtmlArray = htmlArray.map((each) => {
+          let replaced = each
+          attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
+          return replaced
+        })
+
+        if ((JSON.stringify(reducedHtmlArray).length - 2)*3.032 > constants.MAX_ARTICLE_SIZE) {
+          let that = this
+          this.setState({
+            showAlert: true,
+            alertData: {
+              message: (
+              <FormattedMessage
+                id="alert.message16"
+                defaultMessage="Max content is {MAX_ARTICLE_SIZE} characters"
+                values={{ MAX_ARTICLE_SIZE: constants.MAX_ARTICLE_SIZE }}
+              />),
+              onConfirm: () => that.setState({showAlert: false})
+            }
+          })
+        } else {
+          onSubmitArticle(title, reducedHtmlArray, attachedObjs)
+        }
+      }
+    }
 
     return (
-      <div className={styles['root']}>
-        <div id={this.state.id} className={styles['pttai-editor-content']}>
+      <div id='edit-article-modal-main-section'
+           className={styles['root']}
+           onClick={this.onContentClick}>
+        <div className={styles['title-section']}>
+          <div className={styles['prev-arrow']} onClick={this.onPrevPageClick}></div>
+          <div className={styles['title-text']} title={title}>
+          {
+            isEdit ? (
+              title
+            ):(
+              <input
+                placeholder={placeholder}
+                autoFocus
+                name='title-input'
+                value={title}
+                onChange={this.onTitleChange}/>
+            )
+          }
+          </div>
+          <div className={styles['space']}></div>
         </div>
-        <div className={styles['upload-btn']} >
-          <label>
-            <div className={styles['camera-icon']}></div>
-            <input type="file" id={EDITOR_INPUT_ID}
-                    onChange={(e) => {
-                        this.attachmentUpload(e)
-                        this.setState({selection: sel ? sel : selection})
-                    }}
-                    onClick={
-                      /* Avoid onChange to be triggered twice */
-                      (e) => e.target.value = null
-                    }/>
-          </label>
+        <div id={this.state.id} className={styles['pttai-editor-content']}></div>
+        <div className={styles['action-section']}>
+          <div className={styles['upload-button']} >
+            <label>
+              <input type="file" id={EDITOR_INPUT_ID}
+                      onChange={(e) => {
+                          this.attachmentUpload(e)
+                          this.setState({selection: sel ? sel : selection})
+                      }}
+                      onClick={
+                        /* Avoid onChange to be triggered twice */
+                        (e) => {
+                          e.target.value = null
+                        }
+                      }/>
+            </label>
+          </div>
+          {
+            isEdit ? (<div className={styles['delete-button']} onClick={onDelete}></div>) : null
+          }
+          <div className={styles['submit-button']} onClick={onSubmit}></div>
         </div>
         <AlertComponent show={showAlert} alertData={alertData}/>
       </div>
@@ -457,14 +657,4 @@ class PttaiEditor extends PureComponent {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  ...state,
-})
-
-const mapDispatchToProps = (dispatch) => ({
-  actions: {
-    doPttaiEditor: bindActionCreators(doPttaiEditor, dispatch),
-  }
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(PttaiEditor)
+export default injectIntl(PttaiEditor)

@@ -1,0 +1,139 @@
+.root {
+    width: 100%;
+    height: 100%;
+    top: 170px;
+    margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #A9A9A9;
+
+    overflow-y:none;
+    overflow-y:-moz-scrollbars-none;
+}
+
+.title-section {
+    padding: 10px 0px;
+    min-height: 50px;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #A9A9A9;
+}
+
+.prev-arrow {
+    min-width: 45px;
+    cursor: pointer;
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_back@2x.png')
+}
+
+.space {
+    width: 45px;
+}
+
+.title-text {
+    width: 90%;
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+    line-height: 30px;
+    font-size: 16px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.title-text input {
+    width: 100%;
+    height: 30px;
+    outline: none;
+    font-size: 16px;
+    padding: 0px 5px;
+    border: 0px solid;
+}
+
+.pttai-editor-content {
+    min-height: calc(100% - 50px - 100px);
+}
+
+.action-section {
+    min-height: 100px;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.upload-button {
+    height: 80px;
+    width: 80px;
+    cursor: pointer;
+    background-size: 80px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/btn_upload@2x.png');
+}
+
+.upload-button:hover {
+    background-image: url('/images/btn_upload_hover@2x.png');
+}
+
+.upload-button label {
+    width: 80px;
+    height: 80px;
+}
+
+.delete-button {
+    height: 80px;
+    width: 60px;
+    cursor: pointer;
+    background-size: 60px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/btn_delete@2x.png');
+}
+
+.delete-button:hover {
+    background-image: url('/images/btn_delete_hover@2x.png');
+}
+
+.submit-button {
+    height: 80px;
+    width: 80px;
+    cursor: pointer;
+    background-size: 80px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/btn_confirm@2x.png');
+}
+
+.submit-button:hover {
+    background-image: url('/images/btn_confirm_hover@2x.png');
+}
+
+:global(.ql-container) {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
+:global(.ql-editor) {
+    height: 100%;
+    /*width: 100%;*/
+    font-size: 16px;
+    padding: 10px;
+    white-space: wrap;
+    overflow: hidden;
+    overflow-y:scroll;
+    overflow:-moz-scrollbars-vertical;
+    /*padding-right: 17px;  Increase/decrease this value for cross-browser compatibility */
+    box-sizing: content-box;
+};
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #C1C1C1;
+    opacity: 1; /* Firefox */
+}
