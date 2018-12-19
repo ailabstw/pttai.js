@@ -4,7 +4,7 @@ import { PulseLoader }            from 'react-spinners'
 
 import styles           from './ArticleComponent.css'
 import * as constants   from '../constants/Constants'
-import { sanitizeHtml } from '../utils/utils'
+import { array2Html }   from '../utils/utils'
 
 import '../../node_modules/quill/dist/quill.bubble.css'
 
@@ -41,11 +41,9 @@ class ArticleComponent extends PureComponent {
     const { articleContentsList, pullCount, articleInfo } = this.props
     const { noResult } = this.state
 
-    let htmlContent = articleContentsList.reduce((final, piece) => {
+    let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
       return final.concat(piece.contentBlockArray)
-    }, []).reduce((final, piece) => {
-      return final + piece
-    }, '')
+    }, []))
 
     const loading = (htmlContent === '') && !noResult;
     const cntDown = constants.ARTICLE_PULL_COUNT_DOWN - pullCount;
@@ -79,7 +77,7 @@ class ArticleComponent extends PureComponent {
                     defaultMessage="(No content)"
                   />
                 ):(
-                  <div className={constants.PTT_EDITOR_CLASS_NAME} dangerouslySetInnerHTML={{__html: sanitizeHtml(htmlContent)}} />
+                  <div className={constants.PTT_EDITOR_CLASS_NAME} dangerouslySetInnerHTML={{__html: htmlContent}} />
                 )
               }
             </div>

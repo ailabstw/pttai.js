@@ -47,7 +47,7 @@ class MultiDeviceModal extends PureComponent {
     let openAddDeviceScanner = function() {
       onModalSwitch(constants.ADD_DEVICE_SCANNER_MODAL, {device:device, keyInfo: keyInfo })
     }
-    console.log('sammui:', device)
+
     return (
       <div>
         <Modal

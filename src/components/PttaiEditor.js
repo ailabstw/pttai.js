@@ -6,12 +6,13 @@ import { injectIntl,
          FormattedMessage }     from 'react-intl'
 import $                        from 'jquery'
 
-import AlertComponent           from '../components/AlertComponent'
+import AlertComponent         from '../components/AlertComponent'
 import { dataURLtoFile,
          bytesToSize,
          isWhitespace,
          newCanvasSize,
-         getOrientation }       from '../utils/utils'
+         getOrientation,
+         array2Html }         from '../utils/utils'
 
 import * as constants         from '../constants/Constants'
 
@@ -62,7 +63,6 @@ Break.tagName   = 'BR'
 Quill.register(Break)
 Quill.register(Attachment, true);
 
-
 /*                                                         */
 /*  Each line of the array should be wrapped by <p></p>    */
 /*                                                         */
@@ -81,6 +81,38 @@ function html2Array(html) {
   /*  3. split html into array  */
   result = result.match(/<p>.*?<\/p>/g);
 
+  /*  4. convert html array to object array */
+  result = result.map((htmlStr) => {
+
+    let htmlObj = {
+      type: 'text',
+      content: '',
+      param: {},
+    }
+
+    if (htmlStr.indexOf('<p><iframe') === 0) {
+
+      let pElement      = $.parseHTML(htmlStr)[0]
+      let iframeElement = pElement.children[0]
+
+      htmlObj.type = 'attachment'
+      htmlObj.content = ''
+      htmlObj.param = {
+        id:     $(iframeElement).data("id"),
+        class:  $(iframeElement).data("class"),
+        name:   $(iframeElement).data("name"),
+        size:   $(iframeElement).data("size"),
+        type:   $(iframeElement).data("type"),
+      }
+    } else {
+
+      htmlObj.type = 'text'
+      htmlObj.content = htmlStr
+    }
+
+    return htmlObj
+  })
+
   return result
 }
 
@@ -91,11 +123,16 @@ function isEmpty(htmlArray) {
   }
 
   let html = htmlArray.reduce((acc, each) => {
-    let cleanEach = each.replace(/<p>/g,'')
-    cleanEach = cleanEach.replace(/<\/p>/g,'')
-    cleanEach = cleanEach.replace(/<br>/g,'')
-    cleanEach = cleanEach.trim().replace(/\s\s+/g, ' ');
-    return acc + cleanEach
+
+    if (each.type === 'attachment') {
+      return acc + 'dirty'
+    } else {
+      let cleanEach = each.content.replace(/<p>/g,'')
+      cleanEach = cleanEach.replace(/<\/p>/g,'')
+      cleanEach = cleanEach.replace(/<br>/g,'')
+      cleanEach = cleanEach.trim().replace(/\s\s+/g, ' ');
+      return acc + cleanEach
+    }
   }, '')
 
   html = html.replace(/\s\s+/g, ' ')
@@ -111,7 +148,7 @@ class PttaiEditor extends PureComponent {
       editor:       {},
       title:        props.articleTitle,
       htmlArray:    props.initHtmlArray || [],
-      htmlContent:  props.initHtmlArray ? props.initHtmlArray.join('') : '',
+      htmlContent:  props.initHtmlArray ? array2Html(props.initHtmlArray): '',
       attachedObjs: [],
       selection:    { index: 0, length: 0 },
       showAlert:    false,
@@ -184,9 +221,14 @@ class PttaiEditor extends PureComponent {
       /*                                              */
 
       let reducedHtmlArray = htmlArray.map((each) => {
-        let replaced = each
-        attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
-        return replaced
+        if (each.type === 'attachment') {
+          return each
+        } else {
+          let replaced = each.content
+          attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
+          each.content = replaced
+          return each
+        }
       })
 
       if ((JSON.stringify(reducedHtmlArray).length - 2)*3.032 > constants.MAX_ARTICLE_SIZE) {
