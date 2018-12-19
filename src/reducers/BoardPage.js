@@ -9,6 +9,7 @@ import * as serverUtils         from './ServerUtils'
 import * as constants           from '../constants/Constants'
 import { DEFAULT_USER_NAME,
          DEFAULT_USER_IMAGE }   from '../constants/Constants'
+import { toJson }               from '../utils/utils'
 
 export const myClass = 'BOARD_PAGE'
 
@@ -479,7 +480,7 @@ export const addArticle = (myId, userName, userImg, boardId, title, article, med
 
 const postprocessCreateArticle = (myId, userName, userImg, title, articleArray, result) => {
 
-  let aArray = articleArray && articleArray.length > 0 ? JSON.parse(articleArray[0]):null
+  let aArray = articleArray && articleArray.length > 0 ? toJson(articleArray[0]):null
   let PreviewText = ''
   if (aArray.type === 'attachment') {
     PreviewText = ` <div style="display: flex; flex-direction: row;">
@@ -669,7 +670,7 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
               }
             })
             each.param = params
-          } else {
+          } else if (each.type === 'text'){
             let replaced = each.content
             attachments.forEach((attachment) => {
               if (replaced.indexOf(attachment.id) !== -1) {

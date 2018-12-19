@@ -2,7 +2,8 @@ import * as superagent from 'superagent-bluebird-promise'
 import { createDuck } from 'redux-duck'
 import config from 'config'
 import Cookie from 'js-cookie'
-import { queryToString } from '../utils/utils'
+import { queryToString, toJson } from '../utils/utils'
+
 const { API_ROOT, API_ROOT2, AUTH_ROOT } = config
 
 export const CALL_API = Symbol('Call API')
@@ -86,7 +87,7 @@ const callApi = (endpoint, { query, method = 'get', params, files, json }, isWit
         if (method === 'get' && files) {
           return res.text
         }
-        const json = JSON.parse(res.text)
+        const json = toJson(res.text)
         return json
       })
       .catch((res, ...e) => {
