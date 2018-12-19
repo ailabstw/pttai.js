@@ -4,18 +4,18 @@ import camelCase from 'camelcase'
 import decamelize from 'decamelize'
 import QueryString from 'query-string'
 import moment from 'moment'
-import createDOMPurify from 'dompurify'
-import { JSDOM } from 'jsdom'
+import sanitizeHtml from 'sanitize-html'
 import * as constants from '../constants/Constants'
-
 
 const GLOBAL_IDS = new Set()
 
-const window = (new JSDOM('')).window;
-const DOMPurify = createDOMPurify(window);
-
-export const sanitizeHtml = (dirtyHtml) => {
-  return DOMPurify.sanitize(dirtyHtml);
+export const sanitizeDirtyHtml = (dirtyHtml) => {
+  return sanitizeHtml(dirtyHtml, {
+    allowedTags: ['img'],
+    allowedAttributes: {
+      'img': ['width', 'src', 'nameClass', 'alt']
+    }
+  });
 }
 
 export const array2Html = (array) => {
@@ -61,7 +61,7 @@ export const array2Html = (array) => {
 
       return acc + iframe.outerHTML.replace(/\s\s+/g, ' ')
     } else {
-      return acc + sanitizeHtml(each.content)
+      return acc + sanitizeDirtyHtml(each.content)
     }
   }, '')
 }

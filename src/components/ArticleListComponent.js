@@ -7,7 +7,7 @@ import ReactDOM                     from 'react-dom'
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import { isUnRead,
          getStatusClass,
-         sanitizeHtml }                     from '../utils/utils'
+         sanitizeDirtyHtml }                from '../utils/utils'
 import * as serverUtils                     from '../reducers/ServerUtils'
 import * as constants                       from '../constants/Constants'
 
@@ -138,7 +138,7 @@ class ArticleListComponent extends PureComponent {
                             </div>
                           </div>`)
                       })
-                      summaryDataParsed = sanitizeHtml(sData.content)
+                      summaryDataParsed = sanitizeDirtyHtml(sData.content)
                     }
                   }
 
