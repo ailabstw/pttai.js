@@ -5,7 +5,9 @@ import { FormattedMessage }         from 'react-intl'
 import ReactDOM                     from 'react-dom'
 
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
-import { isUnRead, getStatusClass }         from '../utils/utils'
+import { isUnRead,
+         getStatusClass,
+         sanitizeDirtyHtml }                from '../utils/utils'
 import * as serverUtils                     from '../reducers/ServerUtils'
 import * as constants                       from '../constants/Constants'
 
@@ -113,19 +115,34 @@ class ArticleListComponent extends PureComponent {
                 listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
                   //let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
                   let itemLink = (sliderInIndex === -1)? '/board/' + encodeURIComponent(boardId) + '/article/' + encodeURIComponent(item.ID):false
-                  let summary = item.PreviewText || (summaryData[item.ID]? serverUtils.b64decode(summaryData[item.ID].B[0]): <FormattedMessage id="article-list-component.empty" defaultMessage="(No content)"/>)
-                  let iframeEle = [/<p><iframe.*?<\/iframe><\/p>/g]
-                  if (typeof summary === 'string') {
-                    iframeEle.forEach((each) => {
-                      summary = summary.replace(each, '<div style="display: flex; flex-direction: row;"><div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;"></div><div style="line-height: 20px; border-bottom: 0px solid #000;"> ' + item.CreatorName + ' 上傳了檔案</div></div>')
-                    })
+                  let summaryDataParsed = (<FormattedMessage id="article-list-component.empty" defaultMessage="(No content)"/>)
+                  if (summaryData[item.ID]) {
+
+                    let sData = JSON.parse(serverUtils.b64decode(summaryData[item.ID].B[0]))
+
+                    if (sData.type === 'attachment') {
+                      summaryDataParsed = ` <div style="display: flex; flex-direction: row;">
+                                              <div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
+                                              </div>
+                                            <div style="line-height: 20px; border-bottom: 0px solid #000;">
+                                              ${item.CreatorName} 上傳了檔案</div>
+                                            </div>`
+                    } else {
+                      let imgEle = [/<p><img.*?><\/p>/g]
+                      imgEle.forEach((each) => {
+                        sData.content = sData.content.replace(each,
+                          `<div style="display: flex; flex-direction: row;">
+                            $&
+                            <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
+                              ${item.CreatorName} 上傳了圖片
+                            </div>
+                          </div>`)
+                      })
+                      summaryDataParsed = sanitizeDirtyHtml(sData.content)
+                    }
                   }
-                  let imgEle = [/<p><img.*?><\/p>/g]
-                  if (typeof summary === 'string') {
-                    imgEle.forEach((each) => {
-                      summary = summary.replace(each, '<div style="display: flex; flex-direction: row;">$&<div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;"> ' + item.CreatorName + ' 上傳了圖片</div></div>')
-                    })
-                  }
+
+                  let summary = item.PreviewText || summaryDataParsed
 
                   return (
                     <div className={styles['list-item']} key={listData.length - index} onClick={(e) => this.onListItemClick(e, index)}>

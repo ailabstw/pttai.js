@@ -204,7 +204,7 @@ const postprocessGetArticleContent = (myId, result, blockId, usersInfo) => {
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     return {
-      contentBlockArray:  each.B.map((e)=> { return serverUtils.b64decode(e) }),
+      contentBlockArray:  each.B.map((e)=> { return JSON.parse(serverUtils.b64decode(e)) }),
       blockId:            each.BID,
       subContentId:       each.ID,
       articleId:          each.RID,
@@ -708,18 +708,29 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, a
         },{})
 
         /* Replace attachment ID with data url */
-        let articleArray = reducedArticleArray.map((each) => {
-          let replaced = each
-          attachments.forEach((attachment) => {
-            if (replaced.indexOf(attachment.id) !== -1) {
-              if (attachment.type === 'IMAGE') {
-                replaced = replaced.replace(attachment.id, API_ROOT2 + '/api/img/' + boardId + '/' + attachmentIdMap[attachment.id])
-              } else {
-                replaced = replaced.replace(attachment.id, attachmentIdMap[attachment.id])
+        let articleArray = reducedArticleArray.map((each, index) => {
+          if (each.type === 'attachment') {
+            let params = each.param
+            attachments.forEach((attachment) => {
+              if (each.param.id === attachment.id) {
+                if (attachment.type === 'FILE') {
+                  params.id = attachmentIdMap[attachment.id]
+                }
               }
-            }
-          })
-          return replaced
+            })
+            each.param = params
+          } else {
+            let replaced = each.content
+            attachments.forEach((attachment) => {
+              if (replaced.indexOf(attachment.id) !== -1) {
+                if (attachment.type === 'IMAGE') {
+                  replaced = replaced.replace(attachment.id, API_ROOT2 + '/api/img/' + boardId + '/' + attachmentIdMap[attachment.id])
+                }
+              }
+            })
+            each.content = replaced
+          }
+          return JSON.stringify(each)
         })
 
         let mediaIds = attachmentIdObjs.map((attachment) => {

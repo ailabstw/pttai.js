@@ -2,8 +2,9 @@ import React, { PureComponent }   from 'react'
 import { FormattedMessage }       from 'react-intl';
 import { PulseLoader }            from 'react-spinners'
 
-import styles         from './ArticleComponent.css'
-import * as constants from '../constants/Constants'
+import styles           from './ArticleComponent.css'
+import * as constants   from '../constants/Constants'
+import { array2Html }   from '../utils/utils'
 
 import '../../node_modules/quill/dist/quill.bubble.css'
 
@@ -40,11 +41,9 @@ class ArticleComponent extends PureComponent {
     const { articleContentsList, pullCount, articleInfo } = this.props
     const { noResult } = this.state
 
-    let htmlContent = articleContentsList.reduce((final, piece) => {
+    let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
       return final.concat(piece.contentBlockArray)
-    }, []).reduce((final, piece) => {
-      return final + piece
-    }, '')
+    }, []))
 
     const loading = (htmlContent === '') && !noResult;
     const cntDown = constants.ARTICLE_PULL_COUNT_DOWN - pullCount;

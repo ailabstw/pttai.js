@@ -4,8 +4,67 @@ import camelCase from 'camelcase'
 import decamelize from 'decamelize'
 import QueryString from 'query-string'
 import moment from 'moment'
+import sanitizeHtml from 'sanitize-html'
+import * as constants from '../constants/Constants'
 
 const GLOBAL_IDS = new Set()
+
+export const sanitizeDirtyHtml = (dirtyHtml) => {
+  return sanitizeHtml(dirtyHtml, {
+    allowedTags: ['img'],
+    allowedAttributes: {
+      'img': ['width', 'src', 'nameClass', 'alt']
+    }
+  });
+}
+
+export const array2Html = (array) => {
+
+  return array.reduce((acc, each, index) => {
+
+    if (each.type === 'attachment') {
+
+      const fileInfo = {
+          fileId:     each.param.id,
+          fileClass:  each.param.class,
+          fileName:   each.param.name,
+          fileSize:   each.param.size,
+          fileType:   each.param.type,
+      }
+
+      const attachmentTemplate = `<div class="${fileInfo.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
+                                    <div class="attachment-icon" style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
+                                    </div>
+                                    <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
+                                      <div class="attachment-title" title="${fileInfo.fileName}" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                                        ${fileInfo.fileName}
+                                      </div>
+                                      <div class="attachment-size" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;">
+                                        ${bytesToSize(fileInfo.fileSize)}
+                                      </div>
+                                    </div>
+                                  </div>`;
+
+      let iframe = document.createElement('iframe');
+      iframe.className = constants.IFRAME_CLASS_NAME
+      iframe.srcdoc = attachmentTemplate
+      iframe.frameborder = 0
+      iframe.allowfullscreen = true
+      iframe.width = '100%'
+      iframe.height = '84px'
+      iframe.setAttribute('style', 'border-width: 0px')
+      iframe.setAttribute('data-id', fileInfo.fileId)
+      iframe.setAttribute('data-class', fileInfo.fileClass)
+      iframe.setAttribute('data-name', fileInfo.fileName)
+      iframe.setAttribute('data-size', fileInfo.fileSize)
+      iframe.setAttribute('data-type', fileInfo.fileType)
+
+      return acc + iframe.outerHTML.replace(/\s\s+/g, ' ')
+    } else {
+      return acc + sanitizeDirtyHtml(each.content)
+    }
+  }, '')
+}
 
 export const getUUID = (isCheck=true) => {
   let theID = ''

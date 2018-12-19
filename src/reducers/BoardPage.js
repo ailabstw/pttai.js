@@ -479,6 +479,29 @@ export const addArticle = (myId, userName, userImg, boardId, title, article, med
 
 const postprocessCreateArticle = (myId, userName, userImg, title, articleArray, result) => {
 
+  let aArray = articleArray && articleArray.length > 0 ? JSON.parse(articleArray[0]):null
+  let PreviewText = ''
+  if (aArray.type === 'attachment') {
+    PreviewText = ` <div style="display: flex; flex-direction: row;">
+                            <div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
+                            </div>
+                          <div style="line-height: 20px; border-bottom: 0px solid #000;">
+                            ${userName} 上傳了檔案</div>
+                          </div>`
+  } else if (aArray.type === 'text') {
+    let imgEle = [/<p><img.*?><\/p>/g]
+    imgEle.forEach((each) => {
+      aArray.content = aArray.content.replace(each,
+        `<div style="display: flex; flex-direction: row;">
+          $&
+          <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
+            ${userName} 上傳了圖片
+          </div>
+        </div>`)
+    })
+    PreviewText = aArray.content
+  }
+
   let newArticle = {
       BoardID:        result.BID,
       ContentBlockID: result.cID,
@@ -486,7 +509,7 @@ const postprocessCreateArticle = (myId, userName, userImg, title, articleArray, 
       CreatorID:      null,
       CreatorName:    userName,
       CreatorImg:     userImg,
-      PreviewText:    articleArray && articleArray.length > 0? articleArray[0]:null,
+      PreviewText:    PreviewText,
       Status:         0,
       ID:             result.AID,
       LastSeen:       utils.emptyTimeStamp(),
@@ -636,17 +659,28 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
 
         /* Replace attachment ID with data url */
         let articleArray = reducedArticleArray.map((each) => {
-          let replaced = each
-          attachments.forEach((attachment) => {
-            if (replaced.indexOf(attachment.id) !== -1) {
-              if (attachment.type === 'IMAGE') {
-                replaced = replaced.replace(attachment.id, API_ROOT2 + '/api/img/' + boardId + '/' + attachmentIdMap[attachment.id])
-              } else {
-                replaced = replaced.replace(attachment.id, attachmentIdMap[attachment.id])
+          if (each.type === 'attachment') {
+            let params = each.param
+            attachments.forEach((attachment) => {
+              if (each.param.id === attachment.id) {
+                if (attachment.type === 'FILE') {
+                  params.id = attachmentIdMap[attachment.id]
+                }
               }
-            }
-          })
-          return replaced
+            })
+            each.param = params
+          } else {
+            let replaced = each.content
+            attachments.forEach((attachment) => {
+              if (replaced.indexOf(attachment.id) !== -1) {
+                if (attachment.type === 'IMAGE') {
+                  replaced = replaced.replace(attachment.id, API_ROOT2 + '/api/img/' + boardId + '/' + attachmentIdMap[attachment.id])
+                }
+              }
+            })
+            each.content = replaced
+          }
+          return JSON.stringify(each)
         })
 
         let mediaIds = attachmentIdObjs.map((attachment) => {
