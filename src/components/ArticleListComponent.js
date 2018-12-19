@@ -3,7 +3,6 @@ import { Link }                     from 'react-router-dom'
 import { ClipLoader }               from 'react-spinners'
 import { FormattedMessage }         from 'react-intl'
 import ReactDOM                     from 'react-dom'
-import $                            from 'jquery'
 
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import { isUnRead,
