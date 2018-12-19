@@ -4,8 +4,17 @@ import camelCase from 'camelcase'
 import decamelize from 'decamelize'
 import QueryString from 'query-string'
 import moment from 'moment'
+import createDOMPurify from 'dompurify'
+import { JSDOM } from 'jsdom'
 
 const GLOBAL_IDS = new Set()
+
+const window = (new JSDOM('')).window;
+const DOMPurify = createDOMPurify(window);
+
+export const sanitizeHtml = (dirtyHtml) => {
+  return DOMPurify.sanitize(dirtyHtml);
+}
 
 export const getUUID = (isCheck=true) => {
   let theID = ''

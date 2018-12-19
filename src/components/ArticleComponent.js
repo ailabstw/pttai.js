@@ -2,8 +2,9 @@ import React, { PureComponent }   from 'react'
 import { FormattedMessage }       from 'react-intl';
 import { PulseLoader }            from 'react-spinners'
 
-import styles         from './ArticleComponent.css'
-import * as constants from '../constants/Constants'
+import styles           from './ArticleComponent.css'
+import * as constants   from '../constants/Constants'
+import { sanitizeHtml } from '../utils/utils'
 
 import '../../node_modules/quill/dist/quill.bubble.css'
 
@@ -78,7 +79,7 @@ class ArticleComponent extends PureComponent {
                     defaultMessage="(No content)"
                   />
                 ):(
-                  <div className={constants.PTT_EDITOR_CLASS_NAME} dangerouslySetInnerHTML={{__html: htmlContent}} />
+                  <div className={constants.PTT_EDITOR_CLASS_NAME} dangerouslySetInnerHTML={{__html: sanitizeHtml(htmlContent)}} />
                 )
               }
             </div>
