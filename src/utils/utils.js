@@ -32,14 +32,14 @@ export const array2Html = (array) => {
           fileType:   each.param.type,
       }
 
-      const attachmentTemplate = `<div class=\"${fileInfo.fileClass}\" style=\"display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;\">
-                                    <div class=\"attachment-icon\" style=\"background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;\">
+      const attachmentTemplate = `<div class="${fileInfo.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
+                                    <div class="attachment-icon" style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
                                     </div>
-                                    <div class=\"attachment-meta\" style=\"display: flex; flex-direction: column; width: calc(100% - 50px); \">
-                                      <div class=\"attachment-title\" title=\"${fileInfo.fileName}\" style=\"padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;\">
+                                    <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
+                                      <div class="attachment-title" title="${fileInfo.fileName}" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
                                         ${fileInfo.fileName}
                                       </div>
-                                      <div class=\"attachment-size\" style=\"padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;\">
+                                      <div class="attachment-size" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;">
                                         ${bytesToSize(fileInfo.fileSize)}
                                       </div>
                                     </div>
