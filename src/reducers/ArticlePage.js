@@ -9,6 +9,7 @@ import * as serverUtils from './ServerUtils'
 import * as constants   from '../constants/Constants'
 import { DEFAULT_USER_NAME,
          DEFAULT_USER_IMAGE }   from '../constants/Constants'
+import { toJson }               from '../utils/utils'
 
 export const myClass  = 'ARTICLE_PAGE'
 
@@ -204,7 +205,7 @@ const postprocessGetArticleContent = (myId, result, blockId, usersInfo) => {
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     return {
-      contentBlockArray:  each.B.map((e)=> { return JSON.parse(serverUtils.b64decode(e)) }),
+      contentBlockArray:  each.B.map((e)=> { return toJson(serverUtils.b64decode(e)) }),
       blockId:            each.BID,
       subContentId:       each.ID,
       articleId:          each.RID,
@@ -719,7 +720,7 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, a
               }
             })
             each.param = params
-          } else {
+          } else if (each.type === 'text'){
             let replaced = each.content
             attachments.forEach((attachment) => {
               if (replaced.indexOf(attachment.id) !== -1) {

@@ -9,7 +9,7 @@ import { doesCrossDay,
          epoch2MessageTimeFormat,
          epoch2MessageDateFormat,
          expiredFormat           } from '../utils/utilDatetime'
-import { getStatusClass }          from '../utils/utils'
+import { getStatusClass, toJson }  from '../utils/utils'
 
 import AlertComponent              from '../components/AlertComponent'
 import * as constants              from '../constants/Constants'
@@ -260,7 +260,7 @@ class FriendChatComponent extends PureComponent {
                     /*                */
                     /* Invite message */
                     /*                */
-                    let messageObj  = JSON.parse(message.Buf)
+                    let messageObj  = toJson(message.Buf)
                     let messageHtml = messageObj.value
                     let isUser      = (message.CreatorID === userId)
                     let inviteInfo  = {}

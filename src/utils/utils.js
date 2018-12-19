@@ -9,6 +9,16 @@ import * as constants from '../constants/Constants'
 
 const GLOBAL_IDS = new Set()
 
+export const toJson = (data) => {
+  let result = {}
+  try {
+    result = JSON.parse(data);
+  } catch (e) {
+      return result;
+  }
+  return result;
+}
+
 export const sanitizeDirtyHtml = (dirtyHtml) => {
   return sanitizeHtml(dirtyHtml, {
     allowedTags: ['img'],
@@ -21,7 +31,6 @@ export const sanitizeDirtyHtml = (dirtyHtml) => {
 export const array2Html = (array) => {
 
   return array.reduce((acc, each, index) => {
-
     if (each.type === 'attachment') {
 
       const fileInfo = {
@@ -60,8 +69,10 @@ export const array2Html = (array) => {
       iframe.setAttribute('data-type', fileInfo.fileType)
 
       return acc + iframe.outerHTML.replace(/\s\s+/g, ' ')
-    } else {
+    } else if (each.type === 'text'){
       return acc + sanitizeDirtyHtml(each.content)
+    } else {
+      return acc
     }
   }, '')
 }

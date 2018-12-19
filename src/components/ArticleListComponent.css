@@ -174,7 +174,8 @@
     overflow: hidden;
 }
 
-.list-item-content > div {
+.list-item-content > div, .list-item-content > span {
+    display: block;
     margin-top: 15px;
 }
 

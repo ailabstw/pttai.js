@@ -6,7 +6,9 @@ import { FormattedMessage }     from 'react-intl';
 import styles                   from './NewsListComponent.css'
 import { epoch2FullDate,
          epoch2ReadFormat }     from '../utils/utilDatetime'
-import { isUnRead }             from '../utils/utils'
+import { isUnRead,
+         sanitizeDirtyHtml,
+         toJson }               from '../utils/utils'
 
 import * as constants           from '../constants/Constants'
 
@@ -40,19 +42,34 @@ class NewsListComponent extends PureComponent {
           {
             listData.map((item, index) => {
               const itemLink = '/board/' + encodeURIComponent(item.BoardID) + '/article/' + encodeURIComponent(item.ID)
-              let summary = (item.Summary)? item.Summary : (<FormattedMessage id="news-list-component.empty" defaultMessage="(No content)" />)
-              let iframeEle = [/<p><iframe.*?<\/iframe><\/p>/g]
-              if (typeof summary === 'string') {
-                iframeEle.forEach((each) => {
-                  summary = summary.replace(each, '<div style="margin-top: 7px; display: flex; flex-direction: row;"><div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-right: 10px;"></div><div style="line-height: 20px; border-bottom: 0px solid #000;"> ' + item.CreatorName + ' 上傳了檔案</div></div>')
-                })
+
+              let summaryDataParsed = ''
+              if (item.Summary) {
+
+                let sData = toJson(item.Summary)
+                if (sData.type === 'attachment') {
+                  summaryDataParsed = ` <div style="display: flex; flex-direction: row;">
+                                          <div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
+                                          </div>
+                                        <div style="line-height: 20px; border-bottom: 0px solid #000;">
+                                          ${item.CreatorName} 上傳了檔案</div>
+                                        </div>`
+                } else if (sData.type === 'text'){
+                  let imgEle = [/<p><img.*?><\/p>/g]
+                  imgEle.forEach((each) => {
+                    sData.content = sData.content.replace(each,
+                      `<div style="display: flex; flex-direction: row;">
+                        $&
+                        <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
+                          ${item.CreatorName} 上傳了圖片
+                        </div>
+                      </div>`)
+                  })
+                  summaryDataParsed = sanitizeDirtyHtml(sData.content)
+                }
               }
-              let imgEle = [/<p><img.*?><\/p>/g]
-              if (typeof summary === 'string') {
-                imgEle.forEach((each) => {
-                  summary = summary.replace(each, '<div style="margin-top: 7px; display: flex; flex-direction: row;">$&<div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;"> ' + item.CreatorName + ' 上傳了圖片</div></div>')
-                })
-              }
+
+              let summary = summaryDataParsed
 
               return (
                 <div className={styles['list-item']} key={index} onClick={(e) => this.onListItemClick(e, index, itemLink)}>
@@ -80,8 +97,13 @@ class NewsListComponent extends PureComponent {
                         </div>
                       </div>
                       <div className={styles['list-item-content']}>
-                        <div dangerouslySetInnerHTML={{__html: summary}}
-                        />
+                      {
+                        summary ? (
+                          <div dangerouslySetInnerHTML={{__html: summary}}/>
+                        ):(
+                          <FormattedMessage id="news-list-component.empty" defaultMessage="(No content)" />
+                        )
+                      }
                       </div>
                     </div>
                   </Link>

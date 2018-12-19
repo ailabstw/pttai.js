@@ -5,7 +5,8 @@ import { FormattedMessage }       from 'react-intl'
 
 import AlertComponent             from '../components/AlertComponent'
 import { isUnRead,
-         getStatusClass }         from '../utils/utils'
+         getStatusClass,
+         toJson }                 from '../utils/utils'
 import { epoch2ReadFormat }       from '../utils/utilDatetime'
 
 import * as constants             from '../constants/Constants'
@@ -76,7 +77,7 @@ class FriendListComponent extends PureComponent {
           {
             friendSortedList.map((item, index) => {
               const friendLink = (sliderInIndex === -1 && item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}`: false
-              const summaryObj = JSON.parse(item.Summary)
+              const summaryObj = toJson(item.Summary)
 
               let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
               return (

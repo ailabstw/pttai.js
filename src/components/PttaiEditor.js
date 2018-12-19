@@ -126,12 +126,14 @@ function isEmpty(htmlArray) {
 
     if (each.type === 'attachment') {
       return acc + 'dirty'
-    } else {
+    } else if (each.type === 'text'){
       let cleanEach = each.content.replace(/<p>/g,'')
       cleanEach = cleanEach.replace(/<\/p>/g,'')
       cleanEach = cleanEach.replace(/<br>/g,'')
       cleanEach = cleanEach.trim().replace(/\s\s+/g, ' ');
       return acc + cleanEach
+    } else {
+      return acc
     }
   }, '')
 
@@ -223,10 +225,12 @@ class PttaiEditor extends PureComponent {
       let reducedHtmlArray = htmlArray.map((each) => {
         if (each.type === 'attachment') {
           return each
-        } else {
+        } else if (each.type === 'text'){
           let replaced = each.content
           attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
           each.content = replaced
+          return each
+        } else {
           return each
         }
       })
