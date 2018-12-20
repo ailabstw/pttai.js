@@ -115,6 +115,7 @@
     "alert.message25": "[Success] Board Joined",
     "alert.message26": "[Failed] Empty Node ID",
     "alert.message27": "[Success] Signed In",
+    "alert.message28": "[Wait] Signing...",
     "manage-board-modal.message1": "You have no friend to invite to {BOARD_NAME}",
     "manage-board-modal.message2": "Invite friends",
     "manage-board-modal.invite-friend-0": "Joined {JOIN_TIME}"

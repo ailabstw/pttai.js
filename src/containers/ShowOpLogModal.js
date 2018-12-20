@@ -174,14 +174,18 @@ class ShowOpLogModal extends PureComponent {
                         <div className={styles['op-value']}>{item.UID}</div>
                       </div>
                       <div className={styles['item']}>
+                        <div className={styles['op-title']}>User Name</div>
+                        <div className={styles['op-value']}>{item.userName}</div>
+                      </div>
+                      <div hidden className={styles['item']}>
                         <div className={styles['op-title']}>IP</div>
                         <div className={styles['op-value']}>{item.Addr ? item.Addr.IP : 'null'}</div>
                       </div>
-                      <div className={styles['item']}>
+                      <div hidden className={styles['item']}>
                         <div className={styles['op-title']}>Port</div>
                         <div className={styles['op-value']}>{item.Addr ? item.Addr.Port : 'null'}</div>
                       </div>
-                      <div className={styles['item']}>
+                      <div hidden className={styles['item']}>
                         <div className={styles['op-title']}>Zone</div>
                         <div className={styles['op-value']}>{item.Addr ? item.Addr.Zone : 'null'}</div>
                       </div>
@@ -204,6 +208,10 @@ class ShowOpLogModal extends PureComponent {
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Creator ID</div>
                         <div className={styles['op-value']}>{item.CID}</div>
+                      </div>
+                      <div className={styles['item']}>
+                        <div className={styles['op-title']}>Creator Name</div>
+                        <div className={styles['op-value']}>{item.creatorName}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Create TS</div>

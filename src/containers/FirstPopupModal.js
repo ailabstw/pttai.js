@@ -118,7 +118,21 @@ class FirstPopupModal extends PureComponent {
     let inputPrivateKey = userPrivateKeyInfo
 
     let that = this
-    let addDeviceCallBack = (response) => {
+
+    let waitingCallBack = () => {
+      that.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+              id="alert.message28"
+              defaultMessage="[Wait] Signing..."
+            />),
+        }
+      })
+    }
+
+    let addDeviceCallBackFunc = (response) => {
       if (response.error) {
         that.setState({
           showAlert: true,
@@ -138,17 +152,30 @@ class FirstPopupModal extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message27"
-                defaultMessage="[Success] Signed In"
+                id="alert.message28"
+                defaultMessage="[Wait] Signing..."
               />),
-            onConfirm: () => {
-              that.setState({showAlert: false})
-              that.onScannerClose()
-              onModalClose()
-            }
           }
         })
       }
+    }
+
+    let signedInCallBackFunc = (userPrivateKeyInfo, deviceJoinKeyInfo) => {
+      that.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+              id="alert.message27"
+              defaultMessage="[Success] Signed In"
+            />),
+          onConfirm: () => {
+            that.setState({showAlert: false})
+            that.onScannerClose()
+            onModalClose()
+          }
+        }
+      })
     }
 
     if (!inputNodeId || !inputNodeId.startsWith('pnode://')) {
@@ -176,7 +203,7 @@ class FirstPopupModal extends PureComponent {
         }
       })
     } else {
-      signIn(inputNodeId, inputPrivateKey, addDeviceCallBack)
+      signIn(inputNodeId, inputPrivateKey, addDeviceCallBackFunc, waitingCallBack, signedInCallBackFunc)
     }
   }
 

@@ -115,6 +115,7 @@
     "alert.message25": "[成功] 加入板了",
     "alert.message26": "[登入失敗] 空白 Node ID",
     "alert.message27": "[成功] 已登入",
+    "alert.message28": "[等待] 登入中...",
     "manage-board-modal.message1": "目前沒有朋友可以邀請加入{BOARD_NAME}",
     "manage-board-modal.message2": "邀請朋友",
     "manage-board-modal.invite-friend-0": "{JOIN_TIME} 加入"

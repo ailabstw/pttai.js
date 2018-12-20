@@ -165,12 +165,29 @@ export const getOpLogs = (myId, tabs, params) => {
   return (dispatch, getState) => {
     dispatch(getAllOpLogs(dispatch, myId, tabs, params))
       .then((maps) => {
-        dispatch(postprocessGetOpLogs(myId, maps))
+        let userIds = maps.map((item) => {
+          if (!item.error && item.type.indexOf('_PEERS_TAB') !== -1) {
+            return item.value && item.value.length > 0 ? item.value[0].UID : null
+          } else if (!item.error && item.type !== constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
+            return item.value && item.value.length > 0 ? item.value[0].CID : null
+          }
+          return null
+        }).filter((id) => id)
+
+        dispatch(serverUtils.getUsersInfo(userIds))
+          .then((usersInfo) => {
+            dispatch(postprocessGetOpLogs(myId, maps, usersInfo))
+          })
       })
   }
 }
 
-const postprocessGetOpLogs = (myId, maps) => {
+const postprocessGetOpLogs = (myId, maps, usersInfo) => {
+
+  usersInfo = usersInfo.reduce((acc, each) => {
+    acc[each.key] = each.value
+    return acc
+  }, {})
 
   const opLogs = maps.reduce((accumulator, currentValue) => {
 
@@ -186,7 +203,32 @@ const postprocessGetOpLogs = (myId, maps) => {
     return accumulator
   },{})
 
-  console.log('doShowOpLogModal.postprocessGetOpLogs: opLogs:', maps, opLogs)
+  Object.keys(opLogs).forEach(function(key) {
+
+    let opLog = opLogs[key]
+    let userNameMap = usersInfo['userName'] || {}
+
+    if (key.indexOf('_PEERS_TAB') !== -1) {
+      let userId    = opLog && opLog.length > 0 ? opLog[0].UID : null
+      let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
+      opLogs[key] = opLogs[key].map((value) => {
+        return {
+          ...value,
+          userName: userName
+        }
+      })
+    } else if (key !== constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
+      let userId    = opLog && opLog.length > 0 ? opLog[0].CID : null
+      let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
+      opLogs[key] = opLogs[key].map((value) => {
+        return {
+          ...value,
+          creatorName: userName
+        }
+      })
+    }
+
+  });
 
   return {
     myId,
