@@ -38,12 +38,12 @@ class ArticleComponent extends PureComponent {
   }
 
   render() {
-    const { articleContentsList, pullCount, articleInfo } = this.props
+    const { articleContentsList, pullCount, articleInfo, boardInfo } = this.props
     const { noResult } = this.state
 
     let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
       return final.concat(piece.contentBlockArray)
-    }, []))
+    }, []), boardInfo.ID)
 
     const loading = (htmlContent === '') && !noResult;
     const cntDown = constants.ARTICLE_PULL_COUNT_DOWN - pullCount;

@@ -1,13 +1,59 @@
-import uuidv4 from 'uuid/v4'
-import Immutable from 'immutable'
-import camelCase from 'camelcase'
-import decamelize from 'decamelize'
-import QueryString from 'query-string'
-import moment from 'moment'
-import sanitizeHtml from 'sanitize-html'
-import * as constants from '../constants/Constants'
+import uuidv4           from 'uuid/v4'
+import Immutable        from 'immutable'
+import camelCase        from 'camelcase'
+import decamelize       from 'decamelize'
+import QueryString      from 'query-string'
+import moment           from 'moment'
+import sanitizeHtml     from 'sanitize-html'
+import { API_ROOT2 }    from 'config'
+
+import * as constants   from '../constants/Constants'
 
 const GLOBAL_IDS = new Set()
+
+export const getFileTemplate = (file) => {
+  const fileHTML = `<div class="${file.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
+                      <div class="attachment-icon" style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
+                      </div>
+                      <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
+                        <div class="attachment-title" title="${file.fileName}" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                          ${file.fileName}
+                        </div>
+                        <div class="attachment-size" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;">
+                          ${bytesToSize(file.fileSize)}
+                        </div>
+                      </div>
+                    </div>`;
+  return fileHTML.replace(/\s+/g, ' ')
+}
+
+export const getSummaryTemplate = (rowData, extraParams) => {
+
+  let template = `<div></div>`
+  let params = rowData.param
+
+  if (rowData.type === constants.CONTENT_TYPE_FILE) {
+    template = `<div style="display: flex; flex-direction: row;">
+                  <div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
+                  </div>
+                <div style="line-height: 20px; border-bottom: 0px solid #000;">
+                  ${extraParams.CreatorName} 上傳了檔案</div>
+                </div>`
+  } else if (rowData.type === constants.CONTENT_TYPE_IMAGE) {
+    template = `<div style="display: flex; flex-direction: row;">
+                  <img src="${API_ROOT2 + '/api/img/' + extraParams.boardId + '/' + params.id}" style="height: 20px; width: 20px; margin-right: 10px; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border-radius: 3px;">
+                  <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
+                    ${extraParams.CreatorName} 上傳了圖片
+                  </div>
+                </div>`
+  } else {
+    template = `<div>
+                  ${sanitizeDirtyHtml(rowData.content)}
+                </div>`
+  }
+
+  return template.replace(/\s+/g, ' ')
+}
 
 export const toJson = (data) => {
   let result = {}
@@ -20,18 +66,22 @@ export const toJson = (data) => {
 }
 
 export const sanitizeDirtyHtml = (dirtyHtml) => {
-  return sanitizeHtml(dirtyHtml, {
-    allowedTags: ['img'],
+  let cleanHtml =  sanitizeHtml(dirtyHtml, {
+    allowedTags: ['li', 'ol', 'ul', 'a', 'p'],
     allowedAttributes: {
-      'img': ['width', 'src', 'nameClass', 'alt']
-    }
+      'a': [ 'href', 'target' ],
+    },
+    allowedClasses: {
+      'li': [ 'ql-indent-1', 'ql-indent-2', 'ql-indent-3'],
+    },
   });
+  return cleanHtml
 }
 
-export const array2Html = (array) => {
+export const array2Html = (array, boardId) => {
 
   return array.reduce((acc, each, index) => {
-    if (each.type === 'attachment') {
+    if (each.type === constants.CONTENT_TYPE_FILE) {
 
       const fileInfo = {
           fileId:     each.param.id,
@@ -41,26 +91,13 @@ export const array2Html = (array) => {
           fileType:   each.param.type,
       }
 
-      const attachmentTemplate = `<div class="${fileInfo.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
-                                    <div class="attachment-icon" style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
-                                    </div>
-                                    <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
-                                      <div class="attachment-title" title="${fileInfo.fileName}" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                                        ${fileInfo.fileName}
-                                      </div>
-                                      <div class="attachment-size" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;">
-                                        ${bytesToSize(fileInfo.fileSize)}
-                                      </div>
-                                    </div>
-                                  </div>`;
-
       let iframe = document.createElement('iframe');
-      iframe.className = constants.IFRAME_CLASS_NAME
-      iframe.srcdoc = attachmentTemplate
-      iframe.frameborder = 0
-      iframe.allowfullscreen = true
-      iframe.width = '100%'
-      iframe.height = '84px'
+      iframe.className        = constants.IFRAME_CLASS_NAME
+      iframe.srcdoc           = getFileTemplate(fileInfo)
+      iframe.frameborder      = 0
+      iframe.allowfullscreen  = true
+      iframe.width            = '100%'
+      iframe.height           = '84px'
       iframe.setAttribute('style', 'border-width: 0px')
       iframe.setAttribute('data-id', fileInfo.fileId)
       iframe.setAttribute('data-class', fileInfo.fileClass)
@@ -69,7 +106,22 @@ export const array2Html = (array) => {
       iframe.setAttribute('data-type', fileInfo.fileType)
 
       return acc + iframe.outerHTML.replace(/\s\s+/g, ' ')
-    } else if (each.type === 'text'){
+    } else if (each.type === constants.CONTENT_TYPE_IMAGE) {
+
+      const imageInfo = {
+          imageId:     each.param.id,
+          imageClass:  each.param.class,
+      }
+
+      let image = document.createElement('img');
+      image.src              = API_ROOT2 + '/api/img/' + boardId + '/' + imageInfo.imageId
+      image.alt              = 'not working'
+      image.style.width      = '100%'
+      image.setAttribute('data-id', imageInfo.imageId)
+      image.setAttribute('data-class', imageInfo.imageClass)
+
+      return acc + image.outerHTML.replace(/\s\s+/g, ' ')
+    } else if (each.type === constants.CONTENT_TYPE_TEXT){
       return acc + sanitizeDirtyHtml(each.content)
     } else {
       return acc

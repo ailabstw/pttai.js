@@ -127,6 +127,10 @@
     box-sizing: content-box;
 };
 
+:global(.ql-editor a) {
+    cursor: pointer;
+}
+
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #C1C1C1;
     opacity: 1; /* Firefox */

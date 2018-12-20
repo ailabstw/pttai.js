@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react'
 import uuidv4                   from 'uuid/v4'
 import Quill                    from 'quill'
-import Delta                    from 'quill-delta'
 import { injectIntl,
          FormattedMessage }     from 'react-intl'
 import $                        from 'jquery'
@@ -12,27 +11,29 @@ import { dataURLtoFile,
          isWhitespace,
          newCanvasSize,
          getOrientation,
-         array2Html }         from '../utils/utils'
+         array2Html,
+         getFileTemplate,
+         getUUID,
+         sanitizeDirtyHtml }  from '../utils/utils'
 
 import * as constants         from '../constants/Constants'
 
 import styles                 from './PttaiEditor.css'
 
 const EDITOR_INPUT_ID     = 'pttai-editor-input'
-const IMAGE_CLASS_PREFIX  = 'pttai-editor-img-'
 
 let BlockEmbed  = Quill.import('blots/block/embed');
 let Break       = Quill.import('blots/break');
 
 /*                                                       */
-/*  Create a Attachment based off the BlockEmbed         */
+/*  Create a FileAttachment based off the BlockEmbed     */
 /*                                                       */
 /*  Since quill does not allow heirarchical dom element, */
 /*  we use iframe for attachment display in the editor.  */
 /*                                                       */
-class Attachment extends BlockEmbed {
+class FileAttachment extends BlockEmbed {
     static create(params) {
-        var node = super.create(params.value);
+        let node = super.create(params.value);
 
         node.setAttribute('srcdoc', params.value);
         node.setAttribute('frameborder', '0');
@@ -53,15 +54,39 @@ class Attachment extends BlockEmbed {
     }
 }
 
-Attachment.blotName   = 'attachment';
-Attachment.className  = constants.IFRAME_CLASS_NAME;
-Attachment.tagName    = 'iframe';
+FileAttachment.blotName   = 'FileAttachment';
+FileAttachment.tagName    = 'iframe';
 
-Break.blotName  = 'break'
-Break.tagName   = 'BR'
+class ImageAttachment extends BlockEmbed {
+    static create(params) {
+        let node = super.create();
 
-Quill.register(Break)
-Quill.register(Attachment, true);
+        node.setAttribute('src',    params.src);
+        node.setAttribute('alt',    'not working');
+        node.setAttribute('width',  '100%');
+        node.setAttribute('data-id',    params.id);
+        node.setAttribute('data-class', params.class);
+
+        return node;
+    }
+
+    static value(node) {
+        return {
+            url: node.getAttribute('src')
+        }
+    }
+}
+
+ImageAttachment.blotName = 'ImageAttachment';
+ImageAttachment.tagName = 'img';
+
+Break.blotName  = 'break';
+Break.tagName   = 'BR';
+
+Quill.register(Break);
+Quill.register(FileAttachment, true);
+Quill.register(ImageAttachment, true);
+
 
 /*                                                         */
 /*  Each line of the array should be wrapped by <p></p>    */
@@ -69,7 +94,7 @@ Quill.register(Attachment, true);
 
 function html2Array(html) {
 
-  let tags    = [/<ol>.*?<\/ol>/g, /<ul>.*?<\/ul>/g, /<iframe.*?<\/iframe>/g]
+  let tags    = [/<ol>.*?<\/ol>/g, /<ul>.*?<\/ul>/g, /<iframe.*?<\/iframe>/g, /<img.*?>/g]
   let result  = html
 
   /*  1. remove all new line character  */
@@ -95,19 +120,31 @@ function html2Array(html) {
       let pElement      = $.parseHTML(htmlStr)[0]
       let iframeElement = pElement.children[0]
 
-      htmlObj.type = 'attachment'
+      htmlObj.type    = constants.CONTENT_TYPE_FILE
       htmlObj.content = ''
-      htmlObj.param = {
+      htmlObj.param   = {
         id:     $(iframeElement).data("id"),
         class:  $(iframeElement).data("class"),
         name:   $(iframeElement).data("name"),
         size:   $(iframeElement).data("size"),
         type:   $(iframeElement).data("type"),
       }
+
+    } else if (htmlStr.indexOf('<p><img') === 0) {
+
+      let pElement   = $.parseHTML(htmlStr)[0]
+      let imgElement = pElement.children[0]
+
+      htmlObj.type    = constants.CONTENT_TYPE_IMAGE
+      htmlObj.content = ''
+      htmlObj.param   = {
+        id:     $(imgElement).data("id"),
+        class:  $(imgElement).data("class"),
+      }
     } else {
 
-      htmlObj.type = 'text'
-      htmlObj.content = htmlStr
+      htmlObj.type    = constants.CONTENT_TYPE_TEXT
+      htmlObj.content = sanitizeDirtyHtml(htmlStr)
     }
 
     return htmlObj
@@ -124,9 +161,9 @@ function isEmpty(htmlArray) {
 
   let html = htmlArray.reduce((acc, each) => {
 
-    if (each.type === 'attachment') {
+    if (each.type === constants.CONTENT_TYPE_IMAGE ||  each.type === constants.CONTENT_TYPE_FILE) {
       return acc + 'dirty'
-    } else if (each.type === 'text'){
+    } else if (each.type === constants.CONTENT_TYPE_TEXT){
       let cleanEach = each.content.replace(/<p>/g,'')
       cleanEach = cleanEach.replace(/<\/p>/g,'')
       cleanEach = cleanEach.replace(/<br>/g,'')
@@ -150,7 +187,7 @@ class PttaiEditor extends PureComponent {
       editor:       {},
       title:        props.articleTitle,
       htmlArray:    props.initHtmlArray || [],
-      htmlContent:  props.initHtmlArray ? array2Html(props.initHtmlArray): '',
+      htmlContent:  props.initHtmlArray ? array2Html(props.initHtmlArray, props.boardId): '',
       attachedObjs: [],
       selection:    { index: 0, length: 0 },
       showAlert:    false,
@@ -496,34 +533,20 @@ class PttaiEditor extends PureComponent {
         let range = that.state.selection
 
         const fileInfo = {
-            fileId:     ['attachment', file.size, file.type, file.lastModified, attachedObjs.length].join('-'),
-            fileClass:  constants.ATTACHMENT_CLASS_NAME,
+            fileId:     'file-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
+            fileClass:  constants.FILE_CLASS_NAME,
             fileName:   file.name,
             fileSize:   file.size,
         }
 
-        /* This is the attachment html element to show in editor */
-        const attachmentHTML = `<div class="${fileInfo.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
-                                  <div class="attachment-icon" style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
-                                  </div>
-                                  <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
-                                    <div class="attachment-title" title="${fileInfo.fileName}" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 16px; color: #484848; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                                      ${fileInfo.fileName}
-                                    </div>
-                                    <div class="attachment-size" style="padding:2px 5px; height: 20px; line-height: 24px; font-size: 13px; color: #b1b1b1;">
-                                      ${bytesToSize(fileInfo.fileSize)}
-                                    </div>
-                                  </div>
-                                </div>`;
-
         /* Insert as an iframe element */
-        editor.insertEmbed(range.index, 'attachment', {
+        editor.insertEmbed(range.index, 'FileAttachment', {
           id:     fileInfo.fileId,
           class:  fileInfo.fileClass,
           name:   file.name,
           size:   file.size,
           type:   file.type,
-          value:  attachmentHTML,
+          value:  getFileTemplate(fileInfo),
         });
 
         /* New attachment */
@@ -531,7 +554,7 @@ class PttaiEditor extends PureComponent {
           'id':     fileInfo.fileId,
           'data':   fileReader.result,
           'file':   file,
-          'type':   'FILE'
+          'type':   constants.CONTENT_TYPE_FILE
         })
 
         /* Update cursor selection */
@@ -543,9 +566,9 @@ class PttaiEditor extends PureComponent {
         editor.setSelection(newRange)
 
         that.setState({
-          selection:  newRange,
-          editor:     editor,
-          attachedObjs: attachedObjs,
+          editor:         editor,
+          selection:      newRange,
+          attachedObjs:   attachedObjs,
           contentChanged: true,
         })
     }
@@ -608,43 +631,39 @@ class PttaiEditor extends PureComponent {
 
             /* Insert into editor */
             let range           = that.state.selection
-            let imageClassName  = IMAGE_CLASS_PREFIX + attachedObjs.length
 
-            editor.updateContents(
-                new Delta()
-                    .retain(range.index)
-                    .insert(
-                        {
-                            image: dataUrl
-                        },
-                        {
-                            width: '100%',
-                            nameClass: imageClassName,
-                            alt: 'no working',
-                            offset: 3,
-                        }
-                    ).insert('\n'));
+            const imageInfo = {
+              imageId:     'image-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
+              imageClass:  constants.IMAGE_CLASS_NAME + attachedObjs.length,
+            }
+
+            /* Insert as an image element */
+            editor.insertEmbed(range.index, 'ImageAttachment', {
+              id:     imageInfo.imageId,
+              class:  imageInfo.imageClass,
+              src:    dataUrl,
+            });
 
             /* New attachment */
             attachedObjs.push({
-              'id':     imageClassName,
+              'id':     imageInfo.imageId,
               'data':   dataUrl,
               'file':   dataURLtoFile(dataUrl, file.name),
-              'type':   'IMAGE'
+              'type':   constants.CONTENT_TYPE_IMAGE,
             })
 
             /* Update cursor selection */
             let newRange = {
-              index:  range.index + 2,
+              index:  range.index + 1,
               length: range.length
             }
 
             editor.setSelection(newRange)
 
             that.setState({
-              selection:  newRange,
-              editor:     editor,
-              attachedObjs: attachedObjs,
+              editor:         editor,
+              selection:      newRange,
+              attachedObjs:   attachedObjs,
               contentChanged: true,
             })
         }

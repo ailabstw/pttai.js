@@ -17,7 +17,7 @@ import * as constants         from '../constants/Constants'
 import styles  from './ArticlePage.css'
 
 const iframeClass     = 'iframe.' + constants.IFRAME_CLASS_NAME
-const attachmentClass = '.' + constants.ATTACHMENT_CLASS_NAME
+const attachmentClass = '.' + constants.FILE_CLASS_NAME
 
 class ArticlePage extends PureComponent {
   constructor(props) {
@@ -242,6 +242,7 @@ class ArticlePage extends PureComponent {
 
     let openEditArticleModal = () => {
       doModalContainer.setInput({
+        boardId:              boardInfo.ID,
         articleTitle:         articleInfo.Title,
         articleContentsList:  articleContentsList,
         onDeleteArticle:      deleteArticle,
@@ -271,6 +272,7 @@ class ArticlePage extends PureComponent {
           boardInfo={boardInfo}
           articleInfo={articleInfo} />
         <ArticleComponent
+          boardInfo={boardInfo}
           userId={userId}
           pullCount={count}
           articleInfo={articleInfo}

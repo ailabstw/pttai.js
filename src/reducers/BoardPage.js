@@ -1,6 +1,5 @@
 import Immutable                from 'immutable';
 import { createDuck }           from 'redux-duck'
-import { API_ROOT2 }            from 'config'
 import LRU                      from 'lru-cache'
 
 import * as utils               from './utils'
@@ -9,7 +8,8 @@ import * as serverUtils         from './ServerUtils'
 import * as constants           from '../constants/Constants'
 import { DEFAULT_USER_NAME,
          DEFAULT_USER_IMAGE }   from '../constants/Constants'
-import { toJson }               from '../utils/utils'
+import { toJson,
+         getSummaryTemplate }   from '../utils/utils'
 
 export const myClass = 'BOARD_PAGE'
 
@@ -473,35 +473,15 @@ export const addArticle = (myId, userName, userImg, boardId, title, article, med
   return (dispatch, getState) => {
     dispatch(serverUtils.createArticle(boardId, title, article, mediaStr))
       .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessCreateArticle(myId, userName, userImg, title, article, result))
+        dispatch(postprocessCreateArticle(myId, boardId, userName, userImg, title, article, result))
       })
   }
 }
 
-const postprocessCreateArticle = (myId, userName, userImg, title, articleArray, result) => {
+const postprocessCreateArticle = (myId, boardId, userName, userImg, title, articleArray, result) => {
 
-  let aArray = articleArray && articleArray.length > 0 ? toJson(articleArray[0]):null
-  let PreviewText = ''
-  if (aArray.type === 'attachment') {
-    PreviewText = ` <div style="display: flex; flex-direction: row;">
-                            <div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
-                            </div>
-                          <div style="line-height: 20px; border-bottom: 0px solid #000;">
-                            ${userName} 上傳了檔案</div>
-                          </div>`
-  } else if (aArray.type === 'text') {
-    let imgEle = [/<p><img.*?><\/p>/g]
-    imgEle.forEach((each) => {
-      aArray.content = aArray.content.replace(each,
-        `<div style="display: flex; flex-direction: row;">
-          $&
-          <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
-            ${userName} 上傳了圖片
-          </div>
-        </div>`)
-    })
-    PreviewText = aArray.content
-  }
+  let sData = articleArray && articleArray.length > 0 ? toJson(articleArray[0]) : {}
+  let previewText = getSummaryTemplate(sData, { CreatorName: userName, boardId: boardId })
 
   let newArticle = {
       BoardID:        result.BID,
@@ -510,7 +490,7 @@ const postprocessCreateArticle = (myId, userName, userImg, title, articleArray, 
       CreatorID:      null,
       CreatorName:    userName,
       CreatorImg:     userImg,
-      PreviewText:    PreviewText,
+      PreviewText:    previewText,
       Status:         0,
       ID:             result.AID,
       LastSeen:       utils.emptyTimeStamp(),
@@ -658,29 +638,19 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
           return acc
         },{})
 
-        /* Replace attachment ID with data url */
+        /* Replace attachment ID with medaiId */
         let articleArray = reducedArticleArray.map((each) => {
-          if (each.type === 'attachment') {
+
+          if (each.type === constants.CONTENT_TYPE_FILE || each.type === constants.CONTENT_TYPE_IMAGE) {
             let params = each.param
             attachments.forEach((attachment) => {
-              if (each.param.id === attachment.id) {
-                if (attachment.type === 'FILE') {
-                  params.id = attachmentIdMap[attachment.id]
-                }
+              if (params.id === attachment.id) {
+                params.id = attachmentIdMap[attachment.id]
               }
             })
             each.param = params
-          } else if (each.type === 'text'){
-            let replaced = each.content
-            attachments.forEach((attachment) => {
-              if (replaced.indexOf(attachment.id) !== -1) {
-                if (attachment.type === 'IMAGE') {
-                  replaced = replaced.replace(attachment.id, API_ROOT2 + '/api/img/' + boardId + '/' + attachmentIdMap[attachment.id])
-                }
-              }
-            })
-            each.content = replaced
           }
+
           return JSON.stringify(each)
         })
 
@@ -691,7 +661,7 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
         /* Create article with attachment Ids */
         dispatch(serverUtils.createArticle(boardId, title, articleArray, mediaIds))
           .then(({response: {result}, type, query, error}) => {
-            dispatch(postprocessCreateArticle(myId, userName, userImg, title, articleArray, result))
+            dispatch(postprocessCreateArticle(myId, boardId, userName, userImg, title, articleArray, result))
           })
       })
   }

@@ -174,29 +174,22 @@
     overflow: hidden;
 }
 
-.list-item-content > div, .list-item-content > span {
+.list-item-content > div {
     display: block;
-    margin-top: 15px;
+    margin-top: 18px;
 }
 
-.list-item-content > div > ol, .list-item-content > div > ul {
-    margin-top: 10px;
+.list-item-content > div > div > a {
+    color: black;
 }
 
-.list-item-content > div > ol > li, .list-item-content > div > ul > li {
+/*.list-item-content > div > div > ol, .list-item-content > div > div > ul, .list-item-content > div > div > a {
+    margin-top: -25px;
+}
+
+.list-item-content > div > div > ol > li, .list-item-content > div > div > ul > li, .list-item-content > div > div > ol > a {
     margin-bottom: 10px;
-}
-
-.list-item-content img {
-    height: 20px;
-    width: 20px;
-    margin-right: 10px;
-    margin-left: 5px;
-    margin-top: -10px;
-    margin-bottom: auto;
-    border-radius: 3px;
-    object-fit: cover;
-}
+}*/
 
 .list-item-meta {
     min-width: 30px;

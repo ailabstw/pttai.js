@@ -11,7 +11,7 @@ import styles                       from './CreateArticleModal.css'
 class CreateArticleModal extends PureComponent {
 
   render() {
-    const { onModalSubmit, modal: { currentModal }, onModalClose } = this.props
+    const { onModalSubmit, modal: { currentModal }, modalInput: { boardId }, onModalClose } = this.props
 
     return (
       <Modal
@@ -21,7 +21,8 @@ class CreateArticleModal extends PureComponent {
         onRequestClose={null}
         shouldCloseOnEsc={false}
         contentLabel="Create Article Modal">
-        <PttaiEditor articleTitle={''}
+        <PttaiEditor boardId={boardId}
+                     articleTitle={''}
                      initHtmlArray={[]}
                      isEdit={false}
                      onDeleteArticle={null}

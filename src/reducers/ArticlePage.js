@@ -1,6 +1,5 @@
 import Immutable        from 'immutable';
 import { createDuck }   from 'redux-duck'
-import { API_ROOT2 }    from 'config'
 import LRU              from 'lru-cache'
 
 import * as utils       from './utils'
@@ -708,29 +707,19 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, a
           return acc
         },{})
 
-        /* Replace attachment ID with data url */
+        /* Replace attachment ID with mediaId */
         let articleArray = reducedArticleArray.map((each, index) => {
-          if (each.type === 'attachment') {
+
+          if (each.type === constants.CONTENT_TYPE_FILE || each.type === constants.CONTENT_TYPE_IMAGE) {
             let params = each.param
             attachments.forEach((attachment) => {
-              if (each.param.id === attachment.id) {
-                if (attachment.type === 'FILE') {
-                  params.id = attachmentIdMap[attachment.id]
-                }
+              if (params.id === attachment.id) {
+                params.id = attachmentIdMap[attachment.id]
               }
             })
             each.param = params
-          } else if (each.type === 'text'){
-            let replaced = each.content
-            attachments.forEach((attachment) => {
-              if (replaced.indexOf(attachment.id) !== -1) {
-                if (attachment.type === 'IMAGE') {
-                  replaced = replaced.replace(attachment.id, API_ROOT2 + '/api/img/' + boardId + '/' + attachmentIdMap[attachment.id])
-                }
-              }
-            })
-            each.content = replaced
           }
+
           return JSON.stringify(each)
         })
 
