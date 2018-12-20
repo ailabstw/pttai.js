@@ -99,9 +99,12 @@ export const PEER_TYPE_ARRAY = [
     'PeerTypeErr',
     'PeerTypeRemoved',
     'PeerTypeRandom',
+    'PeerTypePending',
     'PeerTypeMember',
     'PeerTypeImportant',
-    'PeerTypeMe'
+    'PeerTypeHub',
+    'PeerTypeMe',
+    'NPeerType'
 ]
 
 export const OP_TYPE_ARRAY = [

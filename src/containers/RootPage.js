@@ -91,6 +91,7 @@ class RootPage extends PureComponent {
 
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
+    doRootPage.getUserInfo(myId, () => {}, () => {})
   }
 
   render() {
