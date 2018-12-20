@@ -76,6 +76,7 @@ class BoardPage extends PureComponent {
     }
 
     let openCreateArticleModal = () => {
+      doModalContainer.setInput({ boardId: boardInfo.ID })
       doModalContainer.setSubmit(openCreateArticleSubmit)
       doModalContainer.openModal(constants.CREATE_ARTICLE_MODAL)
     }

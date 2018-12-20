@@ -7,8 +7,8 @@ import ReactDOM                     from 'react-dom'
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import { isUnRead,
          getStatusClass,
-         sanitizeDirtyHtml,
-         toJson }                           from '../utils/utils'
+         toJson,
+         getSummaryTemplate }               from '../utils/utils'
 import * as serverUtils                     from '../reducers/ServerUtils'
 import * as constants                       from '../constants/Constants'
 
@@ -116,33 +116,14 @@ class ArticleListComponent extends PureComponent {
                 listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
                   //let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
                   let itemLink = (sliderInIndex === -1)? '/board/' + encodeURIComponent(boardId) + '/article/' + encodeURIComponent(item.ID):false
-                  let summaryDataParsed = ''
-                  if (summaryData[item.ID]) {
 
+                  let summary = ''
+                  if (item.PreviewText) {
+                    summary = item.PreviewText
+                  } else if (summaryData[item.ID] && summaryData[item.ID].B) {
                     let sData = toJson(serverUtils.b64decode(summaryData[item.ID].B[0]))
-                    if (sData.type === 'attachment') {
-                      summaryDataParsed = ` <div style="display: flex; flex-direction: row;">
-                                              <div style="background-image: url(/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
-                                              </div>
-                                            <div style="line-height: 20px; border-bottom: 0px solid #000;">
-                                              ${item.CreatorName} 上傳了檔案</div>
-                                            </div>`
-                    } else if (sData.type === 'text'){
-                      let imgEle = [/<p><img.*?><\/p>/g]
-                      imgEle.forEach((each) => {
-                        sData.content = sData.content.replace(each,
-                          `<div style="display: flex; flex-direction: row;">
-                            $&
-                            <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
-                              ${item.CreatorName} 上傳了圖片
-                            </div>
-                          </div>`)
-                      })
-                      summaryDataParsed = sanitizeDirtyHtml(sData.content)
-                    }
+                    summary = getSummaryTemplate(sData, { CreatorName: item.CreatorName, boardId: boardId })
                   }
-
-                  let summary = item.PreviewText || summaryDataParsed
 
                   return (
                     <div className={styles['list-item']} key={listData.length - index} onClick={(e) => this.onListItemClick(e, index)}>

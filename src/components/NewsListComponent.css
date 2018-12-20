@@ -153,26 +153,19 @@
 }
 
 .list-item-content > div {
-    margin-top: -5px;
+    display: block;
+    margin-top: 0px;
+    padding-top: 0px;
+    padding-left: 0px;
 }
 
-.list-item-content > div > ol, .list-item-content > div > ul {
-    margin-top: -20px;
+/*.list-item-content > div > div > ol, .list-item-content > div > div > ul {
+    margin-top: -25px;
 }
 
-.list-item-content > div > ol > li, .list-item-content > div > ul > li {
+.list-item-content > div > div > ol > li, .list-item-content > div > div > ul > li {
     margin-bottom: 10px;
-}
-
-.list-item-content img {
-    height: 20px;
-    width: 20px;
-    margin-right: 10px;
-    margin-top: -10px;
-    margin-bottom: auto;
-    border-radius: 3px;
-    object-fit: cover;
-}
+}*/
 
 .spinner-item {
     padding: 0.5ex 0;

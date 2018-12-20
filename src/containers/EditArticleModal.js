@@ -12,6 +12,7 @@ class EditArticleModal extends PureComponent {
 
   render() {
     const { modalInput: {
+              boardId,
               onDeleteArticle,
               articleTitle,
               articleContentsList
@@ -32,7 +33,8 @@ class EditArticleModal extends PureComponent {
         onRequestClose={null}
         shouldCloseOnEsc={false}
         contentLabel="Edit Article Modal">
-        <PttaiEditor articleTitle={articleTitle}
+        <PttaiEditor boardId={boardId}
+                     articleTitle={articleTitle}
                      initHtmlArray={htmlArray}
                      isEdit={true}
                      onDeleteArticle={onDeleteArticle}

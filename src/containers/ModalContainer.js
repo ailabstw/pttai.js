@@ -55,7 +55,8 @@ class ModalContainer extends PureComponent {
                                   onModalSubmit={modalSubmit} />)
 
       case constants.CREATE_ARTICLE_MODAL:
-        return (<CreateArticleModal onModalClose={doModalContainer.closeModal}
+        return (<CreateArticleModal modalInput={modalInput}
+                                    onModalClose={doModalContainer.closeModal}
                                     onModalSubmit={modalSubmit} />)
 
       case constants.EDIT_ARTICLE_MODAL:

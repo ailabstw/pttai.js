@@ -72,15 +72,21 @@ export const CONTENT_TYPE_REPLY     = 2
 export const BOARD_TYPE_GENERAL     = 0
 export const BOARD_TYPE_PERSONAL    = 1
 
+export const CONTENT_TYPE_TEXT      = 'TEXT'
+export const CONTENT_TYPE_IMAGE     = 'IMAGE'
+export const CONTENT_TYPE_FILE      = 'FILE'
+
 export const PTT_EDITOR_CLASS_NAME  = 'ql-editor'
 export const IFRAME_CLASS_NAME      = 'ql-attachment'
-export const ATTACHMENT_CLASS_NAME  = 'pttai-editor-file-attachment'
+export const FILE_CLASS_NAME        = 'pttai-editor-file-attachment'
+export const IMAGE_CLASS_NAME       = 'pttai-editor-image-attachment'
 
 export const LIST_ORDER_PREV        = 1
 export const LIST_ORDER_NEXT        = 2
 
 export const MESSAGE_TYPE_TEXT      = 1
 export const MESSAGE_TYPE_INVITE    = 2
+
 
 export const ENTITY_TYPE_ARRAY = [
     'EntityTypeInvalid',
