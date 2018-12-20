@@ -134,7 +134,7 @@ if (language === 'zh') {
 }
 
 export const epoch2FullTimeFormat = (epochTS) => {
-  return moment.unix(epochTS).format('YYYY-MM-DD hh:mm:ss')
+  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss')
 }
 
 export const epoch2MessageTimeFormat = (epochTS) => {
