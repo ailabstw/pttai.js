@@ -205,43 +205,6 @@ class ManageBoardModal extends PureComponent {
                 defaultMessage="Invite friends"
               />
             </div>
-{/*}
-            <div className={styles['modal-bar']}>
-              <div className={styles['header-text']}>
-                <FormattedMessage
-                  id="manage-board-modal.copy-board-id-2"
-                  defaultMessage="Board Invite ID"
-                />
-                <div className={styles['space-tmp']}>: </div>
-                <FormattedMessage
-                  id="manage-board-modal.expire-time"
-                  defaultMessage="Time to expiration: {expTimeVal}"
-                  values={{ expTimeVal: expTimeVal }}
-                />
-              </div>
-              <div className={styles['copy-board-id']}>
-                <CopyToClipboard text={boardJoinKey.URL}
-                                 onCopy={() => this.setState({ keyCopied: true }) }>
-                  <button className={styles['copy-board-id-button']}>
-                  {
-                    keyCopied? (
-                      <FormattedMessage
-                        id="manage-board-modal.copy-board-id-2"
-                        defaultMessage="Copied"
-                      />
-                    ):(
-                      <FormattedMessage
-                        id="manage-board-modal.copy-board-id-1"
-                        defaultMessage="Copy ID"
-                      />
-                    )
-                  }
-                  </button>
-                </CopyToClipboard>
-              </div>
-            </div>
-*/}
-
             <div className={styles['friend-list']}>
                 {
                   (friendList.length === 0)? (

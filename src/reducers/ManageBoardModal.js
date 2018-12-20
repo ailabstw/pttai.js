@@ -106,7 +106,7 @@ export const getFriendList = (myId, boardId, limit) => {
         dispatch(serverUtils.getMemberList(boardId, EMPTY_ID, NUM_MEMBER_PER_REQ))
           .then(({response: memberResult, type, query, error}) => {
             let friendIds   = friendResult.result.map((each) => each.FID)
-            let memeberIds  = memberResult.result.map((each) => each.ID)
+            let memeberIds  = memberResult.result.map((each) => each.b.ID)
             dispatch(serverUtils.getUsersInfo([...friendIds, ...memeberIds]))
               .then((usersInfo) => {
                 dispatch(postprocessgetFriends(myId, friendResult.result, memberResult.result, usersInfo))
@@ -128,7 +128,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
   friendListResult = friendListResult.map(serverUtils.deserialize)
 
   let memberMap = memeberListResult.reduce((acc, each) => {
-    acc[each.ID] = each
+    acc[each.b.ID] = { UT: each.UT, ...each.b }
     return acc
   }, {})
 
