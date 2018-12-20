@@ -90,6 +90,7 @@ class RootPage extends PureComponent {
     const { actions: {doRootPage} } = this.props
 
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
+    doRootPage.getDeviceInfo(myId)
   }
 
   render() {

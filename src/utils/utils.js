@@ -67,7 +67,7 @@ export const toJson = (data) => {
 
 export const sanitizeDirtyHtml = (dirtyHtml) => {
   let cleanHtml =  sanitizeHtml(dirtyHtml, {
-    allowedTags: ['li', 'ol', 'ul', 'a', 'p'],
+    allowedTags: ['li', 'ol', 'ul', 'a', 'p', 'br'],
     allowedAttributes: {
       'a': [ 'href', 'target' ],
     },

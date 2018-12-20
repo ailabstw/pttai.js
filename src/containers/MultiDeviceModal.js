@@ -110,7 +110,7 @@ class MultiDeviceModal extends PureComponent {
             </div>
             <div className={styles['add-icon-container']}>
               <div className={styles['add-icon-subcontainer']}>
-              <div className={styles['add-icon']} onClick={this.onAddButtonClicked}></div>
+              <div className={styles['add-icon']} onClick={openAddDevice/*this.onAddButtonClicked*/}></div>
               </div>
             </div>
             <Modal
