@@ -88,7 +88,7 @@ function getUserInfoById(userId) {
   ]);
 }
 
-export const getUserInfo = (myId, callBackFunc) => {
+export const getUserInfo = (myId, noUserCallBackFunc, userCallBackFunc) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.showMe())
       .then(({response: userInfo, type, query, error}) => {
@@ -102,27 +102,31 @@ export const getUserInfo = (myId, callBackFunc) => {
               let info     = userInfo.result
               let metaInfo = userMetaInfo.filter((meta) => !meta.error)
               let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
+
+              /* If no user name, pop up sign-in modal */
               if (!userNameResult || !userNameResult.N || serverUtils.b64decode(userNameResult.N) === DEFAULT_USER_NAME) {
                 dispatch(getAllKeyInfo())
                   .then(( keyInfo ) => {
                     let deviceJoinKeyInfo   = keyInfo.find((key) => key.key === 'deviceJoinKey').value
                     let userPrivateKeyInfo  = keyInfo.find((key) => key.key === 'userPrivateKey').value
 
-                    callBackFunc(userPrivateKeyInfo, {
+                    noUserCallBackFunc(userPrivateKeyInfo, {
                       URL:          deviceJoinKeyInfo.URL,
                       UpdateTS:     deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
                       expirePeriod: deviceJoinKeyInfo.e,
                     })
                   })
+              } else {
+                userCallBackFunc()
               }
-              dispatch(postprocessGetUserInfo(myId, info, metaInfo, callBackFunc))
+              dispatch(postprocessGetUserInfo(myId, info, metaInfo))
           })
         }
       })
   }
 }
 
-const postprocessGetUserInfo = (myId, info, metaInfo, callBackFunc) => {
+const postprocessGetUserInfo = (myId, info, metaInfo) => {
 
   /* deserialization */
   info = serverUtils.deserialize(info)

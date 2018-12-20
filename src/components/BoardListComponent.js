@@ -39,13 +39,15 @@ class BoardListComponent extends PureComponent {
       return ''
     }
 
+    let activeList = listData.toJS().filter((each) => { return each.Status !== constants.STATUS_ARRAY.indexOf('StatusMigrated')})
+
     return (
       <div className={styles['root']}>
         <div className={styles['list-item']} onClick={createBoard}>
           <div className={styles['plus-button']} ></div>
         </div>
         {
-          listData.toJS().map((item, index) => (
+          activeList.map((item, index) => (
           <div className={styles['list-item']} key={index}>
             <div className={styles['list-item-label' + boardType(item)]}></div>
             <Link to={`/board/${encodeURIComponent(item.ID)}`}>

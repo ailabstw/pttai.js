@@ -46,8 +46,13 @@ class RootPage extends PureComponent {
       doModalContainer.setInput({
         deviceJoinKeyInfo:  deviceJoinKeyInfo,
         userPrivateKeyInfo: userPrivateKeyInfo,
-        signIn: (nodeId, pKey, callBackFunc) => {
-          doRootPage.addDevice(myId, nodeId, pKey, callBackFunc)
+        signIn: (nodeId, pKey, addDeviceCallBackFunc, waitingCallBackFunc, signedInCallBackFunc) => {
+          doRootPage.addDevice(myId, nodeId, pKey, addDeviceCallBackFunc)
+          setInterval(() => {
+              doRootPage.getUserInfo(myId, waitingCallBackFunc, signedInCallBackFunc)
+            },
+            constants.REFRESH_INTERVAL
+          )
           //doModalContainer.closeModal()
         },
         signUp: (name) => {
@@ -62,7 +67,7 @@ class RootPage extends PureComponent {
     doRootPage.init(myId, query, decodeURIObj(params))
 
     // get user name and user image
-    doRootPage.getUserInfo(myId, openFirstPopupModal)
+    doRootPage.getUserInfo(myId, openFirstPopupModal, () => {})
 
     // get join keys for multi-device and friend
     doRootPage.getKeyInfo(myId)
