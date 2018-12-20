@@ -48,7 +48,7 @@ class RootPage extends PureComponent {
         userPrivateKeyInfo: userPrivateKeyInfo,
         signIn: (nodeId, pKey, callBackFunc) => {
           doRootPage.addDevice(myId, nodeId, pKey, callBackFunc)
-          doModalContainer.closeModal()
+          //doModalContainer.closeModal()
         },
         signUp: (name) => {
           doRootPage.editName(myId, name)

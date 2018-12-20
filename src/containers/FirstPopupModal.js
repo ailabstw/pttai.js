@@ -112,7 +112,7 @@ class FirstPopupModal extends PureComponent {
   }
 
   onSignIn(nodeId) {
-    const { modalInput:{ userPrivateKeyInfo, signIn } } = this.props
+    const { onModalClose, modalInput:{ userPrivateKeyInfo, signIn } } = this.props
 
     let inputNodeId     = nodeId
     let inputPrivateKey = userPrivateKeyInfo
@@ -141,10 +141,13 @@ class FirstPopupModal extends PureComponent {
                 id="alert.message27"
                 defaultMessage="[Success] Signed In"
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => {
+              that.setState({showAlert: false})
+              that.onScannerClose()
+              onModalClose()
+            }
           }
         })
-        that.onScannerClose()
       }
     }
 
