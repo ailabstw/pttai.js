@@ -437,7 +437,8 @@ function getAllArticles(dispatch, myId, articleIds) {
                                 'Summary':        (summary && summary.length > 0)? summary[0]:'',
                                 'UpdateTS':       article.UpdateTS,
                                 'CreateTS':       article.CreateTS,
-                                'LastSeen':       article.L
+                                'LastSeen':       article.L,
+                                'Status':         article.S,
                               }
                           })
                 }
@@ -515,6 +516,7 @@ const postprocessGetLatestArticles = (myId, result, maps) => {
       LastSeen:       each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
       CreateTS:       each.CreateTS ? each.CreateTS : utils.emptyTimeStamp(),
       UpdateTS:       each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
+      Status:         each.Status,
     }
   });
 
