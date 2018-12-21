@@ -101,6 +101,7 @@ class RootPage extends PureComponent {
     if(!myId) return (<Empty />)
 
     let me          = getRoot(this.props)
+    let userId      = me.getIn(['userInfo', 'userId'])
     let userName    = me.getIn(['userInfo', 'userName'])
     let userImg     = me.getIn(['userInfo', 'userImg'])
     let keyInfo     = me.get('keyInfo',         Immutable.Map()).toJS()
@@ -200,6 +201,7 @@ class RootPage extends PureComponent {
       <div className={styles['root']}>
         <ProfilePage
           myId={profilePageId}
+          userId={userId}
           userName={userName}
           userImg={userImg}
           onEditName={openEditNameModule}

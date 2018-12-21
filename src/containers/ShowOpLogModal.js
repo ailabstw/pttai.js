@@ -9,7 +9,8 @@ import * as doShowOpLogModal    from '../reducers/ShowOpLogModal'
 import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
 import DropdownComponent        from '../components/DropdownComponent'
-import { epoch2FullTimeFormat } from '../utils/utilDatetime'
+import { epoch2FullTimeFormat,
+         epoch2FullTimeMsFormat } from '../utils/utilDatetime'
 
 import styles from './ShowOpLogModal.css'
 
@@ -19,8 +20,10 @@ class ShowOpLogModal extends PureComponent {
     this.state = {
       tab: props.modalInput.tabs[0],
       opLog: {},
+      expandIdx: -1,
     };
     this.refreshPageInterval = null
+    this.expandRow = this.expandRow.bind(this)
   }
 
   componentWillMount() {
@@ -34,6 +37,16 @@ class ShowOpLogModal extends PureComponent {
     clearInterval(this.refreshPageInterval)
   }
 
+  expandRow(idx) {
+    const { expandIdx } = this.state
+
+    if (idx === expandIdx) {
+      this.setState({ expandIdx: -1 })
+    } else {
+      this.setState({ expandIdx: idx })
+    }
+  }
+
   render() {
     const { myId,
             showOpLogModal,
@@ -41,7 +54,7 @@ class ShowOpLogModal extends PureComponent {
             modal: { currentModal },
             modalInput: { tabs }} = this.props
 
-    const { tab } = this.state
+    const { tab, expandIdx } = this.state
 
     let me      = showOpLogModal.get(myId, Immutable.Map())
     let opLogs  = me.get('opLogs', Immutable.Map()).toJS()
@@ -159,23 +172,23 @@ class ShowOpLogModal extends PureComponent {
                   return (
                     <div className={styles['oplog-item']} key={index}>
                       <div className={styles['item-index']}>
-                        <div className={styles['op-value-index']}>Neighbor {index}</div>
+                        <div title={'User ID: ' + item.UID} className={styles['op-value-index']}>Neighbor {index}: {item.userName}</div>
                       </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Node ID</div>
-                        <div className={styles['op-value']}>{item.ID}</div>
+                      <div hidden className={styles['item']}>
+                        <div className={styles['op-title']}>User Name</div>
+                        <div className={styles['op-value']}>{item.userName}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Peer Type</div>
                         <div title={item.T} className={styles['op-value']}>{constants.PEER_TYPE_ARRAY[item.T]}</div>
                       </div>
                       <div className={styles['item']}>
+                        <div className={styles['op-title']}>Node ID</div>
+                        <div title={item.ID} className={styles['op-value']}>{item.ID}</div>
+                      </div>
+                      <div hidden className={styles['item']}>
                         <div className={styles['op-title']}>User ID</div>
                         <div className={styles['op-value']}>{item.UID}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>User Name</div>
-                        <div className={styles['op-value']}>{item.userName}</div>
                       </div>
                       <div hidden className={styles['item']}>
                         <div className={styles['op-title']}>IP</div>
@@ -192,63 +205,76 @@ class ShowOpLogModal extends PureComponent {
                     </div>
                   )
                 }) : opLog.map((item, index) => {
+
+                  let itemMeta = {
+                    'Version': item.V,
+                    'Oplog ID': item.ID,
+                    'Is Sync': item.y,
+                  }
+
                   return (
                     <div className={styles['oplog-item']} key={index}>
-                      <div className={styles['item-index']}>
-                        <div className={styles['op-value-index']}>Index {index}</div>
+                      <div className={styles['item-index']} onClick={() => this.expandRow(index)}>
+                        <div title={JSON.stringify(itemMeta, null, 4)} className={styles['op-value-index']}>{constants.OP_TYPE_ARRAY[item.O] + ' @ ' + epoch2FullTimeMsFormat(item.UT)}</div>
                       </div>
                       <div className={styles['item']}>
-                        <div className={styles['op-title']}>Version</div>
-                        <div className={styles['op-value']}>{item.V}</div>
+                        <div className={styles['op-title']}>Creator</div>
+                        <div title={'Creator ID: ' + item.CID} className={styles['op-value']}>{item.creatorName + ' @ ' + epoch2FullTimeMsFormat(item.CT)}</div>
                       </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>ID</div>
-                        <div className={styles['op-value']}>{item.ID}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Creator ID</div>
-                        <div className={styles['op-value']}>{item.CID}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Creator Name</div>
-                        <div className={styles['op-value']}>{item.creatorName}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Create TS</div>
-                        <div className={styles['op-value']}>{JSON.stringify(item.CT)}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Obj ID</div>
-                        <div className={styles['op-value']}>{item.OID}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Op</div>
-                        <div title={item.O} className={styles['op-value']}>{constants.OP_TYPE_ARRAY[item.O]}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Data</div>
-                        <div className={styles['op-value']}>{JSON.stringify(item.D)}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Update TS</div>
-                        <div className={styles['op-value']}>{JSON.stringify(item.UT)}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Master Log ID</div>
-                        <div className={styles['op-value']}>{item.mID}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Master Signs</div>
-                        <div className={styles['op-value']}>{JSON.stringify(item.m)}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Internal Signs</div>
-                        <div className={styles['op-value']}>{JSON.stringify(item.i)}</div>
-                      </div>
-                      <div className={styles['item']}>
-                        <div className={styles['op-title']}>Is Sync</div>
-                        <div className={styles['op-value']}>{item.y}</div>
-                      </div>
+                      {
+                        expandIdx === index ? (
+                          <span>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Oplog ID</div>
+                            <div title={item.ID} className={styles['op-value']}>{item.ID}</div>
+                          </div>
+                          <div hidden className={styles['item']}>
+                            <div className={styles['op-title']}>Creator ID</div>
+                            <div title={item.CID} className={styles['op-value']}>{item.CID}</div>
+                          </div>
+                          <div hidden className={styles['item']}>
+                            <div className={styles['op-title']}>Create TS</div>
+                            <div title={epoch2FullTimeMsFormat(item.CT)} className={styles['op-value']}>{epoch2FullTimeMsFormat(item.CT)}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Obj ID</div>
+                            <div title={item.OID} className={styles['op-value']}>{item.OID}</div>
+                          </div>
+                          <div hidden className={styles['item']}>
+                            <div className={styles['op-title']}>Op</div>
+                            <div title={item.O} className={styles['op-value']}>{constants.OP_TYPE_ARRAY[item.O]}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Data</div>
+                            <div title={JSON.stringify(item.D, null, 4)} className={styles['op-value']}>{JSON.stringify(item.D)}</div>
+                          </div>
+                          <div hidden className={styles['item']}>
+                            <div className={styles['op-title']}>Update TS</div>
+                            <div title={epoch2FullTimeMsFormat(item.UT)} className={styles['op-value']}>{epoch2FullTimeMsFormat(item.UT)}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Master Log ID</div>
+                            <div title={item.mID} className={styles['op-value']}>{item.mID}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Master Signs</div>
+                            <div title={JSON.stringify(item.m, null, 4)} className={styles['op-value']}>{JSON.stringify(item.m)}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Internal Signs</div>
+                            <div title={JSON.stringify(item.i, null, 4)} className={styles['op-value']}>{JSON.stringify(item.i)}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Is Sync</div>
+                            <div title={item.y} className={styles['op-value']}>{item.y}</div>
+                          </div>
+                          <div className={styles['item']}>
+                            <div className={styles['op-title']}>Version</div>
+                            <div title={item.V} className={styles['op-value']}>{item.V}</div>
+                          </div>
+                          </span>
+                        ):null
+                      }
                     </div>
                   )
                 })

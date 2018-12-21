@@ -116,7 +116,8 @@ class ProfilePage extends PureComponent {
 
   render() {
 
-    const { userName,
+    const { userId,
+            userName,
             userImg,
             onEditName,
             hasUnread,
@@ -142,7 +143,7 @@ class ProfilePage extends PureComponent {
           }
           </div>
           <div className={styles['profile-description']}>
-            <div className={styles['name']} onClick={onEditName}>{userName}</div>
+            <div title={userId} className={styles['name']} onClick={onEditName}>{userName}</div>
           </div>
           <div className={styles[latestClass]} onClick={onLatestClicked}></div>
           <div className={styles['profile-qr-code']} onClick={onSettingClicked}></div>
