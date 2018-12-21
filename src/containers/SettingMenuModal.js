@@ -38,7 +38,7 @@ class SettingMenuModal extends PureComponent {
               <button className={styles['create-board-button']} onClick={() => onSwitchAndClose(constants.SHOW_OP_LOG_MODAL)}>
                 <FormattedMessage
                   id="setting-menu-modal.menu2"
-                  defaultMessage="Log"
+                  defaultMessage="Op Log"
                 />
               </button>
               <button className={styles['close-button']} onClick={onModalClose}>

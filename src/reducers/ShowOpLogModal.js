@@ -210,19 +210,21 @@ const postprocessGetOpLogs = (myId, maps, usersInfo) => {
     let userNameMap = usersInfo['userName'] || {}
 
     if (key.indexOf('_PEERS_TAB') !== -1) {
-      let userId    = opLog && opLog.length > 0 ? opLog[0].UID : null
-      let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
-      opLogs[key] = opLogs[key].map((value) => {
+      opLogs[key] = opLog.map((value) => {
+        let userId    = value.UID
+        let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
+
         return {
           ...value,
           userName: userName
         }
       })
     } else if (key !== constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
-      let userId    = opLog && opLog.length > 0 ? opLog[0].CID : null
-      let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
 
-      opLogs[key] = opLogs[key].map((value) => {
+      opLogs[key] = opLog.map((value) => {
+        let userId    = value.CID
+        let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
+
         return {
           ...value,
           creatorName: userName

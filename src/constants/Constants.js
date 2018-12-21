@@ -170,6 +170,75 @@ export const OP_TYPE_ARRAY = [
     'NMsg',
 ]
 
+export const PTT_ME_OP_TYPE_ARRAY = [
+    'MeOpTypeInvalid',
+    'MeOpTypeCreateMe',
+    'MeOpTypeSetNodeName',
+
+    'OffsetMeOpTypeEntity',
+
+    'MeOpTypeCreateBoard',
+    'MeOpTypeJoinBoard',
+    'MeOpTypeCreateFriend',
+    'MeOpTypeJoinFriend',
+
+    'MeOpTypeMigrateMe',
+    'MeOpTypeDeleteMe',
+
+    'NMeOpType'
+]
+
+export const PTT_OP_TYPE_ARRAY = [
+    'PttOpTypeCreateMe',
+
+    'PttOpTypeCreateArticle',
+    'PttOpTypeCreateComment',
+    'PttOpTypeCreateReply',
+
+    'PttOpTypeCreateFriend',
+    'PttOpTypeJoinBoard'
+]
+
+export const BOARD_OP_TYPE_ARRAY = [
+    'BoardOpTypeInvalid',
+
+    'BoardOpTypeCreateBoard',
+    'BoardOpTypeDeleteBoard',
+    'BoardOpTypeMigrateBoard',
+
+    'BoardOpTypeCreateTitle',
+    'BoardOpTypeUpdateTitle',
+
+    'BoardOpTypeCreateArticle',
+    'BoardOpTypeUpdateArticle',
+    'BoardOpTypeDeleteArticle',
+
+    'BoardOpTypeCreateMedia',
+    'BoardOpTypeDeleteMedia',
+
+    'BoardOpTypeCreateComment',
+    'BoardOpTypeDeleteComment',
+
+    'BoardOpTypeCreateReply',
+    'BoardOpTypeUpdateReply',
+    'BoardOpTypeDeleteReply',
+
+    'NBoardOpType'
+]
+
+export const FRIEND_OP_TYPE_ARRAY = [
+    'FriendOpTypeInvalid',
+
+    'FriendOpTypeCreateFriend',
+    'FriendOpTypeDeleteFriend',
+
+    'FriendOpTypeCreateMessage',
+
+    'FriendOpTypeCreateMedia',
+
+    'NFriendOpType'
+]
+
 export const STATUS_ARRAY = [
     'StatusInvalid',
     'StatusInit',
