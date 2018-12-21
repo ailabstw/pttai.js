@@ -41,6 +41,11 @@ class NewsListComponent extends PureComponent {
           }
           {
             listData.map((item, index) => {
+
+              if (item.Status !== constants.STATUS_ARRAY.indexOf('StatusAlive')) {
+                return null
+              }
+
               const itemLink = '/board/' + encodeURIComponent(item.BoardID) + '/article/' + encodeURIComponent(item.ID)
 
               let summary = ''

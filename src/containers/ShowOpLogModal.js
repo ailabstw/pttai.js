@@ -172,7 +172,7 @@ class ShowOpLogModal extends PureComponent {
                   return (
                     <div className={styles['oplog-item']} key={index}>
                       <div className={styles['item-index']}>
-                        <div title={'User ID: ' + item.UID} className={styles['op-value-index']}>Neighbor {index}: {item.userName}</div>
+                        <div title={'User ID: ' + item.UID} className={styles['op-value-index']}>{item.userName}</div>
                       </div>
                       <div hidden className={styles['item']}>
                         <div className={styles['op-title']}>User Name</div>
@@ -212,10 +212,24 @@ class ShowOpLogModal extends PureComponent {
                     'Is Sync': item.y,
                   }
 
+                  let OplogConst = {
+                    'SHOW_PTT_ME_TAB': constants.PTT_ME_OP_TYPE_ARRAY,
+
+                    'SHOW_CONTENT_BOARD_TAB':  constants.BOARD_OP_TYPE_ARRAY,
+                    'SHOW_CONTENT_MASTER_TAB': constants.BOARD_OP_TYPE_ARRAY,
+                    'SHOW_CONTENT_MEMBER_TAB': constants.BOARD_OP_TYPE_ARRAY,
+                    'SHOW_CONTENT_OPKEY_TAB':  constants.BOARD_OP_TYPE_ARRAY,
+
+                    'SHOW_FRIEND_FRIEND_TAB': constants.FRIEND_OP_TYPE_ARRAY,
+                    'SHOW_FRIEND_MASTER_TAB': constants.FRIEND_OP_TYPE_ARRAY,
+                    'SHOW_FRIEND_MEMBER_TAB': constants.FRIEND_OP_TYPE_ARRAY,
+                    'SHOW_FRIEND_OPKEY_TAB':  constants.FRIEND_OP_TYPE_ARRAY
+                  }
+
                   return (
                     <div className={styles['oplog-item']} key={index}>
                       <div className={styles['item-index']} onClick={() => this.expandRow(index)}>
-                        <div title={JSON.stringify(itemMeta, null, 4)} className={styles['op-value-index']}>{constants.OP_TYPE_ARRAY[item.O] + ' @ ' + epoch2FullTimeMsFormat(item.UT)}</div>
+                        <div title={JSON.stringify(itemMeta, null, 4)} className={styles['op-value-index']}>{OplogConst[tab][item.O] + ' @ ' + epoch2FullTimeMsFormat(item.UT)}</div>
                       </div>
                       <div className={styles['item']}>
                         <div className={styles['op-title']}>Creator</div>
@@ -242,7 +256,7 @@ class ShowOpLogModal extends PureComponent {
                           </div>
                           <div hidden className={styles['item']}>
                             <div className={styles['op-title']}>Op</div>
-                            <div title={item.O} className={styles['op-value']}>{constants.OP_TYPE_ARRAY[item.O]}</div>
+                            <div title={item.O} className={styles['op-value']}>{OplogConst[tab][item.O]}</div>
                           </div>
                           <div className={styles['item']}>
                             <div className={styles['op-title']}>Data</div>
