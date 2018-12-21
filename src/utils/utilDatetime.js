@@ -133,6 +133,11 @@ if (language === 'zh') {
   });
 }
 
+export const epoch2FullTimeMsFormat = (epoch) => {
+  let epochTS = epoch.T + epoch.NT*0.000000001
+  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss.SSS')
+}
+
 export const epoch2FullTimeFormat = (epochTS) => {
   return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss')
 }

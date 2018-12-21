@@ -80,16 +80,19 @@
     padding: 5px;
     display: flex;
     flex-direction: column;
-    margin-bottom:20px;
+    margin-bottom: 5px;
+    cursor: default;
 }
 
 .item-index {
     border-radius: 5px;
     border: 1px solid #E09A4B;
     width: 100%;
+    margin-bottom: 5px;
+
     display: flex;
     flex-direction: row;
-    margin-bottom: 5px;
+    cursor: pointer;
 }
 
 .item {
@@ -99,9 +102,9 @@
 }
 
 .op-title-index {
-    width: 100px;
-    max-width: 100px;
-    min-width: 100px;
+    width: 120px;
+    max-width: 120px;
+    min-width: 120px;
     overflow-wrap: break-word;
     color: #E09A4B;
     font-weight: bold;
@@ -110,9 +113,9 @@
 }
 
 .op-title {
-    width: 100px;
-    max-width: 100px;
-    min-width: 100px;
+    width: 120px;
+    max-width: 120px;
+    min-width: 120px;
     overflow-wrap: break-word;
     color: #7F9662;
     font-weight: bold;
@@ -130,7 +133,11 @@
 }
 
 .op-value {
-    width: calc(100% - 100px);
+    width: calc(100% - 120px);
     padding: 5px;
-    overflow-wrap: break-word;
+/*    overflow-wrap: break-word;
+*/
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

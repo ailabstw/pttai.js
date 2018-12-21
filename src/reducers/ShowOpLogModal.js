@@ -165,16 +165,17 @@ export const getOpLogs = (myId, tabs, params) => {
   return (dispatch, getState) => {
     dispatch(getAllOpLogs(dispatch, myId, tabs, params))
       .then((maps) => {
-        let userIds = maps.map((item) => {
+        let userIds = maps.reduce((ids, item) => {
           if (!item.error && item.type.indexOf('_PEERS_TAB') !== -1) {
-            return item.value && item.value.length > 0 ? item.value[0].UID : null
+            let uIds = item.value ? item.value.map((v) => v.O ? v.O.UID : v.UID) : []
+            uIds.forEach((uid) => { ids[uid] = true })
           } else if (!item.error && item.type !== constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
-            return item.value && item.value.length > 0 ? item.value[0].CID : null
+            let cIds = item.value ? item.value.map((v) => v.O ? v.O.CID : v.CID) : []
+            cIds.forEach((uid) => { ids[uid] = true })
           }
-          return null
-        }).filter((id) => id)
-
-        dispatch(serverUtils.getUsersInfo(userIds))
+          return ids
+        }, {})
+        dispatch(serverUtils.getUsersInfo(Object.keys(userIds)))
           .then((usersInfo) => {
             dispatch(postprocessGetOpLogs(myId, maps, usersInfo))
           })
@@ -220,6 +221,7 @@ const postprocessGetOpLogs = (myId, maps, usersInfo) => {
     } else if (key !== constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
       let userId    = opLog && opLog.length > 0 ? opLog[0].CID : null
       let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
+
       opLogs[key] = opLogs[key].map((value) => {
         return {
           ...value,
