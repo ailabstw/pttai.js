@@ -92,10 +92,12 @@ export const getUserInfo = (myId, noUserCallBackFunc, userCallBackFunc) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.showMe())
       .then(({response: userInfo, type, query, error}) => {
-
         if (error) {
-          /* TODO */
+          const errorMessage = "Backend no response: please try restarting ptt.ai \n\n [Err Message]: " + error
+          alert(errorMessage)
+
         } else {
+
           let userId = userInfo.result.ID
           dispatch(getUserInfoById(userId))
             .then((userMetaInfo) => {
