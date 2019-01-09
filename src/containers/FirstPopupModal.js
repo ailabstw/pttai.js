@@ -25,7 +25,8 @@ class FirstPopupModal extends PureComponent {
       name: '',
       nodeId: '',
       showAlert: false,
-      scannerIsOpen: false,
+      //scannerIsOpen: false,
+      submodalType: null,
       alertData: {
         message: '',
         onClose: null,
@@ -42,6 +43,14 @@ class FirstPopupModal extends PureComponent {
 
   onNameChange(e) {
     this.setState({ name:e.target.value })
+  }
+
+  onSignInSubmodal() {
+    this.setState({ submodalType: 'Sign-in' })
+  }
+
+  onSignUpSubmodal() {
+    this.setState({ submodalType: 'Sign-up' })
   }
 
   onScannerClose() {
@@ -209,7 +218,7 @@ class FirstPopupModal extends PureComponent {
 
   render() {
     const { intl, onModalClose, modal: { currentModal }} = this.props
-    const { name, showAlert, alertData, scannerIsOpen, nodeId } = this.state
+    const { name, showAlert, alertData, submodalType, nodeId } = this.state
 
     const placeholder = intl.formatMessage({id: 'first-popup-modal.placeholder'});
     const placeholder2 = intl.formatMessage({id: 'sign-in-scanner-modal.placeholder2'});
@@ -223,54 +232,15 @@ class FirstPopupModal extends PureComponent {
           onRequestClose={null}
           contentLabel="First Popup Modal">
           <div className={styles['root']}>
-            <div className={styles['sign-up']}>
-              <div className={styles['profile-title']}>
-                <FormattedMessage
-                  id="first-popup-modal.title"
-                  defaultMessage="Let your friend know who you are"
-                />
-              </div>
-              <div className={styles['profile-input']}>
-                <input
-                  placeholder={placeholder}
-                  autoFocus
-                  name='title-input'
-                  className={styles['profile-input-name']}
-                  value={name}
-                  onChange={this.onNameChange}/>
-              </div>
-              <div className={styles['signup-action']}>
-                <button className={styles['close-button']} hidden onClick={onModalClose}>
-                  <FormattedMessage
-                    id="first-popup-modal.action1"
-                    defaultMessage="Cancel"
-                  />
-                </button>
-                <button className={styles['submit-button']} onClick={this.onSubmitName}>
-                <FormattedMessage
-                  id="first-popup-modal.action2"
-                  defaultMessage="Confirm"
-                />
-                </button>
-              </div>
-            </div>
-            <div className={styles['divider']}>
-              <span>
-                <FormattedMessage
-                  id="first-popup-modal.divider"
-                  defaultMessage="Or"
-                />
-              </span>
-            </div>
             <div className={styles['sign-in']}>
               <div className={styles['signin-action']}>
-                <button className={styles['close-button']} hidden onClick={onModalClose}>
+                <div className={styles['profile-title']}>
                   <FormattedMessage
-                    id="first-popup-modal.action1"
-                    defaultMessage="Cancel"
+                    id="first-popup-modal.title"
+                    defaultMessage="Sign in with existing account"
                   />
-                </button>
-                <button className={styles['signin-button']} onClick={() => this.setState({scannerIsOpen:true})}>
+                </div>
+                <button className={styles['signin-button']} onClick={() => this.setState({ submodalType: 'Sign-in' })}>
                 <FormattedMessage
                   id="first-popup-modal.action3"
                   defaultMessage="Sign In"
@@ -279,54 +249,123 @@ class FirstPopupModal extends PureComponent {
               </div>
             </div>
 
+            <div className={styles['divider']}>
+              <FormattedMessage
+                id="first-popup-modal.divider"
+                defaultMessage="Or"
+              />
+            </div>
+
+            <div className={styles['sign-up']}>
+              <div className={styles['signup-action']}>
+                <button className={styles['close-button']} hidden onClick={onModalClose}>
+                  <FormattedMessage
+                    id="first-popup-modal.action1"
+                    defaultMessage="Cancel"
+                  />
+                </button>
+                <button className={styles['submit-button']} onClick={() => this.setState({ submodalType: 'Sign-up' })}>
+                <FormattedMessage
+                  id="first-popup-modal.action4"
+                  defaultMessage="Sign up as new user"
+                />
+                </button>
+              </div>
+            </div>
+
+            <Modal
+              overlayClassName="SignUpModal__Overlay"
+              style={modalConstants.SignupModalStyels}
+              isOpen={submodalType === 'Sign-up'}
+              onRequestClose={this.onScannerClose}
+              contentLabel="Sign Up Scanner Modal">
+              <div className={styles['submodal-signup-container']}>
+                <div className={styles['submodal-signup']}>
+                  <div className={styles['submodal-signup-title']}>
+                    <FormattedMessage
+                      id="first-popup-modal.title2"
+                      defaultMessage="Let others know your name"
+                    />
+                  </div>
+                  <div className={styles['submodal-signup-profile-input']}>
+                    <input
+                      placeholder={placeholder}
+                      autoFocus
+                      name='title-input'
+                      className={styles['profile-input-name']}
+                      value={name}
+                      onChange={this.onNameChange}/>
+                  </div>
+                  <div className={styles['submodal-signup-action-section']}>
+                    <button className={styles['submodal-signup-confirm']} onClick={() => this.onSubmitName() }>
+                      <FormattedMessage
+                        id="alert-component.action2"
+                        defaultMessage="Confirm"
+                      />
+                    </button>
+                    <button className={styles['submodal-signup-cancel']} onClick={() => this.setState({ submodalType: null })}>
+                      <FormattedMessage
+                        id="first-popup-modal.action1"
+                        defaultMessage="Cancel"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Modal>
+
             <Modal
               overlayClassName="SignInModal__Overlay"
               style={modalConstants.AddDeviceScannerModalStyels}
-              isOpen={scannerIsOpen}
+              isOpen={submodalType === 'Sign-in'}
               onRequestClose={this.onScannerClose}
               contentLabel="Sign In Scanner Modal">
-              <div className={styles['submodal-container']}>
-                <div className={styles['submodal-top-bar']}>
-                  <div className={styles['submodal-prev-button']} onClick={this.onScannerClose}></div>
-                  <div className={styles['submodal-title']}>
+              <div className={styles['submodal-signin-container']}>
+                <div className={styles['submodal-signin']}>
+                  <div className={styles['submodal-signin-title']}>
                     <FormattedMessage
-                      id="sign-in-scanner-modal.title"
-                      defaultMessage="Sign in as"
+                      id="first-popup-modal.title"
+                      defaultMessage="Sign in with existing account"
                     />
                   </div>
-                  <div className={styles['submodal-null-space']}></div>
-                </div>
-                <div className={styles['submodal-qr-code-scanner-container']}>
-                  <div className={styles['submodal-qr-code-scanner']}>
-                    <QrReader
-                      delay={300}
-                      onError={(err) => console.error(err)}
-                      onScan={this.onScanned}
-                      className={styles['submodal-qr-code-scanner']}
-                    />
-                    <div className={styles['submodal-qr-code-text']}>
-                      <FormattedMessage
-                        id="add-device-scanner-modal.copy-device-id-4"
-                        defaultMessage="Scan QR Code to sign in"
+                  <div className={styles['submodal-signin-scanner-container']}>
+                    <div className={styles['submodal-qr-code-scanner']}>
+                      <QrReader
+                        delay={300}
+                        onError={(err) => console.error(err)}
+                        onScan={this.onScanned}
+                        className={styles['submodal-qr-code-scanner']}
                       />
+                      <div className={styles['submodal-qr-code-text']}>
+                        <FormattedMessage
+                          id="add-device-scanner-modal.copy-device-id-4"
+                          defaultMessage="Scan QR Code to sign in"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className={styles['submodal-paste-area-node-id']}>
-                    <textarea
-                      placeholder={placeholder2}
-                      autoFocus
-                      name='title-input'
-                      value={nodeId}
-                      onChange={this.onNodeIdChange}/>
-                </div>
-                <div className={styles['submodal-action-section']}>
-                  <button className={styles['submodal-submit-button']} onClick={() => this.onSignIn(nodeId)}>
-                    <FormattedMessage
-                      id="alert-component.action2"
-                      defaultMessage="Confirm"
-                    />
-                  </button>
+                  <div className={styles['submodal-signin-node-id']}>
+                      <textarea
+                        placeholder={placeholder2}
+                        autoFocus
+                        name='title-input'
+                        value={nodeId}
+                        onChange={this.onNodeIdChange}/>
+                  </div>
+                  <div className={styles['submodal-signin-action-section']}>
+                    <button className={styles['submodal-signin-submit']} onClick={() => this.onSignIn(nodeId)}>
+                      <FormattedMessage
+                        id="first-popup-modal.action2"
+                        defaultMessage="Confirm"
+                      />
+                    </button>
+                    <button className={styles['submodal-signin-cancel']} onClick={() => this.setState({ submodalType: null })}>
+                      <FormattedMessage
+                        id="first-popup-modal.action1"
+                        defaultMessage="Cancel"
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
             </Modal>

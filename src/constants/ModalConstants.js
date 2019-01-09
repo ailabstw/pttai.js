@@ -128,23 +128,46 @@ export const editNameModalStyles = {
   }
 };
 
+export const SignupModalStyels = {
+  content : {
+    position              : 'absolute',
+    padding               : '0px',
+    width                 : '100%',
+    height                : '100%',
+    maxWidth              : '554px',
+    margin                : '0px auto',
+    //top                   : 'calc(50% - 182px)',
+    top                   : '0px',
+    left                  : '0px',
+    right                 : '0px',
+    bottom                : '0px',
+    //border                : 'none',
+    //borderRadius          : '5px',
+    borderRadius          : '0px',
+    backgroundColor       : '#4C474E',
+    //boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
+  }
+}
+
 export const firstPopupModalStyels = {
   content : {
     position              : 'absolute',
     padding               : '0px',
-    width                 : '90%',
-    height                : '365px',
-    maxWidth              : '498px',
+    width                 : '100%',
+    height                : '100%',
+    maxWidth              : '554px',
     margin                : '0px auto',
-    top                   : 'calc(50% - 182px)',
+    //top                   : 'calc(50% - 182px)',
+    top                   : '0px',
     left                  : '0px',
     right                 : '0px',
     bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '5px',
+    //border                : 'none',
+    //borderRadius          : '5px',
+    borderRadius          : '0px',
     backgroundColor       : '#4C474E',
     zIndex                : 40,
-    boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
+    //boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
   }
 }
 
