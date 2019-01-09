@@ -18,9 +18,9 @@
 
 .prev-button {
     line-height: 30px;
-    padding: 10px 20px;
-    width: 23%;
-    min-width: 125px;
+    padding: 10px 10px 10px 20px;
+    /*width: 23%;*/
+    min-width: 105px;
     font-weight: lighter;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -47,14 +47,14 @@
 }
 
 .prev-button-text {
-    min-width: 65px;
+    min-width: 45px;
     margin-left: 5px;
 }
 
 .board-name {
     height: 100%;
     line-height: 30px;
-    padding: 10px 20px;
+    padding: 10px 10px;
     width: 54%;
     font-weight: bolder;
     text-overflow: ellipsis;

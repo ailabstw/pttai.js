@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 
-import FriendBar            from '../components/FriendBar'
+//import FriendBar            from '../components/FriendBar'
 import FriendListComponent  from '../components/FriendListComponent'
 
 import styles from './FriendComponent.css'
@@ -11,7 +11,9 @@ class FriendComponent extends PureComponent {
 
     return (
       <div className={styles['root']}>
-        <FriendBar />
+        {/*
+          <FriendBar />
+        */}
         <FriendListComponent
           userName={userName}
           friendList={friendList} />

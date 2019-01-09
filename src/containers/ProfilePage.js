@@ -142,8 +142,8 @@ class ProfilePage extends PureComponent {
             ):null
           }
           </div>
-          <div className={styles['profile-description']}>
-            <div title={userId} className={styles['name']} onClick={onEditName}>{userName}</div>
+          <div className={styles['profile-description']} onClick={onEditName}>
+            <div title={userId} className={styles['name']} >{userName}</div>
           </div>
           <div className={styles[latestClass]} onClick={onLatestClicked}></div>
           <div className={styles['profile-qr-code']} onClick={onSettingClicked}></div>
