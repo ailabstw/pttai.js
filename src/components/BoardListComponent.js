@@ -73,7 +73,7 @@ class BoardListComponent extends PureComponent {
                 }
               </div>
               <div className={styles['list-item-meta']}>
-                <div className={styles['list-item-space']}>
+                <div hidden className={styles['list-item-space']}>
                 </div>
                 <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>
                   {epoch2ReadFormat(item.UpdateTS.T)}
