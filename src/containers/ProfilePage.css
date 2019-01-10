@@ -36,15 +36,6 @@
     object-fit: contain;
 }
 
-.mask {
-    top: 0px;
-    left: 0px;
-    height: 70px;
-    width: 70px;
-    position: absolute;
-    background: radial-gradient(circle, transparent 29px, #4C474E 32px);
-}
-
 .profile-description {
     max-width: calc(100% - 68px - 38px - 38px);
     padding: 0px 20px;

@@ -112,10 +112,10 @@ export const joinBoardModalStyles ={
 
 export const editNameModalStyles = {
   content : {
-    position              : 'absolute',
+    position              : 'relative',
     padding               : '0px',
     width                 : '100%',
-    height                : '97px',
+    height                : 'auto',
     maxWidth              : '414px',
     margin                : '0px auto',
     top                   : '0px',
@@ -124,7 +124,7 @@ export const editNameModalStyles = {
     bottom                : '0px',
     border                : 'none',
     borderRadius          : '0px',
-    backgroundColor       : '#4C474E',
+    //backgroundColor       : 'none',
   }
 };
 

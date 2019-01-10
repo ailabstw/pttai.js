@@ -31,7 +31,8 @@ import {  faMinus,
           faArrowLeft,
           faArrowCircleLeft,
           faCheck,
-          faCaretRight } from '@fortawesome/free-solid-svg-icons'
+          faCaretRight,
+          faPen } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faMinus)
 library.add(faSearch)
@@ -39,6 +40,7 @@ library.add(faArrowLeft)
 library.add(faArrowCircleLeft)
 library.add(faCheck)
 library.add(faCaretRight)
+library.add(faPen)
 
 addLocaleData([...locale_en, ...locale_zh]);
 

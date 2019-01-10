@@ -42,7 +42,13 @@ export const NUM_CACHE_COMMENT      = 100
 export const MAX_USER_IMG_SIZE      = 32000
 export const MAX_USER_IMG_WIDTH     = 256
 export const MAX_FILE_UPLOAD_SIZE   = 10485760
-export const MAX_USER_NAME_SIZE     = 25
+export const MAX_USER_NAME_SIZE         = 25
+export const MAX_USER_COMPANY_SIZE      = 25
+export const MAX_USER_JOBTITLE_SIZE     = 25
+export const MAX_USER_EMAIL_SIZE        = 50
+export const MAX_USER_PHONE_SIZE        = 15
+export const MAX_USER_DESCRIPTION_SIZE  = 100
+
 export const MAX_COMMENT_SIZE       = 500
 export const MAX_ARTICLE_SIZE       = 131072
 export const MAX_BOARDNAME_SIZE     = 50

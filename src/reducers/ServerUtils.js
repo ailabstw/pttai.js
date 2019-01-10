@@ -394,6 +394,37 @@ export const editProfileImg = (myImg) => {
   }
 }
 
+// export const getProfile = () => {
+//   return dispatch => Promise.all([
+//     dispatch(getMe())
+//       .then(({response: {result}, type, query, error}) => {
+//         if (error) {
+//           return { 'error': true, 'key':'userName', 'value': error }
+//         } else {
+//           return { 'error': false, 'key':'userName', 'value': result }
+//         }
+//       }),
+//     dispatch(getUserImgByIds(userIds))
+//       .then(({response: {result}, type, query, error}) => {
+//         if (error) {
+//           return { 'error': true, 'key':'userImg', 'value': error }
+//         } else {
+//           return { 'error': false, 'key':'userImg', 'value': result }
+//         }
+//       }),
+//   ]);
+// }
+
+export const getMe = (entityID) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "me_getRawMe", "params": [entityID]},
+    }
+  }
+}
+
 /*           */
 /*  Oplog    */
 /*           */
