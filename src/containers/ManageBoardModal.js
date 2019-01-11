@@ -224,7 +224,7 @@ class ManageBoardModal extends PureComponent {
                         <div className={styles['list-item-author-pic']}>
                           <img alt="" src={item.Img || constants.DEFAULT_USER_IMAGE}/>
                         </div>
-                        <div className={styles['list-item-author-name']}> {item.Name} </div>
+                        <div hidden className={styles['list-item-author-name']}> {item.Name} </div>
                       </div>
                       <div className={styles['list-item-main']}>
                         <div className={styles['list-item-header']}>

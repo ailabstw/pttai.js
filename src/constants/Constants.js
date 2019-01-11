@@ -76,9 +76,10 @@ export const SHOW_LAST_ANNOUNCE_P2P_TAB  = 'SHOW_LAST_ANNOUNCE_P2P_TAB'
 export const CONTENT_TYPE_ARTICLE   = 0
 export const CONTENT_TYPE_COMMENT   = 1
 export const CONTENT_TYPE_REPLY     = 2
-export const BOARD_TYPE_GENERAL     = 0
+export const BOARD_TYPE_INVALID     = 0
 export const BOARD_TYPE_PERSONAL    = 1
-
+export const BOARD_TYPE_PRIVATE     = 2
+export const BOARD_TYPE_PUBLIC      = 3
 export const CONTENT_TYPE_TEXT      = 'TEXT'
 export const CONTENT_TYPE_IMAGE     = 'IMAGE'
 export const CONTENT_TYPE_FILE      = 'FILE'
