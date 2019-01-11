@@ -23,7 +23,7 @@ class AddFriendModal extends PureComponent {
     super();
     this.refreshKeyInfoInterval = null
     this.state = {
-      tab: SHOW_QR_CODE_TAB,
+      tab: SCAN_QR_CODE_TAB,
       friendReqId: '',
       copied: false,
     };
@@ -86,7 +86,56 @@ class AddFriendModal extends PureComponent {
           isOpen={currentModal !== null}
           onRequestClose={null}
           contentLabel="Add Friend Modal">
-
+        {/*
+          <div className={styles['submodal-signin-container']}>
+            <div className={styles['submodal-signin']}>
+              <div className={styles['submodal-signin-title']}>
+                <FormattedMessage
+                  id="add-friend-modal.tab2"
+                  defaultMessage="Add friend"
+                />
+              </div>
+              <div className={styles['submodal-signin-scanner-container']}>
+                <div className={styles['submodal-qr-code-scanner']}>
+                  <QrReader
+                    delay={300}
+                    onError={(err) => console.error(err)}
+                    onScan={this.onScanned}
+                    className={styles['submodal-qr-code-scanner']}
+                  />
+                  <div className={styles['submodal-qr-code-text']}>
+                    <FormattedMessage
+                      id="add-friend-modal.scan-code-title"
+                      defaultMessage="Scann QR Code to add friend"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className={styles['submodal-signin-node-id']}>
+                  <textarea
+                    placeholder={placeholder}
+                    autoFocus
+                    name='title-input'
+                    value={friendReqId}
+                    onChange={this.onFriendIdChange}/>
+              </div>
+              <div className={styles['submodal-signin-action-section']}>
+                <button className={styles['submodal-signin-submit']} onClick={() => onSubmitAndClose()}>
+                  <FormattedMessage
+                    id="first-popup-modal.action2"
+                    defaultMessage="Confirm"
+                  />
+                </button>
+                <button className={styles['submodal-signin-cancel']} onClick={() => onModalClose()}>
+                  <FormattedMessage
+                    id="first-popup-modal.action1"
+                    defaultMessage="Cancel"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        */}
           <div className={styles['root']}>
             <div className={styles['top-bar']}>
               <div className={styles['prev-button']}  onClick={onModalClose}></div>
@@ -99,16 +148,16 @@ class AddFriendModal extends PureComponent {
               <div className={styles['null-space']}></div>
             </div>
             <div className={styles['tabs']}>
-              <div className={styles['show-code' + showQRStatus]} onClick={() => this.onSwtichTab(SHOW_QR_CODE_TAB)}>
-                <FormattedMessage
-                  id="add-friend-modal.tab1"
-                  defaultMessage="To be added"
-                />
-              </div>
               <div className={styles['scan-code' + scanQRStatus]} onClick={() => this.onSwtichTab(SCAN_QR_CODE_TAB)}>
                 <FormattedMessage
                   id="add-friend-modal.tab2"
                   defaultMessage="Add friend"
+                />
+              </div>
+              <div className={styles['show-code' + showQRStatus]} onClick={() => this.onSwtichTab(SHOW_QR_CODE_TAB)}>
+                <FormattedMessage
+                  id="add-friend-modal.tab1"
+                  defaultMessage="To be added"
                 />
               </div>
             </div>
@@ -198,6 +247,7 @@ class AddFriendModal extends PureComponent {
               )
             }
           </div>
+
         </Modal>
       </div>
     )

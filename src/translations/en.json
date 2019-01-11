@@ -47,7 +47,7 @@
     "add-friend-modal.copy-my-id-2": "Copied, give this ID to other to become friends",
     "add-friend-modal.copy-my-id-1": "Copy your ID",
     "add-friend-modal.scan-code-title": "Scann QR Code to add friend",
-    "add-friend-modal.placeholder": "Paste friend's ID here and add as friend",
+    "add-friend-modal.placeholder": "Paste friend's ID here",
     "add-friend-modal.scan-code-action": "Add",
     "add-device-scanner-modal.copy-device-id-1": "Copy Private Key",
     "add-device-scanner-modal.copy-device-id-2": "Copied",
