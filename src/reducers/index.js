@@ -18,6 +18,7 @@ import modal              from './ModalContainer'
 import createBoardModal   from './CreateBoardModal'
 import manageBoardModal   from './ManageBoardModal'
 import editNameModal      from './EditNameModal'
+import friendProfileModal from './FriendProfileModal'
 import showOpLogModal     from './ShowOpLogModal'
 
 export const reducers = combineReducers({
@@ -26,6 +27,7 @@ export const reducers = combineReducers({
   createBoardModal,
   manageBoardModal,
   editNameModal,
+  friendProfileModal,
   showOpLogModal,
   rootPage,
   hubPage,

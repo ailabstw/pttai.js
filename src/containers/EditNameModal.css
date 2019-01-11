@@ -9,8 +9,19 @@
     box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
+}
+
+.info-section {
+    display: flex;
+    flex-direction: row;
+}
+
+.qr-code-section {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
 }
 
 .left-side {
@@ -63,15 +74,16 @@
 }
 
 .qr-code {
-    width: 100px;
-    height: 100px;
+    width: 270px;
+    height: 270px;
     border-radius: 5px;
     background-color: #ffffff;
     padding: 10px;
+    margin: auto;
 }
 
 .profile-input {
-    width: calc(100% - 100px);
+    width: 100%;
     display: flex;
     flex-direction: column;
     padding: 0px 10px 0px 0px;
@@ -89,12 +101,16 @@
     color: #FFF;
 }
 
-.company, .job-title, .email, .phone {
+.company, .job-title, .email, .phone, .description {
     width: 100%;
     height: 27px;
     line-height: 27px;
     font-size: 16px;
     color: #FFF;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .description {
@@ -104,7 +120,7 @@
     font-size: 16px;
 }
 
-.profile-input input, .contact-input input, .desc-input input {
+.profile-input input, .contact-input input {
     background-color: #4C474E;
     outline: none;
     color: #FFF;
@@ -115,10 +131,6 @@
 
     line-height: 100%;
     color: #FFF;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
 
     background-color: rgba(0, 0, 0, 0.4);
     padding: 5px;
@@ -143,20 +155,17 @@
     resize: none;
 }
 
+.description span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .other-info {
     display: flex;
     flex-direction: column;
     margin: 5px 0px 0px 0px;
 }
-
-
-
-
-
-
-
-
-
 
 .profile-submit {
     height: 30px;

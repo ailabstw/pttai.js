@@ -128,6 +128,24 @@ export const editNameModalStyles = {
   }
 };
 
+export const friendProfileModalStyles = {
+  content : {
+    position              : 'relative',
+    padding               : '0px',
+    width                 : '100%',
+    height                : 'auto',
+    maxWidth              : '414px',
+    margin                : 'auto',
+    top                   : 'calc(50% - 96px)',
+    left                  : '0px',
+    right                 : '0px',
+    bottom                : '0px',
+    border                : 'none',
+    borderRadius          : '0px',
+    //backgroundColor       : 'none',
+  }
+};
+
 export const SignupModalStyels = {
   content : {
     position              : 'absolute',

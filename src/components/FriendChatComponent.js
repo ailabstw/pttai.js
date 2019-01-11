@@ -196,7 +196,7 @@ class FriendChatComponent extends PureComponent {
   }
 
   render() {
-    const { intl, friendData, messageList, isLoading, userId, noMessage, boardList, onOpenOPLogModal } = this.props
+    const { intl, friendData, messageList, isLoading, userId, noMessage, boardList, onOpenOPLogModal, onOpenFriendProfileModal } = this.props
     const { inputMessage, showAlert, alertData } = this.state
 
     const placeholder = intl.formatMessage({id: 'friend-chat-component.placeholder'});
@@ -204,15 +204,15 @@ class FriendChatComponent extends PureComponent {
     return (
       <div className={styles['root']}>
         <div className={styles['main-content']}>
-          <div className={styles['profile-pic']}>
+          <div className={styles['profile-pic']} onClick={onOpenFriendProfileModal}>
             <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
           </div>
           <div className={styles['content']}>
-            <div className={styles['name']} onClick={onOpenOPLogModal}>
-              {friendData.Name}
+            <div className={styles['name']} onClick={onOpenFriendProfileModal}>
+              {friendData.Name || constants.DEFAULT_USER_NAME }
             </div>
-            <div title={friendData.ID} className={styles['job']}>
-             ID: {friendData.ID}
+            <div title={friendData.ID} className={styles['job']} onClick={onOpenOPLogModal}>
+             Chat ID: {friendData.ID}
             </div>
             <div hidden className={styles['description']}>
              {friendData.description}

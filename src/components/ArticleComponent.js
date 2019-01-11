@@ -38,7 +38,7 @@ class ArticleComponent extends PureComponent {
   }
 
   render() {
-    const { articleContentsList, pullCount, articleInfo, boardInfo } = this.props
+    const { articleContentsList, pullCount, articleInfo, boardInfo, onOpenFriendProfileModal } = this.props
     const { noResult } = this.state
 
     let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
@@ -65,7 +65,11 @@ class ArticleComponent extends PureComponent {
                onMouseDown={this.handleLongPress}
                onMouseUp={this.handleLongPressRelease}
                >
-            <div className={styles['author']}>
+            <div className={styles['author']} onClick={() => onOpenFriendProfileModal({
+              FriendID: articleInfo.CreatorID,
+              Name:     articleInfo.CreatorName,
+              Img:  articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE
+            })}>
               <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'}/>
               <div title={articleInfo.CreatorName}> {articleInfo.CreatorName} </div>
             </div>

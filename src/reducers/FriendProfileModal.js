@@ -6,11 +6,11 @@ import * as serverUtils       from './ServerUtils'
 import * as constants         from '../constants/Constants'
 
 import { myDuck as appDuck }    from './App'
-import { EMPTY_ID }   from '../constants/Constants'
+//import { EMPTY_ID }   from '../constants/Constants'
 
-export const myClass = 'EDIT_NAME_MODAL'
+export const myClass = 'FRIEND_PROFILE_MODAL'
 
-export const myDuck = createDuck(myClass, 'Edit_Name_Modal')
+export const myDuck = createDuck(myClass, 'Friend_Profile_Modal')
 
 const INIT            = myDuck.defineType('INIT')
 const ADD_CHILD       = myDuck.defineType('ADD_CHILD')
@@ -27,9 +27,9 @@ export const init = (myId, query) => {
   }
 }
 
-export const getProfile = (myId) => {
+export const getMyProfile = (myId) => {
   return (dispatch, getState) => {
-    dispatch(serverUtils.getMe(EMPTY_ID))
+    dispatch(serverUtils.getMe(constants.EMPTY_ID))
       .then(({response: { result }, type, query, error}) => {
         let boardId = result.BID
         dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, 1, constants.LIST_ORDER_PREV))
@@ -47,7 +47,31 @@ export const getProfile = (myId) => {
                   }
                 })
             }
-            // dispatch(postprocessGetProfile(myId, result))
+          })
+      })
+  }
+}
+
+export const getFriendProfile = (myId, userId) => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.getFriend(userId))
+      .then(({response: { result }, type, query, error}) => {
+        let boardId = result.BID
+        dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, 1, constants.LIST_ORDER_PREV))
+          .then(({response: resultBoard, type, query, error}) => {
+            if (resultBoard.result && resultBoard.result.length > 0) {
+              let articleId = resultBoard.result[0].ID
+              let blockId = resultBoard.result[0].ContentBlockID
+              dispatch(serverUtils.getContent(boardId, articleId, blockId, constants.CONTENT_TYPE_ARTICLE, 0, 0, constants.LIST_ORDER_PREV))
+                .then(({response: resultContent, type, query, error}) => {
+                  if (resultContent.result && resultContent.result.length > 0) {
+                    let content = resultContent.result[0].B.reduce((acc, cur) => {
+                      return acc = [acc, serverUtils.b64decode(cur)].join(' ')
+                    }, '')
+                    dispatch(postprocessGetProfile(myId, content))
+                  }
+                })
+            }
           })
       })
   }
@@ -57,72 +81,13 @@ const postprocessGetProfile = (myId, content) => {
 
   content = JSON.parse(content)
 
-  console.log('doEditNameModal.postprocessGetProfile: ', content)
-
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { profile: content, loaded: true }
-  }
-}
-
-export const editProfile = (myId, profile) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getMe(EMPTY_ID))
-      .then(({response: { result }, type, query, error}) => {
-        let boardId = result.BID
-        dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, 1, constants.LIST_ORDER_PREV))
-          .then(({response: resultBoard, type, query, error}) => {
-            if (resultBoard.result && resultBoard.result.length <= 0) {
-              // create and edit article
-              dispatch(serverUtils.createArticle(boardId, 'profile', [JSON.stringify({})], []))
-                .then(({response: resultCreate, type, query, error}) => {
-                  let articleId = resultCreate.result.AID
-                  dispatch(serverUtils.updateArticle(boardId, articleId, [JSON.stringify(profile)], []))
-                    .then(({response: resultUpdate, type, query, error}) => {
-                      dispatch(postprocessEditProfile(myId, profile))
-                    })
-                })
-            } else {
-              // edit article
-              let articleId = resultBoard.result[0].ID
-              dispatch(serverUtils.updateArticle(boardId, articleId, [JSON.stringify(profile)], []))
-                .then(({response: resultUpdate, type, query, error}) => {
-                  dispatch(postprocessEditProfile(myId, profile))
-                })
-            }
-          })
-      })
-  }
-}
-
-const postprocessEditProfile = (myId, content) => {
-
-  content = JSON.parse(content)
-
-  console.log('doEditNameModal.postprocessEditProfile: ', JSON.stringify(content))
+  console.log('doFriendProfileModal.postprocessGetProfile: ', content)
 
   return {
     myId,
     myClass,
     type: SET_DATA,
     data: { profile: content }
-  }
-}
-
-export const unMount = (myId) => {
-  return (dispatch, getState) => {
-    dispatch(postprocessUnMount(myId))
-  }
-}
-
-const postprocessUnMount = (myId) => {
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { loaded: false }
   }
 }
 

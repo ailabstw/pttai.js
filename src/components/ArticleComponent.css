@@ -39,6 +39,7 @@
 	padding: 0px 13px 0px 13px;
 	display: flex;
 	flex-direction: column;
+	cursor: pointer;
 }
 
 .author img {

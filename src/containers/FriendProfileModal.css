@@ -1,0 +1,137 @@
+.root {
+    /*height: 97px;*/
+    min-height: 97px;
+    background-color: #FFF;
+    position:relative;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.left-side {
+    min-width: 110px;
+    padding: 13px 10px 13px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-picture {
+    min-width: 68px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.profile-picture img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+}
+
+.right-side {
+    padding: 13px 20px 13px 10px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 110px)
+}
+
+.main-info {
+    display: flex;
+    flex-direction: row;
+}
+
+.profile-input {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 10px 0px 0px;
+}
+
+.name {
+    width: 100%;
+
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.25;
+    letter-spacing: normal;
+    text-align: left;
+    color: #484848;
+}
+
+.company {
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.79;
+    letter-spacing: normal;
+    text-align: left;
+    color: #afafaf;
+}
+
+.job-title {
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: left;
+    color: #4e474e;
+}
+
+.email, .phone, .description {
+    font-size: 16px;
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: left;
+    color: #484848;
+}
+
+.other-info {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0px 0px 0px;
+}
+
+.mask {
+    top: 0px;
+    left: 0px;
+    height: 70px;
+    width: 70px;
+    position: absolute;
+    background: radial-gradient(circle, transparent 29px, #4C474E 32px);
+}
+
+.overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px #2F2B2F inset !important;
+}
+
+input:-webkit-autofill {
+    -webkit-text-fill-color: white !important;
+}

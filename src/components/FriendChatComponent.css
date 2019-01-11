@@ -33,6 +33,7 @@
 .profile-pic {
     min-width: 95px;
     padding: 0px 20px 0px 15px;
+    cursor: pointer;
 }
 
 .profile-pic img {
@@ -73,6 +74,7 @@
     font-size: 14px;
     margin-top: 10px;
     color: #AFAFAF;
+    cursor: default;
 
     text-overflow: ellipsis;
     white-space: nowrap;

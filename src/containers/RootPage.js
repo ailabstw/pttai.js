@@ -69,6 +69,9 @@ class RootPage extends PureComponent {
     // get user name and user image
     doRootPage.getUserInfo(myId, openFirstPopupModal, () => {})
 
+    // get user profile info
+    doRootPage.getProfile(myId)
+
     // get join keys for multi-device and friend
     doRootPage.getKeyInfo(myId)
 
@@ -92,6 +95,7 @@ class RootPage extends PureComponent {
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {})
+    doRootPage.getProfile(myId)
   }
 
   render() {
@@ -107,11 +111,13 @@ class RootPage extends PureComponent {
     let keyInfo     = me.get('keyInfo',         Immutable.Map()).toJS()
     let deviceInfo  = me.get('deviceInfo',      Immutable.List()).toJS()
     let latest      = me.get('latestArticles',  Immutable.List()).toJS()
+    let profile     = me.get('profile',         Immutable.Map()).toJS()
 
     let latestHasUnread = latest.length > 0? isUnRead(latest[0].UpdateTS.T,latest[0].LastSeen.T):false;
 
-    let onEditNameSubmit = (name) => {
+    let onEditNameSubmit = (name, editedProfile) => {
       doRootPage.editName(myId, name)
+      doRootPage.editProfile(myId, editedProfile)
       doModalContainer.closeModal()
     }
 
@@ -120,7 +126,12 @@ class RootPage extends PureComponent {
     }
 
     let openEditNameModule = () => {
-      doModalContainer.setInput({ userImg: userImg, userName: userName })
+      doModalContainer.setInput({
+        userImg:  userImg,
+        userName: userName,
+        profile:  profile,
+        friendJoinKey:   keyInfo.friendJoinKey,
+      })
       doModalContainer.setSubmit(onEditNameSubmit)
       doModalContainer.openModal(constants.EDIT_NAME_MODAL)
     }

@@ -5,7 +5,9 @@ import { bindActionCreators }     from 'redux'
 import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
 import { FormattedMessage }       from 'react-intl'
 import QRCode                     from 'qrcode.react'
-import Immutable                  from 'immutable'
+import validator                  from 'validator'
+
+import AlertComponent         from '../components/AlertComponent'
 
 import * as modalConstants    from '../constants/ModalConstants'
 import * as constants         from '../constants/Constants'
@@ -24,14 +26,21 @@ class EditNameModal extends PureComponent {
   constructor(props) {
     super();
     this.state = {
-      name: props.modalInput.userName,
-      userImg: props.modalInput.userImg,
-      company: '',
-      jobTitle: '',
-      email: '',
-      phone: '',
-      description: '',
-      isEdit: false,
+      name:     props.modalInput.userName,
+      userImg:  props.modalInput.userImg,
+      company:  props.modalInput.profile.company,
+      jobTitle: props.modalInput.profile.jobTitle,
+      email:    props.modalInput.profile.email,
+      phone:    props.modalInput.profile.phone,
+      description:    props.modalInput.profile.description,
+      friendJoinKey:  props.modalInput.friendJoinKey,
+      isEdit:         false,
+      showAlert:      false,
+      alertData: {
+        message: '',
+        onClose: null,
+        onConfirm: null,
+      },
     };
 
     this.onNameChange         = this.onNameChange.bind(this);
@@ -70,7 +79,7 @@ class EditNameModal extends PureComponent {
   }
 
   onSubmit() {
-    const { myId, editNameModal, onModalSubmit, actions:{ doEditNameModal } } = this.props
+    const { onModalSubmit, onModalClose } = this.props
     const { name }          = this.state
     const { company }       = this.state
     const { jobTitle }      = this.state
@@ -78,16 +87,13 @@ class EditNameModal extends PureComponent {
     const { phone }         = this.state
     const { description }   = this.state
 
-    let me = editNameModal.get(myId, Immutable.Map())
-    let profile = me.get('profile', Immutable.Map()).toJS()
-
     let that = this
     let trimmedName         = name.trim()
-    let trimmedCompany      = company.trim() || profile.company.trim()
-    let trimmedJobTitle     = jobTitle.trim() || profile.jobTitle.trim()
-    let trimmedEmail        = email.trim() || profile.email.trim()
-    let trimmedPhone        = phone.trim() || profile.phone.trim()
-    let trimmedDescription  = description.trim() || profile.description.trim()
+    let trimmedCompany      = company.trim()
+    let trimmedJobTitle     = jobTitle.trim()
+    let trimmedEmail        = email.trim()
+    let trimmedPhone        = phone.trim()
+    let trimmedDescription  = description.trim()
 
     if (trimmedName === constants.DEFAULT_USER_NAME) {
       this.setState({
@@ -153,18 +159,27 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
+    } else if (trimmedEmail && !validator.isEmail(trimmedEmail)) {
+      this.setState({
+        showAlert: true,
+        alertData: {
+          message: 'email invalid',
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
     } else {
       let editedProfile = {
-        name: trimmedName,
-        company: trimmedCompany,
-        jobTitle: trimmedJobTitle,
-        email: trimmedEmail,
-        phone: trimmedPhone,
-        description: trimmedDescription
+        name:         trimmedName,
+        company:      trimmedCompany,
+        jobTitle:     trimmedJobTitle,
+        email:        trimmedEmail,
+        phone:        trimmedPhone,
+        description:  trimmedDescription
       }
 
-      doEditNameModal.editProfile(myId, editedProfile)
-      onModalSubmit(trimmedName)
+      onModalSubmit(trimmedName, editedProfile)
+      this.setState({ isEdit: false })
+      onModalClose()
     }
   }
 
@@ -252,19 +267,9 @@ class EditNameModal extends PureComponent {
     }
   }
 
-
-  componentWillMount() {
-    const { myId, actions:{ doEditNameModal } } = this.props
-
-    doEditNameModal.getProfile(myId)
-  }
-
   render() {
-    const { myId, editNameModal, onModalClose, modal: { currentModal } } = this.props
-    const { name, userImg, company, jobTitle, email, phone, description, isEdit } = this.state
-
-    let me = editNameModal.get(myId, Immutable.Map())
-    let profile = me.get('profile', Immutable.Map()).toJS()
+    const { onModalClose, modal: { currentModal } } = this.props
+    const { name, userImg, company, jobTitle, email, phone, description, isEdit, showAlert, alertData, friendJoinKey } = this.state
 
     return (
       <div>
@@ -275,6 +280,7 @@ class EditNameModal extends PureComponent {
           onRequestClose={onModalClose}
           contentLabel="Edit Name Modal">
           <div className={styles['root']}>
+          <div className={styles['info-section']}>
             <div className={styles['left-side']}>
               <div className={styles['profile-picture']}>
                 {
@@ -290,19 +296,17 @@ class EditNameModal extends PureComponent {
                 }
               </div>
               {
-                isEdit ? (
-                  <button className={styles['edit-button']} onClick={() => {
-                    this.setState({ isEdit: false })
-                    this.onSubmit()
-                    onModalClose()
-                  }}>
-                    <FontAwesomeIcon icon="check" size="xs"/>
-                  </button>
-                ):(
-                  <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
-                    <FontAwesomeIcon icon="pen" size="xs"/>
-                  </button>
-                )
+                  isEdit ? (
+                    <button className={styles['edit-button']} onClick={() => {
+                      this.onSubmit()
+                    }}>
+                      <FontAwesomeIcon icon="check" size="xs"/>
+                    </button>
+                  ):(
+                    <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
+                      <FontAwesomeIcon icon="pen" size="xs"/>
+                    </button>
+                  )
               }
             </div>
             <div className={styles['right-side']}>
@@ -328,10 +332,10 @@ class EditNameModal extends PureComponent {
                         placeholder='company'
                         autoFocus
                         name='title-input'
-                        value={company || profile.company}
+                        value={company}
                         onChange={this.onCompanyChange}/>
                     ):(
-                      <span>{company || profile.company}</span>
+                      <span>{company}</span>
                     )
                   }
                   </div>
@@ -342,16 +346,16 @@ class EditNameModal extends PureComponent {
                         placeholder='job title'
                         autoFocus
                         name='title-input'
-                        value={jobTitle || profile.jobTitle }
+                        value={jobTitle }
                         onChange={this.onJobTitleChange}/>
                     ):(
-                      <span>{jobTitle || profile.jobTitle }</span>
+                      <span>{jobTitle }</span>
                     )
                   }
                   </div>
                 </div>
-                <div className={styles['qr-code']}>
-                  <QRCode value={'test'} size={80} />
+                <div hidden className={styles['qr-code']}>
+                  <QRCode value={friendJoinKey.URL} size={80} />
                 </div>
               </div>
               <div hidden={!isEdit && !email && !phone} className={styles['other-info']}>
@@ -363,10 +367,10 @@ class EditNameModal extends PureComponent {
                         placeholder='email'
                         autoFocus
                         name='title-input'
-                        value={email || profile.email}
+                        value={email}
                         onChange={this.onEmailChange}/>
                     ):(
-                      <span>{email || profile.email}</span>
+                      <span>{email}</span>
                     )
                   }
                   </div>
@@ -377,10 +381,10 @@ class EditNameModal extends PureComponent {
                         placeholder='phone'
                         autoFocus
                         name='title-input'
-                        value={phone || profile.phone }
+                        value={phone }
                         onChange={this.onPhoneChange}/>
                     ):(
-                      <span>{phone || profile.phone }</span>
+                      <span>{phone }</span>
                     )
                   }
                   </div>
@@ -395,16 +399,24 @@ class EditNameModal extends PureComponent {
                         placeholder='description'
                         autoFocus
                         name='title-input'
-                        value={description || profile.description }
+                        value={description }
                         onChange={this.onDescriptionChange}/>
                     ):(
-                      <span>{description || profile.description }</span>
+                      <span>{description }</span>
                     )
                   }
                   </div>
                 </div>
               </div>
             </div>
+
+          </div>
+          <div className={styles['qr-code-section']}>
+            <div className={styles['qr-code']}>
+              <QRCode value={friendJoinKey.URL} size={250} />
+            </div>
+          </div>
+          <AlertComponent show={showAlert} alertData={alertData}/>
           </div>
         </Modal>
       </div>

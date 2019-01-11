@@ -23,8 +23,6 @@ class ProfilePage extends PureComponent {
     };
   }
 
-
-
   render() {
 
     const { userId,
