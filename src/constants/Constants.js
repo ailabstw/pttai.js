@@ -37,6 +37,7 @@ export const NUM_OPLOG_PER_REQ      = 100
 
 export const NUM_CACHE_MESSAGE      = 100
 export const NUM_CACHE_ARTILCE      = 100
+export const NUM_CACHE_FRIEND       = 100
 export const NUM_CACHE_COMMENT      = 100
 
 

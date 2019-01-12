@@ -1,4 +1,4 @@
-import Immutable                from 'immutable';
+import Immutable                from 'immutable'
 import { createDuck }           from 'redux-duck'
 import LRU                      from 'lru-cache'
 

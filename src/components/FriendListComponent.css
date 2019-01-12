@@ -276,3 +276,10 @@
     color: #ffffff;
     font-size: 13px;
 }
+
+.loader {
+    width: 35px;
+    height: auto;
+    margin-top: 20px;
+    margin-left: calc(50% - 17px);
+}

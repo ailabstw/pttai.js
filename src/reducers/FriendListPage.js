@@ -1,11 +1,14 @@
 import Immutable        from 'immutable'
 import { createDuck }   from 'redux-duck'
+import LRU              from 'lru-cache'
 
 import * as utils         from './utils'
 import * as serverUtils   from './ServerUtils'
 import {  EMPTY_ID,
+          NUM_CACHE_FRIEND,
           DEFAULT_USER_NAME,
           DEFAULT_USER_IMAGE,
+          NUM_FRIEND_PER_REQ,
           MESSAGE_TYPE_TEXT }       from '../constants/Constants'
 
 export const myClass  = 'FRIEND_LIST_PAGE'
@@ -18,6 +21,8 @@ const SET_ROOT      = myDuck.defineType('SET_ROOT')
 const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
 const REMOVE        = myDuck.defineType('REMOVE')
 const SET_DATA      = myDuck.defineType('SET_DATA')
+const PREPEND_FRIENDS  = myDuck.defineType('PREPEND_FRIENDS')
+const APPEND_FRIENDS   = myDuck.defineType('APPEND_FRIENDS')
 const ADD_FRIEND    = myDuck.defineType('ADD_FRIEND')
 
 // init
@@ -57,8 +62,11 @@ function getChatSummaries (chatIds) {
   )
 }
 
-export const getFriendList = (myId, limit) => {
+export const getFriendList = (myId, isFirstFetch, limit) => {
   return (dispatch, getState) => {
+    if (isFirstFetch) {
+      dispatch(preprocessSetStartLoading(myId))
+    }
     dispatch(serverUtils.getFriends(EMPTY_ID, limit))
       .then(({response: friendResult, type, query, error}) => {
         dispatch(serverUtils.getFriendRequest(EMPTY_ID))
@@ -77,7 +85,10 @@ export const getFriendList = (myId, limit) => {
                 let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
                 dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
                   .then((usersInfo) => {
-                    dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+                    dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo, isFirstFetch))
+                    if (isFirstFetch) {
+                      dispatch(postprocessSetFinshLoading(myId))
+                    }
                   })
               })
           })
@@ -85,7 +96,7 @@ export const getFriendList = (myId, limit) => {
   }
 }
 
-const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo) => {
+const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo, isFirstFetch) => {
 
   result = result.map((each) => {
     return {
@@ -176,13 +187,289 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo)
 
   console.log('doFriendListPage.postprocessGetFriendList: friendList:', friendList, reqResult)
 
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { friendList: friendList }
+  if (friendList.length === 0 && isFirstFetch) {
+    return {
+      myId,
+      myClass,
+      type: SET_DATA,
+      data: { myFriends: { lru: null, offset: 0, friendList: [] }, noFriend: true }
+    }
+  } else if (friendList.length === 0 && !isFirstFetch) {
+    return {
+      myId,
+      myClass,
+      type: SET_DATA,
+      data: {}
+    }
+  } else {
+    return {
+      myId,
+      myClass,
+      type: APPEND_FRIENDS,
+      data: { friends: friendList.sort((a,b) => {
+        if (a.SummaryUpdateTS.T < b.SummaryUpdateTS.T) {
+          return -1
+        } else if (a.SummaryUpdateTS.T > b.SummaryUpdateTS.T) {
+          return 1
+        } else {
+          return 0
+        }
+      }), noFriend: false }
+    }
   }
 }
+
+export const getMoreFriendlist = (myId, startFriendId, limit) => {
+  return (dispatch, getState) => {
+    dispatch(preprocessSetStartLoading(myId))
+    dispatch(serverUtils.getFriends(startFriendId, limit))
+      .then(({response: friendResult, type, query, error}) => {
+        dispatch(serverUtils.getFriendRequest(EMPTY_ID))
+          .then(({response: friendReqResult, type, query, error}) => {
+            let chatIds = friendResult.result.map(each => each.ID)
+            dispatch(getChatSummaries(chatIds))
+              .then((summaryResult) => {
+                let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
+                let summaries  = summaryResult.map(each => {
+                  if (each.error) {
+                    return {}
+                  } else {
+                    return each.value
+                  }
+                })
+                let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
+                dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
+                  .then((usersInfo) => {
+                    dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+                    dispatch(postprocessSetFinshLoading(myId))
+                  })
+              })
+          })
+      })
+  }
+}
+
+const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersInfo) => {
+
+  result = result.map((each) => {
+    return {
+      friendID: each.FID,
+      ...each
+    }
+  })
+
+  result    = result.map(serverUtils.deserialize)
+  reqResult = reqResult.map(serverUtils.deserialize)
+
+  usersInfo = usersInfo.reduce((acc, each) => {
+    acc[each.key] = each.value
+    return acc
+  }, {})
+
+  let friendList = result.map((each, index) => {
+
+    let userId          = each.friendID
+    let summaryUserId   = summaries[index].SummaryUserID
+    let userNameMap     = usersInfo['userName'] || {}
+    let userImgMap      = usersInfo['userImg'] || {}
+
+    let userName        = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
+    let SummaryUserImg  = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
+
+    return {
+      Name:             userName,
+      Img:              userImg,
+      friendID:         each.friendID,
+      chatId:           each.ID,
+      BoardID:          each.BID,
+      FriendStatus:     each.S,
+      SummaryStatus:    summaries[index].S,
+      LastSeen:         each.LT ? each.LT : utils.emptyTimeStamp(),
+      ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
+      SummaryUpdateTS:  summaries[index].UpdateTS ? summaries[index].UpdateTS : utils.emptyTimeStamp(),
+      SummaryUserID:    summaryUserId,
+      SummaryUserName:  SummaryUserName,
+      SummaryUserImg:   SummaryUserImg,
+      Summary:          (summaries[index].B && summaries[index].B.length > 0) ? serverUtils.b64decode(summaries[index].B[0]) : JSON.stringify({ type:  MESSAGE_TYPE_TEXT, value: '' }),
+      joinStatus:       3,
+    }
+  })
+
+  let joinReqs = reqResult.map((eachJoin) => {
+    return {
+      CreatorID: eachJoin.C,
+      NodeID:    eachJoin.n,
+      Name:      eachJoin.N,
+      Status:    eachJoin.S,
+    }
+  })
+
+  joinReqs.forEach((join, index) => {
+    let joinFriendIndex = friendList.findIndex((e) => e.friendID === join.CreatorID)
+    if ( joinFriendIndex >= 0) {
+      friendList[joinFriendIndex].joinStatus = join.Status
+    } else {
+      let userId          = join.CreatorID
+      let userNameMap     = usersInfo['userName'] || {}
+      let userImgMap      = usersInfo['userImg'] || {}
+
+      let userName        = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+      let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+
+      friendList.push({
+        Name:             join.Name || userName,
+        Img:              userImg,
+        friendID:         userId,
+        chatId:           null,
+        BoardID:          EMPTY_ID,
+        FriendStatus:     null,
+        SummaryStatus:    null,
+        LastSeen:         utils.emptyTimeStamp(),
+        ArticleCreateTS:  utils.emptyTimeStamp(),
+        SummaryUpdateTS:  utils.emptyTimeStamp(),
+        SummaryUserID:    EMPTY_ID,
+        SummaryUserName:  '',
+        SummaryUserImg:   '',
+        Summary:          JSON.stringify({ type:  MESSAGE_TYPE_TEXT, value: '' }),
+        joinStatus:       join.Status,
+      })
+    }
+  })
+
+  console.log('doFriendListPage.postprocessGetMoreFriendList: friendList:', friendList, reqResult)
+
+  if (friendList.length === 0) {
+    return {
+      myId,
+      myClass,
+      type: SET_DATA,
+      data: { allFriendsLoaded: true }
+    }
+  } else {
+    return {
+      myId,
+      myClass,
+      type: PREPEND_FRIENDS,
+      data: { friendList: friendList.sort((a,b) => {
+          if (a.SummaryUpdateTS.T < b.SummaryUpdateTS.T) {
+            return -1
+          } else if (a.SummaryUpdateTS.T > b.SummaryUpdateTS.T) {
+            return 1
+          } else {
+            return 0
+          }
+        })
+      }
+    }
+  }
+}
+
+export const _prependFriends = (state, action) => {
+
+  const {myId, data: { friends }} = action
+
+  let friendList = state.getIn([myId, 'myFriends', 'friendList'], Immutable.List())
+  let oriOffset  = state.getIn([myId, 'myFriends', 'offset'], 0)
+
+  state = state.setIn([myId, 'myFriends', 'offset'], oriOffset + friends.length)
+  state = state.setIn([myId, 'myFriends', 'friendList'], Immutable.List(friends).concat(friendList))
+
+  return state
+}
+
+export const _appendFriends = (state, action) => {
+
+  /* merge the newly fetched friends to existing friend list */
+  const {myId, data: { friends, noFriend }} = action
+
+  if (!friends || friends.length <= 0) {
+    return state
+  }
+
+  let myFriends   = state.getIn([myId, 'myFriends'], Immutable.Map()).toJS()
+  let friendList  = myFriends.friendList || []
+  let lruCache    = myFriends.lru || new LRU(NUM_CACHE_FRIEND)
+  let offset      = myFriends.offset || 0
+
+  let resultFriendList  = []
+  if (friendList.length === 0) {
+    /* append friend */
+    friends.forEach((friend, index) => {
+      resultFriendList.push(friend)
+      lruCache.set(friend.friendID, { index: index - offset, friend: friend })
+    })
+  } else {
+    /* 1. find earlist start node and save to local lru */
+    let localLRU     = new LRU(NUM_FRIEND_PER_REQ)
+
+    let startFriend  = null
+    let earlistTS    = 2147483648 /* year 2038 */
+
+    friends.forEach((friend, index) => {
+      localLRU.set(friend.friendID, friend)
+      if (lruCache.get(friend.friendID) && lruCache.get(friend.friendID).friend.SummaryUpdateTS.T < earlistTS) {
+        startFriend  = lruCache.get(friend.friendID)
+        earlistTS    = startFriend.friend.SummaryUpdateTS.T
+      }
+    })
+    /* 2. start merge  */
+    let oriIndex    = startFriend ? startFriend.index : friendList.length - offset
+    let newIndex    = 0
+    let mergeIndex  = oriIndex
+
+    let oriList    = friendList.slice(0, offset + oriIndex)
+    let mergedList = []
+
+    while(friendList.length > offset + oriIndex || friends.length > newIndex){
+      if (friendList.length > offset + oriIndex && friends.length > newIndex) {
+        let oriFriend = friendList[offset + oriIndex]
+        let newFriend = friends[newIndex]
+        /* both left */
+        if (oriFriend.SummaryUpdateTS.T <= newFriend.SummaryUpdateTS.T) {
+          if (!localLRU.get(oriFriend.friendID)) {
+            mergedList.push(oriFriend)
+            lruCache.set(oriFriend.friendID, { index: mergeIndex, friend: oriFriend })
+            mergeIndex += 1
+          }
+          oriIndex += 1
+        } else {
+          mergedList.push(newFriend)
+          lruCache.set(newFriend.friendID, { index: mergeIndex, friend: newFriend })
+          mergeIndex += 1
+          newIndex += 1
+        }
+      } else if (friendList.length > offset + oriIndex) {
+        /* only ori */
+        let oriFriend = friendList[offset + oriIndex]
+        if (!localLRU.get(oriFriend.friendID)) {
+          mergedList.push(oriFriend)
+          lruCache.set(oriFriend.friendID, { index: mergeIndex, friend: oriFriend })
+          mergeIndex += 1
+        }
+        oriIndex += 1
+      } else {
+        /* only new */
+        let newFriend = friends[newIndex]
+        mergedList.push(newFriend)
+        lruCache.set(newFriend.friendID, { index: mergeIndex, friend: newFriend })
+        mergeIndex += 1
+        newIndex += 1
+      }
+    }
+    resultFriendList = oriList.concat(mergedList)
+    localLRU.reset()
+  }
+
+  state = state.setIn([myId, 'noFriend'], noFriend)
+  state = state.setIn([myId, 'myFriends', 'offset'], offset)
+  state = state.setIn([myId, 'myFriends', 'lru'], lruCache)
+  state = state.setIn([myId, 'myFriends', 'friendList'], Immutable.List(resultFriendList))
+
+  return state
+}
+
 
 /*                        */
 /*  Update Friend List    */
@@ -326,6 +613,31 @@ const postprocessGetKeyInfo = (myId, keyInfo) => {
   }
 }
 
+/*             */
+/*  Loading    */
+/*             */
+
+const preprocessSetStartLoading = (myId) => {
+  console.log('doFriendListPage.preprocessSetStartLoading')
+
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: {isLoading: true}
+  }
+}
+
+const postprocessSetFinshLoading = (myId) => {
+  console.log('doFriendListPage.postprocessSetFinshLoading')
+
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: {isLoading: false}
+  }
+}
 
 // reducers
 const reducer = myDuck.createReducer({
@@ -336,6 +648,8 @@ const reducer = myDuck.createReducer({
   [REMOVE]:         utils.reduceRemove,
   [SET_DATA]:       utils.reduceSetData,
   [ADD_FRIEND]:     _addNewFriend,
+  [PREPEND_FRIENDS]:_prependFriends,
+  [APPEND_FRIENDS]: _appendFriends,
 }, Immutable.Map())
 
 export default reducer
