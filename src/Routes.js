@@ -13,7 +13,7 @@ class Routes extends Component {
           <Route exact path='/board/:boardId/article/:articleId' render={(props) => <RootPage {...props} myComponent={'ArticlePage'} />} />
           <Route exact path='/friend' render={(props) => <RootPage {...props} myComponent={'FriendListPage'} />} />
           <Route exact path='/friend/:friendId/chat/:chatId' render={(props) => <RootPage {...props} myComponent={'FriendChatPage'} />} />
-          <Redirect exact from="/" to="/hub" />
+          <Redirect exact from="/" to="/friend" />
         </Switch>
       </Router>
     );

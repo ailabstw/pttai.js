@@ -240,7 +240,7 @@
     min-width:64px;
     color: #808080;
     text-align: center;
-    padding: 0px 5px;
+    padding: 5px 5px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -346,7 +346,7 @@
 
 .submit-button {
     position: fixed;
-    max-width: 554px;
+    max-width: 414px;
     bottom: 10px;
     font-size: 80px;
     cursor: pointer;

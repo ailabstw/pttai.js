@@ -251,6 +251,11 @@ class ArticlePage extends PureComponent {
       doModalContainer.openModal(constants.EDIT_ARTICLE_MODAL)
     }
 
+    let onOpenFriendProfileModal = (friendData) => {
+      doModalContainer.setInput(friendData)
+      doModalContainer.openModal(constants.FRIEND_PROFILE_MODAL)
+    }
+
     let onCommentAdded = (comment) => {
       let mediaIds = ""
       doArticlePage.addComment(myId, boardId, articleId, comment, userName, userImg, userId, mediaIds)
@@ -277,7 +282,8 @@ class ArticlePage extends PureComponent {
           pullCount={count}
           articleInfo={articleInfo}
           articleContentsList={articleContentsList}
-          editArticleAction={openEditArticleModal} />
+          editArticleAction={openEditArticleModal}
+          onOpenFriendProfileModal={onOpenFriendProfileModal} />
         <CommentReplyListComponent
           isLoading={isCommentLoading}
           userId={userId}

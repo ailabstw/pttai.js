@@ -9,8 +9,8 @@
 
 .top-bar {
     width: 100%;
-    height: 110px;
-    min-height: 110px;
+    height: 97px;
+    min-height: 97px;
     background-color: #4e474e;
     padding: 10px;
     display: flex;
@@ -43,7 +43,7 @@
     flex-grow: 1;
     height: 100%;
     color: #FFF;
-    line-height: 90px;
+    line-height: 77px;
     text-align: center;
     vertical-align: middle;
 
@@ -137,7 +137,7 @@
 
 .add-icon-container {
     position: fixed;
-    max-width: 554px;
+    max-width: 414px;
     bottom: 10px;
     font-size: 80px;
     cursor: pointer;

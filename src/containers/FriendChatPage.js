@@ -104,6 +104,14 @@ class FriendChatPage extends PureComponent {
       doModalContainer.openModal(constants.SHOW_OP_LOG_MODAL)
     }
 
+    let onOpenFriendProfileModal = () => {
+      doModalContainer.setInput({
+        FriendID: params.friendId,
+        ...friendData
+      })
+      doModalContainer.openModal(constants.FRIEND_PROFILE_MODAL)
+    }
+
     return (
       <div className={styles['root']}>
         <FriendChatBar />
@@ -120,6 +128,7 @@ class FriendChatPage extends PureComponent {
           onMessageAdded={onMessageAdded}
           onGetMoreMessages={onGetMoreMessages}
           onOpenOPLogModal={onOpenOPLogModal}
+          onOpenFriendProfileModal={onOpenFriendProfileModal}
           />
       </div>
     )

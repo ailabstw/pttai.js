@@ -1,6 +1,6 @@
 .root {
-    height: 110px;
-    min-height: 110px;
+    height: 97px;
+    min-height: 97px;
     background-color: #4D474E;
     position:relative;
     z-index:1;
@@ -12,9 +12,9 @@
 
 .content {
     width: 100%;
-    height: 110px;
-    max-width: 554px;
-    padding: 21px;
+    height: 97px;
+    max-width: 414px;
+    padding: 11px 21px;
 
     display: flex;
     flex-direction: row;
@@ -36,19 +36,11 @@
     object-fit: contain;
 }
 
-.mask {
-    top: 0px;
-    left: 0px;
-    height: 70px;
-    width: 70px;
-    position: absolute;
-    background: radial-gradient(circle, transparent 29px, #4C474E 32px);
-}
-
 .profile-description {
     max-width: calc(100% - 68px - 38px - 38px);
     padding: 0px 20px;
     flex-grow: 1;
+    cursor: pointer;
 }
 
 .profile-description .name {
@@ -56,7 +48,6 @@
     line-height: 37px;
     color: #FFF;
     font-size: 30px;
-    cursor: pointer;
 
     text-overflow: ellipsis;
     white-space: nowrap;

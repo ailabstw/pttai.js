@@ -25,8 +25,7 @@ class ArticleListComponent extends PureComponent {
     this.onListItemClick  = this.onListItemClick.bind(this)
     this.scrollToBottom   = this.scrollToBottom.bind(this)
     this.needFetchMore    = this.needFetchMore.bind(this)
-    this.handleScroll     = this.handleScroll.bind(this);
-
+    this.handleScroll     = this.handleScroll.bind(this)
   }
 
   needFetchMore() {

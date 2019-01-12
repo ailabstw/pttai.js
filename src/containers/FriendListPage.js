@@ -32,10 +32,10 @@ class FriendListPage extends PureComponent {
   componentWillMount() {
     const { actions: {doFriendListPage}, myId} = this.props
 
-    doFriendListPage.getFriendList(myId, constants.NUM_FRIEND_PER_REQ)
+    doFriendListPage.getFriendList(myId, true, constants.NUM_FRIEND_PER_REQ)
     doFriendListPage.getKeyInfo(myId)
 
-    this.refreshPageInterval = setInterval(() => doFriendListPage.getFriendList(myId, constants.NUM_FRIEND_PER_REQ), constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(() => doFriendListPage.getFriendList(myId, false, constants.NUM_FRIEND_PER_REQ), constants.REFRESH_INTERVAL);
   }
 
   componentWillUnmount() {
@@ -50,9 +50,12 @@ class FriendListPage extends PureComponent {
 
     let userName      = getRoot(this.props).getIn(['userInfo','userName'])
 
-    let me            = friendListPage.get(myId, Immutable.Map())
-    let keyInfo       = me.get('keyInfo', Immutable.Map()).toJS()
-    let friendList    = me.get('friendList', Immutable.List()).toJS()
+    let me                = friendListPage.get(myId, Immutable.Map())
+    let keyInfo           = me.get('keyInfo', Immutable.Map()).toJS()
+    let friendList        = me.getIn(['myFriends','friendList'], Immutable.List()).toJS()
+    let isLoading         = me.get('isLoading',   false)
+    let noFriend          = me.get('noFriend', false)
+    let allFriendsLoaded  = me.get('allFriendsLoaded', false)
 
     let refreshKeyInfo = () => {
       doFriendListPage.getKeyInfo(myId)
@@ -128,13 +131,20 @@ class FriendListPage extends PureComponent {
       doModalContainer.openModal(constants.ADD_FRIEND_MODAL)
     }
 
+    let onGetMoreFriends = (startFriendId) => {
+      doFriendListPage.getMoreFriendlist(myId, startFriendId, constants.NUM_FRIEND_PER_REQ)
+    }
 
     return (
       <div className={styles['root']}>
         <FriendComponent
           userName={userName}
+          isLoading={isLoading}
+          noFriend={noFriend}
           friendList={friendList}
-          addFriendAction={openAddFriendModal}/>
+          addFriendAction={openAddFriendModal}
+          onGetMoreFriends={onGetMoreFriends}
+          allFriendsLoaded={allFriendsLoaded} />
         <AlertComponent show={showAlert} alertData={alertData}/>
       </div>
     )

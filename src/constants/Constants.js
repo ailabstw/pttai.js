@@ -6,6 +6,7 @@ export const EDIT_ARTICLE_MODAL     = 'EDIT_ARTICLE_MODAL'
 export const FIRST_POPUP_MODAL      = 'FIRST_POPUP_MODAL'
 export const ADD_KNOWN_BOARD_MODAL  = 'ADD_KNOWN_BOARD_MODAL'
 export const EDIT_NAME_MODAL        = 'EDIT_NAME_MODAL'
+export const FRIEND_PROFILE_MODAL   = 'FRIEND_PROFILE_MODAL'
 export const SHOW_DEVICE_INFO       = 'SHOW_DEVICE_INFO'
 export const ADD_FRIEND_MODAL       = 'ADD_FRIEND_MODAL'
 export const ADD_DEVICE_MODAL       = 'ADD_DEVICE_MODAL'
@@ -36,13 +37,20 @@ export const NUM_OPLOG_PER_REQ      = 100
 
 export const NUM_CACHE_MESSAGE      = 100
 export const NUM_CACHE_ARTILCE      = 100
+export const NUM_CACHE_FRIEND       = 100
 export const NUM_CACHE_COMMENT      = 100
 
 
 export const MAX_USER_IMG_SIZE      = 32000
 export const MAX_USER_IMG_WIDTH     = 256
 export const MAX_FILE_UPLOAD_SIZE   = 10485760
-export const MAX_USER_NAME_SIZE     = 25
+export const MAX_USER_NAME_SIZE         = 25
+export const MAX_USER_COMPANY_SIZE      = 25
+export const MAX_USER_JOBTITLE_SIZE     = 25
+export const MAX_USER_EMAIL_SIZE        = 50
+export const MAX_USER_PHONE_SIZE        = 15
+export const MAX_USER_DESCRIPTION_SIZE  = 100
+
 export const MAX_COMMENT_SIZE       = 500
 export const MAX_ARTICLE_SIZE       = 131072
 export const MAX_BOARDNAME_SIZE     = 50
@@ -69,9 +77,10 @@ export const SHOW_LAST_ANNOUNCE_P2P_TAB  = 'SHOW_LAST_ANNOUNCE_P2P_TAB'
 export const CONTENT_TYPE_ARTICLE   = 0
 export const CONTENT_TYPE_COMMENT   = 1
 export const CONTENT_TYPE_REPLY     = 2
-export const BOARD_TYPE_GENERAL     = 0
+export const BOARD_TYPE_INVALID     = 0
 export const BOARD_TYPE_PERSONAL    = 1
-
+export const BOARD_TYPE_PRIVATE     = 2
+export const BOARD_TYPE_PUBLIC      = 3
 export const CONTENT_TYPE_TEXT      = 'TEXT'
 export const CONTENT_TYPE_IMAGE     = 'IMAGE'
 export const CONTENT_TYPE_FILE      = 'FILE'

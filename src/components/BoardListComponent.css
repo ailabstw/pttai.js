@@ -7,10 +7,10 @@
 }
 
 .list-item {
-    width: calc(50% - 14px);
+    width: calc(50% - 6px);
     height: 94px;
 	padding: 15px 10px 15px 24px;
-    margin: 7px 7px;
+    margin: 3px 3px;
 	font-size: 16px;
     background-color: #FFF;
     line-height: 30px;
@@ -169,7 +169,8 @@
 }
 
 .list-item-time {
-    width: 33%;
+    /*width: 33%;*/
+    margin: auto;
 }
 
 .list-item-author {
@@ -211,16 +212,18 @@
 }
 
 .list-item-edit-button {
-    width: 33%;
-    position: relative;
+    /*width: 33%;
+    position: relative;*/
+    margin-left: auto;
 }
 
 .list-item-ellipsis {
     width: 20px;
-    height: 16px;
-    position: absolute;
+    height: 23px;
+/*    position: absolute;
     right: 0px;
-    bottom: 0px;
+    bottom: 0px;*/
+    margin: auto;
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
@@ -229,10 +232,11 @@
 
 .list-item-ellipsis:active, .list-item-ellipsis:hover {
     width: 20px;
-    height: 16px;
-    position: absolute;
+    height: 23px;
+/*    position: absolute;
     right: 0px;
-    bottom: 0px;
+    bottom: 0px;*/
+    margin: auto;
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;

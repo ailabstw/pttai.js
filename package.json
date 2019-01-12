@@ -47,7 +47,8 @@
     "slick-carousel": "^1.8.1",
     "superagent": "^3.8.3",
     "superagent-bluebird-promise": "^4.2.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "validator": "^10.10.0"
   },
   "devDependencies": {
     "enzyme": "^3.7.0",

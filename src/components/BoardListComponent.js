@@ -39,7 +39,9 @@ class BoardListComponent extends PureComponent {
       return ''
     }
 
-    let activeList = listData.toJS().filter((each) => { return each.Status !== constants.STATUS_ARRAY.indexOf('StatusMigrated')})
+    let activeList = listData.toJS()
+                      .filter((each) => { return each.Status !== constants.STATUS_ARRAY.indexOf('StatusMigrated') })
+                      .filter((each) => { return each.BoardType === constants.BOARD_TYPE_PRIVATE })
 
     return (
       <div className={styles['root']}>
@@ -73,7 +75,7 @@ class BoardListComponent extends PureComponent {
                 }
               </div>
               <div className={styles['list-item-meta']}>
-                <div className={styles['list-item-space']}>
+                <div hidden className={styles['list-item-space']}>
                 </div>
                 <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>
                   {epoch2ReadFormat(item.UpdateTS.T)}

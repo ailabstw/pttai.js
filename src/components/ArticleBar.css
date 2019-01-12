@@ -6,7 +6,7 @@
 .content {
     height: 50px;
     width: calc(100% - 1px);
-    max-width: 553px;
+    max-width: 413px;
     display: flex;
     flex-direction: row;
     position: fixed;

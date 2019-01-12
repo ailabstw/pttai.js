@@ -19,22 +19,22 @@ class Navigator extends PureComponent {
         <div className={styles['content']}>
 
           <ul className={styles['tabs']}>
-            <li className={styles[tabOneClass]}>
-              <Link to={`/hub`} className={styles['content-block']}>
-                <div>
-                  <FormattedMessage
-                    id="navigator.tab1"
-                    defaultMessage="Latest"
-                  />
-                </div>
-              </Link>
-            </li>
             <li className={styles[tabTwoClass]}>
               <Link to={`/friend`} className={styles['content-block']}>
                 <div>
                   <FormattedMessage
                     id="navigator.tab2"
                     defaultMessage="Friends"
+                  />
+                </div>
+              </Link>
+            </li>
+            <li className={styles[tabOneClass]}>
+              <Link to={`/hub`} className={styles['content-block']}>
+                <div>
+                  <FormattedMessage
+                    id="navigator.tab1"
+                    defaultMessage="Latest"
                   />
                 </div>
               </Link>
