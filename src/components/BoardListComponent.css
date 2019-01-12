@@ -165,7 +165,7 @@
 }
 
 .list-item-space {
-    width: 33%;
+    width: 20px;
 }
 
 .list-item-time {
@@ -213,8 +213,9 @@
 
 .list-item-edit-button {
     /*width: 33%;
-    position: relative;*/
-    margin-left: auto;
+    position: relative;
+    margin-left: auto;*/
+    width: 20px;
 }
 
 .list-item-ellipsis {
