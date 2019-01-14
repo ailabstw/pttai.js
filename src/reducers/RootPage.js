@@ -21,9 +21,7 @@ import { getUUID }              from '../utils/utils'
 import { EMPTY_ID,
          DEFAULT_USER_NAME,
          DEFAULT_USER_IMAGE,
-         DEFAULT_USER_NAMECARD,
-         LIST_ORDER_PREV,
-         CONTENT_TYPE_ARTICLE }   from '../constants/Constants'
+         DEFAULT_USER_NAMECARD }   from '../constants/Constants'
 
 export const myClass = 'ROOT_PAGE'
 

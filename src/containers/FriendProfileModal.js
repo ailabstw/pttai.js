@@ -8,8 +8,6 @@ import * as constants               from '../constants/Constants'
 import * as modalConstants          from '../constants/ModalConstants'
 import * as doFriendProfileModal    from '../reducers/FriendProfileModal'
 
-import { getRoot }                  from '../utils/utils'
-
 import styles from './FriendProfileModal.css'
 
 class FriendProfileModal extends PureComponent {
@@ -26,14 +24,12 @@ class FriendProfileModal extends PureComponent {
     const { myId, actions:{ doFriendProfileModal } } = this.props
     const { friendId } = this.state
 
-    let userId   = getRoot(this.props).getIn(['userInfo','userId'])
-
     doFriendProfileModal.getFriendProfile(myId, friendId)
   }
 
   render() {
     const { myId, friendProfileModal, onModalClose, modal: { currentModal } } = this.props
-    const { name, userImg, company, jobTitle, email, phone, description } = this.state
+    const { name, userImg } = this.state
 
     let me = friendProfileModal.get(myId, Immutable.Map())
     let profile = me.get('profile', Immutable.Map()).toJS()

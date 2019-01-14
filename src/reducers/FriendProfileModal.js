@@ -3,10 +3,8 @@ import { createDuck }   from 'redux-duck'
 
 import * as utils             from './utils'
 import * as serverUtils       from './ServerUtils'
-import * as constants         from '../constants/Constants'
 
 import { myDuck as appDuck }    from './App'
-//import { EMPTY_ID }   from '../constants/Constants'
 
 export const myClass = 'FRIEND_PROFILE_MODAL'
 
