@@ -21,6 +21,7 @@ import { getUUID }              from '../utils/utils'
 import { EMPTY_ID,
          DEFAULT_USER_NAME,
          DEFAULT_USER_IMAGE,
+         DEFAULT_USER_NAMECARD,
          LIST_ORDER_PREV,
          CONTENT_TYPE_ARTICLE }   from '../constants/Constants'
 
@@ -92,6 +93,14 @@ function getUserInfoById(userId) {
           return { 'error': false, 'key': 'userImg', 'value': result }
         }
       }),
+    dispatch(serverUtils.getNameCard(userId))
+      .then(({response: { result }, type, query, error}) => {
+        if (error) {
+          return { 'error': true, 'key': 'userNameCard', 'value': error }
+        } else {
+          return { 'error': false, 'key': 'userNameCard', 'value': result }
+        }
+      }),
   ]);
 }
 
@@ -143,19 +152,22 @@ const postprocessGetUserInfo = (myId, info, metaInfo) => {
   console.log('doRootPage.postprocessGetUserInfo: userInfo: ',      info)
   console.log('doRootPage.postprocessGetUserInfo: userMetaInfo: ',  metaInfo)
 
-  let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
-  let userImgResult  = metaInfo.find((meta) => meta.key === 'userImg').value
-  let userName = (userNameResult && userNameResult.N ) ? serverUtils.b64decode(userNameResult.N) : DEFAULT_USER_NAME
-  let userImg  = (userImgResult && userImgResult.I) ? userImgResult.I : DEFAULT_USER_IMAGE
+  let userNameResult      = metaInfo.find((meta) => meta.key === 'userName').value
+  let userImgResult       = metaInfo.find((meta) => meta.key === 'userImg').value
+  let userNameCardResult  = metaInfo.find((meta) => meta.key === 'userNameCard').value
+  let userName      = (userNameResult && userNameResult.N ) ? serverUtils.b64decode(userNameResult.N) : DEFAULT_USER_NAME
+  let userImg       = (userImgResult && userImgResult.I) ? userImgResult.I : DEFAULT_USER_IMAGE
+  let userNameCard  = (userNameCardResult && userNameCardResult.Card) ? JSON.parse(userNameCardResult.Card) : DEFAULT_USER_NAMECARD
 
   console.log('doRootPage.postprocessGetUserInfo: userName: ',      userName)
-  console.log('doRootPage.postprocessGetUserInfo: userImg: ',  userImg)
-
+  console.log('doRootPage.postprocessGetUserInfo: userImg: ',       userImg)
+  console.log('doRootPage.postprocessGetUserInfo: userNameCard: ',  userNameCard)
 
   const combinedUserInfo = {
     userId:       info.ID,
     userName:     userName,
     userImg:      userImg,
+    userNameCard: userNameCard,
     createTime:   info.CT ? info.CT : utils.emptyTimeStamp(),
     updateTime:   info.UT ? info.UT : utils.emptyTimeStamp(),
     status:       info.S,
@@ -292,86 +304,28 @@ const postprocessGetDeviceInfo = (myId, result) => {
 /*  Update User Info  */
 /*                    */
 
-export const getProfile = (myId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getMe(EMPTY_ID))
-      .then(({response: { result }, type, query, error}) => {
-        let boardId = result.BID
-        dispatch(serverUtils.getArticles(boardId, EMPTY_ID, 1, LIST_ORDER_PREV))
-          .then(({response: resultBoard, type, query, error}) => {
-            if (resultBoard.result && resultBoard.result.length > 0) {
-              let articleId = resultBoard.result[0].ID
-              let blockId = resultBoard.result[0].ContentBlockID
-              dispatch(serverUtils.getContent(boardId, articleId, blockId, CONTENT_TYPE_ARTICLE, 0, 0, LIST_ORDER_PREV))
-                .then(({response: resultContent, type, query, error}) => {
-                  if (resultContent.result && resultContent.result.length > 0) {
-                    let content = resultContent.result[0].B.reduce((acc, cur) => {
-                      return acc = [acc, serverUtils.b64decode(cur)].join(' ')
-                    }, '')
-                    dispatch(postprocessGetProfile(myId, content))
-                  }
-                })
-            }
-          })
-      })
-  }
-}
-
-const postprocessGetProfile = (myId, content) => {
-
-  content = JSON.parse(content)
-
-  console.log('doRootPage.postprocessGetProfile: ', content)
-
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { profile: content, loaded: true }
-  }
-}
-
 export const editProfile = (myId, profile) => {
   return (dispatch, getState) => {
-    dispatch(serverUtils.getMe(EMPTY_ID))
+    dispatch(serverUtils.setMyNameCard(JSON.stringify(profile)))
       .then(({response: { result }, type, query, error}) => {
-        let boardId = result.BID
-        dispatch(serverUtils.getArticles(boardId, EMPTY_ID, 1, LIST_ORDER_PREV))
-          .then(({response: resultBoard, type, query, error}) => {
-            if (resultBoard.result && resultBoard.result.length <= 0) {
-              // create and edit article
-              dispatch(serverUtils.createArticle(boardId, 'profile', [JSON.stringify({})], []))
-                .then(({response: resultCreate, type, query, error}) => {
-                  let articleId = resultCreate.result.AID
-                  dispatch(serverUtils.updateArticle(boardId, articleId, [JSON.stringify(profile)], []))
-                    .then(({response: resultUpdate, type, query, error}) => {
-                      dispatch(postprocessEditProfile(myId, profile))
-                    })
-                })
-            } else {
-              // edit article
-              let articleId = resultBoard.result[0].ID
-              dispatch(serverUtils.updateArticle(boardId, articleId, [JSON.stringify(profile)], []))
-                .then(({response: resultUpdate, type, query, error}) => {
-                  dispatch(postprocessEditProfile(myId, profile))
-                })
-            }
-          })
+        dispatch(postprocessEditProfile(myId, profile))
       })
   }
 }
 
 const postprocessEditProfile = (myId, content) => {
 
-  //content = JSON.parse(content)
-
   console.log('doRootPage.postprocessEditProfile: ', JSON.stringify(content))
+
+  const combinedUserInfo = {
+    userNameCard: content
+  }
 
   return {
     myId,
     myClass,
-    type: SET_DATA,
-    data: { profile: content }
+    type: UPDATE_DATA, /* UPDATE_DATA will merge the updated object with original */
+    data: { userInfo: combinedUserInfo }
   }
 }
 

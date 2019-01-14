@@ -19,6 +19,7 @@ export const SHOW_OP_LOG_MODAL      = 'SHOW_OP_LOG_MODAL'
 export const EMPTY_ID               = ''
 export const DEFAULT_USER_NAME      = 'guest'
 export const DEFAULT_USER_IMAGE     = '/images/icon_avatar@2x.png'
+export const DEFAULT_USER_NAMECARD  = {}
 
 export const REFRESH_INTERVAL           = 5000
 export const CONTENT_REFETCH_INTERVAL   = 1000

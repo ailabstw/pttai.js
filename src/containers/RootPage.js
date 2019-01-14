@@ -69,9 +69,6 @@ class RootPage extends PureComponent {
     // get user name and user image
     doRootPage.getUserInfo(myId, openFirstPopupModal, () => {})
 
-    // get user profile info
-    doRootPage.getProfile(myId)
-
     // get join keys for multi-device and friend
     doRootPage.getKeyInfo(myId)
 
@@ -95,7 +92,6 @@ class RootPage extends PureComponent {
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {})
-    doRootPage.getProfile(myId)
   }
 
   render() {
@@ -104,15 +100,15 @@ class RootPage extends PureComponent {
     let myId = getRootId(this.props)
     if(!myId) return (<Empty />)
 
-    let me          = getRoot(this.props)
-    let userId      = me.getIn(['userInfo', 'userId'])
-    let userName    = me.getIn(['userInfo', 'userName'])
-    let userImg     = me.getIn(['userInfo', 'userImg'])
-    let keyInfo     = me.get('keyInfo',         Immutable.Map()).toJS()
-    let deviceInfo  = me.get('deviceInfo',      Immutable.List()).toJS()
-    let latest      = me.get('latestArticles',  Immutable.List()).toJS()
-    let profile     = me.get('profile',         Immutable.Map()).toJS()
-
+    let me            = getRoot(this.props)
+    let userId        = me.getIn(['userInfo', 'userId'])
+    let userName      = me.getIn(['userInfo', 'userName'])
+    let userImg       = me.getIn(['userInfo', 'userImg'])
+    let profile       = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
+    let keyInfo       = me.get('keyInfo',         Immutable.Map()).toJS()
+    let deviceInfo    = me.get('deviceInfo',      Immutable.List()).toJS()
+    let latest        = me.get('latestArticles',  Immutable.List()).toJS()
+    console.log('sammui profile:', profile)
     let latestHasUnread = latest.length > 0? isUnRead(latest[0].UpdateTS.T,latest[0].LastSeen.T):false;
 
     let onEditNameSubmit = (name, editedProfile) => {

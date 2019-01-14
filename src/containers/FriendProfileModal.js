@@ -16,14 +16,9 @@ class FriendProfileModal extends PureComponent {
   constructor(props) {
     super();
     this.state = {
-      friendId:   props.modalInput.FriendID,
-      name:     props.modalInput.Name,
-      userImg:  props.modalInput.Img,
-      company:  '',
-      jobTitle: '',
-      email:    '',
-      phone:    '',
-      description: '',
+      friendId:     props.modalInput.FriendID,
+      name:         props.modalInput.Name,
+      userImg:      props.modalInput.Img,
     };
   }
 
@@ -33,11 +28,7 @@ class FriendProfileModal extends PureComponent {
 
     let userId   = getRoot(this.props).getIn(['userInfo','userId'])
 
-    if (userId === friendId) {
-      doFriendProfileModal.getMyProfile(myId)
-    } else {
-      doFriendProfileModal.getFriendProfile(myId, friendId)
-    }
+    doFriendProfileModal.getFriendProfile(myId, friendId)
   }
 
   render() {
@@ -48,12 +39,12 @@ class FriendProfileModal extends PureComponent {
     let profile = me.get('profile', Immutable.Map()).toJS()
 
     profile = {
-      name:         name        || profile.name,
-      company:      company     || profile.company,
-      jobTitle:     jobTitle    || profile.jobTitle,
-      email:        email       || profile.email,
-      phone:        phone       || profile.phone,
-      description:  description || profile.description
+      name:         name || profile.name,
+      company:      profile.company,
+      jobTitle:     profile.jobTitle,
+      email:        profile.email,
+      phone:        profile.phone,
+      description:  profile.description
     }
 
     // profile = {

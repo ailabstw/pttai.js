@@ -27,52 +27,11 @@ export const init = (myId, query) => {
   }
 }
 
-export const getMyProfile = (myId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getMe(constants.EMPTY_ID))
-      .then(({response: { result }, type, query, error}) => {
-        let boardId = result.BID
-        dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, 1, constants.LIST_ORDER_PREV))
-          .then(({response: resultBoard, type, query, error}) => {
-            if (resultBoard.result && resultBoard.result.length > 0) {
-              let articleId = resultBoard.result[0].ID
-              let blockId = resultBoard.result[0].ContentBlockID
-              dispatch(serverUtils.getContent(boardId, articleId, blockId, constants.CONTENT_TYPE_ARTICLE, 0, 0, constants.LIST_ORDER_PREV))
-                .then(({response: resultContent, type, query, error}) => {
-                  if (resultContent.result && resultContent.result.length > 0) {
-                    let content = resultContent.result[0].B.reduce((acc, cur) => {
-                      return acc = [acc, serverUtils.b64decode(cur)].join(' ')
-                    }, '')
-                    dispatch(postprocessGetProfile(myId, content))
-                  }
-                })
-            }
-          })
-      })
-  }
-}
-
 export const getFriendProfile = (myId, userId) => {
   return (dispatch, getState) => {
-    dispatch(serverUtils.getFriend(userId))
+    dispatch(serverUtils.getNameCard(userId))
       .then(({response: { result }, type, query, error}) => {
-        let boardId = result.BID
-        dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, 1, constants.LIST_ORDER_PREV))
-          .then(({response: resultBoard, type, query, error}) => {
-            if (resultBoard.result && resultBoard.result.length > 0) {
-              let articleId = resultBoard.result[0].ID
-              let blockId = resultBoard.result[0].ContentBlockID
-              dispatch(serverUtils.getContent(boardId, articleId, blockId, constants.CONTENT_TYPE_ARTICLE, 0, 0, constants.LIST_ORDER_PREV))
-                .then(({response: resultContent, type, query, error}) => {
-                  if (resultContent.result && resultContent.result.length > 0) {
-                    let content = resultContent.result[0].B.reduce((acc, cur) => {
-                      return acc = [acc, serverUtils.b64decode(cur)].join(' ')
-                    }, '')
-                    dispatch(postprocessGetProfile(myId, content))
-                  }
-                })
-            }
-          })
+        dispatch(postprocessGetProfile(myId, result.Card))
       })
   }
 }

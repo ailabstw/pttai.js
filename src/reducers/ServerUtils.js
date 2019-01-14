@@ -394,26 +394,35 @@ export const editProfileImg = (myImg) => {
   }
 }
 
-// export const getProfile = () => {
-//   return dispatch => Promise.all([
-//     dispatch(getMe())
-//       .then(({response: {result}, type, query, error}) => {
-//         if (error) {
-//           return { 'error': true, 'key':'userName', 'value': error }
-//         } else {
-//           return { 'error': false, 'key':'userName', 'value': result }
-//         }
-//       }),
-//     dispatch(getUserImgByIds(userIds))
-//       .then(({response: {result}, type, query, error}) => {
-//         if (error) {
-//           return { 'error': true, 'key':'userImg', 'value': error }
-//         } else {
-//           return { 'error': false, 'key':'userImg', 'value': result }
-//         }
-//       }),
-//   ]);
-// }
+export const getNameCard = (userId) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "account_getNameCard", "params": [userId]},
+    }
+  }
+}
+
+export const getNameCardByIds = (userIds) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "account_getNameCardByIDs", "params": [userIds]},
+    }
+  }
+}
+
+export const setMyNameCard = (content) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "me_setMyNameCard", "params": [b64encode(content)]},
+    }
+  }
+}
 
 export const getMe = (entityID) => {
   return {

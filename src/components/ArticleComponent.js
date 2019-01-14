@@ -67,8 +67,8 @@ class ArticleComponent extends PureComponent {
                >
             <div className={styles['author']} onClick={() => onOpenFriendProfileModal({
               FriendID: articleInfo.CreatorID,
-              Name:     articleInfo.CreatorName,
-              Img:  articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE
+              Name:     articleInfo.CreatorName || constants.DEFAULT_USER_NAME,
+              Img:      articleInfo.CreatorImg  || constants.DEFAULT_USER_IMAGE
             })}>
               <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'}/>
               <div title={articleInfo.CreatorName}> {articleInfo.CreatorName} </div>
