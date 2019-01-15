@@ -29,7 +29,7 @@ export const getFriendProfile = (myId, userId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getNameCard(userId))
       .then(({response: { result }, type, query, error}) => {
-        dispatch(postprocessGetProfile(myId, result.Card))
+        dispatch(postprocessGetProfile(myId, serverUtils.b64decode(result.C)))
       })
   }
 }

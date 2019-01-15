@@ -47,7 +47,6 @@ class HubPage extends PureComponent {
 
     let isLoading       = me.get('isLoading', false)
     let boardList       = me.get('boardList', Immutable.List())
-
     // let fetchMoreBoard = () => {
     //   if (!allBoardsLoaded) {
     //     let startBoardId = boardList.toJS()[boardList.toJS().length-1].ID

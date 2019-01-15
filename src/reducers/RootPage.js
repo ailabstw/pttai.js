@@ -154,7 +154,7 @@ const postprocessGetUserInfo = (myId, info, metaInfo) => {
   let userNameCardResult  = metaInfo.find((meta) => meta.key === 'userNameCard').value
   let userName      = (userNameResult && userNameResult.N ) ? serverUtils.b64decode(userNameResult.N) : DEFAULT_USER_NAME
   let userImg       = (userImgResult && userImgResult.I) ? userImgResult.I : DEFAULT_USER_IMAGE
-  let userNameCard  = (userNameCardResult && userNameCardResult.Card) ? JSON.parse(userNameCardResult.Card) : DEFAULT_USER_NAMECARD
+  let userNameCard  = (userNameCardResult && userNameCardResult.C) ? JSON.parse(serverUtils.b64decode(userNameCardResult.C)) : DEFAULT_USER_NAMECARD
 
   console.log('doRootPage.postprocessGetUserInfo: userName: ',      userName)
   console.log('doRootPage.postprocessGetUserInfo: userImg: ',       userImg)
