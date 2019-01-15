@@ -1,5 +1,5 @@
-import Immutable        from 'immutable';
-import { createDuck }   from 'redux-duck'
+import Immutable            from 'immutable'
+import { createDuck }       from 'redux-duck'
 
 import * as utils       from './utils'
 import * as serverUtils from './ServerUtils'
@@ -102,16 +102,15 @@ function getUserInfoById(userId) {
   ]);
 }
 
-export const getUserInfo = (myId, noUserCallBackFunc, userCallBackFunc) => {
+export const getUserInfo = (myId, noUserCallBackFunc, userCallBackFunc, connectionLostCallBackFunc) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.showMe())
       .then(({response: userInfo, type, query, error}) => {
         if (error) {
-          const errorMessage = "Backend no response: please try restarting ptt.ai \n\n [Err Message]: " + error
-          alert(errorMessage)
+          const errorMessage = "Backend no response: please try restarting ptt.ai"
+          connectionLostCallBackFunc(errorMessage)
 
         } else {
-
           let userId = userInfo.result.ID
           dispatch(getUserInfoById(userId))
             .then((userMetaInfo) => {

@@ -1,7 +1,8 @@
-import React, { PureComponent } from 'react'
-import { connect }              from 'react-redux'
-import { bindActionCreators }   from 'redux'
-import Immutable                from 'immutable'
+import React, { PureComponent }   from 'react'
+import { connect }                from 'react-redux'
+import { bindActionCreators }     from 'redux'
+import Immutable                  from 'immutable'
+import { ToastContainer, toast }  from 'react-toastify'
 
 import Empty          from '../components/Empty'
 import Navigator      from '../components/Navigator'
@@ -27,10 +28,12 @@ import {  getUUID,
           parseQueryString  } from '../utils/utils'
 
 import styles from './RootPage.css'
+import 'react-toastify/dist/ReactToastify.css'
 
 class RootPage extends PureComponent {
   constructor(props) {
     super();
+    this.toastId = null
     this.refreshPageInterval = null
 
     this.refreshPage = this.refreshPage.bind(this)
@@ -89,9 +92,15 @@ class RootPage extends PureComponent {
   refreshPage(myId) {
     const { actions: {doRootPage} } = this.props
 
+    let onConnectionLost = (message) => {
+      if (!toast.isActive(this.toastId)) {
+        this.toastId = toast.error(message, { autoClose: 3000 });
+      }
+    }
+
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
-    doRootPage.getUserInfo(myId, () => {}, () => {})
+    doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
   }
 
   render() {
@@ -108,7 +117,7 @@ class RootPage extends PureComponent {
     let keyInfo       = me.get('keyInfo',         Immutable.Map()).toJS()
     let deviceInfo    = me.get('deviceInfo',      Immutable.List()).toJS()
     let latest        = me.get('latestArticles',  Immutable.List()).toJS()
-    console.log('sammui profile:', profile)
+
     let latestHasUnread = latest.length > 0? isUnRead(latest[0].UpdateTS.T,latest[0].LastSeen.T):false;
 
     let onEditNameSubmit = (name, editedProfile) => {
@@ -219,6 +228,7 @@ class RootPage extends PureComponent {
         <Navigator {...this.props} />
         { MAIN_PAGE }
         <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
+        <ToastContainer hideProgressBar={true}/>
       </div>
     );
   }

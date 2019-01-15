@@ -39,6 +39,7 @@
     "react-router-dom": "^4.2.2",
     "react-slick": "^0.23.1",
     "react-spinners": "^0.3.2",
+    "react-toastify": "^4.5.2",
     "redux": "^4.0.0",
     "redux-duck": "^1.0.2",
     "redux-testkit": "^1.0.6",
