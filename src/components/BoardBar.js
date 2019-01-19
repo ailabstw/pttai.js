@@ -11,7 +11,7 @@ class BoardBar extends PureComponent {
       <div className={styles['root']}>
         <div className={styles['content']}>
             <div className={styles['prev-button']}>
-                <Link to={`/hub`}>
+              <Link to={`/hub`}>
                     <div className={styles['prev-button-icon']}></div>
                     <div className={styles['prev-button-text']}>
                       <FormattedMessage

@@ -114,7 +114,7 @@ class ArticleListComponent extends PureComponent {
               {
                 listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
                   //let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
-                  let itemLink = (sliderInIndex === -1)? '/board/' + encodeURIComponent(boardId) + '/article/' + encodeURIComponent(item.ID):false
+                  let itemLink = (sliderInIndex === -1)? `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(item.ID)}`:false
 
                   let summary = ''
                   if (item.PreviewText) {

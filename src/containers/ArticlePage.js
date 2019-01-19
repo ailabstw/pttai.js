@@ -3,6 +3,7 @@ import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
 import Immutable                  from 'immutable'
 import $                          from 'jquery'
+import { PTTAI_URL_BASE }         from 'config'
 
 import Empty                      from '../components/Empty'
 import ArticleComponent           from '../components/ArticleComponent'
@@ -230,7 +231,7 @@ class ArticlePage extends PureComponent {
       doArticlePage.deleteArticle(myId, boardId, articleId)
       doModalContainer.closeModal()
 
-      this.props.history.push('/board/' + boardId)
+      this.props.history.push(`${PTTAI_URL_BASE}/board/${boardId}`)
     }
 
     let openEditArticleSubmit = (title, reducedArticleArray, attachments) => {

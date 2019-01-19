@@ -1,6 +1,7 @@
 import React, { PureComponent }     from 'react'
 import { FormattedMessage }         from 'react-intl'
 import { Link }                     from 'react-router-dom'
+import { PTTAI_URL_BASE }           from 'config'
 
 import styles   from './Navigator.css'
 
@@ -8,8 +9,8 @@ class Navigator extends PureComponent {
   render() {
     let tabOneClass = ''
     let tabTwoClass = ''
-    if (this.props.match.url.indexOf('/hub') === 0 ||
-        this.props.match.url.indexOf('/board') === 0 ) {
+    if (this.props.match.url.indexOf(`${PTTAI_URL_BASE}/hub`) === 0 ||
+        this.props.match.url.indexOf(`${PTTAI_URL_BASE}/board`) === 0 ) {
       tabOneClass = 'active'
     } else {
       tabTwoClass = 'active'

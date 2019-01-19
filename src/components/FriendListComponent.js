@@ -1,5 +1,5 @@
 import React, { PureComponent }   from 'react'
-import { BeatLoader, ClipLoader }             from 'react-spinners'
+import { BeatLoader, ClipLoader } from 'react-spinners'
 
 import { Link }                   from 'react-router-dom'
 import { FormattedMessage }       from 'react-intl'

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
-import { Link }                 from "react-router-dom";
-import { BeatLoader }           from 'react-spinners';
-import { FormattedMessage }     from 'react-intl';
+import { Link }                 from "react-router-dom"
+import { BeatLoader }           from 'react-spinners'
+import { FormattedMessage }     from 'react-intl'
 
 import styles                   from './NewsListComponent.css'
 import { epoch2FullDate,
@@ -46,7 +46,7 @@ class NewsListComponent extends PureComponent {
                 return null
               }
 
-              const itemLink = '/board/' + encodeURIComponent(item.BoardID) + '/article/' + encodeURIComponent(item.ID)
+              const itemLink = `/board/${encodeURIComponent(item.BoardID)}/article/${encodeURIComponent(item.ID)}`
 
               let summary = ''
               if (item.Summary) {

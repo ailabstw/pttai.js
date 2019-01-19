@@ -1,7 +1,7 @@
 import React, { PureComponent }   from 'react'
-import { Link }                   from "react-router-dom";
-import { BeatLoader }             from 'react-spinners';
-import { FormattedMessage }       from 'react-intl';
+import { Link }                   from "react-router-dom"
+import { BeatLoader }             from 'react-spinners'
+import { FormattedMessage }       from 'react-intl'
 
 import { isUnRead, getStatusClass }         from '../utils/utils'
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'

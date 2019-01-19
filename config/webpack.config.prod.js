@@ -244,6 +244,14 @@ module.exports = {
                         ],
                       },
                     },
+                    {
+                      loader: 'string-replace-loader',
+                      options: {
+                        search: `/images`,
+                        replace: `${publicUrl}/images`,
+                        flags: 'i'
+                      }
+                    },
                   ],
                 },
                 extractTextPluginOptions

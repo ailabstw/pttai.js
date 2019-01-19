@@ -1,3 +1,5 @@
+import { PTTAI_URL_BASE }         from 'config'
+
 export const CREATE_BOARD_MODAL 	= 'CREATE_BOARD_MODAL'
 export const MANAGE_BOARD_MODAL     = 'MANAGE_BOARD_MODAL'
 export const CREATE_ARTICLE_MODAL 	= 'CREATE_ARTICLE_MODAL'
@@ -18,7 +20,7 @@ export const SHOW_OP_LOG_MODAL      = 'SHOW_OP_LOG_MODAL'
 
 export const EMPTY_ID               = ''
 export const DEFAULT_USER_NAME      = 'guest'
-export const DEFAULT_USER_IMAGE     = '/images/icon_avatar@2x.png'
+export const DEFAULT_USER_IMAGE     = `${PTTAI_URL_BASE}/images/icon_avatar@2x.png`
 export const DEFAULT_USER_NAMECARD  = {}
 
 export const REFRESH_INTERVAL           = 5000

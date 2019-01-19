@@ -1,8 +1,8 @@
-import { API_ROOT2 }  from 'config'
-import { Base64 }     from 'js-base64'
+import { PTTAI_APP_ROOT } from 'config'
+import { Base64 }         from 'js-base64'
 
-import * as api       from '../middleware/api'
-import { getUUID }    from '../utils/utils'
+import * as api           from '../middleware/api'
+import { getUUID }        from '../utils/utils'
 
 import { LIST_ORDER_PREV, LIST_ORDER_NEXT } from '../constants/Constants'
 
@@ -659,7 +659,7 @@ export const joinMe = (nodeId, key) => {
 export const uploadImg = (boardId, image) => {
   return {
     [api.CALL_API]: {
-      endpoint: API_ROOT2 + '/api/upload/' + boardId,
+      endpoint: PTTAI_APP_ROOT + '/api/upload/' + boardId,
       method: 'post',
       files: { 'file': image.file },
     }
@@ -669,7 +669,7 @@ export const uploadImg = (boardId, image) => {
 export const uploadFile = (boardId, file) => {
   return {
     [api.CALL_API]: {
-      endpoint: API_ROOT2 + '/api/uploadfile/' + boardId,
+      endpoint: PTTAI_APP_ROOT + '/api/uploadfile/' + boardId,
       method: 'post',
       files: { 'file': file.file },
     }
@@ -679,7 +679,7 @@ export const uploadFile = (boardId, file) => {
 export const downloadFile = (boardId, mediaId) => {
   return {
     [api.CALL_API]: {
-      endpoint: API_ROOT2 + '/api/file/' + boardId + '/' + mediaId,
+      endpoint: PTTAI_APP_ROOT + '/api/file/' + boardId + '/' + mediaId,
       method: 'get',
       files: { 'gzip': true },
       gzip: true,

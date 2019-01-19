@@ -4,7 +4,7 @@ import config from 'config'
 import Cookie from 'js-cookie'
 import { queryToString, toJson } from '../utils/utils'
 
-const { API_ROOT, API_ROOT2, AUTH_ROOT } = config
+const { PTTAI_APP_ROOT, PTTAI_API_ROOT, AUTH_ROOT } = config
 
 export const CALL_API = Symbol('Call API')
 
@@ -22,8 +22,8 @@ const callApi = (endpoint, { query, method = 'get', params, files, json }, isWit
   }
 
 
-  if (endpoint.indexOf(API_ROOT) === -1 && endpoint.indexOf(API_ROOT2) === -1) {
-    endpoint = API_ROOT + endpoint
+  if (endpoint.indexOf(PTTAI_API_ROOT) === -1 && endpoint.indexOf(PTTAI_APP_ROOT) === -1) {
+    endpoint = PTTAI_API_ROOT + endpoint
   }
 
   if (query) {
