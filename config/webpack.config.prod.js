@@ -249,7 +249,7 @@ module.exports = {
                       options: {
                         search: `/images`,
                         replace: `${publicUrl}/images`,
-                        flags: 'i'
+                        flags: 'g'
                       }
                     },
                   ],
