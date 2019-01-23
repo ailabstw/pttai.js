@@ -2,3 +2,36 @@
     height: auto;
     width: 100%;
 }
+
+.add-icon-container {
+    position: fixed;
+    max-width: 414px;
+    bottom: 10px;
+    font-size: 80px;
+    cursor: pointer;
+    top:85%;
+    width: 80px;
+    left: calc(50% - 40px);
+}
+
+.add-icon-subcontainer {
+    width: 80px;
+    height: 80px;
+    margin: auto;
+}
+
+.add-icon {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background-size: 80px;
+    background-image: url('/images/btn_add@2x.png');
+}
+
+.add-icon:hover {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background-size: 80px;
+    background-image: url('/images/btn_add_hover@2x.png');
+}

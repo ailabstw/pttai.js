@@ -80,6 +80,7 @@
     "board-action-modal.action3": "Cancel",
     "alert-component.action1": "Cancel",
     "alert-component.action2": "Confirm",
+    "board-list-component.message": "You have no group yet, click below button to add",
     "board-list-component.board-type": "[Private] {name}",
     "comment-reply-list-component.action": "Delete",
     "article-list-component.action": "Delete",

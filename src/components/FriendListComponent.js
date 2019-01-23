@@ -202,7 +202,6 @@ class FriendListComponent extends PureComponent {
                   )
                 })
               }
-
               </div>
             )
           }

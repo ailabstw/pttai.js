@@ -34,8 +34,11 @@ export const init = (myId, parentId, parentClass, parentDuck) => {
 /*  Get Board List    */
 /*                    */
 
-export const getBoardList = (myId, limit) => {
+export const getBoardList = (myId, isFirstFetch, limit) => {
   return (dispatch, getState) => {
+    if (isFirstFetch) {
+      dispatch(preprocessSetStartLoading(myId))
+    }
     dispatch(serverUtils.getBoards(EMPTY_ID, limit))
       .then(({response: {result}, type, query, error}) => {
         dispatch(serverUtils.getBoardRequest(EMPTY_ID))
@@ -43,14 +46,17 @@ export const getBoardList = (myId, limit) => {
             let creatorIds = result.map((each) => each.C)
             dispatch(serverUtils.getUsersInfo(creatorIds))
               .then((usersInfo) => {
-                dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
+                dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, isFirstFetch))
+                if (isFirstFetch) {
+                  dispatch(postprocessSetFinshLoading(myId))
+                }
               })
           })
       })
   }
 }
 
-const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
+const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetch) => {
 
   result = result.map((each) => {
     return {
@@ -58,6 +64,7 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
       ...each
     }
   })
+  result = []
 
   result    = result.map(serverUtils.deserialize)
   reqResult = reqResult.map(serverUtils.deserialize)
@@ -121,11 +128,27 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
     }
   })
 
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { boardList: boardList }
+  if (boardList.length === 0 && isFirstFetch) {
+    return {
+      myId,
+      myClass,
+      type: SET_DATA,
+      data: { noBoard: true }
+    }
+  } else if (boardList.length === 0 && !isFirstFetch) {
+    return {
+      myId,
+      myClass,
+      type: SET_DATA,
+      data: {}
+    }
+  } else {
+    return {
+      myId,
+      myClass,
+      type: SET_DATA,
+      data: { boardList: boardList, noBoard: false }
+    }
   }
 }
 
@@ -230,7 +253,7 @@ export const setBoardName = (myId, boardId, name) => {
                   let creatorIds = result.map((each) => each.C)
                   dispatch(serverUtils.getUsersInfo(creatorIds))
                     .then((usersInfo) => {
-                      dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
+                      dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
                     })
                 })
             })

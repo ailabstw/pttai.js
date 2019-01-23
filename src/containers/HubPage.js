@@ -25,9 +25,9 @@ class HubPage extends PureComponent {
   componentWillMount() {
     const { myId, actions: { doHubPage }} = this.props
 
-    doHubPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
+    doHubPage.getBoardList(myId, true, constants.NUM_BOARD_PER_REQ)
 
-    this.refreshPageInterval = setInterval(() => doHubPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ), constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(() => doHubPage.getBoardList(myId, false, constants.NUM_BOARD_PER_REQ), constants.REFRESH_INTERVAL);
   }
 
   componentWillUnmount() {
@@ -46,6 +46,7 @@ class HubPage extends PureComponent {
     let userName        = getRoot(this.props).getIn(['userInfo','userName'])
 
     let isLoading       = me.get('isLoading', false)
+    let noBoard         = me.get('noBoard', false)
     let boardList       = me.get('boardList', Immutable.List()).toJS()
     // let fetchMoreBoard = () => {
     //   if (!allBoardsLoaded) {
@@ -79,6 +80,7 @@ class HubPage extends PureComponent {
         <HubComponent
           userId={userId}
           userName={userName}
+          noBoard={noBoard}
           boardList={boardList}
           isLoading={isLoading}
           createBoardAction={openBoardActionModule}
