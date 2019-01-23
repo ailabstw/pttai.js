@@ -5,14 +5,14 @@
 
 .content {
     height: 50px;
-    width: calc(100% - 1px);
-    max-width: 413px;
+    width: 100%;
+    /*max-width: 413px;*/
     display: flex;
     flex-direction: row;
-    position: fixed;
+    /*position: fixed;*/
     background-color: #FFF;
     border-bottom: 1px solid #A9A9A9;
-    border-right: 1px solid #A9A9A9;
+    /*border-right: 1px solid #A9A9A9;*/
     z-index: 10;
 }
 

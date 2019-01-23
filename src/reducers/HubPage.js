@@ -4,7 +4,8 @@ import { createDuck }   from 'redux-duck'
 import { EMPTY_ID,
          NUM_BOARD_PER_REQ,
          DEFAULT_USER_NAME,
-         MESSAGE_TYPE_INVITE } from '../constants/Constants'
+         MESSAGE_TYPE_INVITE,
+         BOARD_TYPE_PRIVATE } from '../constants/Constants'
 
 import * as utils       from './utils'
 import * as serverUtils from './ServerUtils'
@@ -106,7 +107,7 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
       let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
       boardList.push({
-        BoardType:        0,
+        BoardType:        BOARD_TYPE_PRIVATE,
         ID:               EMPTY_ID,
         Status:           0,
         Title:            join.Name,
@@ -184,6 +185,7 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
       LastSeen:         each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
       UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
       joinStatus:       3,
+      BoardType:        each.BT,
     }
   })
 
@@ -297,6 +299,7 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
       UpdateTS:         utils.emptyTimeStamp(),
       LastSeen:         utils.emptyTimeStamp(),
       joinStatus:       3,
+      BoardType:        BOARD_TYPE_PRIVATE,
   }
 
   return {
@@ -354,6 +357,7 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
       CreateTS:         utils.emptyTimeStamp(),
       UpdateTS:         utils.emptyTimeStamp(),
       joinStatus:       0,
+      BoardType:        BOARD_TYPE_PRIVATE,
   }
 
   return {

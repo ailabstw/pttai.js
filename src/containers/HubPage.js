@@ -46,7 +46,7 @@ class HubPage extends PureComponent {
     let userName        = getRoot(this.props).getIn(['userInfo','userName'])
 
     let isLoading       = me.get('isLoading', false)
-    let boardList       = me.get('boardList', Immutable.List())
+    let boardList       = me.get('boardList', Immutable.List()).toJS()
     // let fetchMoreBoard = () => {
     //   if (!allBoardsLoaded) {
     //     let startBoardId = boardList.toJS()[boardList.toJS().length-1].ID

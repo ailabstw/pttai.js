@@ -184,7 +184,7 @@ class EditNameModal extends PureComponent {
   }
 
   onUpload(e) {
-    let { onEditImg } = this.props
+    let { modalInput: { editImgSubmit } } = this.props
     let that          = this
     let file          = document.querySelector('input[type=file]').files[0];
     let resizeReader  = new FileReader();
@@ -259,7 +259,7 @@ class EditNameModal extends PureComponent {
                 let imgDataUrl = canvas.toDataURL('image/jpeg');
                 that.setState({ profilePic:imgDataUrl })
 
-                onEditImg(imgDataUrl)
+                editImgSubmit(imgDataUrl)
                 document.getElementById('profile-page-pic').setAttribute('src', imgDataUrl);
             }
          }

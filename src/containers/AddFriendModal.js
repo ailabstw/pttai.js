@@ -4,6 +4,7 @@ import { bindActionCreators }   from 'redux'
 import Modal                    from 'react-modal'
 import QRCode                   from 'qrcode.react'
 import QrReader                 from 'react-qr-reader'
+import QrCode                   from 'qrcode-reader'
 import { CopyToClipboard }      from 'react-copy-to-clipboard';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
@@ -22,6 +23,7 @@ class AddFriendModal extends PureComponent {
   constructor(props) {
     super();
     this.refreshKeyInfoInterval = null
+    this.rqScanner = new QrCode();
     this.state = {
       tab: SCAN_QR_CODE_TAB,
       friendReqId: '',

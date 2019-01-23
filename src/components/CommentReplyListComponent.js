@@ -59,9 +59,10 @@ class CommentReplyListComponent extends PureComponent {
   onInputEnter(e) {
     const { comment } = this.state
 
-    if (e.which && e.which !== 13) return
+    /* isComposing is for 注音輸入法 */
+    if (e.isComposing || (e.key && e.key !== "Enter")) return
 
-    if (e.which === 13 && $(':focus').is('input')) {
+    if (e.key === "Enter" && $(':focus').is('input')) {
       /* From key pressed */
 
       e.preventDefault()
@@ -71,7 +72,7 @@ class CommentReplyListComponent extends PureComponent {
         this.onCommentSubmit(comment)
       }
       this.setState({comment:''})
-    } else if (!e.which) {
+    } else if (!e.key) {
       /* From button clicked */
 
       if (isEmpty(comment)) {

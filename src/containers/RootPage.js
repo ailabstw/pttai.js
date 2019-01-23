@@ -135,6 +135,7 @@ class RootPage extends PureComponent {
         userImg:  userImg,
         userName: userName,
         profile:  profile,
+        editImgSubmit:   onEditImgSubmit,
         friendJoinKey:   keyInfo.friendJoinKey,
       })
       doModalContainer.setSubmit(onEditNameSubmit)
@@ -221,7 +222,6 @@ class RootPage extends PureComponent {
           userName={userName}
           userImg={userImg}
           onEditName={openEditNameModule}
-          onEditImg={onEditImgSubmit}
           onSettingClicked={onSettingClicked}
           onLatestClicked={onLatestClicked}
           hasUnread={latestHasUnread} />
