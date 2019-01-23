@@ -22,7 +22,6 @@ class AddFriendModal extends PureComponent {
   constructor(props) {
     super();
     this.refreshKeyInfoInterval = null
-    this.rqScanner = new QrCode();
     this.state = {
       tab: SCAN_QR_CODE_TAB,
       friendReqId: '',
