@@ -368,7 +368,7 @@ class PttaiEditor extends PureComponent {
 
   onInputEnter(e) {
     /* focus editor when press enter or tab */
-    if ((e.which === 13 || e.which === 9) && $(':focus').is('input')) {
+    if (((!e.isComposing && e.key === 'Enter') || (!e.isComposing && e.key === 'Tab')) && $(':focus').is('input')) {
         $('.' + constants.PTT_EDITOR_CLASS_NAME).focus();
         e.preventDefault()
     }

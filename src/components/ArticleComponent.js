@@ -1,6 +1,7 @@
 import React, { PureComponent }   from 'react'
-import { FormattedMessage }       from 'react-intl';
+import { FormattedMessage }       from 'react-intl'
 import { PulseLoader }            from 'react-spinners'
+import $                          from 'jquery'
 
 import styles           from './ArticleComponent.css'
 import * as constants   from '../constants/Constants'
@@ -26,6 +27,18 @@ class ArticleComponent extends PureComponent {
     }
   }
 
+  componentDidMount() {
+    // For mobile
+    $("#article-main-content").on("touchstart", this.handleLongPress);
+    $("#article-main-content").on("touchend", this.handleLongPressRelease);
+  }
+
+  componentWillUnmount(){
+    // For mobile
+    $("#article-main-content").off("touchstart", this.handleLongPress);
+    $("#article-main-content").off("touchend", this.handleLongPressRelease);
+  }
+
   handleLongPress () {
     const { editArticleAction, articleInfo, userId } = this.props
     if (articleInfo.CreatorID === userId) {
@@ -49,7 +62,7 @@ class ArticleComponent extends PureComponent {
     const cntDown = constants.ARTICLE_PULL_COUNT_DOWN - pullCount;
 
     return (
-      <div className={styles['root']}>
+      <div id="article-main-content" className={styles['root']}>
       {
         loading? (
           <div className={styles['loading']}>

@@ -45,9 +45,10 @@ class FriendChatComponent extends PureComponent {
   onInputEnter(e) {
     const { inputMessage } = this.state
 
-    if (e.which && e.which !== 13) return
+    /* isComposing is for 注音輸入法 */
+    if (e.isComposing || (e.key && e.key !== "Enter")) return
 
-    if (e.which === 13 && $(':focus').is('input')) {
+    if (e.key === "Enter" && $(':focus').is('input')) {
       /* From key pressed */
       e.preventDefault()
 
@@ -58,7 +59,7 @@ class FriendChatComponent extends PureComponent {
       }
       this.setState({inputMessage:''})
 
-    } else if (!e.which) {
+    } else if (!e.key) {
       /* From button clicked */
 
       if (isEmpty(inputMessage)) {
