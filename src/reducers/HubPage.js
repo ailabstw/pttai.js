@@ -64,7 +64,6 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
       ...each
     }
   })
-  result = []
 
   result    = result.map(serverUtils.deserialize)
   reqResult = reqResult.map(serverUtils.deserialize)

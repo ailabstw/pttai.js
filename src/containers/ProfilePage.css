@@ -1,6 +1,6 @@
 .root {
-    height: 97px;
-    min-height: 97px;
+    height: 78px;
+    min-height: 78px;
     background-color: #4D474E;
     position:relative;
     z-index:1;
@@ -12,7 +12,7 @@
 
 .content {
     width: 100%;
-    height: 97px;
+    height: 78px;
     max-width: 414px;
     padding: 11px 21px;
 
@@ -23,31 +23,42 @@
 }
 
 .profile-picture {
-    min-width: 68px;
     cursor: pointer;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .profile-picture img {
     max-width: 100%;
     max-height: 100%;
-    width: 68px;
-    height: 68px;
+    width: 50px;
+    height: 50px;
     object-fit: contain;
+    margin: auto;
 }
 
 .profile-description {
-    max-width: calc(100% - 68px - 38px - 38px);
+    max-width: calc(100% - 50px - 38px - 38px);
     padding: 0px 20px;
     flex-grow: 1;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .profile-description .name {
-    height: 37px;
-    line-height: 37px;
-    color: #FFF;
-    font-size: 30px;
+    height: 36px;
+    line-height: 1.5;
+    font-size: 24px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #ffffff;
 
     text-overflow: ellipsis;
     white-space: nowrap;

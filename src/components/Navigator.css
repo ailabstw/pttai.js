@@ -23,11 +23,17 @@
     text-align: center;
     line-height: 42px;
     color: #000;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .content-selected .content-block:hover {
     color: #000;
     text-decoration: none;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .content-not-selected .content-block {
@@ -36,11 +42,17 @@
     text-align: center;
     line-height: 42px;
     color: #fff;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .content-not-selected .content-block:hover {
     color: #fff;
     text-decoration: none;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .content-not-selected:hover {
@@ -74,8 +86,6 @@
 
 
 
-
-
 .tabs {
   list-style: none;
   width: 100%;
@@ -95,7 +105,7 @@
     /*    Make them block level           */
     /*    and only as wide as they need   */
     float: left;
-    padding: 0px 40px;
+    /*padding: 0px 40px;*/
     text-decoration: none;
 
     /* Default colors */
@@ -115,12 +125,58 @@
     text-align: center;
     line-height: 42px;
     color: #fff;
+
+    display: flex;
+    flex-direction: row;
 }
 .tabs a:hover {
     color: #fff;
     text-decoration: none;
     /*background: #B9B6B6;*/
 }
+.tabs .inactive a .tab1-icon {
+    background-image: url('/images/icon_group_pressed@2x.png');
+}
+.tabs .active a .tab1-icon {
+    background-image: url('/images/icon_group@2x.png');
+}
+.tabs .inactive a .tab2-icon {
+    background-image: url('/images/icon_friend_pressed@2x.png');
+}
+.tabs .active a .tab2-icon {
+    background-image: url('/images/icon_friend@2x.png');
+}
+.tabs a .tab1-icon {
+    height: 42px;
+    width: 20px;
+    min-width: 18px;
+    margin: auto 5px auto auto;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.tabs a .tab2-icon {
+    height: 42px;
+    width: 20px;
+    min-width: 18px;
+    margin: auto 5px auto auto;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.tabs a .tab1-text {
+    min-width: 29px;
+    margin: auto auto auto 5px;
+    font-size: 18px;
+    font-weight: normal;
+}
+.tabs a .tab2-text {
+    min-width: 29px;
+    margin: auto auto auto 5px;
+    font-size: 18px;
+    font-weight: normal;
+}
+
 .tabs li:first-child a {
     /* Only round the top corners */
     -webkit-border-top-left-radius: 0px;

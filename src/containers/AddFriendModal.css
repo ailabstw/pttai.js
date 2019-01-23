@@ -9,8 +9,8 @@
 
 .top-bar {
     width: 100%;
-    height: 97px;
-    min-height: 97px;
+    height: 78px;
+    min-height: 78px;
     background-color: #4e474e;
     padding: 10px;
     display: flex;
@@ -38,10 +38,10 @@
 
 .title {
     flex-grow: 1;
-    height: 75px;
+    height: calc(78px - 10px - 10px);
     color: #FFF;
     text-align: center;
-    line-height: 77px;
+    line-height: calc(78px - 10px - 10px);
 
     font-size: 20px;
     font-weight: bold;
@@ -271,23 +271,6 @@ input:-moz-placeholder {
     padding-bottom: 10px;
 }
 
-.submit-button {
-    padding: 0.5ex 0;
-    margin: 0.5ex;
-    font-size: 1rem;
-    width: 100%;
-    max-height: 100%;
-    height: 45px;
-
-    border-radius: 10px;
-    background-color: #7EB349;
-    color: #FFF;
-    font-weight: lighter;
-
-    margin: auto;
-    cursor: pointer;
-}
-
 .submodal-signup-container {
     background-color: #ffffff;
     height: 100%;
@@ -476,6 +459,10 @@ input:-moz-placeholder {
 
     cursor: pointer;
 }
+.submodal-signin-submit:focus {
+    text-decoration: none;
+    outline: none;
+}
 
 .submodal-signin-cancel {
     padding: 0.5ex 0;
@@ -491,4 +478,8 @@ input:-moz-placeholder {
     font-weight: lighter;
 
     cursor: pointer;
+}
+.submodal-signin-cancel:focus {
+    text-decoration: none;
+    outline: none;
 }

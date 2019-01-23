@@ -114,7 +114,11 @@ class FriendChatPage extends PureComponent {
 
     return (
       <div className={styles['root']}>
-        <FriendChatBar />
+        <FriendChatBar
+          friendData={friendData}
+          onOpenOPLogModal={onOpenOPLogModal}
+          onOpenFriendProfileModal={onOpenFriendProfileModal}
+        />
         <FriendChatComponent
           userId={userId}
           match={match}

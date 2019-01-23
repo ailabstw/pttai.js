@@ -197,13 +197,14 @@ class FriendChatComponent extends PureComponent {
   }
 
   render() {
-    const { intl, friendData, messageList, isLoading, userId, noMessage, boardList, onOpenOPLogModal, onOpenFriendProfileModal } = this.props
+    const { intl, messageList, isLoading, userId, noMessage, boardList } = this.props
     const { inputMessage, showAlert, alertData } = this.state
 
     const placeholder = intl.formatMessage({id: 'friend-chat-component.placeholder'});
 
     return (
       <div className={styles['root']}>
+    {/*
         <div className={styles['main-content']}>
           <div className={styles['profile-pic']} onClick={onOpenFriendProfileModal}>
             <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
@@ -220,6 +221,7 @@ class FriendChatComponent extends PureComponent {
             </div>
           </div>
         </div>
+    */}
         <div className={styles['chat']}
              onScroll={this.handleScroll}
              ref={(scroller) => {

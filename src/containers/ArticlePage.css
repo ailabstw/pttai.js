@@ -1,8 +1,9 @@
 .root {
     border: 1px solid #A9A9A9;
+    border-top: 1px solid #DCDCDC;
     height: 100%;
 
     overflow-y: scroll;
     width: 100%;
-    max-height: calc(100% - 139px);
+    max-height: calc(100% - 120px);
 }

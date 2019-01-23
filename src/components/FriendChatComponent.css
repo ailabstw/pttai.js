@@ -16,7 +16,7 @@
     height: 40px;
 }
 
-.main-content {
+/*.main-content {
     padding: 15px 0px;
     font-size: 16px;
     font-weight: lighter;
@@ -89,7 +89,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-}
+}*/
 
 .chat {
     padding: 15px;

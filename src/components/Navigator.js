@@ -6,8 +6,8 @@ import styles   from './Navigator.css'
 
 class Navigator extends PureComponent {
   render() {
-    let tabOneClass = ''
-    let tabTwoClass = ''
+    let tabOneClass = 'inactive'
+    let tabTwoClass = 'inactive'
     if (this.props.match.url.indexOf(`/hub`) === 0 ||
         this.props.match.url.indexOf(`/board`) === 0 ) {
       tabOneClass = 'active'
@@ -21,7 +21,8 @@ class Navigator extends PureComponent {
           <ul className={styles['tabs']}>
             <li className={styles[tabTwoClass]}>
               <Link to={`/friend`} className={styles['content-block']}>
-                <div>
+                <div className={styles['tab2-icon']}></div>
+                <div className={styles['tab2-text']}>
                   <FormattedMessage
                     id="navigator.tab2"
                     defaultMessage="Friends"
@@ -31,7 +32,8 @@ class Navigator extends PureComponent {
             </li>
             <li className={styles[tabOneClass]}>
               <Link to={`/hub`} className={styles['content-block']}>
-                <div>
+                <div className={styles['tab1-icon']}></div>
+                <div className={styles['tab1-text']}>
                   <FormattedMessage
                     id="navigator.tab1"
                     defaultMessage="Latest"

@@ -1,31 +1,33 @@
 .root {
-    min-height: 50px;
+    min-height: 64px;
     width: 100%;
     background-color: #FFF;
     border-bottom: 1px solid #A9A9A9;
 }
 
 .content {
-    min-height: 50px;
+    min-height: 64px;
     width: 100%;
     max-width: 413px;
     display: flex;
     flex-direction: row;
-    position: fixed;
-    border-bottom: 1px solid #A9A9A9;
-    border-right: 1px solid #A9A9A9;
+    /*position: fixed;*/
+/*    border-bottom: 1px solid #A9A9A9;
+    border-right: 1px solid #A9A9A9;*/
     z-index: 10;
 }
 
 
 .prev-button {
-    line-height: 50px;
-    padding: 10px 20px;
-    width: 30px;
-    font-weight: lighter;
+    line-height: 64px;
+    /*padding: 10px 20px;*/
+    margin: auto 15px;
+    min-width: 19px;
+    width: 19px;
+/*    font-weight: lighter;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: hidden;*/
 }
 
 .prev-button a, .prev-button a:hover {
@@ -33,18 +35,95 @@
     height: 100%;
     color: #000;
     text-decoration: none;
-    display: flex;
-    flex-direction: row;
+/*    display: flex;
+    flex-direction: row;*/
 }
 
 .prev-button-icon {
     height: 14px;
     width: 19px;
     min-width: 19px;
-    margin: auto 5px auto auto;
+    /*margin: auto 5px auto auto;*/
     background-size: 19px 14px;
     background-repeat: no-repeat;
+    background-position: center;
     background-image: url('/images/icon_back@2x.png');
+}
+
+.main-content {
+    width: calc(100% - 49px);
+    padding: 10px 0px;
+    font-size: 16px;
+    font-weight: lighter;
+    white-space: pre-line;
+
+    display: flex;
+    flex-direction: row;
+    min-height: 64px;
+    max-height: 64px;
+    border-bottom: 1px solid #A9A9A9;
+
+}
+
+.profile-pic {
+    min-width: 42px;
+    padding: 0px 15px 0px 5px;
+    cursor: pointer;
+}
+
+.profile-pic img {
+    width: 42px;
+    height: 42px;
+}
+
+.profile-pic div {
+    color: #000;
+    text-align: center;
+    line-height: 30px;
+}
+
+.friend-content {
+    width: calc(100% - 62px);
+    padding-right: 15px;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #484848;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.name:hover {
+    cursor: pointer;
+}
+
+.job {
+    font-weight:lighter;
+    font-size: 14px;
+    margin-top: 10px;
+    color: #AFAFAF;
+    cursor: default;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.description {
+    font-weight:lighter;
+    font-size: 14px;
+    color: #4E474E;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .friend-name {
