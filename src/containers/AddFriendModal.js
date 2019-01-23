@@ -4,7 +4,6 @@ import { bindActionCreators }   from 'redux'
 import Modal                    from 'react-modal'
 import QRCode                   from 'qrcode.react'
 import QrReader                 from 'react-qr-reader'
-import QrCode                   from 'qrcode-reader'
 import { CopyToClipboard }      from 'react-copy-to-clipboard';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
