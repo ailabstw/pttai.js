@@ -332,7 +332,7 @@ class FriendChatComponent extends PureComponent {
                             </div>
                             {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
-                                <div className={styles['user-message-content']}>{messageHtml}</div>
+                                <div className={styles['user-message-content-invitation']}>{messageHtml}</div>
                               ):(
                                 <div className={styles['user-message-content']}>{messageObj.value}</div>
                               )
@@ -348,7 +348,7 @@ class FriendChatComponent extends PureComponent {
                             {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
                                 boardList.findIndex(each => each.ID === inviteInfo.boardId) >= 0 ? (
-                                  <div className={styles['message-content']}>
+                                  <div className={styles['message-content-invitation']}>
                                     {messageHtml}
                                   </div>
                                 ):(
