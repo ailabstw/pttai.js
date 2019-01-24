@@ -121,5 +121,11 @@
     "alert.message28": "[等待] 登入中...",
     "manage-board-modal.message1": "目前沒有朋友可以邀請加入{BOARD_NAME}",
     "manage-board-modal.message2": "邀請朋友",
-    "manage-board-modal.invite-friend-0": "{JOIN_TIME} 加入"
+    "manage-board-modal.invite-friend-0": "{JOIN_TIME} 加入",
+    "edit-name-modal.company-placeholder":"公司 (請點選編輯鈕)",
+    "edit-name-modal.jobtitle-placeholder":"職稱 (請點選編輯鈕)",
+    "edit-name-modal.email-placeholder":"E-mail (請點選編輯鈕)",
+    "edit-name-modal.phone-placeholder":"聯絡電話 (請點選編輯鈕)",
+    "edit-name-modal.description-placeholder":"請填入自我介紹 (請點選編輯鈕)",
+    "edit-name-modal.edit-button":"編輯"
 }

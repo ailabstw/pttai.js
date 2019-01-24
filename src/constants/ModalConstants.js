@@ -115,7 +115,7 @@ export const editNameModalStyles = {
     position              : 'relative',
     padding               : '0px',
     width                 : '100%',
-    height                : 'auto',
+    height                : '100%',
     maxWidth              : '414px',
     margin                : '0px auto',
     top                   : '0px',

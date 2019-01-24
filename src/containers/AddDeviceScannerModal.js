@@ -4,8 +4,9 @@ import { bindActionCreators }         from 'redux'
 import Slider                         from 'react-slick'
 import Modal                          from 'react-modal'
 import QrReader                       from 'react-qr-reader'
-import { CopyToClipboard }            from 'react-copy-to-clipboard';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { CopyToClipboard }            from 'react-copy-to-clipboard'
+import { FormattedMessage,
+         injectIntl }                 from 'react-intl'
 
 import AlertComponent                 from '../components/AlertComponent'
 import * as doAddDeviceScannerModal   from '../reducers/AddDeviceScannerModal'

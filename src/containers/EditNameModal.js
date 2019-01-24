@@ -3,7 +3,8 @@ import Modal                      from 'react-modal'
 import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
 import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
-import { FormattedMessage }       from 'react-intl'
+import { FormattedMessage,
+         injectIntl }             from 'react-intl'
 import QRCode                     from 'qrcode.react'
 import validator                  from 'validator'
 
@@ -179,7 +180,7 @@ class EditNameModal extends PureComponent {
 
       onModalSubmit(trimmedName, editedProfile)
       this.setState({ isEdit: false })
-      onModalClose()
+      //onModalClose()
     }
   }
 
@@ -257,7 +258,7 @@ class EditNameModal extends PureComponent {
 
                 /* Update img src with data url */
                 let imgDataUrl = canvas.toDataURL('image/jpeg');
-                that.setState({ profilePic:imgDataUrl })
+                that.setState({ userImg: imgDataUrl })
 
                 editImgSubmit(imgDataUrl)
                 document.getElementById('profile-page-pic').setAttribute('src', imgDataUrl);
@@ -268,8 +269,14 @@ class EditNameModal extends PureComponent {
   }
 
   render() {
-    const { onModalClose, modal: { currentModal } } = this.props
+    const { intl, onModalClose, modal: { currentModal } } = this.props
     const { name, userImg, company, jobTitle, email, phone, description, isEdit, showAlert, alertData, friendJoinKey } = this.state
+
+    const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
+    const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
+    const email_placeholder       = intl.formatMessage({id: 'edit-name-modal.email-placeholder'});
+    const phone_placeholder       = intl.formatMessage({id: 'edit-name-modal.phone-placeholder'});
+    const description_placeholder = intl.formatMessage({id: 'edit-name-modal.description-placeholder'});
 
     return (
       <div>
@@ -280,143 +287,214 @@ class EditNameModal extends PureComponent {
           onRequestClose={onModalClose}
           contentLabel="Edit Name Modal">
           <div className={styles['root']}>
-          <div className={styles['info-section']}>
-            <div className={styles['left-side']}>
-              <div className={styles['profile-picture']}>
-                {
-                  isEdit? (
-                    <label >
-                      <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
-                      <div className={styles['mask']}></div>
-                      <input type="file" id="getval" onChange={this.onUpload}/>
-                    </label>
-                  ):(
-                    <img src={userImg} alt={'User Profile'}/>
-                  )
-                }
+            <div className={styles['wrapper']}>
+              <div className={styles['info-section']}>
+                <div className={styles['left-side']}>
+                  <div className={styles['profile-picture']}>
+                    {
+                      isEdit? (
+                        <label >
+                          <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
+                          <div className={styles['mask']}></div>
+                          <input type="file" id="getval" onChange={this.onUpload}/>
+                        </label>
+                      ):(
+                        <label >
+                          <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
+                          <div className={styles['mask']}></div>
+                        </label>
+                      )
+                    }
+                  </div>
+                  {/*
+                      isEdit ? (
+                        <button className={styles['edit-button']} onClick={() => {
+                          this.onSubmit()
+                        }}>
+                          <FontAwesomeIcon icon="check" size="xs"/>
+                        </button>
+                      ):(
+                        <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
+                          <FontAwesomeIcon icon="pen" size="xs"/>
+                        </button>
+                      )
+                  */}
+                </div>
+                <div className={styles['right-side']}>
+                  <div className={styles['main-info']}>
+                    <div className={styles['profile-input']}>
+                      <div className={styles['name']}>
+                      {
+                        isEdit ? (
+                          <input
+                            autoFocus
+                            name='title-input'
+                            value={name}
+                            onChange={this.onNameChange}/>
+                        ):(
+                          <span>{name}</span>
+                        )
+                      }
+                      </div>
+                      <div className={styles['company']}>
+                      {
+                        isEdit ? (
+                          <input
+                            placeholder={company_placeholder}
+                            autoFocus
+                            name='title-input'
+                            value={company}
+                            onChange={this.onCompanyChange}/>
+                        ):(
+                          company ? (
+                            <span>{company}</span>
+                          ):(
+                            <span className={styles['unfilled']}>{company_placeholder}</span>
+                          )
+                        )
+                      }
+                      </div>
+                      <div className={styles['job-title']}>
+                      {
+                        isEdit ? (
+                          <input
+                            placeholder={jobtitle_placeholder}
+                            autoFocus
+                            name='title-input'
+                            value={jobTitle}
+                            onChange={this.onJobTitleChange}/>
+                        ):(
+                          jobTitle ? (
+                            <span>{jobTitle}</span>
+                          ):(
+                            <span className={styles['unfilled']}>{jobtitle_placeholder}</span>
+                          )
+                        )
+                      }
+                      </div>
+                    </div>
+                    <div hidden className={styles['qr-code']}>
+                      <QRCode value={friendJoinKey.URL} size={80} />
+                    </div>
+                  </div>
+                  <div className={styles['divider']}></div>
+                  <div className={styles['other-info']}>
+                    <div className={styles['contact-input']}>
+                      <div className={styles['email']}>
+                      {
+                        isEdit ? (
+                          <input
+                            placeholder={email_placeholder}
+                            autoFocus
+                            name='title-input'
+                            value={email}
+                            onChange={this.onEmailChange}/>
+                        ):(
+                          email ? (
+                            <span>{email}</span>
+                          ):(
+                            <span className={styles['unfilled']}>{email_placeholder}</span>
+                          )
+                        )
+                      }
+                      </div>
+                      <div className={styles['phone']}>
+                      {
+                        isEdit ? (
+                          <input
+                            placeholder={phone_placeholder}
+                            autoFocus
+                            name='title-input'
+                            value={phone}
+                            onChange={this.onPhoneChange}/>
+                        ):(
+                          phone ? (
+                            <span>{phone}</span>
+                          ):(
+                            <span className={styles['unfilled']}>{phone_placeholder}</span>
+                          )
+                        )
+                      }
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles['divider']}></div>
+                  <div className={styles['other-info']}>
+                    <div className={styles['desc-input']}>
+                      <div className={styles['description']}>
+                      {
+                        isEdit ? (
+                          <textarea
+                            placeholder={description_placeholder}
+                            autoFocus
+                            name='title-input'
+                            value={description}
+                            onChange={this.onDescriptionChange}/>
+                        ):(
+                          description ? (
+                            <span>{description}</span>
+                          ):(
+                            <span className={styles['unfilled']}>{description_placeholder}</span>
+                          )
+                        )
+                      }
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               {
-                  isEdit ? (
-                    <button className={styles['edit-button']} onClick={() => {
-                      this.onSubmit()
-                    }}>
-                      <FontAwesomeIcon icon="check" size="xs"/>
+                isEdit ? (
+                  <div className={styles['editname-modal-action-section']}>
+                    <button className={styles['editname-modal-cancel']} onClick={() => this.setState({ isEdit: false })}>
+                      <div className={styles['cancel-icon']}></div>
+                      <FormattedMessage
+                        id="first-popup-modal.action1"
+                        defaultMessage="Cancel"
+                      />
                     </button>
-                  ):(
-                    <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
-                      <FontAwesomeIcon icon="pen" size="xs"/>
+                    <button className={styles['editname-modal-submit']} onClick={() => {
+                          this.onSubmit()
+                        }}>
+                      <div className={styles['confirm-icon']}></div>
+                      <FormattedMessage
+                        id="first-popup-modal.action2"
+                        defaultMessage="Confirm"
+                      />
                     </button>
-                  )
+                  </div>
+                ):(
+                  <div className={styles['editname-modal-action-section']}>
+                    <button className={styles['editname-modal-cancel']} onClick={onModalClose}>
+                      <div className={styles['cancel-icon']}></div>
+                      <FormattedMessage
+                        id="first-popup-modal.action1"
+                        defaultMessage="Cancel"
+                      />
+                    </button>
+                    <button className={styles['editname-modal-submit']} onClick={() => this.setState({ isEdit: true })}>
+                      <div className={styles['edit-icon']}></div>
+                      <FormattedMessage
+                        id="edit-name-modal.edit-button"
+                        defaultMessage="Edit"
+                      />
+                    </button>
+                  </div>
+                )
               }
-            </div>
-            <div className={styles['right-side']}>
-              <div className={styles['main-info']}>
-                <div className={styles['profile-input']}>
-                  <div className={styles['name']}>
-                  {
-                    isEdit ? (
-                      <input
-                        autoFocus
-                        name='title-input'
-                        value={name}
-                        onChange={this.onNameChange}/>
-                    ):(
-                      <span>{name}</span>
-                    )
-                  }
-                  </div>
-                  <div className={styles['company']}>
-                  {
-                    isEdit ? (
-                      <input
-                        placeholder='company'
-                        autoFocus
-                        name='title-input'
-                        value={company}
-                        onChange={this.onCompanyChange}/>
-                    ):(
-                      <span>{company}</span>
-                    )
-                  }
-                  </div>
-                  <div className={styles['job-title']}>
-                  {
-                    isEdit ? (
-                      <input
-                        placeholder='job title'
-                        autoFocus
-                        name='title-input'
-                        value={jobTitle }
-                        onChange={this.onJobTitleChange}/>
-                    ):(
-                      <span>{jobTitle }</span>
-                    )
-                  }
-                  </div>
+              <div className={styles['qr-code-section']}>
+                <div className={styles['qr-code']}>
+                  <QRCode value={friendJoinKey.URL} size={250} />
                 </div>
-                <div hidden className={styles['qr-code']}>
-                  <QRCode value={friendJoinKey.URL} size={80} />
-                </div>
+                <button className={styles['editname-modal-copy']} onClick={null}>
+                  <FormattedMessage
+                    id="add-friend-modal.copy-my-id-1"
+                    defaultMessage="Copy your ID"
+                  />
+                </button>
               </div>
-              <div hidden={!isEdit && !email && !phone} className={styles['other-info']}>
-                <div className={styles['contact-input']}>
-                  <div className={styles['email']}>
-                  {
-                    isEdit ? (
-                      <input
-                        placeholder='email'
-                        autoFocus
-                        name='title-input'
-                        value={email}
-                        onChange={this.onEmailChange}/>
-                    ):(
-                      <span>{email}</span>
-                    )
-                  }
-                  </div>
-                  <div className={styles['phone']}>
-                  {
-                    isEdit ? (
-                      <input
-                        placeholder='phone'
-                        autoFocus
-                        name='title-input'
-                        value={phone }
-                        onChange={this.onPhoneChange}/>
-                    ):(
-                      <span>{phone }</span>
-                    )
-                  }
-                  </div>
-                </div>
-              </div>
-              <div hidden={!isEdit && !description} className={styles['other-info']}>
-                <div className={styles['desc-input']}>
-                  <div className={styles['description']}>
-                  {
-                    isEdit ? (
-                      <textarea
-                        placeholder='description'
-                        autoFocus
-                        name='title-input'
-                        value={description }
-                        onChange={this.onDescriptionChange}/>
-                    ):(
-                      <span>{description }</span>
-                    )
-                  }
-                  </div>
-                </div>
-              </div>
+              <AlertComponent show={showAlert} alertData={alertData}/>
             </div>
-
-          </div>
-          <div className={styles['qr-code-section']}>
-            <div className={styles['qr-code']}>
-              <QRCode value={friendJoinKey.URL} size={250} />
-            </div>
-          </div>
-          <AlertComponent show={showAlert} alertData={alertData}/>
           </div>
         </Modal>
       </div>
@@ -434,4 +512,4 @@ const mapDispatchToProps = (dispatch) => ({
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditNameModal)
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(EditNameModal))

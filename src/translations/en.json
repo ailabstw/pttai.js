@@ -121,5 +121,11 @@
     "alert.message28": "[Wait] Signing...",
     "manage-board-modal.message1": "You have no friend to invite to {BOARD_NAME}",
     "manage-board-modal.message2": "Invite friends",
-    "manage-board-modal.invite-friend-0": "Joined {JOIN_TIME}"
+    "manage-board-modal.invite-friend-0": "Joined {JOIN_TIME}",
+    "edit-name-modal.company-placeholder":"Company (press below to edit)",
+    "edit-name-modal.jobtitle-placeholder":"Job Title (press below to edit)",
+    "edit-name-modal.email-placeholder":"Email (press below to edit)",
+    "edit-name-modal.phone-placeholder":"Phone (press below to edit)",
+    "edit-name-modal.description-placeholder":"About me (press below to edit)",
+    "edit-name-modal.edit-button":"Edit"
 }

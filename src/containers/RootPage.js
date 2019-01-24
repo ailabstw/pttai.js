@@ -123,7 +123,7 @@ class RootPage extends PureComponent {
     let onEditNameSubmit = (name, editedProfile) => {
       doRootPage.editName(myId, name)
       doRootPage.editProfile(myId, editedProfile)
-      doModalContainer.closeModal()
+      //doModalContainer.closeModal()
     }
 
     let onEditImgSubmit = (imgBase64) => {
