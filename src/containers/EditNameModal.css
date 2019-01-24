@@ -310,6 +310,14 @@
     cursor: pointer;
 }
 
+.editname-modal-copy:hover {
+    background-color: #dd8800;
+}
+
+.editname-modal-copy:focus {
+    outline: none;
+}
+
 .mask {
     top: 0px;
     left: 0px;

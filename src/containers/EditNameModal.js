@@ -7,6 +7,7 @@ import { FormattedMessage,
          injectIntl }             from 'react-intl'
 import QRCode                     from 'qrcode.react'
 import validator                  from 'validator'
+import { CopyToClipboard }        from 'react-copy-to-clipboard'
 
 import AlertComponent         from '../components/AlertComponent'
 
@@ -36,6 +37,7 @@ class EditNameModal extends PureComponent {
       description:    props.modalInput.profile.description || '',
       friendJoinKey:  props.modalInput.friendJoinKey,
       isEdit:         false,
+      qrCodeCopied:         false,
       showAlert:      false,
       alertData: {
         message: '',
@@ -270,7 +272,7 @@ class EditNameModal extends PureComponent {
 
   render() {
     const { intl, onModalClose, modal: { currentModal } } = this.props
-    const { name, userImg, company, jobTitle, email, phone, description, isEdit, showAlert, alertData, friendJoinKey } = this.state
+    const { name, userImg, company, jobTitle, email, phone, description, isEdit, showAlert, alertData, friendJoinKey, qrCodeCopied } = this.state
 
     const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
     const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
@@ -486,12 +488,24 @@ class EditNameModal extends PureComponent {
                 <div className={styles['qr-code']}>
                   <QRCode value={friendJoinKey.URL} size={250} />
                 </div>
-                <button className={styles['editname-modal-copy']} onClick={null}>
-                  <FormattedMessage
-                    id="add-friend-modal.copy-my-id-1"
-                    defaultMessage="Copy your ID"
-                  />
-                </button>
+                <CopyToClipboard text={friendJoinKey.URL}
+                                 onCopy={() => this.setState({qrCodeCopied: true})}>
+                  <button className={styles['editname-modal-copy']} onClick={null}>
+                    {
+                      qrCodeCopied? (
+                        <FormattedMessage
+                          id="add-device-modal.copy-node-id-2"
+                          defaultMessage="Copied"
+                        />
+                      ): (
+                        <FormattedMessage
+                          id="add-friend-modal.copy-my-id-1"
+                          defaultMessage="Copy your ID"
+                        />
+                      )
+                    }
+                  </button>
+                </CopyToClipboard>
               </div>
               <AlertComponent show={showAlert} alertData={alertData}/>
             </div>

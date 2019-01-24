@@ -4,7 +4,7 @@ import { bindActionCreators }       from 'redux'
 import Modal                        from 'react-modal'
 import Immutable                    from 'immutable'
 import { FormattedMessage }         from 'react-intl'
-//import {CopyToClipboard}            from 'react-copy-to-clipboard'
+import { CopyToClipboard }          from 'react-copy-to-clipboard'
 
 import { //expiredFormat,
          epoch2ReadFormat }       from '../utils/utilDatetime'
@@ -22,7 +22,7 @@ class ManageBoardModal extends PureComponent {
     this.state = {
       name: props.modalInput.boardName,
       friendInvited:{},
-      //keyCopied: false,
+      qrCodeCopied: false,
       copyBoardIdText:'',
       alertData: {
         message: '',
@@ -79,11 +79,11 @@ class ManageBoardModal extends PureComponent {
 
   render() {
     const { onModalSwitch, modalInput: { boardId, setBoardName, deleteBoard }, myId, manageBoardModal, onModalClose, modal: { currentModal }} = this.props
-    const { name, /*keyCopied,*/ showAlert, alertData, friendInvited } = this.state
+    const { name, qrCodeCopied, showAlert, alertData, friendInvited } = this.state
 
     let me = manageBoardModal.get(myId, Immutable.Map())
 
-    //let boardJoinKey  = me.get('boardJoinKey', Immutable.Map()).toJS()
+    let boardJoinKey  = me.get('boardJoinKey', Immutable.Map()).toJS()
     let friendList    = me.get('friendList', Immutable.List()).toJS()
 
     let onSetBoardName = () => {
@@ -208,7 +208,6 @@ class ManageBoardModal extends PureComponent {
                   />
                 </button>
               </div>
-
               <div hidden className={styles['board-log']}>
                 <button className={styles['board-log-button']} onClick={onOpenOPLogModal}>
                   <FormattedMessage
@@ -217,14 +216,35 @@ class ManageBoardModal extends PureComponent {
                   />
                 </button>
               </div>
-
             </div>
-
             <div className={styles['invite-title']}>
-              <FormattedMessage
-                id="manage-board-modal.message2"
-                defaultMessage="Invite friends"
-              />
+              <div className={styles['null-space']}></div>
+              <div className={styles['invite-title-text']}>
+                <FormattedMessage
+                  id="manage-board-modal.message2"
+                  defaultMessage="Invite friends"
+                />
+              </div>
+              <div className={styles['copy-space']}>
+                <CopyToClipboard text={boardJoinKey.URL}
+                                 onCopy={() => this.setState({qrCodeCopied: true})}>
+                  <button className={styles['manageboard-modal-copy']}>
+                    {
+                      qrCodeCopied? (
+                        <FormattedMessage
+                          id="add-device-modal.copy-node-id-2"
+                          defaultMessage="Copied"
+                        />
+                      ): (
+                        <FormattedMessage
+                          id="manage-board-modal.copy-my-id-1"
+                          defaultMessage="Copy Group ID"
+                        />
+                      )
+                    }
+                  </button>
+                </CopyToClipboard>
+              </div>
             </div>
             <div className={styles['friend-list']}>
                 {

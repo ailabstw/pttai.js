@@ -23,6 +23,7 @@
     "manage-board-modal.expire-time": "{expTimeVal} 後過期",
     "manage-board-modal.set-board-name-submit": "確定",
     "manage-board-modal.get-board-log": "板Log",
+    "manage-board-modal.copy-my-id-1": "複製群聊ID",
     "first-popup-modal.title": "以現有帳號登入",
     "first-popup-modal.title2": "讓朋友知道你是誰",
     "first-popup-modal.placeholder": "輸入您的姓名",
