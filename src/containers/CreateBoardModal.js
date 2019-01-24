@@ -188,16 +188,6 @@ class CreateBoardModal extends PureComponent {
                 }
             </div>
 
-
-
-
-
-
-
-
-
-
-
             <div hidden className={styles['friend-list']}>
               <div className={styles['friend-list-text']}>
                 邀請朋友

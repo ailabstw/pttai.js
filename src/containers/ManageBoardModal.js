@@ -49,17 +49,16 @@ class ManageBoardModal extends PureComponent {
 
     if (friendId in newFriendInvited && newFriendInvited[friendId]){
       /* Already Invited: do nothing */
-
+      newFriendInvited[friendId] = null
     } else {
+      newFriendInvited[friendId] = chatId
+      // /* Construct invite message */
+      // let inviteMessage = {
+      //   type:   constants.MESSAGE_TYPE_INVITE,
+      //   value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+      // }
 
-      newFriendInvited[friendId] = true
-      /* Construct invite message */
-      let inviteMessage = {
-        type:   constants.MESSAGE_TYPE_INVITE,
-        value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
-      }
-
-      doManageBoardModal.sendFriendInvite(myId, chatId, JSON.stringify(inviteMessage))
+      // doManageBoardModal.sendFriendInvite(myId, chatId, JSON.stringify(inviteMessage))
     }
     this.setState({friendInvited: newFriendInvited})
   }
@@ -88,12 +87,23 @@ class ManageBoardModal extends PureComponent {
     let friendList    = me.get('friendList', Immutable.List()).toJS()
 
     let onSetBoardName = () => {
-      if (name && name.replace(/\s+/g, '') !== '') {
-        setBoardName(boardId, name)
-        onModalClose()
-      } else {
+      if (JSON.stringify(name).length - 2 > constants.MAX_BOARDNAME_SIZE) {
         let that = this
-        that.setState({
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message12"
+                defaultMessage="Board name cannot exceed {MAX_BOARDNAME_SIZE} characters"
+                values={{ MAX_BOARDNAME_SIZE: constants.MAX_BOARDNAME_SIZE }}
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      } else if (!name || name.replace(/\s+/g, '') === '') {
+        let that = this
+        this.setState({
           showAlert: true,
           alertData: {
             message: (
@@ -104,6 +114,9 @@ class ManageBoardModal extends PureComponent {
             onConfirm: () => that.setState({showAlert: false})
           }
         })
+      } else {
+        setBoardName(boardId, name, friendInvited)
+        onModalClose()
       }
     }
 
@@ -157,6 +170,14 @@ class ManageBoardModal extends PureComponent {
               <div className={styles['prev-arrow']}>
                 <div className={styles['prev-arrow-icon']} onClick={onModalClose}></div>
               </div>
+              <div className={styles['edit-name']}>
+                <input
+                  autoFocus
+                  name='board-name-input'
+                  className={styles['board-name-input']}
+                  value={name}
+                  onChange={this.onNameChange}/>
+              </div>
               <div hidden className={styles['modal-title']}>
                 {name}
               </div>
@@ -167,7 +188,7 @@ class ManageBoardModal extends PureComponent {
                 />
               </div>
             </div>
-            <div className={styles['modal-bar']}>
+            <div hidden className={styles['modal-bar']}>
 
               <div className={styles['edit-name']}>
                 <FormattedMessage
@@ -180,7 +201,7 @@ class ManageBoardModal extends PureComponent {
                   className={styles['board-name-input']}
                   value={name}
                   onChange={this.onNameChange}/>
-                <button onClick={onSetBoardName}>
+                <button>
                   <FormattedMessage
                     id="manage-board-modal.set-board-name-submit"
                     defaultMessage="Enter"
@@ -247,7 +268,7 @@ class ManageBoardModal extends PureComponent {
                         ):(
 
                           ((item.friendID in friendInvited) && friendInvited[item.friendID])?(
-                            <div className={styles['list-item-invited']}>
+                            <div className={styles['list-item-invited']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
                               <FormattedMessage
                                 id="manage-board-modal.invite-friend-1"
                                 defaultMessage="Invited"
@@ -268,15 +289,13 @@ class ManageBoardModal extends PureComponent {
                   ))
                 }
             </div>
-          {/*}
             <div className={styles['action-section']}>
-              <div hidden className={styles['submit-button']}>
-                <div className={styles['submit-icon-subcontainer']} onClick={onSubmitAndClose}>
+              <div className={styles['submit-button']}>
+                <div className={styles['submit-icon-subcontainer']} onClick={onSetBoardName}>
                   <div className={styles['submit-icon']}></div>
                 </div>
               </div>
             </div>
-          */}
           </div>
         </Modal>
         <AlertComponent show={showAlert} alertData={alertData}/>

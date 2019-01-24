@@ -3,7 +3,7 @@ import { connect }              from 'react-redux'
 import { bindActionCreators }   from 'redux'
 import Modal                    from 'react-modal'
 import QrReader                 from 'react-qr-reader'
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl'
 
 import * as doAddFriendModal    from '../reducers/AddFriendModal'
 

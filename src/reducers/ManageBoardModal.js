@@ -161,7 +161,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
     }
   })
 
-  console.log('doManageBoardModal.postprocessgetFriends: friendList:', friendList)
+  console.log('doManageBoardModal.postprocessgetFriends: friendList:', friendList, memeberListResult)
 
   return {
     myId,

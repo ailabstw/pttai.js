@@ -67,8 +67,6 @@ class BoardListComponent extends PureComponent {
     }
 
     let activeList = listData
-                      .filter((each) => { return each.Status !== constants.STATUS_ARRAY.indexOf('StatusMigrated') })
-                      .filter((each) => { return each.BoardType === constants.BOARD_TYPE_PRIVATE })
 
     return (
       <div className={styles['root']}

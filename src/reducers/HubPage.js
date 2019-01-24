@@ -248,21 +248,57 @@ export const _addMoreBoards = (state, action) => {
 /*  Update Board List   */
 /*                      */
 
-export const setBoardName = (myId, boardId, name) => {
+export const setBoardName = (myId, boardId, name, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.setBoardName(boardId, name))
       .then(({response: {result}, type, query, error}) => {
-          dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
-            .then(({response: {result}, type, query, error}) => {
-              dispatch(serverUtils.getBoardRequest(EMPTY_ID))
-                .then(({response: reqResult, type, query, error}) => {
-                  let creatorIds = result.map((each) => each.C)
-                  dispatch(serverUtils.getUsersInfo(creatorIds))
-                    .then((usersInfo) => {
-                      dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
-                    })
-                })
+
+        dispatch(serverUtils.getBoardUrl(boardId))
+          .then(({response: boardUrlResult, type, query, error}) => {
+
+            const boardJoinKey = {
+              C:            boardUrlResult.result.C,
+              ID:           boardUrlResult.result.ID,
+              Pn:           boardUrlResult.result.Pn,
+              T:            boardUrlResult.result.T,
+              URL:          boardUrlResult.result.URL,
+              UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
+              expirePeriod: boardUrlResult.result.e,
+            }
+
+            let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
+              let chatId = friendInvited[friendId]
+              let message = {
+                type:   MESSAGE_TYPE_INVITE,
+                value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+              }
+              return {
+                chatId: chatId,
+                message: JSON.stringify(message),
+              }
             })
+
+            dispatch(sentInviteMessages(inviteMessages))
+              .then(({response: inviteResult, type, error, query}) => {
+                //dispatch(postprocessCreateBoard(myId, name, result, userName))
+              })
+          })
+
+
+
+
+
+          // dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
+          //   .then(({response: {result}, type, query, error}) => {
+          //     dispatch(serverUtils.getBoardRequest(EMPTY_ID))
+          //       .then(({response: reqResult, type, query, error}) => {
+          //         let creatorIds = result.map((each) => each.C)
+          //         dispatch(serverUtils.getUsersInfo(creatorIds))
+          //           .then((usersInfo) => {
+          //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
+          //           })
+          //       })
+          //   })
       })
   }
 }

@@ -1,10 +1,11 @@
 import React, { PureComponent }   from 'react'
 import { bindActionCreators }     from 'redux'
 import { connect }                from 'react-redux'
-import { FormattedMessage }       from 'react-intl'
+import { FormattedMessage,
+         injectIntl }             from 'react-intl'
 import Modal                      from 'react-modal'
+import QrReader                   from 'react-qr-reader'
 
-import AlertComponent             from '../components/AlertComponent'
 import * as modalConstants        from '../constants/ModalConstants'
 import * as doAddKnownBoardModal  from '../reducers/AddKnownBoardModal'
 
@@ -15,102 +16,92 @@ class AddKnownBoardModal extends PureComponent {
     super();
     this.state = {
       boardUrl: '',
-      showAlert: false,
-      alertData: {
-        message: '',
-        onClose: null,
-        onConfirm: null,
-      },
     };
     this.onNameChange = this.onNameChange.bind(this);
+    this.onScanned    = this.onScanned.bind(this);
   }
 
   onNameChange(e) {
     this.setState({boardUrl:e.target.value})
   }
 
-  render() {
-    const { modalInput: {modalJoinBoardSubmit},  onModalClose, modal: { currentModal }} = this.props
-    const { boardUrl, alertData, showAlert } = this.state
+  onScanned(data) {
+    if (data) {
+      const { modalInput:{ modalJoinBoardSubmit }} = this.props
 
-    let that = this
+      this.setState({boardUrl:data})
 
-    let sumbitCallBack = function(response) {
-      if (response.error) {
-        that.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message7"
-                defaultMessage="[Error] {data}:{boardUrl}"
-                values={{ data: response.data, boardUrl: response.boardUrl}}
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else {
-        onModalClose()
-      }
+      modalJoinBoardSubmit(data)
     }
+  }
+
+  render() {
+    const { intl, modalInput: {modalJoinBoardSubmit},  onModalClose, modal: { currentModal }} = this.props
+    const { boardUrl } = this.state
 
     let onSubmitAndClose = function() {
-      if (!boardUrl || !boardUrl.startsWith('pnode://')) {
-        that.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message8"
-                defaultMessage="Board name empty or invalid"
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else {
-        modalJoinBoardSubmit(boardUrl, sumbitCallBack)
-      }
+      modalJoinBoardSubmit(boardUrl)
     }
+
+    const placeholder = intl.formatMessage({id: 'add-known-board-modal.placeholder'});
 
     return (
       <div>
         <Modal
           overlayClassName={styles['overlay']}
-          style={modalConstants.joinBoardModalStyles}
+          style={modalConstants.AddDeviceScannerModalStyels}
           isOpen={currentModal !== null}
-          onRequestClose={onModalClose}
+          onRequestClose={null}
           contentLabel="Add Known Board Modal">
-          <div className={styles['root']}>
-            <div className={styles['profile-title']}>
-              <FormattedMessage
-                id="add-known-board-modal.title"
-                defaultMessage="Enter board ID to join"
-              />
-            </div>
-            <div className={styles['profile-input']}>
-              <textarea
-                autoFocus
-                name='title-input'
-                value={boardUrl}
-                onChange={this.onNameChange}/>
-            </div>
-            <div className={styles['action-section']}>
-              <button className={styles['close-button']} onClick={onModalClose}>
+          <div className={styles['add-known-board-container']}>
+            <div className={styles['add-known-board']}>
+              <div className={styles['add-known-board-title']}>
                 <FormattedMessage
-                  id="add-known-board-modal.action1"
-                  defaultMessage="Cancel"
+                  id="add-known-board-modal.title"
+                  defaultMessage="Enter Group ID to join"
                 />
-              </button>
-              <button className={styles['submit-button']} onClick={onSubmitAndClose}>
-                <FormattedMessage
-                  id="add-known-board-modal.action2"
-                  defaultMessage="Confirm"
-                />
-              </button>
+              </div>
+              <div className={styles['add-known-board-scanner-container']}>
+                <div className={styles['submodal-qr-code-scanner']}>
+                  <QrReader
+                    delay={300}
+                    onError={(err) => console.error(err)}
+                    onScan={this.onScanned}
+                    className={styles['submodal-qr-code-scanner']}
+                  />
+                  <div className={styles['submodal-qr-code-text']}>
+                    <FormattedMessage
+                      id="add-known-board-modal.scan-code-title"
+                      defaultMessage="Scann QR Code to join Group"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className={styles['add-known-board-node-id']}>
+                <textarea
+                  placeholder={placeholder}
+                  autoFocus
+                  name='title-input'
+                  value={boardUrl}
+                  onChange={this.onNameChange}/>
+              </div>
+              <div className={styles['add-known-board-action-section']}>
+                <button className={styles['add-known-board-submit']} onClick={onSubmitAndClose}>
+                  <FormattedMessage
+                    id="add-known-board-modal.scan-code-action"
+                    defaultMessage="Join"
+                  />
+                </button>
+                <button className={styles['add-known-board-cancel']} onClick={onModalClose}>
+                  <FormattedMessage
+                    id="first-popup-modal.action1"
+                    defaultMessage="Cancel"
+                  />
+                </button>
+              </div>
             </div>
           </div>
         </Modal>
-        <AlertComponent show={showAlert} alertData={alertData}/>
       </div>
     )
   }
@@ -126,4 +117,4 @@ const mapDispatchToProps = (dispatch) => ({
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddKnownBoardModal)
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(AddKnownBoardModal))
