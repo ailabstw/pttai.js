@@ -4,6 +4,7 @@ import { injectIntl,
          FormattedMessage }        from 'react-intl'
 import $                           from 'jquery'
 import { ClipLoader }              from 'react-spinners'
+import { PTTAI_URL_BASE }          from 'config'
 
 import { doesCrossDay,
          epoch2MessageTimeFormat,
@@ -282,20 +283,24 @@ class FriendChatComponent extends PureComponent {
                         messageHtml = (<span>
                           <FormattedMessage
                             id="friend-chat-component.action1"
-                            defaultMessage="Board [{BOARD_NAME}] invitation: Joined"
-                            values={{ BOARD_NAME: inviteInfo.boardName}}
+                            defaultMessage="You Have Joined"
+                          />
+                          <span>{inviteInfo.boardName}</span>
+                          <FormattedMessage
+                            id="friend-chat-component.action1-2"
+                            defaultMessage="Click to go to Group"
                           />
                         </span>)
                       } else if (!isUser){
                         messageHtml = (<span>
                           <FormattedMessage
                             id="friend-chat-component.action2"
-                            defaultMessage="Board [{BOARD_NAME}] invitation: Click to join"
-                            values={{ BOARD_NAME: inviteInfo.boardName}}
+                            defaultMessage="Invited to"
                           />
+                          <span>{inviteInfo.boardName}</span>
                           <FormattedMessage
-                            id="friend-chat-component.action4"
-                            defaultMessage=" (Expired in {expTimeVal})"
+                            id="friend-chat-component.action2-2"
+                            defaultMessage="Click to join (Expired in {expTimeVal})"
                             values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
                           />
                         </span>)
@@ -303,9 +308,9 @@ class FriendChatComponent extends PureComponent {
                         messageHtml = (<span>
                           <FormattedMessage
                             id="friend-chat-component.action3"
-                            defaultMessage="Board [{BOARD_NAME}] invitation: Sent"
-                            values={{ BOARD_NAME: inviteInfo.boardName}}
+                            defaultMessage="Sent Group Invitation"
                           />
+                          <span>{inviteInfo.boardName}</span>
                           <FormattedMessage
                             id="friend-chat-component.action4"
                             defaultMessage=" (Expired in {expTimeVal})"
@@ -348,7 +353,8 @@ class FriendChatComponent extends PureComponent {
                             {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
                                 boardList.findIndex(each => each.ID === inviteInfo.boardId) >= 0 ? (
-                                  <div className={styles['message-content-invitation']}>
+                                  <div className={styles['message-content-invitation']}
+                                       onClick={() => this.props.history.push(`${PTTAI_URL_BASE}/board/${inviteInfo.boardId}`)}>
                                     {messageHtml}
                                   </div>
                                 ):(

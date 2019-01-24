@@ -85,7 +85,7 @@
 }
 
 .list-item-main {
-    width: 80%;
+    width: calc(100% - 95px);
     padding: 2px 5px;
     display: flex;
     flex-direction: column;

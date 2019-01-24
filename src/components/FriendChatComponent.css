@@ -139,6 +139,48 @@
     word-break: break-all;
 }
 
+.user-message-content-invitation {
+    /*width: fit-content;
+    height: fit-content;*/
+    width: 267px;
+    height: 99px;
+    border-radius: 10px;
+    background-color: #4e474e;
+
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 24px;
+    letter-spacing: normal;
+    text-align: center;
+    color: #a3a3a3;
+
+    padding: 10px 15px;
+    word-break: break-all;
+    cursor: default;
+}
+
+.user-message-content-invitation span {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-message-content-invitation span span:nth-child(2){
+    width: fit-content;
+    padding: 1px 5px;
+    margin: 3px auto;
+    color: #ffffff;
+    font-weight: normal;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    border: 1px solid #FFFF;
+    border-radius: 5px;
+}
+
 .message-content {
     width: fit-content;
     height: fit-content;
@@ -159,10 +201,12 @@
 }
 
 .message-content-invitation {
-    width: fit-content;
-    height: fit-content;
+    /*width: fit-content;
+    height: fit-content;*/
+    width: 267px;
+    height: 99px;
     border-radius: 10px;
-    background-color: #ececec;
+    background-color: #4e474e;
 
     font-size: 16px;
     font-weight: normal;
@@ -170,16 +214,36 @@
     font-stretch: normal;
     line-height: 24px;
     letter-spacing: normal;
-    text-align: left;
-    color: #545454;
+    text-align: center;
+    color: #a3a3a3;
 
     padding: 10px 15px;
     word-break: break-all;
     cursor: pointer;
 }
 
+.message-content-invitation span {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-content-invitation span span:nth-child(2){
+    width: fit-content;
+    padding: 1px 5px;
+    margin: 3px auto;
+    color: #ffffff;
+    font-weight: normal;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    border: 1px solid #FFFF;
+    border-radius: 5px;
+}
+
 .message-content-invitation:hover {
-    background-color: #cecece;
+    background-color: #716C71;
 }
 
 .user-message-meta, .message-meta {

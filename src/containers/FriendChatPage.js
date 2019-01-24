@@ -54,7 +54,7 @@ class FriendChatPage extends PureComponent {
   }
 
   render() {
-    const { myId, friendChatPage, actions: {doFriendChatPage, doModalContainer}, match: {params}, match } = this.props
+    const { myId, history, friendChatPage, actions: {doFriendChatPage, doModalContainer}, match: {params}, match } = this.props
 
     let userId   = getRoot(this.props).getIn(['userInfo','userId'])
     let userName = getRoot(this.props).getIn(['userInfo','userName'])
@@ -120,6 +120,7 @@ class FriendChatPage extends PureComponent {
           onOpenFriendProfileModal={onOpenFriendProfileModal}
         />
         <FriendChatComponent
+          history={history}
           userId={userId}
           match={match}
           friendData={friendData}
