@@ -3,7 +3,7 @@ import { createDuck }   from 'redux-duck'
 
 import { EMPTY_ID,
          STATUS_ARRAY,
-         NUM_BOARD_PER_REQ,
+         //NUM_BOARD_PER_REQ,
          DEFAULT_USER_NAME,
          MESSAGE_TYPE_INVITE,
          BOARD_TYPE_PRIVATE } from '../constants/Constants'
@@ -283,10 +283,6 @@ export const setBoardName = (myId, boardId, name, friendInvited) => {
                 //dispatch(postprocessCreateBoard(myId, name, result, userName))
               })
           })
-
-
-
-
 
           // dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
           //   .then(({response: {result}, type, query, error}) => {

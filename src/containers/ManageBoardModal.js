@@ -39,11 +39,11 @@ class ManageBoardModal extends PureComponent {
   }
 
   onFriendInvited(e, friendId, chatId) {
-    const { manageBoardModal, modalInput: { boardId }, actions: { doManageBoardModal }, myId } = this.props
-    const { friendInvited, name } = this.state
+    //const { manageBoardModal, modalInput: { boardId }, actions: { doManageBoardModal }, myId } = this.props
+    const { friendInvited } = this.state
 
-    let me = manageBoardModal.get(myId, Immutable.Map())
-    let boardJoinKey  = me.get('boardJoinKey', Immutable.Map()).toJS()
+    //let me = manageBoardModal.get(myId, Immutable.Map())
+    //let boardJoinKey  = me.get('boardJoinKey', Immutable.Map()).toJS()
 
     let newFriendInvited = Object.assign({},friendInvited)
 

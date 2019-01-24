@@ -2,7 +2,7 @@ import React, { PureComponent }   from 'react'
 import Modal                      from 'react-modal'
 import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
-import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
+//import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
 import { FormattedMessage,
          injectIntl }             from 'react-intl'
 import QRCode                     from 'qrcode.react'
@@ -82,7 +82,7 @@ class EditNameModal extends PureComponent {
   }
 
   onSubmit() {
-    const { onModalSubmit, onModalClose } = this.props
+    const { onModalSubmit/*, onModalClose*/ } = this.props
     const { name }          = this.state
     const { company }       = this.state
     const { jobTitle }      = this.state
