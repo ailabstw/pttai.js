@@ -739,7 +739,7 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, a
 
             dispatch(serverUtils.getContent(boardId, articleId, subContentId, constants.CONTENT_TYPE_ARTICLE, blockId, artilceLimit, constants.LIST_ORDER_NEXT))
               .then(({response: contentResult, type, error, query}) => {
-                console.log('sammui:',contentResult.result)
+
                 let creatorIds = contentResult.result.map(each => each.CID).filter(each => each)
                 dispatch(serverUtils.getUsersInfo(creatorIds))
                   .then((usersInfo) => {
