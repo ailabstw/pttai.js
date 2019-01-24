@@ -141,6 +141,9 @@ class FriendListComponent extends PureComponent {
                               }
                             </div>
                           </div>
+                          <div className={styles['list-item-description']}>
+                              { item.nameCard && item.nameCard.company ? item.nameCard.company : constants.DEFAULT_USER_COMPANY }
+                          </div>
                           <div className={isUnRead(item.ArticleCreateTS.T, item.LastSeen.T) ? styles['list-item-content-unread'] : styles['list-item-content']}>
                             {
                               summaryObj.type === constants.MESSAGE_TYPE_INVITE ? (

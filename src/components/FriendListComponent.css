@@ -153,8 +153,15 @@
     display: inline-block;
 }
 
+.list-item-description {
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #afafaf;
+}
+
 .list-item-content {
-    margin-top: 15px;
+    margin-top: 0px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -171,7 +178,7 @@
 }
 
 .list-item-content-unread {
-    margin-top: 15px;
+    margin-top: 0px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;

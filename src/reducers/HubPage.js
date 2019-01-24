@@ -2,6 +2,7 @@ import Immutable        from 'immutable';
 import { createDuck }   from 'redux-duck'
 
 import { EMPTY_ID,
+         STATUS_ARRAY,
          NUM_BOARD_PER_REQ,
          DEFAULT_USER_NAME,
          MESSAGE_TYPE_INVITE,
@@ -73,7 +74,7 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
     return acc
   }, {})
 
-  const boardList = result.map(each => {
+  let boardList = result.map(each => {
 
     let userId      = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
@@ -126,6 +127,9 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
       })
     }
   })
+
+  boardList = boardList.filter((each) => { return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') })
+  boardList = boardList.filter((each) => { return each.BoardType === BOARD_TYPE_PRIVATE })
 
   if (boardList.length === 0 && isFirstFetch) {
     return {
@@ -192,7 +196,7 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
   result = result.map(serverUtils.deserialize)
   result = result.slice(1)
 
-  const boardList = result.map(each => {
+  let boardList = result.map(each => {
 
     let userId      = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
@@ -210,6 +214,9 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
       BoardType:        each.BT,
     }
   })
+
+  boardList = boardList.filter((each) => { return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') })
+  boardList = boardList.filter((each) => { return each.BoardType === BOARD_TYPE_PRIVATE })
 
   if (boardList.length === 0) {
     return {

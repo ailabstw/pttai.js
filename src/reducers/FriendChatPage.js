@@ -8,6 +8,7 @@ import * as serverUtils from './ServerUtils'
 import {  EMPTY_ID,
           DEFAULT_USER_NAME,
           DEFAULT_USER_IMAGE,
+          DEFAULT_USER_NAMECARD,
           NUM_MESSAGE_PER_REQ,
           NUM_CACHE_MESSAGE }   from '../constants/Constants'
 
@@ -75,17 +76,20 @@ const postprocessGetFriend = (myId, result, usersInfo) => {
     return acc
   }, {})
 
-  let userId      = result.FID
-  let userNameMap = usersInfo['userName'] || {}
-  let userImgMap  = usersInfo['userImg'] || {}
+  let userId          = result.FID
+  let userNameMap     = usersInfo['userName'] || {}
+  let userImgMap      = usersInfo['userImg'] || {}
+  let userNameCardMap = usersInfo['userNameCard'] || {}
 
-  let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-  let userImg   = userImgMap[userId]  ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userName      = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+  let userImg       = userImgMap[userId]  ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userNameCard  = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
 
   const friendData = {
     ID:         result.ID,
     Name:       userName,
     Img:        userImg,
+    NameCard:   userNameCard,
     BoardID:    result.BID,
     LastSeen:   result.LT ? result.LT : utils.emptyTimeStamp(),
   }
@@ -114,6 +118,12 @@ export const markChat = (myId, chatId) => {
 }
 
 const postprocessMarkChat = (myId, result) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: {}
+  }
 }
 
 /*                      */

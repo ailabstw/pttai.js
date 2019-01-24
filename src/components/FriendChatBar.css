@@ -62,13 +62,12 @@
     min-height: 64px;
     max-height: 64px;
     border-bottom: 1px solid #A9A9A9;
-
+    cursor: pointer;
 }
 
 .profile-pic {
     min-width: 42px;
     padding: 0px 15px 0px 5px;
-    cursor: pointer;
 }
 
 .profile-pic img {
@@ -107,9 +106,8 @@
 .job {
     font-weight:lighter;
     font-size: 14px;
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     color: #AFAFAF;
-    cursor: default;
 
     text-overflow: ellipsis;
     white-space: nowrap;

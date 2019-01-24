@@ -9,7 +9,7 @@ import * as constants              from '../constants/Constants'
 class FriendChatBar extends PureComponent {
 
   render() {
-    const { friendData, onOpenOPLogModal, onOpenFriendProfileModal } = this.props
+    const { friendData, /*onOpenOPLogModal,*/ onOpenFriendProfileModal } = this.props
 
     return (
       <div className={styles['root']}>
@@ -19,16 +19,16 @@ class FriendChatBar extends PureComponent {
               <div className={styles['prev-button-icon']}></div>
             </Link>
           </div>
-          <div className={styles['main-content']}>
-            <div className={styles['profile-pic']} onClick={onOpenFriendProfileModal}>
+          <div className={styles['main-content']} onClick={onOpenFriendProfileModal}>
+            <div className={styles['profile-pic']}>
               <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
             </div>
             <div className={styles['friend-content']}>
               <div className={styles['name']} onClick={onOpenFriendProfileModal}>
                 {friendData.Name || constants.DEFAULT_USER_NAME }
               </div>
-              <div hidden title={friendData.ID} className={styles['job']} onClick={onOpenOPLogModal}>
-               Chat ID: {friendData.ID}
+              <div title={friendData.ID} className={styles['job']} onClick={null/*onOpenOPLogModal*/}>
+                {friendData.NameCard && friendData.NameCard.company ? friendData.NameCard.company : constants.DEFAULT_USER_COMPANY}
               </div>
               <div hidden className={styles['description']}>
                {friendData.description}

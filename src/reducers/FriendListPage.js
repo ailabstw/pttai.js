@@ -8,6 +8,7 @@ import {  EMPTY_ID,
           NUM_CACHE_FRIEND,
           DEFAULT_USER_NAME,
           DEFAULT_USER_IMAGE,
+          DEFAULT_USER_NAMECARD,
           NUM_FRIEND_PER_REQ,
           MESSAGE_TYPE_TEXT }       from '../constants/Constants'
 
@@ -115,19 +116,22 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
 
   let friendList = result.map((each, index) => {
 
-    let userId          = each.friendID
-    let summaryUserId   = summaries[index].SummaryUserID
-    let userNameMap     = usersInfo['userName'] || {}
-    let userImgMap      = usersInfo['userImg'] || {}
+    let userId            = each.friendID
+    let summaryUserId     = summaries[index].SummaryUserID
+    let userNameMap       = usersInfo['userName'] || {}
+    let userImgMap        = usersInfo['userImg'] || {}
+    let userNameCardMap   = usersInfo['userNameCard'] || {}
 
     let userName        = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
     let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
     let SummaryUserImg  = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
 
     return {
       Name:             userName,
       Img:              userImg,
+      nameCard:         userNameCard,
       friendID:         each.friendID,
       chatId:           each.ID,
       BoardID:          each.BID,
@@ -161,14 +165,17 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
       let userId          = join.CreatorID
       let userNameMap     = usersInfo['userName'] || {}
       let userImgMap      = usersInfo['userImg'] || {}
+      let userNameCardMap = usersInfo['userNameCard'] || {}
 
       let userName        = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
       let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+      let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
 
       friendList.push({
         Name:             join.Name || userName,
         Img:              userImg,
         friendID:         userId,
+        nameCard:         userNameCard,
         chatId:           null,
         BoardID:          EMPTY_ID,
         FriendStatus:     null,
@@ -272,15 +279,18 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
     let summaryUserId   = summaries[index].SummaryUserID
     let userNameMap     = usersInfo['userName'] || {}
     let userImgMap      = usersInfo['userImg'] || {}
+    let userNameCardMap = usersInfo['userNameCard'] || {}
 
     let userName        = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
     let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
     let SummaryUserImg  = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
 
     return {
       Name:             userName,
       Img:              userImg,
+      nameCard:         userNameCard,
       friendID:         each.friendID,
       chatId:           each.ID,
       BoardID:          each.BID,
@@ -314,14 +324,17 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
       let userId          = join.CreatorID
       let userNameMap     = usersInfo['userName'] || {}
       let userImgMap      = usersInfo['userImg'] || {}
+      let userNameCardMap = usersInfo['userNameCard'] || {}
 
       let userName        = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
       let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+      let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
 
       friendList.push({
         Name:             join.Name || userName,
         Img:              userImg,
         friendID:         userId,
+        nameCard:         userNameCard,
         chatId:           null,
         BoardID:          EMPTY_ID,
         FriendStatus:     null,
@@ -501,14 +514,18 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
 
   result = serverUtils.deserialize(result)
 
-  let userId      = result.C
-  let userImgMap  = usersInfo['userImg'] || {}
-  let userImg     = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userId          = result.C
+  let userImgMap      = usersInfo['userImg'] || {}
+  let userNameCardMap = usersInfo['userNameCard'] || {}
+
+  let userImg         = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
 
   const combinedFriend = {
     Name:             result.N,
     Img:              userImg,
     friendID:         null,
+    nameCard:         userNameCard,
     chatId:           null,
     BoardID:          null,
     FriendStatus:     0,

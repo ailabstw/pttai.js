@@ -381,6 +381,14 @@ export const getUsersInfo = (userIds) => {
           return { 'error': false, 'key':'userImg', 'value': result }
         }
       }),
+    dispatch(getNameCardByIds(userIds))
+      .then(({response: {result}, type, query, error}) => {
+        if (error) {
+          return { 'error': true, 'key':'userNameCard', 'value': error }
+        } else {
+          return { 'error': false, 'key':'userNameCard', 'value': result }
+        }
+      }),
   ]);
 }
 
