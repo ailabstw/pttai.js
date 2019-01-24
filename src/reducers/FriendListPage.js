@@ -656,6 +656,21 @@ const postprocessSetFinshLoading = (myId) => {
   }
 }
 
+export const clearData = (myId) => {
+  return (dispatch, getState) => {
+    dispatch(postprocessClearData(myId))
+  }
+}
+
+const postprocessClearData = (myId) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: { myFriends: { lru: null, offset: 0, friendList: [] }, noFriend: false, isLoading: false, allFriendsLoaded: false }
+  }
+}
+
 // reducers
 const reducer = myDuck.createReducer({
   [INIT]:           utils.reduceInit,

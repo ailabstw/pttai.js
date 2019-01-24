@@ -39,7 +39,10 @@ class FriendListPage extends PureComponent {
   }
 
   componentWillUnmount() {
+    const { actions: {doFriendListPage}, myId} = this.props
+
     clearInterval(this.refreshPageInterval)
+    doFriendListPage.clearData(myId)
   }
 
   render() {

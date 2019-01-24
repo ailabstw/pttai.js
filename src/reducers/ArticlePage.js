@@ -733,12 +733,13 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, a
             let boardId       = result.BID
             let articleId     = result.AID
             let subContentId  = result.cID
-            let totalBlockNum = result.NB
-            let artilceLimit  = (totalBlockNum < constants.NUM_CONTENT_PER_REQ) ? totalBlockNum : constants.NUM_CONTENT_PER_REQ
+            //let totalBlockNum = result.NB
+            let artilceLimit  = 0 //(totalBlockNum < constants.NUM_CONTENT_PER_REQ) ? totalBlockNum : constants.NUM_CONTENT_PER_REQ
             let blockId       = 0
 
             dispatch(serverUtils.getContent(boardId, articleId, subContentId, constants.CONTENT_TYPE_ARTICLE, blockId, artilceLimit, constants.LIST_ORDER_NEXT))
               .then(({response: contentResult, type, error, query}) => {
+                console.log('sammui:',contentResult.result)
                 let creatorIds = contentResult.result.map(each => each.CID).filter(each => each)
                 dispatch(serverUtils.getUsersInfo(creatorIds))
                   .then((usersInfo) => {

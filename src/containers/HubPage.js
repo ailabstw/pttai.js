@@ -41,7 +41,10 @@ class HubPage extends PureComponent {
   }
 
   componentWillUnmount() {
+    const { myId, actions: { doHubPage }} = this.props
+
     clearInterval(this.refreshPageInterval)
+    doHubPage.clearData(myId)
   }
 
   render() {

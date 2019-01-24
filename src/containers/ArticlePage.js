@@ -58,6 +58,10 @@ class ArticlePage extends PureComponent {
     let commentContentsList = commentContents.commentContentsList || []
     let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
 
+    doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
+    doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
+    doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
+
     doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), latestSubContentId, 0, constants.NUM_CONTENT_PER_REQ)
   }
 
