@@ -107,7 +107,7 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
   })
 
   result    = result.map(serverUtils.deserialize)
-  reqResult = reqResult.map(serverUtils.deserialize)
+  //reqResult = reqResult.map(serverUtils.deserialize)
 
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
@@ -512,7 +512,7 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
     return acc
   }, {})
 
-  result = serverUtils.deserialize(result)
+  //result = serverUtils.deserialize(result)
 
   let userId          = result.C
   let userImgMap      = usersInfo['userImg'] || {}
@@ -524,7 +524,7 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
   const combinedFriend = {
     Name:             result.N,
     Img:              userImg,
-    friendID:         null,
+    friendID:         userId,
     nameCard:         userNameCard,
     chatId:           null,
     BoardID:          null,
