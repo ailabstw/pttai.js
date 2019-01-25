@@ -355,9 +355,9 @@ export const _appendMessages = (state, action) => {
     let earlistTS    = 2147483648 /* year 2038 */
     messages.forEach((message, index) => {
       localLRU.set(message.ID, message)
-      if (lruCache.get(message.ID) && lruCache.get(message.ID).message.UpdateTS.T < earlistTS) {
+      if (lruCache.get(message.ID) && lruCache.get(message.ID).message.CreateTS.T < earlistTS) {
         startMessage  = lruCache.get(message.ID)
-        earlistTS     = startMessage.message.UpdateTS.T
+        earlistTS     = startMessage.message.CreateTS.T
       }
     })
     /* 2. start merge  */
@@ -373,7 +373,7 @@ export const _appendMessages = (state, action) => {
         let oriMessage = messageList[offset + oriIndex]
         let newMessage = messages[newIndex]
         /* both left */
-        if (oriMessage.UpdateTS.T <= newMessage.UpdateTS.T) {
+        if (oriMessage.CreateTS.T <= newMessage.CreateTS.T) {
           if (!localLRU.get(oriMessage.ID)) {
             mergedList.push(oriMessage)
             lruCache.set(oriMessage.ID, { index: mergeIndex, message: oriMessage })
@@ -488,7 +488,12 @@ const postprocessClearData = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { friendMessages: { lru: null, offset: 0, messageList: [] }, friendData: {} }
+    data: {
+      friendMessages: { lru: null, offset: 0, messageList: [] },
+      friendData: {},
+      allMessagesLoaded: false,
+      friendId: '',
+      boardList: [] }
   }
 }
 

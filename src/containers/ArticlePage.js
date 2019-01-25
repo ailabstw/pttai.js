@@ -3,7 +3,7 @@ import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
 import Immutable                  from 'immutable'
 import $                          from 'jquery'
-import { PTTAI_URL_BASE }         from 'config'
+//import { PTTAI_URL_BASE }         from 'config'
 
 import Empty                      from '../components/Empty'
 import ArticleComponent           from '../components/ArticleComponent'
@@ -50,19 +50,19 @@ class ArticlePage extends PureComponent {
   }
 
   getLatestComment() {
-    const { myId, articlePage, actions: {doArticlePage}, match: {params} } = this.props
+    const { myId, /*articlePage,*/ actions: {doArticlePage}, match: {params} } = this.props
 
-    let me = articlePage.get(myId, Immutable.Map())
+    //let me = articlePage.get(myId, Immutable.Map())
 
-    let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
-    let commentContentsList = commentContents.commentContentsList || []
-    let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
+    //let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
+    //let commentContentsList = commentContents.commentContentsList || []
+    //let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
 
     doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
     doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
     doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
 
-    doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), latestSubContentId, 0, constants.NUM_CONTENT_PER_REQ)
+    doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
   }
 
   downloadAttachment(e, iframeParams) {
@@ -235,7 +235,7 @@ class ArticlePage extends PureComponent {
       doArticlePage.deleteArticle(myId, boardId, articleId)
       doModalContainer.closeModal()
 
-      this.props.history.push(`${PTTAI_URL_BASE}/board/${boardId}`)
+      this.props.history.push(`/board/${boardId}`)
     }
 
     let openEditArticleSubmit = (title, reducedArticleArray, attachments) => {

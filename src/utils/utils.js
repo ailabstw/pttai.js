@@ -336,5 +336,5 @@ export const getStatusClass = (status) => {
 }
 
 export const isIOS = () => {
-  return platform.os.toString().indexOf('iOS') !== -1
+  return platform.os.toString().indexOf('iOS') !== -1 && platform.name.indexOf('Safari') === -1
 }

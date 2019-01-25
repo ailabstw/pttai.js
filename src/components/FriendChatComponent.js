@@ -4,7 +4,7 @@ import { injectIntl,
          FormattedMessage }        from 'react-intl'
 import $                           from 'jquery'
 import { ClipLoader }              from 'react-spinners'
-import { PTTAI_URL_BASE }          from 'config'
+//import { PTTAI_URL_BASE }          from 'config'
 
 import { doesCrossDay,
          epoch2MessageTimeFormat,
@@ -205,24 +205,6 @@ class FriendChatComponent extends PureComponent {
 
     return (
       <div className={styles['root']}>
-    {/*
-        <div className={styles['main-content']}>
-          <div className={styles['profile-pic']} onClick={onOpenFriendProfileModal}>
-            <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
-          </div>
-          <div className={styles['content']}>
-            <div className={styles['name']} onClick={onOpenFriendProfileModal}>
-              {friendData.Name || constants.DEFAULT_USER_NAME }
-            </div>
-            <div title={friendData.ID} className={styles['job']} onClick={onOpenOPLogModal}>
-             Chat ID: {friendData.ID}
-            </div>
-            <div hidden className={styles['description']}>
-             {friendData.description}
-            </div>
-          </div>
-        </div>
-    */}
         <div className={styles['chat']}
              onScroll={this.handleScroll}
              ref={(scroller) => {
@@ -325,7 +307,7 @@ class FriendChatComponent extends PureComponent {
                     /*          */
                     if (isUser) {
                       return (
-                        <div key={messageList.length - index}>
+                        <div key={message.ID}>
                           {divider}
                           <div className={styles['user-message-item']}>
                             <div className={styles['user-message-meta']}>
@@ -347,14 +329,14 @@ class FriendChatComponent extends PureComponent {
                       )
                     } else {
                       return (
-                        <div key={messageList.length - index}>
+                        <div key={message.ID}>
                           {divider}
                           <div className={styles['message-item']}>
                             {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
                                 boardList.findIndex(each => each.ID === inviteInfo.boardId) >= 0 ? (
                                   <div className={styles['message-content-invitation']}
-                                       onClick={() => this.props.history.push(`${PTTAI_URL_BASE}/board/${inviteInfo.boardId}`)}>
+                                       onClick={() => this.props.history.push(`/board/${inviteInfo.boardId}`)}>
                                     {messageHtml}
                                   </div>
                                 ):(

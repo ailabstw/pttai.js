@@ -443,9 +443,9 @@ export const _appendArticles = (state, action) => {
     let earlistTS    = 2147483648 /* year 2038 */
     articles.forEach((article, index) => {
       localLRU.set(article.ID, article)
-      if (lruCache.get(article.ID) && lruCache.get(article.ID).article.UpdateTS.T < earlistTS) {
+      if (lruCache.get(article.ID) && lruCache.get(article.ID).article.CreateTS.T < earlistTS) {
         startArticle  = lruCache.get(article.ID)
-        earlistTS     = startArticle.article.UpdateTS.T
+        earlistTS     = startArticle.article.CreateTS.T
       }
     })
     /* 2. start merge  */
@@ -461,7 +461,7 @@ export const _appendArticles = (state, action) => {
         let oriArticle = articleList[offset + oriIndex]
         let newArticle = articles[newIndex]
         /* both left */
-        if (oriArticle.UpdateTS.T <= newArticle.UpdateTS.T) {
+        if (oriArticle.CreateTS.T <= newArticle.CreateTS.T) {
           if (!localLRU.get(oriArticle.ID)) {
             mergedList.push(oriArticle)
             lruCache.set(oriArticle.ID, { index: mergeIndex, article: oriArticle })

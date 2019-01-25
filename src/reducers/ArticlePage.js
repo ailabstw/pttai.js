@@ -272,6 +272,7 @@ export const getCommentContent = (myId, boardId, articleId, latestSubContentId, 
     }
     dispatch(serverUtils.getContent(boardId, articleId, latestSubContentId, constants.CONTENT_TYPE_COMMENT, blockId, limit, listOrder))
       .then(({response: {result}, type, error, query}) => {
+        console.log('sammui comment:',result)
         let creatorIds = result.map(each => each.CID).filter(each => each)
         dispatch(serverUtils.getUsersInfo(creatorIds))
           .then((usersInfo) => {
@@ -360,9 +361,9 @@ export const _appendComment = (state, action) => {
     let earlistTS    = 2147483648 /* year 2038 */
     comments.forEach((comment, index) => {
       localLRU.set(comment.subContentId, comment)
-      if (lruCache.get(comment.subContentId) && lruCache.get(comment.subContentId).comment.updateTS.T < earlistTS) {
+      if (lruCache.get(comment.subContentId) && lruCache.get(comment.subContentId).comment.createTS.T < earlistTS) {
         startComment  = lruCache.get(comment.subContentId)
-        earlistTS     = startComment.comment.updateTS.T
+        earlistTS     = startComment.comment.createTS.T
       }
     })
     /* 2. start merge  */
@@ -377,7 +378,7 @@ export const _appendComment = (state, action) => {
         let oriComment = commentContentsList[oriIndex]
         let newComment = comments[newIndex]
         /* both left */
-        if (oriComment.updateTS.T <= newComment.updateTS.T) {
+        if (oriComment.createTS.T <= newComment.createTS.T) {
           if (!localLRU.get(oriComment.subContentId)) {
             mergedList.push(oriComment)
             lruCache.set(oriComment.subContentId, { index: mergeIndex, comment: oriComment })

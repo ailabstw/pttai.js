@@ -125,7 +125,7 @@ class ArticleListComponent extends PureComponent {
                   }
 
                   return (
-                    <div className={styles['list-item']} key={listData.length - index} onClick={(e) => this.onListItemClick(e, index)}>
+                    <div className={styles['list-item']} key={item.ID} onClick={(e) => this.onListItemClick(e, index)}>
                       <Link to={itemLink}>
                         <div hidden className={styles['list-item-blocker']}></div>
                         <div className={styles['list-item-author']}>

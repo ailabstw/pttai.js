@@ -2,7 +2,7 @@ import React, { PureComponent }     from 'react'
 import { connect }                  from 'react-redux'
 import { bindActionCreators }       from 'redux'
 import Immutable                    from 'immutable'
-import { PTTAI_URL_BASE }           from 'config'
+//import { PTTAI_URL_BASE }           from 'config'
 
 import Empty                  from '../components/Empty'
 import BoardComponent         from '../components/BoardComponent'
@@ -89,7 +89,7 @@ class BoardPage extends PureComponent {
         setBoardName: (boardId, name, friendInvited) => doBoardPage.setBoardName(myId, boardId, name, friendInvited),
         deleteBoard: (boardId) => {
           doBoardPage.deleteBoard(myId, boardId)
-          this.props.history.push(`${PTTAI_URL_BASE}/hub`)
+          this.props.history.push(`/hub`)
         }
       })
       doModalContainer.openModal(constants.MANAGE_BOARD_MODAL)
