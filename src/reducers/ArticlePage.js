@@ -611,10 +611,7 @@ const postprocessDeleteComment = (myId, commentId) => {
 export const _deleteComment = (state, action) => {
   const {myId, data: { commentId }} = action
 
-  let commentContentsList = state.getIn([myId, 'commentContentsList'], Immutable.List())
-  commentContentsList = commentContentsList.filter(each => { return each.subContentId !== commentId })
-
-  return state.setIn([myId, 'commentContentsList'], commentContentsList)
+  return state.updateIn([myId, 'commentContents', 'commentContentsList'], arr => arr.filter(each => { return each.subContentId !== commentId }))
 }
 
 export const clearData = (myId) => {
