@@ -7,6 +7,7 @@ import moment               from 'moment'
 import sanitizeHtml         from 'sanitize-html'
 import { PTTAI_APP_ROOT,
          PTTAI_URL_BASE }   from 'config'
+import platform             from 'platform'
 
 import * as constants   from '../constants/Constants'
 
@@ -332,4 +333,8 @@ export const getStatusClass = (status) => {
     statusClass = 'post-failed'
   }
   return statusClass
+}
+
+export const isIOS = () => {
+  return platform.os.toString().indexOf('iOS') !== -1
 }

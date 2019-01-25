@@ -12,6 +12,7 @@ import AlertComponent                 from '../components/AlertComponent'
 import * as doAddDeviceScannerModal   from '../reducers/AddDeviceScannerModal'
 import * as modalConstants            from '../constants/ModalConstants'
 import * as constants                 from '../constants/Constants'
+import { isIOS }                      from '../utils/utils'
 
 import styles                         from './AddDeviceScannerModal.css'
 
@@ -219,7 +220,7 @@ class AddDeviceScannerModal extends PureComponent {
                   </div>
                   <div className={styles['slide-item']}>
                     <div className={styles['container']}>
-                      <div className={styles['qr-code-scanner-container']}>
+                      <div hidden={isIOS()} className={styles['qr-code-scanner-container']}>
                         <div className={styles['qr-code-scanner']}>
                           <QrReader
                             delay={300}

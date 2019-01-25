@@ -11,6 +11,7 @@ import AlertComponent from '../components/AlertComponent'
 import * as modalConstants    from '../constants/ModalConstants'
 import * as constants         from '../constants/Constants'
 import * as doFirstPopupModal from '../reducers/FirstPopupModal'
+import { isIOS }              from '../utils/utils'
 
 import styles from './FirstPopupModal.css'
 
@@ -328,7 +329,7 @@ class FirstPopupModal extends PureComponent {
                       defaultMessage="Sign in with existing account"
                     />
                   </div>
-                  <div className={styles['submodal-signin-scanner-container']}>
+                  <div hidden={isIOS()} className={styles['submodal-signin-scanner-container']}>
                     <div className={styles['submodal-qr-code-scanner']}>
                       <QrReader
                         delay={300}

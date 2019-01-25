@@ -8,6 +8,7 @@ import QrReader                   from 'react-qr-reader'
 
 import * as modalConstants        from '../constants/ModalConstants'
 import * as doAddKnownBoardModal  from '../reducers/AddKnownBoardModal'
+import { isIOS }                  from '../utils/utils'
 
 import styles from './AddKnownBoardModal.css'
 
@@ -61,7 +62,7 @@ class AddKnownBoardModal extends PureComponent {
                   defaultMessage="Enter Group ID to join"
                 />
               </div>
-              <div className={styles['add-known-board-scanner-container']}>
+              <div hidden={isIOS()} className={styles['add-known-board-scanner-container']}>
                 <div className={styles['submodal-qr-code-scanner']}>
                   <QrReader
                     delay={300}

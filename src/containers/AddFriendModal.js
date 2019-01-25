@@ -3,13 +3,14 @@ import { connect }              from 'react-redux'
 import { bindActionCreators }   from 'redux'
 import Modal                    from 'react-modal'
 import QrReader                 from 'react-qr-reader'
-import { FormattedMessage, injectIntl } from 'react-intl'
+import { FormattedMessage,
+         injectIntl }           from 'react-intl'
 
 import * as doAddFriendModal    from '../reducers/AddFriendModal'
 
 import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
-// import { expiredFormat }        from '../utils/utilDatetime'
+import { isIOS }                from '../utils/utils'
 
 import styles from './AddFriendModal.css'
 
@@ -79,7 +80,7 @@ class AddFriendModal extends PureComponent {
                   defaultMessage="Add friend"
                 />
               </div>
-              <div className={styles['submodal-signin-scanner-container']}>
+              <div hidden={isIOS()} className={styles['submodal-signin-scanner-container']}>
                 <div className={styles['submodal-qr-code-scanner']}>
                   <QrReader
                     delay={300}
