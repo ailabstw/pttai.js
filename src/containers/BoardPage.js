@@ -86,7 +86,7 @@ class BoardPage extends PureComponent {
       doModalContainer.setInput({
         boardId:    boardInfo.ID,
         boardName:  boardInfo.Title,
-        setBoardName: (boardId, name) => doBoardPage.setBoardName(myId, boardInfo.ID, name),
+        setBoardName: (boardId, name, friendInvited) => doBoardPage.setBoardName(myId, boardId, name, friendInvited),
         deleteBoard: (boardId) => {
           doBoardPage.deleteBoard(myId, boardId)
           this.props.history.push(`${PTTAI_URL_BASE}/hub`)

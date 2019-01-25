@@ -128,13 +128,13 @@ class BoardListComponent extends PureComponent {
                       <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>
                         {epoch2ReadFormat(item.UpdateTS.T)}
                       </div>
-                        <div className={styles['list-item-edit-button']}>
-                        {
-                          item.CreatorID !== userId? (null):(
-                            <div className={styles['list-item-ellipsis']} onClick={(e) => this.onEditBoard(e, item)}></div>
-                          )
-                        }
-                        </div>
+                      <div className={styles['list-item-edit-button']}>
+                      {
+                        true || item.CreatorID !== userId? (null):(
+                          <div className={styles['list-item-ellipsis']} onClick={(e) => this.onEditBoard(e, item)}></div>
+                        )
+                      }
+                      </div>
                     </div>
                   </Link>
                 </div>

@@ -7,7 +7,8 @@ import * as serverUtils         from './ServerUtils'
 
 import * as constants           from '../constants/Constants'
 import { DEFAULT_USER_NAME,
-         DEFAULT_USER_IMAGE }   from '../constants/Constants'
+         DEFAULT_USER_IMAGE,
+         MESSAGE_TYPE_INVITE }  from '../constants/Constants'
 import { toJson,
          getSummaryTemplate }   from '../utils/utils'
 
@@ -90,11 +91,50 @@ const postprocessGetBoardInfo = (myId, result) => {
 /*  Update Board  Info      */
 /*                          */
 
-export const setBoardName = (myId, boardId, name) => {
+function sentInviteMessages(inviteMessages) {
+  return dispatch => Promise.all(inviteMessages.map((invite) => {
+      return dispatch(serverUtils.postMessage(invite.chatId, [invite.message], []))
+        .then(({response: {result}, type, query, error}) => {
+          return { 'chatId': invite.chatId }
+        })
+  }));
+}
+
+export const setBoardName = (myId, boardId, name, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.setBoardName(boardId, name))
       .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessSetBoardName(myId, boardId, name))
+
+        dispatch(serverUtils.getBoardUrl(boardId))
+          .then(({response: boardUrlResult, type, query, error}) => {
+
+            const boardJoinKey = {
+              C:            boardUrlResult.result.C,
+              ID:           boardUrlResult.result.ID,
+              Pn:           boardUrlResult.result.Pn,
+              T:            boardUrlResult.result.T,
+              URL:          boardUrlResult.result.URL,
+              UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
+              expirePeriod: boardUrlResult.result.e,
+            }
+
+            let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
+              let chatId = friendInvited[friendId]
+              let message = {
+                type:   MESSAGE_TYPE_INVITE,
+                value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+              }
+              return {
+                chatId: chatId,
+                message: JSON.stringify(message),
+              }
+            })
+
+            dispatch(sentInviteMessages(inviteMessages))
+              .then(({response: inviteResult, type, error, query}) => {
+                dispatch(postprocessSetBoardName(myId, boardId, name))
+              })
+          })
       })
   }
 }
