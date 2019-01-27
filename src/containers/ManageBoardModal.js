@@ -183,7 +183,7 @@ class ManageBoardModal extends PureComponent {
               </div>
               <div hidden className={styles['search']} onClick={onDelete}>
                 <FormattedMessage
-                  id="manage-board-modal.copy-board-id-3"
+                  id="manage-board-modal.board-action-2"
                   defaultMessage="Delete Board"
                 />
               </div>
@@ -192,7 +192,7 @@ class ManageBoardModal extends PureComponent {
 
               <div className={styles['edit-name']}>
                 <FormattedMessage
-                  id="manage-board-modal.copy-board-id-1"
+                  id="manage-board-modal.board-action-1"
                   defaultMessage="Change Board Name"
                 />:
                 <input

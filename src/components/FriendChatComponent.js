@@ -282,7 +282,7 @@ class FriendChatComponent extends PureComponent {
                           <span>{inviteInfo.boardName}</span>
                           <FormattedMessage
                             id="friend-chat-component.action2-2"
-                            defaultMessage="Click to join (Expired in {expTimeVal})"
+                            defaultMessage="Click to join ({expTimeVal})"
                             values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
                           />
                         </span>)
@@ -295,7 +295,7 @@ class FriendChatComponent extends PureComponent {
                           <span>{inviteInfo.boardName}</span>
                           <FormattedMessage
                             id="friend-chat-component.action4"
-                            defaultMessage=" (Expired in {expTimeVal})"
+                            defaultMessage=" ({expTimeVal})"
                             values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
                           />
                         </span>)

@@ -292,10 +292,9 @@
     background-image: url('/images/icon_confirm_white@2x.png')
 }
 .editname-modal-copy {
-    padding: 0.5ex 0;
-    margin: 10px auto 15px auto;
+    padding: 0.5ex 10px;
+    margin: 15px auto;
     font-size: 1rem;
-    width: 150px;
     min-width: 100px;
     max-height: 34px;
     min-height: 34px;

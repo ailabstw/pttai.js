@@ -12,7 +12,7 @@
     min-height: 50px;
     max-height: 50px;
     border-bottom: 1px solid #A9A9A9;
-    padding: 5px 10px;
+    padding: 5px 15px 5px 10px;
     background-color: #FFF;
 }
 
@@ -88,6 +88,8 @@
     width: 100%;
     margin: 0px 0px 0px 0px;
     padding: 0px 5px;
+
+    border: 1px solid #A9A9A9;
 }
 
 .edit-name input:focus {
@@ -340,6 +342,11 @@
   cursor: pointer;
 }
 
+.list-item-invited:hover {
+    background-color: #8D8D8D;
+    cursor: pointer;
+}
+
 .action-section {
     height: 100%;
     text-align: center;
@@ -380,7 +387,7 @@
 }
 
 .null-space, .copy-space {
-    min-width: 100px;
+    min-width: 135px;
     height: 50px;
 }
 
@@ -399,7 +406,7 @@
 }
 
 .manageboard-modal-copy {
-    margin: 5px 10px;
+    margin: 5px 15px;
     font-size: 1rem;
     width: 105px;
     max-height: 34px;

@@ -205,7 +205,11 @@ export const expiredFormat = (updateTS_T, period) => {
       result = 'Expired'
     }
   } else {
-    result = expiredTime.toNow(true)
+    if (language === 'zh') {
+      result = expiredTime.toNow(true) + '後過期'
+    } else {
+      result = 'Expired in ' + expiredTime.toNow(true)
+    }
   }
 
   return result

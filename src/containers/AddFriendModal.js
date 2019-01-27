@@ -76,7 +76,7 @@ class AddFriendModal extends PureComponent {
             <div className={styles['submodal-signin']}>
               <div className={styles['submodal-signin-title']}>
                 <FormattedMessage
-                  id="add-friend-modal.tab2"
+                  id="add-friend-modal.title"
                   defaultMessage="Add friend"
                 />
               </div>

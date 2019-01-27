@@ -19,7 +19,6 @@
 .prev-button {
     line-height: 30px;
     padding: 10px 10px 10px 20px;
-    /*width: 23%;*/
     min-width: 105px;
     font-weight: lighter;
     text-overflow: ellipsis;
@@ -70,7 +69,7 @@
 
 .search {
     line-height: 30px;
-    padding: 10px 20px;
+    padding: 10px 10px;
     text-align: right;
     flex-grow: 1;
     min-width: 55px;
@@ -81,12 +80,10 @@
 }
 
 .list-item-ellipsis {
-    position: absolute;
-    right: 20px;
-    bottom: 0px;
     cursor: pointer;
-    width: 15px;
-    height: 50px;
+    margin: auto;
+    width: 40px;
+    height: 30px;
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
@@ -94,12 +91,10 @@
 }
 
 .list-item-ellipsis:hover, .list-item-ellipsis:active {
-    position: absolute;
-    right: 20px;
-    bottom: 0px;
     cursor: pointer;
-    width: 15px;
-    height: 50px;
+    margin: auto;
+    width: 40px;
+    height: 30px;
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;

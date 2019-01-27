@@ -62,7 +62,7 @@ class AddDeviceModal extends PureComponent {
               <div className={styles['null-space']}></div>
             </div>
             <div className={styles['content']}>
-              <div className={styles['content-title']}>Node ID</div>
+              <div hidden className={styles['content-title']}>Node ID</div>
               <div className={styles['qr-code']}>
                 <QRCode value={keyInfo.data.deviceJoinKey.URL} size={250} />
               </div>
@@ -70,7 +70,7 @@ class AddDeviceModal extends PureComponent {
                 <div className={styles['expiration']}>
                   <FormattedMessage
                     id="add-device-modal.expiration"
-                    defaultMessage="Expire in {expTimeVal}"
+                    defaultMessage="{expTimeVal}"
                     values={{ expTimeVal: expTimeVal }}
                   />
                 </div>
