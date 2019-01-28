@@ -103,6 +103,10 @@
     line-height: 37px;
     font-size: 26px;
     color: #FFF;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .company, .job-title, .email, .phone, .description {

@@ -125,5 +125,6 @@
     "edit-name-modal.email-placeholder":"E-mail (請點選編輯鈕)",
     "edit-name-modal.phone-placeholder":"聯絡電話 (請點選編輯鈕)",
     "edit-name-modal.description-placeholder":"請填入自我介紹 (請點選編輯鈕)",
-    "edit-name-modal.edit-button":"編輯"
+    "edit-name-modal.edit-button":"編輯",
+    "edit-name-modal.leave-button":"離開"
 }

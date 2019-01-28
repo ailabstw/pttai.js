@@ -28,6 +28,15 @@ class EditNameModal extends PureComponent {
   constructor(props) {
     super();
     this.state = {
+
+      nameOriginal:         props.modalInput.userName,
+      userImgOriginal:      props.modalInput.userImg,
+      companyOriginal:      props.modalInput.profile.company || '',
+      jobTitleOriginal:     props.modalInput.profile.jobTitle || '',
+      emailOriginal:        props.modalInput.profile.email || '',
+      phoneOriginal:        props.modalInput.profile.phone || '',
+      descriptionOriginal:  props.modalInput.profile.description || '',
+
       name:     props.modalInput.userName,
       userImg:  props.modalInput.userImg,
       company:  props.modalInput.profile.company || '',
@@ -35,6 +44,7 @@ class EditNameModal extends PureComponent {
       email:    props.modalInput.profile.email || '',
       phone:    props.modalInput.profile.phone || '',
       description:    props.modalInput.profile.description || '',
+
       friendJoinKey:  props.modalInput.friendJoinKey,
       isEdit:         false,
       qrCodeCopied:         false,
@@ -82,8 +92,10 @@ class EditNameModal extends PureComponent {
   }
 
   onSubmit() {
-    const { onModalSubmit/*, onModalClose*/ } = this.props
+    const { onModalSubmit/*, onModalClose*/, modalInput: { editImgSubmit } } = this.props
+
     const { name }          = this.state
+    const { userImg }       = this.state
     const { company }       = this.state
     const { jobTitle }      = this.state
     const { email }         = this.state
@@ -180,6 +192,7 @@ class EditNameModal extends PureComponent {
         description:  trimmedDescription
       }
 
+      editImgSubmit(userImg)
       onModalSubmit(trimmedName, editedProfile)
       this.setState({ isEdit: false })
       //onModalClose()
@@ -187,7 +200,7 @@ class EditNameModal extends PureComponent {
   }
 
   onUpload(e) {
-    let { modalInput: { editImgSubmit } } = this.props
+    //let { modalInput: { editImgSubmit } } = this.props
     let that          = this
     let file          = document.querySelector('input[type=file]').files[0];
     let resizeReader  = new FileReader();
@@ -262,8 +275,8 @@ class EditNameModal extends PureComponent {
                 let imgDataUrl = canvas.toDataURL('image/jpeg');
                 that.setState({ userImg: imgDataUrl })
 
-                editImgSubmit(imgDataUrl)
-                document.getElementById('profile-page-pic').setAttribute('src', imgDataUrl);
+                // editImgSubmit(imgDataUrl)
+                // document.getElementById('profile-page-pic').setAttribute('src', imgDataUrl);
             }
          }
       })
@@ -448,7 +461,27 @@ class EditNameModal extends PureComponent {
               {
                 isEdit ? (
                   <div className={styles['editname-modal-action-section']}>
-                    <button className={styles['editname-modal-cancel']} onClick={() => this.setState({ isEdit: false })}>
+                    <button className={styles['editname-modal-cancel']} onClick={() => {
+
+                      const { nameOriginal,
+                              userImgOriginal,
+                              companyOriginal,
+                              jobTitleOriginal,
+                              emailOriginal,
+                              phoneOriginal,
+                              descriptionOriginal } = this.state
+
+                      this.setState({
+                        isEdit:       false,
+                        name:         nameOriginal,
+                        userImg:      userImgOriginal,
+                        company:      companyOriginal,
+                        jobTitle:     jobTitleOriginal,
+                        email:        emailOriginal,
+                        phone:        phoneOriginal,
+                        description:  descriptionOriginal
+                      })
+                    }}>
                       <div className={styles['cancel-icon']}></div>
                       <FormattedMessage
                         id="first-popup-modal.action1"
@@ -470,8 +503,8 @@ class EditNameModal extends PureComponent {
                     <button className={styles['editname-modal-cancel']} onClick={onModalClose}>
                       <div className={styles['cancel-icon']}></div>
                       <FormattedMessage
-                        id="first-popup-modal.action1"
-                        defaultMessage="Cancel"
+                        id="edit-name-modal.leave-button"
+                        defaultMessage="Leave"
                       />
                     </button>
                     <button className={styles['editname-modal-submit']} onClick={() => this.setState({ isEdit: true })}>

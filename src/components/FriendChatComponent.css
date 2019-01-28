@@ -143,7 +143,7 @@
     /*width: fit-content;
     height: fit-content;*/
     width: 267px;
-    height: 99px;
+    height: /*99px*/auto;
     border-radius: 10px;
     background-color: #4e474e;
 
@@ -168,14 +168,15 @@
 
 .user-message-content-invitation span span:nth-child(2){
     width: fit-content;
+    max-width: 100%;
     padding: 1px 5px;
     margin: 3px auto;
     color: #ffffff;
     font-weight: normal;
 
-    text-overflow: ellipsis;
+/*    text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: hidden;*/
 
     border: 1px solid #FFFF;
     border-radius: 5px;

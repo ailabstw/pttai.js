@@ -526,7 +526,7 @@ const postprocessCreateArticle = (myId, boardId, userName, userImg, title, artic
   let newArticle = {
       BoardID:        result.BID,
       ContentBlockID: result.cID,
-      CreateTS:       null,
+      CreateTS:       utils.emptyTimeStamp(),
       CreatorID:      null,
       CreatorName:    userName,
       CreatorImg:     userImg,

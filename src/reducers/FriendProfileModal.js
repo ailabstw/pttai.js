@@ -5,6 +5,7 @@ import * as utils             from './utils'
 import * as serverUtils       from './ServerUtils'
 
 import { myDuck as appDuck }    from './App'
+import { DEFAULT_USER_NAMECARD }   from '../constants/Constants'
 
 export const myClass = 'FRIEND_PROFILE_MODAL'
 
@@ -29,7 +30,8 @@ export const getFriendProfile = (myId, userId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getNameCard(userId))
       .then(({response: { result }, type, query, error}) => {
-        dispatch(postprocessGetProfile(myId, serverUtils.b64decode(result.C)))
+        let content = result.C ? serverUtils.b64decode(result.C) : DEFAULT_USER_NAMECARD
+        dispatch(postprocessGetProfile(myId, content))
       })
   }
 }

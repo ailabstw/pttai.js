@@ -125,5 +125,6 @@
     "edit-name-modal.email-placeholder":"Email (press below to edit)",
     "edit-name-modal.phone-placeholder":"Phone (press below to edit)",
     "edit-name-modal.description-placeholder":"About me (press below to edit)",
-    "edit-name-modal.edit-button":"Edit"
+    "edit-name-modal.edit-button":"Edit",
+    "edit-name-modal.leave-button":"Leave"
 }

@@ -152,7 +152,7 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
     return {
       CreatorID: eachJoin.C,
       NodeID:    eachJoin.n,
-      Name:      eachJoin.N,
+      Name:      serverUtils.b64decode(eachJoin.N),
       Status:    eachJoin.S,
     }
   })
