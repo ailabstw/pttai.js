@@ -19,7 +19,6 @@ import { getOrientation,
 
 import styles from './EditNameModal.css'
 
-
 function isEmpty(name) {
   return name.replace(/\s\s+/g, '') === ''
 }
