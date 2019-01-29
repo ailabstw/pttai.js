@@ -10,7 +10,10 @@ import { doesCrossDay,
          epoch2MessageTimeFormat,
          epoch2MessageDateFormat,
          expiredFormat           } from '../utils/utilDatetime'
-import { getStatusClass, toJson }  from '../utils/utils'
+
+import { getStatusClass,
+         toJson,
+         isMobile }                from '../utils/utils'
 
 import AlertComponent              from '../components/AlertComponent'
 import * as constants              from '../constants/Constants'
@@ -373,7 +376,7 @@ class FriendChatComponent extends PureComponent {
         </div>
         <div className={styles['message-input']}>
           <input
-            autoFocus
+            autoFocus={!isMobile()}
             placeholder={placeholder}
             value={inputMessage}
             onChange={(e) => this.setState({inputMessage:e.target.value})}

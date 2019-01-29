@@ -342,7 +342,6 @@ class EditNameModal extends PureComponent {
                       {
                         isEdit ? (
                           <input
-                            autoFocus
                             name='title-input'
                             value={name}
                             onChange={this.onNameChange}/>
@@ -374,7 +373,6 @@ class EditNameModal extends PureComponent {
                         isEdit ? (
                           <input
                             placeholder={jobtitle_placeholder}
-                            autoFocus
                             name='title-input'
                             value={jobTitle}
                             onChange={this.onJobTitleChange}/>
@@ -400,7 +398,6 @@ class EditNameModal extends PureComponent {
                         isEdit ? (
                           <input
                             placeholder={email_placeholder}
-                            autoFocus
                             name='title-input'
                             value={email}
                             onChange={this.onEmailChange}/>
@@ -418,7 +415,6 @@ class EditNameModal extends PureComponent {
                         isEdit ? (
                           <input
                             placeholder={phone_placeholder}
-                            autoFocus
                             name='title-input'
                             value={phone}
                             onChange={this.onPhoneChange}/>
@@ -441,7 +437,6 @@ class EditNameModal extends PureComponent {
                         isEdit ? (
                           <textarea
                             placeholder={description_placeholder}
-                            autoFocus
                             name='title-input'
                             value={description}
                             onChange={this.onDescriptionChange}/>

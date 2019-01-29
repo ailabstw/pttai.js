@@ -4,8 +4,13 @@ import { FormattedMessage }     from 'react-intl'
 import { ClipLoader }           from 'react-spinners'
 
 import styles               from './CommentReplyListComponent.css'
+
 import AlertComponent       from '../components/AlertComponent'
-import { getStatusClass }   from '../utils/utils'
+
+import { getStatusClass,
+         isMobile }                 from '../utils/utils'
+import { epoch2FullTimeFormat,
+         epoch2ReadFormat }  from '../utils/utilDatetime'
 
 import * as constants from '../constants/Constants'
 
@@ -147,6 +152,7 @@ class CommentReplyListComponent extends PureComponent {
           <div>
             {
               commentContents.map((item, index) => {
+                console.log('sammui:',item)
                 let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
                 return (
                   <div className={styles['list-item']} key={index} onClick={(e) => this.onListItemClick(e, index)}>
@@ -158,8 +164,9 @@ class CommentReplyListComponent extends PureComponent {
                       <div className={styles['comment-creator-name']}>
                         {item.creatorName}
                       </div>
-                      <div className={styles['comment-creator-id-prefix']}>
-                        {item.creatorId && item.creatorId.length >= 8? item.creatorId.substring(0, 8):'null'}
+                      <div title={epoch2FullTimeFormat(item.createTS.T)} className={styles['comment-creator-id-prefix']}>
+                        {epoch2ReadFormat(item.createTS.T)}
+                        {/*item.creatorId && item.creatorId.length >= 8? item.creatorId.substring(0, 8):'null'*/}
                       </div>
                     </div>
                     {
@@ -247,7 +254,7 @@ class CommentReplyListComponent extends PureComponent {
             </div>
             <div className={styles['comment-input']}>
               <input
-                autoFocus
+                autoFocus={!isMobile()}
                 value={comment}
                 name='comment-input'
                 onChange={(e) => this.setState({comment: e.target.value})}/>

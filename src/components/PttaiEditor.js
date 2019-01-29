@@ -14,7 +14,8 @@ import { dataURLtoFile,
          array2Html,
          getFileTemplate,
          getUUID,
-         sanitizeDirtyHtml }  from '../utils/utils'
+         sanitizeDirtyHtml,
+         isMobile }           from '../utils/utils'
 
 import * as constants         from '../constants/Constants'
 
@@ -692,7 +693,7 @@ class PttaiEditor extends PureComponent {
             ):(
               <input
                 placeholder={placeholder}
-                autoFocus
+                autoFocus={!isMobile()}
                 name='title-input'
                 value={title}
                 onChange={this.onTitleChange}/>

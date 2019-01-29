@@ -10,7 +10,7 @@ import * as doAddFriendModal    from '../reducers/AddFriendModal'
 
 import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
-import { isIOS }                from '../utils/utils'
+import { isIOS, isMobile }      from '../utils/utils'
 
 import styles from './AddFriendModal.css'
 
@@ -99,7 +99,7 @@ class AddFriendModal extends PureComponent {
               <div className={styles['submodal-signin-node-id']}>
                 <textarea
                   placeholder={placeholder}
-                  autoFocus
+                  autoFocus={!isMobile()}
                   name='title-input'
                   value={friendReqId}
                   onChange={this.onFriendIdChange}/>

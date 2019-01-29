@@ -6,8 +6,9 @@ import Immutable                    from 'immutable'
 import { FormattedMessage }         from 'react-intl'
 import { CopyToClipboard }          from 'react-copy-to-clipboard'
 
-import { //expiredFormat,
-         epoch2ReadFormat }       from '../utils/utilDatetime'
+import { epoch2ReadFormat }       from '../utils/utilDatetime'
+import { isMobile }               from '../utils/utils'
+
 import AlertComponent             from '../components/AlertComponent'
 import * as doManageBoardModal    from '../reducers/ManageBoardModal'
 import * as modalConstants        from '../constants/ModalConstants'
@@ -172,7 +173,7 @@ class ManageBoardModal extends PureComponent {
               </div>
               <div className={styles['edit-name']}>
                 <input
-                  autoFocus
+                  autoFocus={!isMobile()}
                   name='board-name-input'
                   className={styles['board-name-input']}
                   value={name}

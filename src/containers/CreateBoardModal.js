@@ -13,6 +13,8 @@ import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
 import * as doCreateBoardModal  from '../reducers/CreateBoardModal'
 
+import { isMobile }             from '../utils/utils'
+
 import styles from './CreateBoardModal.css'
 
 class CreateBoardModal extends PureComponent {
@@ -122,7 +124,7 @@ class CreateBoardModal extends PureComponent {
             <div className={styles['title-section']}>
               <input
                 placeholder={placeholder}
-                autoFocus
+                autoFocus={!isMobile()}
                 name='title-input'
                 className={styles['title-input']}
                 value={name}

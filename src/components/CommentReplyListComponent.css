@@ -124,6 +124,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    cursor: default;
 }
 
 .comment-content {

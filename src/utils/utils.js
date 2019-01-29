@@ -335,6 +335,12 @@ export const getStatusClass = (status) => {
   return statusClass
 }
 
+export const isMobile = () => {
+  return platform.os.family.indexOf('Android') !== -1 ||
+         platform.os.family.indexOf('iOS') !== -1 ||
+         platform.os.family.indexOf('Windows Phone') !== -1 ;
+}
+
 export const isIOS = () => {
   return platform.os.toString().indexOf('iOS') !== -1 && platform.name.indexOf('Safari') === -1
 }

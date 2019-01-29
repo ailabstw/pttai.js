@@ -272,7 +272,6 @@ export const getCommentContent = (myId, boardId, articleId, latestSubContentId, 
     }
     dispatch(serverUtils.getContent(boardId, articleId, latestSubContentId, constants.CONTENT_TYPE_COMMENT, blockId, limit, listOrder))
       .then(({response: {result}, type, error, query}) => {
-        console.log('sammui comment:',result)
         let creatorIds = result.map(each => each.CID).filter(each => each)
         dispatch(serverUtils.getUsersInfo(creatorIds))
           .then((usersInfo) => {

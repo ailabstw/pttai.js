@@ -8,7 +8,7 @@ import QrReader                   from 'react-qr-reader'
 
 import * as modalConstants        from '../constants/ModalConstants'
 import * as doAddKnownBoardModal  from '../reducers/AddKnownBoardModal'
-import { isIOS }                  from '../utils/utils'
+import { isIOS, isMobile }        from '../utils/utils'
 
 import styles from './AddKnownBoardModal.css'
 
@@ -81,7 +81,7 @@ class AddKnownBoardModal extends PureComponent {
               <div className={styles['add-known-board-node-id']}>
                 <textarea
                   placeholder={placeholder}
-                  autoFocus
+                  autoFocus={!isMobile()}
                   name='title-input'
                   value={boardUrl}
                   onChange={this.onNameChange}/>
