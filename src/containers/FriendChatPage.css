@@ -1,6 +1,6 @@
 .root {
     border: 1px solid #A9A9A9;
-    height: 100%;
+    height: calc(100% - 42px - 78px);
 
     width: 100%;
     max-height: 100%;
