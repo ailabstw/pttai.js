@@ -1,7 +1,7 @@
 import React, { PureComponent }   from 'react'
 import { FormattedMessage }       from 'react-intl'
 import { PulseLoader }            from 'react-spinners'
-import $                          from 'jquery'
+//import $                          from 'jquery'
 
 import styles           from './ArticleComponent.css'
 import * as constants   from '../constants/Constants'
@@ -15,8 +15,8 @@ class ArticleComponent extends PureComponent {
     this.state = {
       noResult: false,
     };
-    this.handleLongPress          = this.handleLongPress.bind(this)
-    this.handleLongPressRelease   = this.handleLongPressRelease.bind(this)
+    //this.handleLongPress          = this.handleLongPress.bind(this)
+    //this.handleLongPressRelease   = this.handleLongPressRelease.bind(this)
   }
 
   componentWillReceiveProps(nextProp) {
@@ -29,29 +29,29 @@ class ArticleComponent extends PureComponent {
 
   componentDidMount() {
     // For mobile
-    $("#article-main-content").on("touchstart", this.handleLongPress);
-    $("#article-main-content").on("touchend", this.handleLongPressRelease);
+    //$("#article-main-content").on("touchstart", this.handleLongPress);
+    //$("#article-main-content").on("touchend", this.handleLongPressRelease);
   }
 
   componentWillUnmount(){
     // For mobile
-    $("#article-main-content").off("touchstart", this.handleLongPress);
-    $("#article-main-content").off("touchend", this.handleLongPressRelease);
+    //$("#article-main-content").off("touchstart", this.handleLongPress);
+    //$("#article-main-content").off("touchend", this.handleLongPressRelease);
   }
 
-  handleLongPress () {
-    const { editArticleAction, articleInfo, userId } = this.props
-    if (articleInfo.CreatorID === userId) {
-      this.longPressTimer = setTimeout(() => editArticleAction(), constants.PRESS_TO_EDIT_DELAY);
-    }
-  }
+  // handleLongPress () {
+  //   const { editArticleAction, articleInfo, userId } = this.props
+  //   if (articleInfo.CreatorID === userId) {
+  //     this.longPressTimer = setTimeout(() => editArticleAction(), constants.PRESS_TO_EDIT_DELAY);
+  //   }
+  // }
 
-  handleLongPressRelease () {
-    clearTimeout(this.longPressTimer);
-  }
+  // handleLongPressRelease () {
+  //   clearTimeout(this.longPressTimer);
+  // }
 
   render() {
-    const { articleContentsList, pullCount, articleInfo, boardInfo, onOpenFriendProfileModal } = this.props
+    const { articleContentsList, pullCount, editArticleAction, articleInfo, userId, boardInfo, onOpenFriendProfileModal } = this.props
     const { noResult } = this.state
 
     let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
@@ -75,16 +75,25 @@ class ArticleComponent extends PureComponent {
           </div>
         ): (
           <div className={styles['main-content']}
-               onMouseDown={this.handleLongPress}
-               onMouseUp={this.handleLongPressRelease}
+               //onMouseDown={this.handleLongPress}
+               //onMouseUp={this.handleLongPressRelease}
                >
-            <div className={styles['author']} onClick={() => onOpenFriendProfileModal({
+            <div className={styles['author']}>
+              <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'} onClick={() => onOpenFriendProfileModal({
               FriendID: articleInfo.CreatorID,
               Name:     articleInfo.CreatorName || constants.DEFAULT_USER_NAME,
               Img:      articleInfo.CreatorImg  || constants.DEFAULT_USER_IMAGE
-            })}>
-              <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'}/>
-              <div title={articleInfo.CreatorName}> {articleInfo.CreatorName} </div>
+            })}/>
+              <div title={articleInfo.CreatorName} onClick={() => onOpenFriendProfileModal({
+              FriendID: articleInfo.CreatorID,
+              Name:     articleInfo.CreatorName || constants.DEFAULT_USER_NAME,
+              Img:      articleInfo.CreatorImg  || constants.DEFAULT_USER_IMAGE
+            })}> {articleInfo.CreatorName} </div>
+              {
+                articleInfo.CreatorID === userId ? (
+                  <div className={styles['edit-button']} onClick={editArticleAction}></div>
+                ):null
+              }
             </div>
             <div id='quill-id' className={styles['content']}>
               {

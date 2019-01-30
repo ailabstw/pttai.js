@@ -62,6 +62,22 @@
     overflow: hidden;
 }
 
+.edit-button {
+  max-width: 43px;
+  height: 43px;
+  margin: 5px auto;
+  border-radius: 7px;
+  background-color: #7eb349;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  background-image: url('/images/icon_edit@2x.png');
+}
+
+.edit-button:hover {
+	background-color: #66903A;
+}
+
 .content {
 	width: calc(100% - 90px);
 	font-size: 16px;
