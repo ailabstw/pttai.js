@@ -336,10 +336,20 @@ export const getStatusClass = (status) => {
 }
 
 export const isMobile = () => {
-  return platform.os.toString().indexOf('iOS') !== -1 ||
-         platform.os.toString().indexOf('Android') !== -1 ;
+  /* If true, autofocus will be disabled */
+  /* Currently, the following should return true: */
+  /* Android and iOS device */
+  return platform.description.indexOf('Mobile') !== -1  // Android and iOS chorome browser
+      || platform.description.indexOf('Android') !== -1 // Android app
+      || platform.description.indexOf('Windows Server') !== -1 // iOS app
+      || platform.description.indexOf('iOS') !== -1; // iOS safari browser
 }
 
 export const isIOS = () => {
-  return platform.os.toString().indexOf('iOS') !== -1
+  /* If true, QR code scanner will not display */
+  /* Currently, the following should return true: */
+  /* Android pttai app, iOS pttai app, iOS chrome */
+  return platform.description.indexOf('Android') !== -1 // Android app
+      || platform.description.indexOf('Windows Server') !== -1 // iOS app
+      || (platform.description.indexOf('iOS') !== -1 && platform.description.indexOf('Chrome') !== -1 )// iOS chrome
 }
