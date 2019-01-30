@@ -3,6 +3,7 @@ import { connect }              from 'react-redux'
 import { bindActionCreators }   from 'redux'
 import { FormattedMessage }     from 'react-intl'
 import Modal                    from 'react-modal'
+import platform                 from 'platform'
 
 import { epoch2FullTimeFormat } from '../utils/utilDatetime'
 
@@ -18,6 +19,7 @@ class MultiDeviceModal extends PureComponent {
     this.state = {
       name: '',
       menuIsOpen: false,
+      openCurrent: false,
     };
     this.onNameChange = this.onNameChange.bind(this);
     this.onAddButtonClicked = this.onAddButtonClicked.bind(this)
@@ -38,7 +40,7 @@ class MultiDeviceModal extends PureComponent {
 
   render() {
     const { modalInput:{ device, keyInfo }, onModalClose, onModalSwitch, modal: { currentModal }} = this.props
-    const { menuIsOpen } = this.state
+    const { menuIsOpen, openCurrent } = this.state
 
     let openAddDevice = function() {
       onModalSwitch(constants.ADD_DEVICE_MODAL, {device:device, keyInfo: keyInfo})
@@ -67,10 +69,40 @@ class MultiDeviceModal extends PureComponent {
                   defaultMessage="Devices Setting"
                 />
               </div>
-              <div className={styles['null-space']}>
+              <div className={styles['null-space']} onClick={() => this.setState({ openCurrent: !openCurrent })}>
               </div>
             </div>
             <div className={styles['device-list']}>
+              <div hidden={!openCurrent} className={styles['device-item']} key={-1}>
+                <div className={styles['item-index']}>
+                  <div className={styles['op-value-index']}>[Debug] Platform</div>
+                </div>
+                <div className={styles['item']}>
+                  <div className={styles['op-title']}>Name</div>
+                  <div className={styles['op-value']}>{platform.name}</div>
+                </div>
+                <div className={styles['item']}>
+                  <div className={styles['op-title']}>Version</div>
+                  <div className={styles['op-value']}>{platform.version}</div>
+                </div>
+                <div className={styles['item']}>
+                  <div className={styles['op-title']}>Manufacturer</div>
+                  <div className={styles['op-value']}>{platform.manufacturer}</div>
+                </div>
+                <div className={styles['item']}>
+                  <div className={styles['op-title']}>Layout</div>
+                  <div className={styles['op-value']}>{platform.layout}</div>
+                </div>
+                <div className={styles['item']}>
+                  <div className={styles['op-title']}>OS</div>
+                  <div title={platform.os} className={styles['op-value']}>{platform.os.toString()}</div>
+                </div>
+                <div className={styles['item']}>
+                  <div className={styles['op-title']}>Description</div>
+                  <div className={styles['op-value']}>{platform.description}</div>
+                </div>
+              </div>
+
             {
               device.data.map((item, index) => {
                 return (
