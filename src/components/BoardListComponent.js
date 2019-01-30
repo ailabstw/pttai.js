@@ -140,6 +140,8 @@ class BoardListComponent extends PureComponent {
                 </div>
               ))
             }
+            <div className={styles['list-item-hidden']} key={activeList.length + 1}>
+            </div>
             </div>
           )
         }

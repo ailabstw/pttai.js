@@ -29,6 +29,19 @@
     overflow:hidden;
 }
 
+.list-item-hidden {
+    width: calc(50% - 6px);
+    height: 94px;
+    padding: 15px 10px 15px 24px;
+    margin: 3px 3px 20px 3px;
+    font-size: 16px;
+    line-height: 30px;
+
+    position: relative;
+    float: left;
+    overflow: hidden;
+}
+
 @media (max-width: 480px) {
   .list-item {
     width: calc(100% - 42px);
