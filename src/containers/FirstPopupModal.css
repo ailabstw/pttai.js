@@ -139,7 +139,7 @@
     flex-direction: column;
     margin: 58px auto;
     width: 80%;
-    height: 100%;
+    height: inherit;
     text-align: center;
 }
 
