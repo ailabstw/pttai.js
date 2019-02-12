@@ -34,6 +34,7 @@
     "create-board-modal.invite-friend-1": "UnSelect",
     "create-board-modal.invite-friend-2": "Select",
     "create-article-modal.placeholder": "Enter title",
+    "file.previewing": "File is previewing...",
     "add-known-board-modal.title": "Enter board ID to join",
     "add-known-board-modal.action1": "Cancel",
     "add-known-board-modal.action2": "Confirm",

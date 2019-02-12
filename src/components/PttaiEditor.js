@@ -497,17 +497,21 @@ class PttaiEditor extends PureComponent {
 
   attachmentUpload(e) {
     const { editor, attachedObjs } = this.state
+    const { intl } = this.props
+    const previewingText = intl.formatMessage({id: 'file.previewing'});
 
     let ele         = document.querySelector('#' + EDITOR_INPUT_ID)
     let file        = ele.files[0];
     let fileReader  = new FileReader();
     let imgReader   = new FileReader();
     let that        = this
+    let insertPointIndex = that.state.selection.index;
 
     if (!file) {
       return
     } else if (file.type && file.type.match(/image\/(jpeg|png|gif)/)) {
       /* image upload */
+      // TODO: img still need size check?
       imgReader.readAsDataURL(file)
     } else {
       /* file upload */
@@ -529,9 +533,10 @@ class PttaiEditor extends PureComponent {
       }
     }
 
-    fileReader.onloadend = function () {
-      let range = that.state.selection
+    /* preview placeholder text */
+    editor.insertText(insertPointIndex, previewingText, {}, true);
 
+    fileReader.onloadend = function () {
       const fileInfo = {
         fileId:     'file-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
         fileClass:  constants.FILE_CLASS_NAME,
@@ -539,8 +544,11 @@ class PttaiEditor extends PureComponent {
         fileSize:   file.size,
       }
 
+      /* remove placeholder text */
+      editor.deleteText(insertPointIndex, previewingText.length);
+
       /* Insert as an iframe element */
-      editor.insertEmbed(range.index, 'FileAttachment', {
+      editor.insertEmbed(insertPointIndex, 'FileAttachment', {
         id:     fileInfo.fileId,
         class:  fileInfo.fileClass,
         name:   file.name,
@@ -558,6 +566,7 @@ class PttaiEditor extends PureComponent {
       })
 
       /* Update cursor selection */
+      let range = that.state.selection
       let newRange = {
         index:  range.index + 1,
         length: range.length,
@@ -637,6 +646,9 @@ class PttaiEditor extends PureComponent {
             imageId:     'image-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
             imageClass:  constants.IMAGE_CLASS_NAME + attachedObjs.length,
           }
+
+          /* remove placeholder text */
+          editor.deleteText(insertPointIndex, previewingText.length);
 
           /* Insert as an image element */
           editor.insertEmbed(range.index, 'ImageAttachment', {

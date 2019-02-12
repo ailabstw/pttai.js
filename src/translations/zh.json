@@ -34,6 +34,7 @@
     "create-board-modal.invite-friend-1": "取消選擇",
     "create-board-modal.invite-friend-2": "選擇",
     "create-article-modal.placeholder": "請輸入文章標題",
+    "file.previewing": "檔案預覽顯示中...",
     "add-known-board-modal.title": "請在下方輸入欲加入的板 ID：",
     "add-known-board-modal.action1": "取消",
     "add-known-board-modal.action2": "確定",
