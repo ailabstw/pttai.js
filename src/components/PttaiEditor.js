@@ -503,29 +503,30 @@ class PttaiEditor extends PureComponent {
     let imgReader  = new FileReader();
     let that       = this
 
-    if (!file) {
-      return
-    } else if (!(file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif')) {
-      /* file upload */
-      if (file.size >= constants.MAX_FILE_UPLOAD_SIZE) {
-        that.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message24"
-                defaultMessage="File size cannot exceed {MAX_FILE_UPLOAD_SIZE}"
-                values={{ MAX_FILE_UPLOAD_SIZE: bytesToSize(constants.MAX_FILE_UPLOAD_SIZE) }}
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else {
-        fileReader.readAsDataURL(file);
-      }
-    } else {
+    if (!file) return;
+
+    if (file.size >= constants.MAX_FILE_UPLOAD_SIZE) {
+      that.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+              id="alert.message24"
+              defaultMessage="File size cannot exceed {MAX_FILE_UPLOAD_SIZE}"
+              values={{ MAX_FILE_UPLOAD_SIZE: bytesToSize(constants.MAX_FILE_UPLOAD_SIZE) }}
+            />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
+      return;
+    }
+
+    if (file.type && file.type.match(/image\/(jpeg|png|gif)/)) {
       /* image upload */
       imgReader.readAsDataURL(file);
+    } else {
+      /* file upload */
+      fileReader.readAsDataURL(file);
     }
 
     fileReader.onloadend = function () {
