@@ -33,49 +33,49 @@ let Break       = Quill.import('blots/break');
 /*  we use iframe for attachment display in the editor.  */
 /*                                                       */
 class FileAttachment extends BlockEmbed {
-    static create(params) {
-        let node = super.create(params.value);
+  static create(params) {
+    let node = super.create(params.value);
 
-        node.setAttribute('srcdoc', params.value);
-        node.setAttribute('frameborder', '0');
-        node.setAttribute('allowfullscreen', true);
-        node.setAttribute('width', '100%');
-        node.setAttribute('height', '84px');
-        node.setAttribute('data-id', params.id);
-        node.setAttribute('data-class', params.class);
-        node.setAttribute('data-name', params.name);
-        node.setAttribute('data-size', params.size);
-        node.setAttribute('data-type', params.type);
+    node.setAttribute('srcdoc', params.value);
+    node.setAttribute('frameborder', '0');
+    node.setAttribute('allowfullscreen', true);
+    node.setAttribute('width', '100%');
+    node.setAttribute('height', '84px');
+    node.setAttribute('data-id', params.id);
+    node.setAttribute('data-class', params.class);
+    node.setAttribute('data-name', params.name);
+    node.setAttribute('data-size', params.size);
+    node.setAttribute('data-type', params.type);
 
-        return node;
-    }
+    return node;
+  }
 
-    static value(node) {
-        return node.getAttribute('srcdoc');
-    }
+  static value(node) {
+    return node.getAttribute('srcdoc');
+  }
 }
 
 FileAttachment.blotName   = 'FileAttachment';
 FileAttachment.tagName    = 'iframe';
 
 class ImageAttachment extends BlockEmbed {
-    static create(params) {
-        let node = super.create();
+  static create(params) {
+    let node = super.create();
 
-        node.setAttribute('src',    params.src);
-        node.setAttribute('alt',    'not working');
-        node.setAttribute('width',  '100%');
-        node.setAttribute('data-id',    params.id);
-        node.setAttribute('data-class', params.class);
+    node.setAttribute('src',    params.src);
+    node.setAttribute('alt',    'not working');
+    node.setAttribute('width',  '100%');
+    node.setAttribute('data-id',    params.id);
+    node.setAttribute('data-class', params.class);
 
-        return node;
+    return node;
+  }
+
+  static value(node) {
+    return {
+      url: node.getAttribute('src')
     }
-
-    static value(node) {
-        return {
-            url: node.getAttribute('src')
-        }
-    }
+  }
 }
 
 ImageAttachment.blotName = 'ImageAttachment';
@@ -124,11 +124,11 @@ function html2Array(html) {
       htmlObj.type    = constants.CONTENT_TYPE_FILE
       htmlObj.content = ''
       htmlObj.param   = {
-        id:     $(iframeElement).data("id"),
-        class:  $(iframeElement).data("class"),
-        name:   $(iframeElement).data("name"),
-        size:   $(iframeElement).data("size"),
-        type:   $(iframeElement).data("type"),
+        id:    $(iframeElement).data("id"),
+        class: $(iframeElement).data("class"),
+        name:  $(iframeElement).data("name"),
+        size:  $(iframeElement).data("size"),
+        type:  $(iframeElement).data("type"),
       }
 
     } else if (htmlStr.indexOf('<p><img') === 0) {
@@ -139,8 +139,8 @@ function html2Array(html) {
       htmlObj.type    = constants.CONTENT_TYPE_IMAGE
       htmlObj.content = ''
       htmlObj.param   = {
-        id:     $(imgElement).data("id"),
-        class:  $(imgElement).data("class"),
+        id:    $(imgElement).data("id"),
+        class: $(imgElement).data("class"),
       }
     } else {
 
@@ -156,13 +156,11 @@ function html2Array(html) {
 
 function isEmpty(htmlArray) {
 
-  if (!htmlArray || htmlArray.length === 0) {
-    return true
-  }
+  if (!htmlArray || htmlArray.length === 0) return true
 
   let html = htmlArray.reduce((acc, each) => {
 
-    if (each.type === constants.CONTENT_TYPE_IMAGE ||  each.type === constants.CONTENT_TYPE_FILE) {
+    if (each.type === constants.CONTENT_TYPE_IMAGE || each.type === constants.CONTENT_TYPE_FILE) {
       return acc + 'dirty'
     } else if (each.type === constants.CONTENT_TYPE_TEXT){
       let cleanEach = each.content.replace(/<p>/g,'')
@@ -195,21 +193,21 @@ class PttaiEditor extends PureComponent {
       titleChanged:   false,
       contentChanged: false,
       alertData: {
-        message:    '',
-        onClose:    null,
-        onConfirm:  null,
+        message:   '',
+        onClose:   null,
+        onConfirm: null,
       },
     }
 
-    this.onTitleChange      = this.onTitleChange.bind(this);
-    this.onInputEnter       = this.onInputEnter.bind(this);
-    this.onPrevPageClick    = this.onPrevPageClick.bind(this)
-    this.onContentClick     = this.onContentClick.bind(this)
-    this.mountQuill         = this.mountQuill.bind(this)
-    this.attachmentUpload   = this.attachmentUpload.bind(this)
-    this.handleChange       = this.handleChange.bind(this)
-    this.onDelete           = this.onDelete.bind(this)
-    this.onSubmit           = this.onSubmit.bind(this)
+    this.onTitleChange    = this.onTitleChange.bind(this);
+    this.onInputEnter     = this.onInputEnter.bind(this);
+    this.onPrevPageClick  = this.onPrevPageClick.bind(this)
+    this.onContentClick   = this.onContentClick.bind(this)
+    this.mountQuill       = this.mountQuill.bind(this)
+    this.attachmentUpload = this.attachmentUpload.bind(this)
+    this.handleChange     = this.handleChange.bind(this)
+    this.onDelete         = this.onDelete.bind(this)
+    this.onSubmit         = this.onSubmit.bind(this)
   }
 
   onDelete() {
@@ -221,10 +219,10 @@ class PttaiEditor extends PureComponent {
       showAlert: true,
       alertData: {
         message: (
-            <FormattedMessage
-              id="alert.message1"
-              defaultMessage="Are you sure you want to delete?"
-            />),
+          <FormattedMessage
+            id="alert.message1"
+            defaultMessage="Are you sure you want to delete?"
+          />),
         onConfirm: () => {
           that.setState({showAlert: false})
           onDeleteArticle()
@@ -308,10 +306,10 @@ class PttaiEditor extends PureComponent {
           showAlert: true,
           alertData: {
             message: (
-                <FormattedMessage
-                  id="alert.message14"
-                  defaultMessage="You have edited the article, are you sure you want to leave?"
-                />),
+              <FormattedMessage
+                id="alert.message14"
+                defaultMessage="You have edited the article, are you sure you want to leave?"
+              />),
             onConfirm: () => {
               that.setState({showAlert: false})
               onCloseArticle()
@@ -329,10 +327,10 @@ class PttaiEditor extends PureComponent {
           showAlert: true,
           alertData: {
             message: (
-                <FormattedMessage
-                  id="alert.message9"
-                  defaultMessage="You have unfinished article, are you sure you want to leave?"
-                />),
+              <FormattedMessage
+                id="alert.message9"
+                defaultMessage="You have unfinished article, are you sure you want to leave?"
+              />),
             onConfirm: () => {
               that.setState({showAlert: false})
               onCloseArticle()
@@ -499,11 +497,11 @@ class PttaiEditor extends PureComponent {
   attachmentUpload(e) {
     const { editor, attachedObjs } = this.state
 
-    let ele         = document.querySelector('#' + EDITOR_INPUT_ID)
-    let file        = ele.files[0];
-    let fileReader  = new FileReader();
-    let imgReader   = new FileReader();
-    let that        = this
+    let ele        = document.querySelector('#' + EDITOR_INPUT_ID)
+    let file       = ele.files[0];
+    let fileReader = new FileReader();
+    let imgReader  = new FileReader();
+    let that       = this
 
     if (!file) {
       return
@@ -531,47 +529,47 @@ class PttaiEditor extends PureComponent {
     }
 
     fileReader.onloadend = function () {
-        let range = that.state.selection
+      let range = that.state.selection
 
-        const fileInfo = {
-            fileId:     'file-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
-            fileClass:  constants.FILE_CLASS_NAME,
-            fileName:   file.name,
-            fileSize:   file.size,
-        }
+      const fileInfo = {
+        fileId:     'file-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
+        fileClass:  constants.FILE_CLASS_NAME,
+        fileName:   file.name,
+        fileSize:   file.size,
+      }
 
-        /* Insert as an iframe element */
-        editor.insertEmbed(range.index, 'FileAttachment', {
-          id:     fileInfo.fileId,
-          class:  fileInfo.fileClass,
-          name:   file.name,
-          size:   file.size,
-          type:   file.type,
-          value:  getFileTemplate(fileInfo),
-        });
+      /* Insert as an iframe element */
+      editor.insertEmbed(range.index, 'FileAttachment', {
+        id:     fileInfo.fileId,
+        class:  fileInfo.fileClass,
+        name:   file.name,
+        size:   file.size,
+        type:   file.type,
+        value:  getFileTemplate(fileInfo),
+      });
 
-        /* New attachment */
-        attachedObjs.push({
-          'id':     fileInfo.fileId,
-          'data':   fileReader.result,
-          'file':   file,
-          'type':   constants.CONTENT_TYPE_FILE
-        })
+      /* New attachment */
+      attachedObjs.push({
+        'id':   fileInfo.fileId,
+        'data': fileReader.result,
+        'file': file,
+        'type': constants.CONTENT_TYPE_FILE
+      })
 
-        /* Update cursor selection */
-        let newRange = {
-          index:  range.index + 1,
-          length: range.length,
-        }
+      /* Update cursor selection */
+      let newRange = {
+        index:  range.index + 1,
+        length: range.length,
+      }
 
-        editor.setSelection(newRange)
+      editor.setSelection(newRange)
 
-        that.setState({
-          editor:         editor,
-          selection:      newRange,
-          attachedObjs:   attachedObjs,
-          contentChanged: true,
-        })
+      that.setState({
+        editor:         editor,
+        selection:      newRange,
+        attachedObjs:   attachedObjs,
+        contentChanged: true,
+      })
     }
 
     imgReader.onloadend = function () {
@@ -581,92 +579,92 @@ class PttaiEditor extends PureComponent {
         image.src = imgReader.result;
         image.onload = function (imageEvent) {
 
-            /* Resize image if too large */
-            let canvas    = document.createElement('canvas'),
-                max_size  = constants.MAX_EDITOR_IMG_WIDTH,
-                width     = image.width,
-                height    = image.height;
+          /* Resize image if too large */
+          let canvas    = document.createElement('canvas'),
+              max_size  = constants.MAX_EDITOR_IMG_WIDTH,
+              width     = image.width,
+              height    = image.height;
 
-            if (width > height) {
-                if (width > max_size) {
-                    height *= max_size / width;
-                    width = max_size;
-                }
-            } else {
-                if (height > max_size) {
-                    width *= max_size / height;
-                    height = max_size;
-                }
+          if (width > height) {
+            if (width > max_size) {
+              height *= max_size / width;
+              width = max_size;
             }
-            canvas.width  = width;
-            canvas.height = height;
-            canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-
-            /* Adjust Orientation for mobile */
-            let oriWidth  = width
-            let oriHeight = height
-            let degrees   = 0
-
-            if (orientation === 6) {
-              degrees = 90;
-            } else if (orientation === 3) {
-              degrees = 180;
-            } else if (orientation === 8) {
-              degrees = 270;
+          } else {
+            if (height > max_size) {
+              width *= max_size / height;
+              height = max_size;
             }
+          }
+          canvas.width  = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(image, 0, 0, width, height);
 
-            let newSize   = newCanvasSize(oriWidth, oriHeight, degrees);
-            canvas.width  = newSize[0];
-            canvas.height = newSize[1];
+          /* Adjust Orientation for mobile */
+          let oriWidth  = width
+          let oriHeight = height
+          let degrees   = 0
 
-            let ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.translate(canvas.width/2, canvas.height/2);
-            ctx.rotate(degrees*Math.PI/180);
-            ctx.drawImage(image, -oriWidth/2, -oriHeight/2, oriWidth, oriHeight);
-            ctx.restore();
+          if (orientation === 6) {
+            degrees = 90;
+          } else if (orientation === 3) {
+            degrees = 180;
+          } else if (orientation === 8) {
+            degrees = 270;
+          }
 
-            /* Update img src with data url */
-            let dataUrl = canvas.toDataURL('image/jpeg');
+          let newSize   = newCanvasSize(oriWidth, oriHeight, degrees);
+          canvas.width  = newSize[0];
+          canvas.height = newSize[1];
 
-            /* Insert into editor */
-            let range           = that.state.selection
+          let ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.translate(canvas.width/2, canvas.height/2);
+          ctx.rotate(degrees*Math.PI/180);
+          ctx.drawImage(image, -oriWidth/2, -oriHeight/2, oriWidth, oriHeight);
+          ctx.restore();
 
-            const imageInfo = {
-              imageId:     'image-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
-              imageClass:  constants.IMAGE_CLASS_NAME + attachedObjs.length,
-            }
+          /* Update img src with data url */
+          let dataUrl = canvas.toDataURL('image/jpeg');
 
-            /* Insert as an image element */
-            editor.insertEmbed(range.index, 'ImageAttachment', {
-              id:     imageInfo.imageId,
-              class:  imageInfo.imageClass,
-              src:    dataUrl,
-            });
+          /* Insert into editor */
+          let range   = that.state.selection
 
-            /* New attachment */
-            attachedObjs.push({
-              'id':     imageInfo.imageId,
-              'data':   dataUrl,
-              'file':   dataURLtoFile(dataUrl, file.name),
-              'type':   constants.CONTENT_TYPE_IMAGE,
-            })
+          const imageInfo = {
+            imageId:    'image-tmp-' + getUUID(), // Will be replaced my media ID after uploaded
+            imageClass: constants.IMAGE_CLASS_NAME + attachedObjs.length,
+          }
 
-            /* Update cursor selection */
-            let newRange = {
-              index:  range.index + 1,
-              length: range.length
-            }
+          /* Insert as an image element */
+          editor.insertEmbed(range.index, 'ImageAttachment', {
+            id:    imageInfo.imageId,
+            class: imageInfo.imageClass,
+            src:   dataUrl,
+          });
 
-            editor.setSelection(newRange)
+          /* New attachment */
+          attachedObjs.push({
+            'id':   imageInfo.imageId,
+            'data': dataUrl,
+            'file': dataURLtoFile(dataUrl, file.name),
+            'type': constants.CONTENT_TYPE_IMAGE,
+          })
 
-            that.setState({
-              editor:         editor,
-              selection:      newRange,
-              attachedObjs:   attachedObjs,
-              contentChanged: true,
-            })
+          /* Update cursor selection */
+          let newRange = {
+            index:  range.index + 1,
+            length: range.length
+          }
+
+          editor.setSelection(newRange)
+
+          that.setState({
+            editor:         editor,
+            selection:      newRange,
+            attachedObjs:   attachedObjs,
+            contentChanged: true,
+          })
         }
       })
     }
