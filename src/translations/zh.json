@@ -71,6 +71,8 @@
     "friend-list-component.message": "請點選下方按鈕「新增朋友」",
     "friend-list-component.message2": "\u2605 {INVITING_USER_NAME} 邀請 {INVITED_USER_NAME} 加入某個群聊",
     "article-list-component.message": "請點選下方按鈕「新增討論主題」",
+    "summary-template.user-upload-file": "上傳了檔案",
+    "summary-template.user-upload-image": "上傳了圖片",
     "article-component.message1": "抓取文章中 ({cntDown})",
     "article-component.message2": "(無內容)",
     "board-action-modal.action1": "加入群組",

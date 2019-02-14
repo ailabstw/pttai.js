@@ -57,13 +57,13 @@ export const getSummaryTemplate = (rowData, extraParams) => {
                   <div style="background-image: url(${PTTAI_URL_BASE}/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 20px; width: 20px; min-height:20px; min-width:20px; margin-left: 5px; margin-right: 10px;">
                   </div>
                 <div style="line-height: 20px; border-bottom: 0px solid #000;">
-                  ${extraParams.CreatorName} 上傳了檔案</div>
+                  ${extraParams.CreatorName} ${messages['summary-template.user-upload-file']}</div>
                 </div>`
   } else if (rowData.type === constants.CONTENT_TYPE_IMAGE) {
     template = `<div style="display: flex; flex-direction: row;">
                   <img src="${PTTAI_APP_ROOT + '/api/img/' + extraParams.boardId + '/' + params.id}" style="height: 20px; width: 20px; margin-right: 10px; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border-radius: 3px;">
                   <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
-                    ${extraParams.CreatorName} 上傳了圖片
+                    ${extraParams.CreatorName} ${messages['summary-template.user-upload-image']}
                   </div>
                 </div>`
   } else {
