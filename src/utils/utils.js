@@ -26,7 +26,11 @@ const all_messages = {
 };
 
 // language without region code
-export const language = navigator.language.split(/[-_]/)[0];
+export const language = (() => {
+  let lang = navigator.language.split(/[-_]/)[0];
+  return (lang in all_messages) ? lang : 'en';
+})();
+
 export const messages = all_messages[language];
 
 const GLOBAL_IDS = new Set()
