@@ -8,8 +8,26 @@ import sanitizeHtml         from 'sanitize-html'
 import { PTTAI_APP_ROOT,
          PTTAI_URL_BASE }   from 'config'
 import platform             from 'platform'
+import { addLocaleData } from 'react-intl';
 
 import * as constants   from '../constants/Constants'
+
+import locale_en from 'react-intl/locale-data/en';
+import locale_zh from 'react-intl/locale-data/zh';
+import messages_zh from '../translations/zh.json'
+import messages_en from '../translations/en.json'
+
+addLocaleData([...locale_en, ...locale_zh]);
+
+// Localization
+const all_messages = {
+  'zh': messages_zh,
+  'en': messages_en
+};
+
+// language without region code
+export const language = navigator.language.split(/[-_]/)[0];
+export const messages = all_messages[language];
 
 const GLOBAL_IDS = new Set()
 
