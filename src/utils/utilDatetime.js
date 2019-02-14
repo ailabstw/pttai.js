@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-const language = navigator.language.split(/[-_]/)[0];  // language without region code
+import { language } from './utils'
 
 moment.relativeTimeRounding(Math.floor);
 moment.relativeTimeThreshold('s', 60);
