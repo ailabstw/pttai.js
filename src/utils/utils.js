@@ -36,7 +36,7 @@ export const messages = all_messages[language];
 const GLOBAL_IDS = new Set()
 
 export const getFileTemplate = (file) => {
-  const fileHTML = `<div class="${file.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100% - 16px); padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
+  const fileHTML = `<div class="${file.fileClass}" style="display: flex; flex-direction: row; font-family: sans-serif; width: calc(100vw - 16px); box-sizing: border-box; padding: 8px; border: solid 1px #bbbbbb; border-radius: 12px; margin: auto 0px; cursor: pointer;">
                       <div class="attachment-icon" style="background-image: url(${PTTAI_URL_BASE}/images/icon_attach@2x.png); background-repeat: no-repeat; background-size: 50px; width: 50px; min-height:50px; min-width:50px; margin-right: 10px;">
                       </div>
                       <div class="attachment-meta" style="display: flex; flex-direction: column; width: calc(100% - 50px); ">
