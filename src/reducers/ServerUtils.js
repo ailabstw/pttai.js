@@ -275,6 +275,16 @@ export const getFriendRequest = (entityID) => {
   }
 }
 
+export const deleteFriend = (chatId) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method":"friend_deleteFriend", "params":[chatId]},
+    }
+  }
+}
+
 /*           */
 /*  Message  */
 /*           */

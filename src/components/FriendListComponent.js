@@ -29,7 +29,6 @@ class FriendListComponent extends PureComponent {
       },
     };
 
-    this.onFriendDelete   = this.onFriendDelete.bind(this)
     this.onSliderClick    = this.onSliderClick.bind(this)
     this.onListItemClick  = this.onListItemClick.bind(this)
 
@@ -59,10 +58,6 @@ class FriendListComponent extends PureComponent {
     }
   }
 
-  onFriendDelete() {
-
-  }
-
   onSliderClick(e, index) {
     e.preventDefault();
     e.stopPropagation();
@@ -80,10 +75,10 @@ class FriendListComponent extends PureComponent {
   }
 
   render() {
-    const { friendList, userName, noFriend, isLoading } = this.props
+    const { friendList, userName, noFriend, isLoading, onFriendDelete } = this.props
     const { sliderInIndex, showAlert, alertData } = this.state
 
-    //let that = this
+    let that = this
     let friendSortedList = friendList.sort((a,b) => {
       return b.SummaryUpdateTS.T - a.SummaryUpdateTS.T
     })
@@ -113,7 +108,7 @@ class FriendListComponent extends PureComponent {
               }
               {
                 friendSortedList.map((item, index) => {
-                  //let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
+                  let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
 
                   const friendLink = (sliderInIndex === -1 && item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}`: false
                   const summaryObj = toJson(item.Summary)
@@ -167,11 +162,12 @@ class FriendListComponent extends PureComponent {
                             )
                           }
                           {
-                            <div hidden className={styles['list-item-ellipsis']} onClick={(e) => this.onSliderClick(e, index)}></div>
+                            <div className={styles['list-item-ellipsis']} onClick={(e) => this.onSliderClick(e, index)}></div>
                           }
                         </div>
                       </Link>
-                      {/*
+
+
                       <div className={styles[menuClass]}>
                         <div className={styles['list-item-menu-item']}
                              onClick={()=> {
@@ -184,7 +180,7 @@ class FriendListComponent extends PureComponent {
                                       defaultMessage="Are you sure you want to delete?"
                                     />),
                                   onConfirm: () => {
-                                    this.onFriendDelete(item.friendID)
+                                    onFriendDelete(item.chatId)
                                     that.setState({showAlert: false})
                                   },
                                   onClose: () => that.setState({showAlert: false}),
@@ -200,7 +196,9 @@ class FriendListComponent extends PureComponent {
                           </div>
                         </div>
                       </div>
-                      */}
+
+
+
                     </div>
                   )
                 })
