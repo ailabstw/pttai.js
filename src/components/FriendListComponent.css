@@ -146,10 +146,11 @@
 }
 
 .list-item-circle-white {
-    height: 0px;
-    width: 0px;
+    height: 10px;
+    width: 10px;
     min-width: 10px;
-    margin: auto;
+    margin: 10px auto auto auto;
+    border-radius: 50%;
     display: inline-block;
 }
 
@@ -220,10 +221,10 @@
 }
 
 .list-item-ellipsis {
-    margin: auto;
+    margin: auto auto 0px auto;
     cursor: pointer;
-    width: 35px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;

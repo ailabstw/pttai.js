@@ -123,6 +123,8 @@
     "alert.message27": "[Success] Signed In",
     "alert.message28": "[Wait] Signing...",
     "alert.message29": "[Success] Board Joined",
+    "alert.message30": "[Success] Friend Deleted",
+    "alert.message31": "[Failed] {data}:{chatId}",
     "edit-name-modal.company-placeholder":"Company (press below to edit)",
     "edit-name-modal.jobtitle-placeholder":"Job Title (press below to edit)",
     "edit-name-modal.email-placeholder":"Email (press below to edit)",

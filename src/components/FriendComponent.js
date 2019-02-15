@@ -7,7 +7,7 @@ import styles from './FriendComponent.css'
 
 class FriendComponent extends PureComponent {
   render() {
-    const { friendList, addFriendAction, userName, isLoading, onGetMoreFriends, allFriendsLoaded, noFriend } = this.props
+    const { friendList, addFriendAction, userName, isLoading, onGetMoreFriends, allFriendsLoaded, noFriend, onFriendDelete } = this.props
 
     return (
       <div className={styles['root']}>
@@ -20,7 +20,8 @@ class FriendComponent extends PureComponent {
           noFriend={noFriend}
           friendList={friendList}
           onGetMoreFriends={onGetMoreFriends}
-          allFriendsLoaded={allFriendsLoaded}/>
+          allFriendsLoaded={allFriendsLoaded}
+          onFriendDelete={onFriendDelete}/>
         <div className={styles['add-icon-container']}>
           <div className={styles['add-icon-subcontainer']}>
             <div className={styles['add-icon-container']}>

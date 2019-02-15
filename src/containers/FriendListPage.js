@@ -138,6 +138,42 @@ class FriendListPage extends PureComponent {
       doFriendListPage.getMoreFriendlist(myId, startFriendId, constants.NUM_FRIEND_PER_REQ)
     }
 
+    let deleteFriendCallBack = (response) => {
+      if (response.error) {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message31"
+                defaultMessage="[Failed] {data}:{chatId}"
+                values={{ data: response.data, chatId: response.chatId }}
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message30"
+                defaultMessage="[Success] Friend Deleted"
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+        doModalContainer.closeModal()
+      }
+    }
+
+    let onFriendDelete = (chatId) => {
+      doFriendListPage.deleteFriend(myId, chatId, deleteFriendCallBack)
+    }
+
     return (
       <div className={styles['root']}>
         <FriendComponent
@@ -146,6 +182,7 @@ class FriendListPage extends PureComponent {
           noFriend={noFriend}
           friendList={friendList}
           addFriendAction={openAddFriendModal}
+          onFriendDelete={onFriendDelete}
           onGetMoreFriends={onGetMoreFriends}
           allFriendsLoaded={allFriendsLoaded} />
         <AlertComponent show={showAlert} alertData={alertData}/>

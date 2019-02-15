@@ -22,9 +22,10 @@ const SET_ROOT      = myDuck.defineType('SET_ROOT')
 const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
 const REMOVE        = myDuck.defineType('REMOVE')
 const SET_DATA      = myDuck.defineType('SET_DATA')
-const PREPEND_FRIENDS  = myDuck.defineType('PREPEND_FRIENDS')
-const APPEND_FRIENDS   = myDuck.defineType('APPEND_FRIENDS')
-const ADD_FRIEND    = myDuck.defineType('ADD_FRIEND')
+const PREPEND_FRIENDS   = myDuck.defineType('PREPEND_FRIENDS')
+const APPEND_FRIENDS    = myDuck.defineType('APPEND_FRIENDS')
+const ADD_FRIEND        = myDuck.defineType('ADD_FRIEND')
+const DELETE_FRIEND     = myDuck.defineType('DELETE_FRIEND')
 
 // init
 export const init = (myId, parentId, parentClass, parentDuck) => {
@@ -558,6 +559,41 @@ export const _addNewFriend = (state, action) => {
   return state.setIn([myId, 'friendList'], friendList.push(friend))
 }
 
+export const deleteFriend = (myId, chatId, callBackFunc) => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.deleteFriend(chatId))
+      .then(({response: {result, error}, type, query}) => {
+        if (error) {
+          callBackFunc({error: true, data: error.message, chatId: chatId})
+        } else {
+          callBackFunc({error: false, data: result})
+          dispatch(serverUtils.getUsersInfo([result.C]))
+            .then((usersInfo) => {
+              dispatch(postprocessDeleteFriend(myId, chatId))
+            })
+        }
+      })
+  }
+}
+
+const postprocessDeleteFriend = (myId, chatId) => {
+
+  console.log('doFriendListPage.postprocessDeleteFriend: chatId:', chatId)
+
+  return {
+    myId,
+    myClass,
+    type: DELETE_FRIEND,
+    data: { chatId: chatId }
+  }
+}
+
+export const _deleteFriend = (state, action) => {
+  const {myId, data: { chatId }} = action
+
+  return state.updateIn([myId, 'friendList'], arr => arr.filter(each => { return each.chatId !== chatId }))
+}
+
 /*                    */
 /*  Get Key Info      */
 /*                    */
@@ -680,6 +716,7 @@ const reducer = myDuck.createReducer({
   [REMOVE]:         utils.reduceRemove,
   [SET_DATA]:       utils.reduceSetData,
   [ADD_FRIEND]:     _addNewFriend,
+  [DELETE_FRIEND]:  _deleteFriend,
   [PREPEND_FRIENDS]:_prependFriends,
   [APPEND_FRIENDS]: _appendFriends,
 }, Immutable.Map())

@@ -152,7 +152,6 @@ class CommentReplyListComponent extends PureComponent {
           <div>
             {
               commentContents.map((item, index) => {
-                console.log('sammui:',item)
                 let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
                 return (
                   <div className={styles['list-item']} key={index} onClick={(e) => this.onListItemClick(e, index)}>
