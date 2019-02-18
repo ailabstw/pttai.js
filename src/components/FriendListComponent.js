@@ -107,7 +107,7 @@ class FriendListComponent extends PureComponent {
                 ):(null)
               }
               {
-                friendSortedList.map((item, index) => {
+                friendSortedList.filter((friend) => friend.FriendStatus < constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
                   let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
 
                   const friendLink = (sliderInIndex === -1 && item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}`: false
