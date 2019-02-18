@@ -312,7 +312,7 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
     return {
       CreatorID: eachJoin.C,
       NodeID:    eachJoin.n,
-      Name:      eachJoin.N,
+      Name:      serverUtils.b64decode(eachJoin.N),
       Status:    eachJoin.S,
     }
   })
@@ -523,7 +523,7 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
   let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
 
   const combinedFriend = {
-    Name:             result.N,
+    Name:             serverUtils.b64decode(result.N),
     Img:              userImg,
     friendID:         userId,
     nameCard:         userNameCard,
@@ -548,15 +548,24 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
     myId,
     myClass,
     type: ADD_FRIEND,
-    data: { friend: combinedFriend }
+    data: { friend: combinedFriend, noFriend: false }
   }
 }
 
 export const _addNewFriend = (state, action) => {
-  const {myId, data:{friend}} = action
+  const {myId, data:{ friend, noFriend }} = action
 
-  let friendList = state.getIn([myId, 'friendList'], [])
-  return state.setIn([myId, 'friendList'], friendList.push(friend))
+  let myFriends   = state.getIn([myId, 'myFriends'], Immutable.Map()).toJS()
+  let friendList  = myFriends.friendList || []
+  let lruCache    = myFriends.lru || new LRU(NUM_CACHE_FRIEND)
+
+  lruCache.set(friend.friendID, { index: friendList.length, friend: friend })
+
+  state = state.setIn([myId, 'noFriend'], noFriend)
+  state = state.setIn([myId, 'myFriends', 'lru'], lruCache)
+  state = state.updateIn([myId, 'myFriends', 'friendList'], arr => arr.push(Immutable.Map(friend)))
+
+  return state
 }
 
 export const deleteFriend = (myId, chatId, callBackFunc) => {
@@ -591,7 +600,7 @@ const postprocessDeleteFriend = (myId, chatId) => {
 export const _deleteFriend = (state, action) => {
   const {myId, data: { chatId }} = action
 
-  return state.updateIn([myId, 'friendList'], arr => arr.filter(each => { return each.chatId !== chatId }))
+  return state.updateIn([myId, 'myFriends', 'friendList'], arr => arr.filter(each => { return each.chatId !== chatId }))
 }
 
 /*                    */
