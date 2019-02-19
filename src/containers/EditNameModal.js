@@ -307,16 +307,17 @@ class EditNameModal extends PureComponent {
                   <div className={styles['profile-picture']}>
                     {
                       isEdit? (
-                        <label >
+                        <label>
                           <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
                           <div className={styles['mask']}></div>
                           <input type="file" id="getval" onChange={this.onUpload}/>
+                          <div className={styles['profile-picture-edit-icon']}></div>
                         </label>
                       ):(
-                        <label >
+                        <div>
                           <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
                           <div className={styles['mask']}></div>
-                        </label>
+                        </div>
                       )
                     }
                   </div>
@@ -345,7 +346,7 @@ class EditNameModal extends PureComponent {
                             value={name}
                             onChange={this.onNameChange}/>
                         ):(
-                          <span>{name}</span>
+                          <div>{name}</div>
                         )
                       }
                       </div>
@@ -360,9 +361,9 @@ class EditNameModal extends PureComponent {
                             onChange={this.onCompanyChange}/>
                         ):(
                           company ? (
-                            <span>{company}</span>
+                            <div>{company}</div>
                           ):(
-                            <span className={styles['unfilled']}>{company_placeholder}</span>
+                            <div className={styles['unfilled']}>{company_placeholder}</div>
                           )
                         )
                       }
@@ -377,9 +378,9 @@ class EditNameModal extends PureComponent {
                             onChange={this.onJobTitleChange}/>
                         ):(
                           jobTitle ? (
-                            <span>{jobTitle}</span>
+                            <div>{jobTitle}</div>
                           ):(
-                            <span className={styles['unfilled']}>{jobtitle_placeholder}</span>
+                            <div className={styles['unfilled']}>{jobtitle_placeholder}</div>
                           )
                         )
                       }
@@ -402,9 +403,9 @@ class EditNameModal extends PureComponent {
                             onChange={this.onEmailChange}/>
                         ):(
                           email ? (
-                            <span>{email}</span>
+                            <div>{email}</div>
                           ):(
-                            <span className={styles['unfilled']}>{email_placeholder}</span>
+                            <div className={styles['unfilled']}>{email_placeholder}</div>
                           )
                         )
                       }
@@ -419,9 +420,9 @@ class EditNameModal extends PureComponent {
                             onChange={this.onPhoneChange}/>
                         ):(
                           phone ? (
-                            <span>{phone}</span>
+                            <div>{phone}</div>
                           ):(
-                            <span className={styles['unfilled']}>{phone_placeholder}</span>
+                            <div className={styles['unfilled']}>{phone_placeholder}</div>
                           )
                         )
                       }
@@ -441,9 +442,9 @@ class EditNameModal extends PureComponent {
                             onChange={this.onDescriptionChange}/>
                         ):(
                           description ? (
-                            <span>{description}</span>
+                            description.split('\n').map((line,i) => <div key={`desc-line-${i}`}>{line}</div>)
                           ):(
-                            <span className={styles['unfilled']}>{description_placeholder}</span>
+                            <div className={styles['unfilled']}>{description_placeholder}</div>
                           )
                         )
                       }
