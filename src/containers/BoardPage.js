@@ -128,6 +128,41 @@ class BoardPage extends PureComponent {
       }
     }
 
+    let deleteBoardCallBack = (response) => {
+      if (response.error) {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message32"
+                defaultMessage="[Failed] {data}"
+                values={{ data: response.data }}
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message34"
+                defaultMessage="[Success] Group Deleted"
+              />),
+            onConfirm: () => {
+              that.setState({showAlert: false})
+              that.props.history.push(`/hub`)
+            }
+          }
+        })
+        doModalContainer.closeModal()
+      }
+    }
+
     let openManageBoardModal = (modalData) => {
       doModalContainer.setInput({
         isCreator:  boardInfo.CreatorID === userId,
@@ -142,9 +177,8 @@ class BoardPage extends PureComponent {
         onRemoveFriend: (boardId, friendToRemove) => {
           //doBoardPage.removeFriend(myId, boardId, friendToRemove)
         },
-        onDeleteBoard: (boardId) => {
-          doBoardPage.deleteBoard(myId, boardId)
-          this.props.history.push(`/hub`)
+        onDeleteBoard: () => {
+          doBoardPage.deleteBoard(myId, boardInfo.ID, deleteBoardCallBack)
         },
         onLeaveBoard: () => {
           doBoardPage.leaveBoard(myId, boardInfo.ID, leaveBoardCallBack)

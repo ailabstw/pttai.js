@@ -197,11 +197,16 @@ const postprocessLeaveBoard = (myId, boardId) => {
   }
 }
 
-export const deleteBoard = (myId, boardId) => {
+export const deleteBoard = (myId, boardId, callBackFunc) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.deleteBoard(boardId))
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessDeleteBoard(myId, boardId))
+      .then(({response: {result, error}, type, query}) => {
+        if (error) {
+          callBackFunc({error: true, data: error.message })
+        } else {
+          callBackFunc({error: false, data: result})
+          dispatch(postprocessDeleteBoard(myId, boardId))
+        }
       })
   }
 }
