@@ -84,15 +84,28 @@ class BoardPage extends PureComponent {
 
     let openManageBoardModal = (modalData) => {
       doModalContainer.setInput({
+        isCreator:  boardInfo.CreatorID === userId,
         boardId:    boardInfo.ID,
         boardName:  boardInfo.Title,
-        setBoardName: (boardId, name, friendInvited) => doBoardPage.setBoardName(myId, boardId, name, friendInvited),
-        deleteBoard: (boardId) => {
+        onEditBoardName: (boardId, name, friendInvited) => {
+          doBoardPage.setBoardName(myId, boardId, name, friendInvited)
+        },
+        onInviteFriend: (boardId, friendInvited) => {
+          //doBoardPage.inviteFriend(myId, boardId, friendInvited)
+        },
+        onRemoveFriend: (boardId, friendToRemove) => {
+          //doBoardPage.removeFriend(myId, boardId, friendToRemove)
+        },
+        onDeleteBoard: (boardId) => {
           doBoardPage.deleteBoard(myId, boardId)
           this.props.history.push(`/hub`)
-        }
+        },
+        onLeaveBoard: (boardId) => {
+          //doBoardPage.leaveBoard(myId, boardId)
+          this.props.history.push(`/hub`)
+        },
       })
-      doModalContainer.openModal(constants.MANAGE_BOARD_MODAL)
+      doModalContainer.openModal(constants.BOARD_SETTING_MENU_MODAL)
     }
 
     let onOpenOPLogModal = () => {
