@@ -5,6 +5,7 @@ import * as utils       from './utils'
 import * as serverUtils from './ServerUtils'
 
 import { EMPTY_ID,
+         STATUS_ARRAY,
          DEFAULT_USER_IMAGE,
          DEFAULT_USER_NAME,
          NUM_MEMBER_PER_REQ }     from '../constants/Constants'
@@ -146,6 +147,8 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
+    let isBoardMember = (userId in memberMap) && memberMap[userId].S < STATUS_ARRAY.indexOf('StatusDeleted')
+
     return {
       Name:             userName,
       Img:              userImg,
@@ -154,7 +157,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
       BoardID:          each.BID,
       FriendStatus:     each.S,
       LastSeen:         each.LT ? each.LT : utils.emptyTimeStamp(),
-      isBoardMember:    (userId in memberMap),
+      isBoardMember:    isBoardMember,
       memberStatus:     (userId in memberMap) ? memberMap[userId].S : null,
       memberUpdateTS:   (userId in memberMap) ? memberMap[userId].UT : utils.emptyTimeStamp(),
       /* ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(), */

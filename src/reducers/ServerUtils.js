@@ -100,6 +100,16 @@ export const getMemberList = (boardId, starUserId, limit) => {
   }
 }
 
+export const leaveBoard = (boardId) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "content_leaveBoard", "params": [boardId]},
+    }
+  }
+}
+
 export const deleteBoard = (boardId) => {
   return {
     [api.CALL_API]: {

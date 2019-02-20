@@ -97,7 +97,7 @@ class BoardListComponent extends PureComponent {
               ):(null)
             }
             {
-              activeList.map((item, index) => (
+              activeList.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => (
                 <div className={styles['list-item']} key={index}>
                   <div className={styles['list-item-label' + boardType(item)]}></div>
                   <Link to={`/board/${encodeURIComponent(item.ID)}`}>
