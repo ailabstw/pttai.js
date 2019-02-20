@@ -136,7 +136,7 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
       myId,
       myClass,
       type: SET_DATA,
-      data: { noBoard: true }
+      data: { boardList: [], noBoard: true }
     }
   } else if (boardList.length === 0 && !isFirstFetch) {
     return {
@@ -367,16 +367,18 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
     myId,
     myClass,
     type: ADD_BOARD,
-    data: { board: newBoard }
+    data: { board: newBoard, noBoard: false }
   }
 }
 
 export const _addBoard = (state, action) => {
 
-  const {myId, data: { board }} = action
+  const {myId, data: { board, noBoard }} = action
 
-  let boardList = state.getIn([myId, 'boardList'], Immutable.List())
-  return state.setIn([myId, 'boardList'], boardList.push(Immutable.Map(board)))
+  state = state.setIn([myId, 'noBoard'], noBoard)
+  state = state.updateIn([myId, 'boardList'], arr => arr.push(Immutable.Map(board)))
+
+  return state
 }
 
 export const joinBoard = (myId, boardUrl, callBack) => {
@@ -449,7 +451,7 @@ const postprocessDeleteBoard = (myId, boardId) => {
 }
 
 export const _deleteBoard = (state, action) => {
-  const {myId, data:{boardId}} = action
+  const {myId, data:{ boardId }} = action
 
   let boardList = state.getIn([myId, 'boardList'], Immutable.List())
   boardList = boardList.filter(each => { return each.get('ID') !== boardId })
