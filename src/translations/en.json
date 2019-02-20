@@ -133,6 +133,7 @@
     "alert.message31": "[Failed] {data}:{chatId}",
     "alert.message32": "[Failed] {data}",
     "alert.message33": "[Success] Left Group",
+    "alert.message34": "[Success] Group Deleted",
     "edit-name-modal.company-placeholder":"Company (press below to edit)",
     "edit-name-modal.jobtitle-placeholder":"Job Title (press below to edit)",
     "edit-name-modal.email-placeholder":"Email (press below to edit)",
