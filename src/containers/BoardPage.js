@@ -2,10 +2,12 @@ import React, { PureComponent }     from 'react'
 import { connect }                  from 'react-redux'
 import { bindActionCreators }       from 'redux'
 import Immutable                    from 'immutable'
+import { FormattedMessage }         from 'react-intl'
 //import { PTTAI_URL_BASE }           from 'config'
 
 import Empty                  from '../components/Empty'
 import BoardComponent         from '../components/BoardComponent'
+import AlertComponent         from '../components/AlertComponent'
 
 import { getRoot }            from '../utils/utils'
 import * as doBoardPage       from '../reducers/BoardPage'
@@ -18,6 +20,14 @@ class BoardPage extends PureComponent {
   constructor(props) {
     super();
     this.refreshPageInterval  = null
+    this.state = {
+      showAlert: false,
+      alertData: {
+        message: '',
+        onClose: null,
+        onConfirm: null,
+      },
+    };
     this.getLatestArticle     = this.getLatestArticle.bind(this);
   }
 
@@ -52,7 +62,8 @@ class BoardPage extends PureComponent {
 
   render() {
     const { match, myId, boardPage, actions: {doBoardPage, doModalContainer}} = this.props
-
+    const { showAlert, alertData } = this.state
+    console.log('sammui:',showAlert, alertData)
     if(!myId) return (<Empty />)
 
     let userId    = getRoot(this.props).getIn(['userInfo','userId'])
@@ -82,6 +93,41 @@ class BoardPage extends PureComponent {
       doModalContainer.openModal(constants.CREATE_ARTICLE_MODAL)
     }
 
+    let leaveBoardCallBack = (response) => {
+      if (response.error) {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message32"
+                defaultMessage="[Failed] {data}"
+                values={{ data: response.data }}
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      } else {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message33"
+                defaultMessage="[Success] Left Group"
+              />),
+            onConfirm: () => {
+              that.setState({showAlert: false})
+              that.props.history.push(`/hub`)
+            }
+          }
+        })
+        doModalContainer.closeModal()
+      }
+    }
+
     let openManageBoardModal = (modalData) => {
       doModalContainer.setInput({
         isCreator:  boardInfo.CreatorID === userId,
@@ -100,9 +146,8 @@ class BoardPage extends PureComponent {
           doBoardPage.deleteBoard(myId, boardId)
           this.props.history.push(`/hub`)
         },
-        onLeaveBoard: (boardId) => {
-          //doBoardPage.leaveBoard(myId, boardId)
-          this.props.history.push(`/hub`)
+        onLeaveBoard: () => {
+          doBoardPage.leaveBoard(myId, boardInfo.ID, leaveBoardCallBack)
         },
       })
       doModalContainer.openModal(constants.BOARD_SETTING_MENU_MODAL)
@@ -144,6 +189,7 @@ class BoardPage extends PureComponent {
           manageBoardAction={openManageBoardModal}
           onOpenOPLogModal={onOpenOPLogModal}
           deleteArticleAction={(articleId) => doBoardPage.deleteArticle(myId, boardInfo.ID, articleId)} />
+        <AlertComponent show={showAlert} alertData={alertData}/>
       </div>
     )
   }

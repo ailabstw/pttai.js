@@ -131,6 +131,8 @@
     "alert.message29": "【成功】 已加入",
     "alert.message30": "【成功】 朋友已刪除",
     "alert.message31": "【刪友失敗】 {data}:{chatId}",
+    "alert.message32": "【離開失敗】 {data}",
+    "alert.message33": "【成功】已離開群組",
     "edit-name-modal.company-placeholder":"公司 (請點選編輯鈕)",
     "edit-name-modal.jobtitle-placeholder":"職稱 (請點選編輯鈕)",
     "edit-name-modal.email-placeholder":"E-mail (請點選編輯鈕)",
