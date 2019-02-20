@@ -25,13 +25,7 @@ class BoardBar extends PureComponent {
               {boardInfo.Title}
             </div>
             <div className={styles['search']}>
-              {
-                boardInfo.CreatorID !== userId? (
-                  null
-                ):(
-                  <div className={styles['list-item-ellipsis']} onClick={() => manageBoardAction(boardInfo.ID)}></div>
-                )
-              }
+              <div className={styles['list-item-ellipsis']} onClick={() => manageBoardAction(boardInfo.ID)}></div>
             </div>
         </div>
       </div>
