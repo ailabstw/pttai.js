@@ -194,6 +194,16 @@ export const markArticle = (boardId, articleId) => {
   }
 }
 
+export const removeBoardMember = (boardId, userId) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "content_deleteMember", "params": [boardId, userId]},
+    }
+  }
+}
+
 /*                      */
 /*  Content - Content   */
 /*                      */

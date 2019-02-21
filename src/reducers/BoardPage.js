@@ -100,6 +100,15 @@ function sentInviteMessages(inviteMessages) {
   }));
 }
 
+function removeBoardMembers(boardId, memberToRemove) {
+  return dispatch => Promise.all(memberToRemove.map((member) => {
+      return dispatch(serverUtils.removeBoardMember(boardId, member.userId))
+        .then(({response: {result}, type, query, error}) => {
+          return { 'userId': member.userId }
+        })
+  }));
+}
+
 export const inviteFriend = (myId, boardId, boardName, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getBoardUrl(boardId))
@@ -227,6 +236,33 @@ export const deleteBoard = (myId, boardId, callBackFunc) => {
 
 const postprocessDeleteBoard = (myId, boardId) => {
   /* Do nothing */
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: {}
+  }
+}
+
+export const removeMember = (myId, boardId, memberToRemove) => {
+  return (dispatch, getState) => {
+
+    let memberIds = Object.keys(memberToRemove).filter(mID => memberToRemove[mID]).map(memberId => {
+      let chatId = memberToRemove[memberId]
+      return {
+        userId: memberId,
+        chatId: chatId,
+      }
+    })
+
+    dispatch(removeBoardMembers(boardId, memberIds))
+      .then(({response: removeResult, type, error, query}) => {
+        dispatch(postprocessRemoveMember(myId, boardId))
+      })
+  }
+}
+
+const postprocessRemoveMember = (myId, boardId) => {
   return {
     myId,
     myClass,

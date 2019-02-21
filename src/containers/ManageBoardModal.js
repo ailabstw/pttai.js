@@ -100,10 +100,6 @@ class ManageBoardModal extends PureComponent {
             </div>
             <div hidden className={styles['modal-bar']}>
               <div className={styles['edit-name']}>
-                <FormattedMessage
-                  id="manage-board-modal.message1"
-                  defaultMessage="Change Group Name"
-                />
               </div>
             </div>
             <div className={styles['action-section']}>

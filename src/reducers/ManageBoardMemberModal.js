@@ -64,42 +64,11 @@ const postprocessGetBoardInfo = (myId, result) => {
   }
 }
 
-export const getBoardJoinKey = (myId, boardId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getBoardUrl(boardId))
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessGetBoardJoinKey(myId, result))
-      })
-  }
-}
-
-const postprocessGetBoardJoinKey = (myId, result) => {
-
-  const boardJoinKey = {
-    C:            result.C,
-    ID:           result.ID,
-    Pn:           result.Pn,
-    T:            result.T,
-    URL:          result.URL,
-    UpdateTS:     result.UT ? result.UT : utils.emptyTimeStamp(),
-    expirePeriod: result.e,
-  }
-
-  console.log('doBoardPage.postprocessGetBoardJoinKey: boardJoinKey:', boardJoinKey)
-
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { boardJoinKey: boardJoinKey }
-  }
-}
-
 /*                     */
-/*  Get Friend Info    */
+/*  Get Member Info    */
 /*                     */
 
-export const getFriendList = (myId, boardId, limit) => {
+export const getMemberList = (myId, boardId, limit) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getFriends(EMPTY_ID, limit))
       .then(({response: friendResult, type, query, error}) => {
@@ -110,14 +79,14 @@ export const getFriendList = (myId, boardId, limit) => {
             let memeberIds  = memberResult.result.map((each) => each.b.ID)
             dispatch(serverUtils.getUsersInfo([...friendIds, ...memeberIds]))
               .then((usersInfo) => {
-                dispatch(postprocessgetFriends(myId, friendResult.result, memberResult.result, usersInfo))
+                dispatch(postprocessGetMembers(myId, friendResult.result, memberResult.result, usersInfo))
               })
           })
       })
   }
 }
 
-const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersInfo) => {
+const postprocessGetMembers = (myId, friendListResult, memeberListResult, usersInfo) => {
 
   friendListResult = friendListResult.map((each) => {
     return {
@@ -138,7 +107,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
     return acc
   }, {})
 
-  const friendList = friendListResult.map(each => {
+  const memberList = friendListResult.filter(friend => { return (friend.friendID in memberMap) && memberMap[friend.friendID].S < STATUS_ARRAY.indexOf('StatusDeleted') }).map(each => {
 
     let userId      = each.friendID
     let userNameMap = usersInfo['userName'] || {}
@@ -146,8 +115,6 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
 
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-
-    let isBoardMember = (userId in memberMap) && memberMap[userId].S < STATUS_ARRAY.indexOf('StatusDeleted')
 
     return {
       Name:             userName,
@@ -157,46 +124,22 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
       BoardID:          each.BID,
       FriendStatus:     each.S,
       LastSeen:         each.LT ? each.LT : utils.emptyTimeStamp(),
-      isBoardMember:    isBoardMember,
+      isBoardMember:    true,
       memberStatus:     (userId in memberMap) ? memberMap[userId].S : null,
       memberUpdateTS:   (userId in memberMap) ? memberMap[userId].UT : utils.emptyTimeStamp(),
       /* ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(), */
     }
   })
 
-  console.log('doManageBoardMemberModal.postprocessgetFriends: friendList:', friendList, memeberListResult)
+  console.log('doManageBoardMemberModal.postprocessGetMembers: memberList:', memberList)
 
   return {
     myId,
     myClass,
     type: SET_DATA,
-    data: { friendList: friendList }
+    data: { memberList: memberList }
   }
 }
-
-/*                             */
-/*  Invite Friend to Board     */
-/*                             */
-
-export const sendFriendInvite = (myId, chatId, inviteMessage) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.postMessage(chatId, [inviteMessage], []))
-      .then(({response: {result}, type, error, query}) => {
-        dispatch(postprocessPostMessage(myId, result))
-      })
-  }
-}
-
-const postprocessPostMessage = (myId, result) => {
-  /* Do nothing */
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: {}
-  }
-}
-
 
 // reducers
 const reducer = myDuck.createReducer({
