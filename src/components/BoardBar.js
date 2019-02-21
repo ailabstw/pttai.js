@@ -6,7 +6,7 @@ import styles from './BoardBar.css'
 
 class BoardBar extends PureComponent {
   render() {
-    const { boardInfo, userId, manageBoardAction, onOpenOPLogModal } = this.props
+    const { boardInfo, manageBoardAction, onOpenOPLogModal } = this.props
     return (
       <div className={styles['root']}>
         <div className={styles['content']}>

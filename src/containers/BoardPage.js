@@ -168,11 +168,11 @@ class BoardPage extends PureComponent {
         isCreator:  boardInfo.CreatorID === userId,
         boardId:    boardInfo.ID,
         boardName:  boardInfo.Title,
-        onEditBoardName: (boardId, name, friendInvited) => {
-          doBoardPage.setBoardName(myId, boardId, name, friendInvited)
+        onEditBoardName: (boardId, name) => {
+          doBoardPage.setBoardName(myId, boardId, name)
         },
-        onInviteFriend: (boardId, friendInvited) => {
-          //doBoardPage.inviteFriend(myId, boardId, friendInvited)
+        onInviteFriend: (boardId, boardName, friendInvited) => {
+          //doBoardPage.inviteFriend(myId, boardId, boardName, friendInvited)
         },
         onRemoveFriend: (boardId, friendToRemove) => {
           //doBoardPage.removeFriend(myId, boardId, friendToRemove)
