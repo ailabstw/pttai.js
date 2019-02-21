@@ -4,7 +4,9 @@ import { bindActionCreators }     from 'redux'
 import Modal                      from 'react-modal'
 
 import CreateBoardModal       from './CreateBoardModal';
-import ManageBoardModal       from './ManageBoardModal'
+import ManageBoardModal       from './ManageBoardModal';
+import ManageBoardMemberModal from './ManageBoardMemberModal';
+import InviteToBoardModal     from './InviteToBoardModal';
 import CreateArticleModal     from './CreateArticleModal';
 import EditArticleModal       from './EditArticleModal';
 import AddKnownBoardModal     from './AddKnownBoardModal';
@@ -55,6 +57,20 @@ class ModalContainer extends PureComponent {
                                   modalInput={modalInput}
                                   onModalClose={doModalContainer.closeModal}
                                   onModalSubmit={modalSubmit} />)
+
+      case constants.MANAGE_BOARD_MEMBER_MODAL:
+        return (<ManageBoardMemberModal myId={idMap['MANAGE_BOARD_MEMBER_MODAL']}
+                                        onModalSwitch={modalSwitch}
+                                        modalInput={modalInput}
+                                        onModalClose={doModalContainer.closeModal}
+                                        onModalSubmit={modalSubmit} />)
+
+      case constants.INVITE_TO_BOARD_MODAL:
+        return (<InviteToBoardModal myId={idMap['INVITE_TO_BOARD_MODAL']}
+                                    onModalSwitch={modalSwitch}
+                                    modalInput={modalInput}
+                                    onModalClose={doModalContainer.closeModal}
+                                    onModalSubmit={modalSubmit} />)
 
       case constants.CREATE_ARTICLE_MODAL:
         return (<CreateArticleModal modalInput={modalInput}

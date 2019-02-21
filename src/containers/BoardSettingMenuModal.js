@@ -31,13 +31,19 @@ class BoardSettingMenuModal extends PureComponent {
             {
               modalInput.isCreator ? (
                 <div className={styles['action-section']}>
-                  <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.MANAGE_BOARD_MODAL)}>
+                  <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.INVITE_TO_BOARD_MODAL)}>
+                    <FormattedMessage
+                      id="board-setting-menu-modal.menu0"
+                      defaultMessage="Invite"
+                    />
+                  </button>
+                  <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.MANAGE_BOARD_MEMBER_MODAL)}>
                     <FormattedMessage
                       id="board-setting-menu-modal.menu1"
                       defaultMessage="Members"
                     />
                   </button>
-                  <button className={styles['menu-button']} onClick={modalInput.onEditBoardName}>
+                  <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.MANAGE_BOARD_MODAL)}>
                     <FormattedMessage
                       id="board-setting-menu-modal.menu2"
                       defaultMessage="Edit Name"

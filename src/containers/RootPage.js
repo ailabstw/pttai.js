@@ -182,14 +182,18 @@ class RootPage extends PureComponent {
     const friendListPageId  = getChildId(me, 'FRIEND_LIST_PAGE')
     const friendChatPageId  = getChildId(me, 'FRIEND_CHAT_PAGE')
 
-    const createBoardId     = getChildId(me, 'CREATE_BOARD_MODAL')
-    const manageBoardId     = getChildId(me, 'MANAGE_BOARD_MODAL')
-    const showOpLogId       = getChildId(me, 'SHOW_OP_LOG_MODAL')
+    const createBoardId       = getChildId(me, 'CREATE_BOARD_MODAL')
+    const manageBoardId       = getChildId(me, 'MANAGE_BOARD_MODAL')
+    const manageBoardMemberId = getChildId(me, 'MANAGE_BOARD_MEMBER_MODAL')
+    const inviteToBoardId     = getChildId(me, 'INVITE_TO_BOARD_MODAL')
+    const showOpLogId         = getChildId(me, 'SHOW_OP_LOG_MODAL')
 
     let modalIdMap = {
-      'CREATE_BOARD_MODAL': createBoardId,
-      'MANAGE_BOARD_MODAL': manageBoardId,
-      'SHOW_OP_LOG_MODAL' : showOpLogId,
+      'CREATE_BOARD_MODAL':         createBoardId,
+      'MANAGE_BOARD_MODAL':         manageBoardId,
+      'SHOW_OP_LOG_MODAL' :         showOpLogId,
+      'MANAGE_BOARD_MEMBER_MODAL':  manageBoardMemberId,
+      'INVITE_TO_BOARD_MODAL':      inviteToBoardId,
     }
 
     let MAIN_PAGE = null
