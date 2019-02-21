@@ -100,41 +100,55 @@ function sentInviteMessages(inviteMessages) {
   }));
 }
 
-export const setBoardName = (myId, boardId, name, friendInvited) => {
+export const inviteFriend = (myId, boardId, boardName, friendInvited) => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.getBoardUrl(boardId))
+      .then(({response: boardUrlResult, type, query, error}) => {
+
+        const boardJoinKey = {
+          C:            boardUrlResult.result.C,
+          ID:           boardUrlResult.result.ID,
+          Pn:           boardUrlResult.result.Pn,
+          T:            boardUrlResult.result.T,
+          URL:          boardUrlResult.result.URL,
+          UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
+          expirePeriod: boardUrlResult.result.e,
+        }
+
+        let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
+          let chatId = friendInvited[friendId]
+          let message = {
+            type:   MESSAGE_TYPE_INVITE,
+            value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${boardName}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+          }
+          return {
+            chatId: chatId,
+            message: JSON.stringify(message),
+          }
+        })
+
+        dispatch(sentInviteMessages(inviteMessages))
+          .then(({response: inviteResult, type, error, query}) => {
+            dispatch(postprocessInviteFriend(myId, boardId))
+          })
+      })
+  }
+}
+
+const postprocessInviteFriend = (myId, boardId) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: {}
+  }
+}
+
+export const setBoardName = (myId, boardId, name) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.setBoardName(boardId, name))
       .then(({response: {result}, type, query, error}) => {
-
-        dispatch(serverUtils.getBoardUrl(boardId))
-          .then(({response: boardUrlResult, type, query, error}) => {
-
-            const boardJoinKey = {
-              C:            boardUrlResult.result.C,
-              ID:           boardUrlResult.result.ID,
-              Pn:           boardUrlResult.result.Pn,
-              T:            boardUrlResult.result.T,
-              URL:          boardUrlResult.result.URL,
-              UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-              expirePeriod: boardUrlResult.result.e,
-            }
-
-            let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
-              let chatId = friendInvited[friendId]
-              let message = {
-                type:   MESSAGE_TYPE_INVITE,
-                value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
-              }
-              return {
-                chatId: chatId,
-                message: JSON.stringify(message),
-              }
-            })
-
-            dispatch(sentInviteMessages(inviteMessages))
-              .then(({response: inviteResult, type, error, query}) => {
-                dispatch(postprocessSetBoardName(myId, boardId, name))
-              })
-          })
+        dispatch(postprocessSetBoardName(myId, boardId, name))
       })
   }
 }
