@@ -7,7 +7,6 @@ import { FormattedMessage }         from 'react-intl'
 import { CopyToClipboard }          from 'react-copy-to-clipboard'
 
 import { epoch2ReadFormat }       from '../utils/utilDatetime'
-import { isMobile }               from '../utils/utils'
 
 import AlertComponent             from '../components/AlertComponent'
 import * as doInviteToBoardModal  from '../reducers/InviteToBoardModal'
@@ -31,20 +30,11 @@ class InviteToBoardModal extends PureComponent {
         onConfirm: null,
       },
     };
-    this.onNameChange     = this.onNameChange.bind(this);
     this.onFriendInvited = this.onFriendInvited.bind(this);
   }
 
-  onNameChange(e) {
-    this.setState({name:e.target.value})
-  }
-
   onFriendInvited(e, friendId, chatId) {
-    //const { inviteToBoardModal, modalInput: { boardId }, actions: { doInviteToBoardModal }, myId } = this.props
     const { friendInvited } = this.state
-
-    //let me = inviteToBoardModal.get(myId, Immutable.Map())
-    //let boardJoinKey  = me.get('boardJoinKey', Immutable.Map()).toJS()
 
     let newFriendInvited = Object.assign({},friendInvited)
 
@@ -53,13 +43,6 @@ class InviteToBoardModal extends PureComponent {
       newFriendInvited[friendId] = null
     } else {
       newFriendInvited[friendId] = chatId
-      // /* Construct invite message */
-      // let inviteMessage = {
-      //   type:   constants.MESSAGE_TYPE_INVITE,
-      //   value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
-      // }
-
-      // doInviteToBoardModal.sendFriendInvite(myId, chatId, JSON.stringify(inviteMessage))
     }
     this.setState({friendInvited: newFriendInvited})
   }
@@ -79,7 +62,7 @@ class InviteToBoardModal extends PureComponent {
   }
 
   render() {
-    const { onModalSwitch, modalInput: { boardId, setBoardName, deleteBoard }, myId, inviteToBoardModal, onModalClose, modal: { currentModal }} = this.props
+    const { modalInput: { boardId, onInviteFriend }, myId, inviteToBoardModal, onModalClose, modal: { currentModal }} = this.props
     const { name, qrCodeCopied, showAlert, alertData, friendInvited } = this.state
 
     let me = inviteToBoardModal.get(myId, Immutable.Map())
@@ -87,74 +70,20 @@ class InviteToBoardModal extends PureComponent {
     let boardJoinKey  = me.get('boardJoinKey', Immutable.Map()).toJS()
     let friendList    = me.get('friendList', Immutable.List()).toJS()
 
-    let onSetBoardName = () => {
-      if (JSON.stringify(name).length - 2 > constants.MAX_BOARDNAME_SIZE) {
-        let that = this
-        this.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message12"
-                defaultMessage="Board name cannot exceed {MAX_BOARDNAME_SIZE} characters"
-                values={{ MAX_BOARDNAME_SIZE: constants.MAX_BOARDNAME_SIZE }}
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else if (!name || name.replace(/\s+/g, '') === '') {
-        let that = this
-        this.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message13"
-                defaultMessage="Board name cannot be empty"
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else {
-        setBoardName(boardId, name, friendInvited)
-        onModalClose()
-      }
-    }
-
-    let onOpenOPLogModal = () => {
-      onModalSwitch(constants.SHOW_OP_LOG_MODAL, {
-        tabs: [
-          constants.SHOW_CONTENT_BOARD_TAB,
-          constants.SHOW_CONTENT_MASTER_TAB,
-          constants.SHOW_CONTENT_MEMBER_TAB,
-          constants.SHOW_CONTENT_OPKEY_TAB,
-          constants.SHOW_CONTENT_PEERS_TAB,
-        ],
-        params: {
-          boardId: boardId,
-        },
-      })
-    }
-
-    let onDelete = () => {
-      let that = this
-      that.setState({
-        showAlert: true,
-        alertData: {
-          message: (
-            <FormattedMessage
-              id="alert.message1"
-              defaultMessage="Are you sure you want to delete?"
-            />),
-          onConfirm: () => {
-            deleteBoard(boardId)
-            that.setState({showAlert: false})
-            onModalClose()
-          },
-          onClose: () => that.setState({showAlert: false}),
-        }
-      })
-    }
+    // let onOpenOPLogModal = () => {
+    //   onModalSwitch(constants.SHOW_OP_LOG_MODAL, {
+    //     tabs: [
+    //       constants.SHOW_CONTENT_BOARD_TAB,
+    //       constants.SHOW_CONTENT_MASTER_TAB,
+    //       constants.SHOW_CONTENT_MEMBER_TAB,
+    //       constants.SHOW_CONTENT_OPKEY_TAB,
+    //       constants.SHOW_CONTENT_PEERS_TAB,
+    //     ],
+    //     params: {
+    //       boardId: boardId,
+    //     },
+    //   })
+    // }
 
     //const expTimeVal = expiredFormat(boardJoinKey.UpdateTS.T, boardJoinKey.expirePeriod)
 
@@ -171,58 +100,17 @@ class InviteToBoardModal extends PureComponent {
               <div className={styles['prev-arrow']}>
                 <div className={styles['prev-arrow-icon']} onClick={onModalClose}></div>
               </div>
-              <div className={styles['edit-name']}>
-                <input
-                  autoFocus={!isMobile()}
-                  name='board-name-input'
-                  className={styles['board-name-input']}
-                  value={name}
-                  onChange={this.onNameChange}/>
-              </div>
-              <div hidden className={styles['modal-title']}>
+              <div className={styles['board-name']}>
                 {name}
               </div>
-              <div hidden className={styles['search']} onClick={onDelete}>
-                <FormattedMessage
-                  id="manage-board-modal.board-action-2"
-                  defaultMessage="Delete Board"
-                />
-              </div>
-            </div>
-            <div hidden className={styles['modal-bar']}>
-
-              <div className={styles['edit-name']}>
-                <FormattedMessage
-                  id="manage-board-modal.board-action-1"
-                  defaultMessage="Change Board Name"
-                />:
-                <input
-                  autoFocus
-                  name='board-name-input'
-                  className={styles['board-name-input']}
-                  value={name}
-                  onChange={this.onNameChange}/>
-                <button>
-                  <FormattedMessage
-                    id="manage-board-modal.set-board-name-submit"
-                    defaultMessage="Enter"
-                  />
-                </button>
-              </div>
-              <div hidden className={styles['board-log']}>
-                <button className={styles['board-log-button']} onClick={onOpenOPLogModal}>
-                  <FormattedMessage
-                    id="manage-board-modal.get-board-log"
-                    defaultMessage="Board Log"
-                  />
-                </button>
+              <div className={styles['null-prev-arrow']}>
               </div>
             </div>
             <div className={styles['invite-title']}>
               <div className={styles['null-space']}></div>
               <div className={styles['invite-title-text']}>
                 <FormattedMessage
-                  id="manage-board-modal.message2"
+                  id="invite-to-board-modal.message2"
                   defaultMessage="Invite friends"
                 />
               </div>
@@ -233,12 +121,12 @@ class InviteToBoardModal extends PureComponent {
                     {
                       qrCodeCopied? (
                         <FormattedMessage
-                          id="add-device-modal.copy-node-id-2"
+                          id="invite-to-board-modal.copy-node-id-2"
                           defaultMessage="Copied"
                         />
                       ): (
                         <FormattedMessage
-                          id="manage-board-modal.copy-my-id-1"
+                          id="invite-to-board-modal.copy-my-id-1"
                           defaultMessage="Copy Group ID"
                         />
                       )
@@ -252,7 +140,7 @@ class InviteToBoardModal extends PureComponent {
                   (friendList.length === 0)? (
                     <div className={styles['no-friend-text']}>
                       <FormattedMessage
-                        id="manage-board-modal.message1"
+                        id="invite-to-board-modal.message1"
                         defaultMessage="You have no friend to invite to {BOARD_NAME}"
                         values={{ BOARD_NAME: name }}
                       />
@@ -281,7 +169,7 @@ class InviteToBoardModal extends PureComponent {
                         item.isBoardMember ? (
                           <div className={styles['list-item-time']}>
                             <FormattedMessage
-                              id="manage-board-modal.invite-friend-0"
+                              id="invite-to-board-modal.invite-friend-0"
                               defaultMessage="joined {JOIN_TIME}"
                               values={{ JOIN_TIME: epoch2ReadFormat(item.memberUpdateTS.T)}}
                             />
@@ -291,14 +179,14 @@ class InviteToBoardModal extends PureComponent {
                           ((item.friendID in friendInvited) && friendInvited[item.friendID])?(
                             <div className={styles['list-item-invited']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
                               <FormattedMessage
-                                id="manage-board-modal.invite-friend-1"
+                                id="invite-to-board-modal.invite-friend-1"
                                 defaultMessage="Invited"
                               />
                             </div>
                           ):(
                             <div className={styles['list-item-to-invite']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
                               <FormattedMessage
-                                id="manage-board-modal.invite-friend-2"
+                                id="invite-to-board-modal.invite-friend-2"
                                 defaultMessage="Invite"
                               />
                             </div>
@@ -312,7 +200,10 @@ class InviteToBoardModal extends PureComponent {
             </div>
             <div className={styles['action-section']}>
               <div className={styles['submit-button']}>
-                <div className={styles['submit-icon-subcontainer']} onClick={onSetBoardName}>
+                <div className={styles['submit-icon-subcontainer']} onClick={() => {
+                  onInviteFriend(boardId, name, friendInvited)
+                  onModalClose()
+                }}>
                   <div className={styles['submit-icon']}></div>
                 </div>
               </div>

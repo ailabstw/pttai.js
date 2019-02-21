@@ -112,7 +112,7 @@ class ManageBoardMemberModal extends PureComponent {
                         <div className={styles['list-item-title']}> {item.Name} </div>
                         <div className={styles['list-item-time']}>
                           <FormattedMessage
-                            id="manage-board-modal.invite-friend-0"
+                            id="manage-board-member-modal.member-status"
                             defaultMessage="joined {JOIN_TIME}"
                             values={{ JOIN_TIME: epoch2ReadFormat(item.memberUpdateTS.T)}}
                           />
