@@ -63,7 +63,7 @@ class BoardPage extends PureComponent {
   render() {
     const { match, myId, boardPage, actions: {doBoardPage, doModalContainer}} = this.props
     const { showAlert, alertData } = this.state
-    console.log('sammui:',showAlert, alertData)
+
     if(!myId) return (<Empty />)
 
     let userId    = getRoot(this.props).getIn(['userInfo','userId'])
@@ -172,7 +172,7 @@ class BoardPage extends PureComponent {
           doBoardPage.setBoardName(myId, boardId, name)
         },
         onInviteFriend: (boardId, boardName, friendInvited) => {
-          //doBoardPage.inviteFriend(myId, boardId, boardName, friendInvited)
+          doBoardPage.inviteFriend(myId, boardId, boardName, friendInvited)
         },
         onRemoveMember: (boardId, memberToRemove) => {
           doBoardPage.removeMember(myId, boardId, memberToRemove)

@@ -51,6 +51,7 @@
     height: 34px;
     text-align: center;
     margin: auto 2px;
+    font-weight: bolder;
 }
 
 .invite-title {
@@ -256,7 +257,7 @@
 }
 
 .null-space, .copy-space {
-    min-width: 135px;
+    min-width: 105px;
     height: 50px;
 }
 
@@ -269,7 +270,6 @@
 }
 
 .invite-title-text {
-    min-width: calc(100% -200px);
     height: 50px;
     margin: auto;
 }
