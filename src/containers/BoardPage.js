@@ -174,8 +174,8 @@ class BoardPage extends PureComponent {
         onInviteFriend: (boardId, boardName, friendInvited) => {
           //doBoardPage.inviteFriend(myId, boardId, boardName, friendInvited)
         },
-        onRemoveFriend: (boardId, friendToRemove) => {
-          //doBoardPage.removeFriend(myId, boardId, friendToRemove)
+        onRemoveMember: (boardId, memberToRemove) => {
+          doBoardPage.removeMember(myId, boardId, memberToRemove)
         },
         onDeleteBoard: () => {
           doBoardPage.deleteBoard(myId, boardInfo.ID, deleteBoardCallBack)

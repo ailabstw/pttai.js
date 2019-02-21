@@ -16,6 +16,15 @@
     background-color: #FFF;
 }
 
+.null-prev-arrow {
+    width: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    line-height: 38px;
+    cursor: pointer;
+    margin-right: auto
+}
+
 .prev-arrow {
     width: 40px;
     min-width: 40px;
@@ -36,138 +45,13 @@
     background-image: url('/images/icon_back@2x.png')
 }
 
-.modal-title {
-    width: 100%;
-    min-height: 40px;
-    text-align: center;
-    line-height: 40px;
-    cursor: pointer;
-}
-
-.search {
-    width: fit-content;
-    min-width: 40px;
-    min-height: 40px;
-    line-height: 40px;
-
-    font-size: 16px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    letter-spacing: normal;
-    color: #727171;
-}
-
-.search:hover {
-    color: #000;
-    cursor: pointer;
-}
-
-.edit-name {
+.board-name {
     flex-grow: 1;
     line-height: 34px;
     height: 34px;
     text-align: center;
-
-    display: flex;
-    flex-direction: row;
     margin: auto 2px;
 }
-
-.edit-name span {
-    min-width: fit-content;
-}
-
-.edit-name input {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-
-    flex-grow: 1;
-    height: 34px;
-    width: 100%;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 5px;
-
-    border: 1px solid #A9A9A9;
-}
-
-.edit-name input:focus {
-    outline: none;
-}
-
-.edit-name button {
-    text-align: center;
-    vertical-align: middle;
-    line-height: 34px;
-    height: 34px;
-    border-radius: 2px;
-    border: 1px solid #A9A9A9;
-    color: #000;
-    cursor: pointer;
-    margin-left: 5px;
-    min-width: fit-content;
-}
-
-.edit-name button:hover {
-    background-color: #A9A9A9;
-    color: #fff;
-}
-
-.edit-name button:focus {
-    outline: none;
-}
-
-.board-log {
-    min-width: fit-content;
-    margin: auto 2px;
-}
-
-.board-log-button {
-    min-width: fit-content;
-    height: 34px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 34px;
-    border: 1px solid #A9A9A9;
-    color: #000;
-    cursor: pointer;
-    margin-left: 5px;
-    align-items: flex-end;
-}
-
-.board-log-button:hover {
-    background-color: #A9A9A9;
-    color: #fff;
-}
-
-.board-log-button:focus {
-    outline: none;
-}
-
-/*.copy-board-id {
-    width: auto;
-    margin: auto;
-}*/
-
-/*.space-tmp {
-    margin: auto 10px auto 0px;
-}*/
-
-/*.copy-board-id-button {
-    text-align: center;
-    vertical-align: middle;
-    line-height: 34px;
-    height: 34px;
-    border-radius: 7px;
-    background-color: #7eb349;
-    color: #FFF;
-    cursor: pointer;
-}
-
-.copy-board-id-button:focus {
-    outline: none;
-}*/
 
 .invite-title {
     min-height: 50px;
@@ -272,13 +156,8 @@
     flex-direction: column;
 }
 
-.list-item-header {
-    display: flex;
-    flex-direction: row;
-}
-
 .list-item-title {
-    width: 80%;
+    width: 100%;
     color: #000;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -294,7 +173,6 @@
     min-width: fit-content;
     color: #C0C0C0;
     font-weight: lighter;
-    padding: 0px 5px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -302,16 +180,6 @@
     height: 25px;
     line-height: 25px;
     font-size: 14px;
-    text-align: center;
-}
-
-.list-item-content {
-    font-size: 14px;
-    height: 55px;
-    line-height:1.8;
-    font-weight: lighter;
-    color: #000;
-    overflow: hidden;
 }
 
 .list-item-meta {
@@ -321,7 +189,7 @@
     text-align: center;
 }
 
-.list-item-invited {
+.list-item-selected {
   width: 105px;
   height: 34px;
   line-height: 34px;
@@ -329,25 +197,26 @@
   background-color: #9d9d9d;
 }
 
-.list-item-to-invite {
+.list-item-unselect {
   width: 105px;
   height: 34px;
   line-height: 34px;
   border-radius: 7px;
-  background-color: #7eb349;
+  background-color: #d46c6c;
 }
 
-.list-item-to-invite:hover {
-  background-color: #6a9e37;
+.list-item-unselect:hover {
+  background-color: #c84545;
   cursor: pointer;
 }
 
-.list-item-invited:hover {
+.list-item-selected:hover {
     background-color: #8D8D8D;
     cursor: pointer;
 }
 
 .action-section {
+    position: absolute;
     height: 100%;
     text-align: center;
     background-color: #F2F2F2;
@@ -403,32 +272,6 @@
     min-width: calc(100% -200px);
     height: 50px;
     margin: auto;
-}
-
-.manageboard-modal-copy {
-    margin: 5px 15px;
-    font-size: 1rem;
-    width: 105px;
-    max-height: 34px;
-    min-height: 34px;
-    line-height: 34px;
-
-    border-radius: 7px;
-    border: 0px;
-    background-color: #dda200;
-    color: #FFF;
-    font-weight: lighter;
-    text-align: center;
-
-    cursor: pointer;
-}
-
-.manageboard-modal-copy:hover {
-    background-color: #dd8800;
-}
-
-.manageboard-modal-copy:focus {
-    outline: none;
 }
 
 .overlay {
