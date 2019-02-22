@@ -67,6 +67,7 @@
     "add-device-modal.copy-node-id-3": "以帳號登入時請掃描此 QR Code 或是使用此「p.me碼」",
     "add-device-modal.title": "p.me 碼",
     "add-device-modal.expiration": "{expTimeVal}",
+    "qrcode-scanner.tap-to-scan": "點擊以掃描 QR Code",
     "news-list-component.message": "目前沒有討論主題",
     "news-list-component.empty": "(無內容)",
     "friend-list-component.message": "請點選下方按鈕「新增朋友」",

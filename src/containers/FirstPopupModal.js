@@ -347,7 +347,10 @@ class FirstPopupModal extends PureComponent {
                     isIOS() ?
                       <div className={styles['scan-btn-container']} onClick={this.openCamera} >
                         <div className={styles['scan-btn']}>
-                          Tap to scan QR Code
+                          <FormattedMessage
+                            id="qrcode-scanner.tap-to-scan"
+                            defaultMessage="Tap to scan QR Code"
+                          />
                         </div>
                       </div>
                       :

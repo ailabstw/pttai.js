@@ -67,6 +67,7 @@
     "add-device-modal.copy-node-id-3": "Scan QR Code or use the above p.me Code when signing in",
     "add-device-modal.title": "p.me Code",
     "add-device-modal.expiration": "{expTimeVal}",
+    "qrcode-scanner.tap-to-scan": "Tap to scan QR Code",
     "news-list-component.message": "There are no new discussions",
     "news-list-component.empty": "(No content)",
     "friend-list-component.message": "Click below button to add new friends",
