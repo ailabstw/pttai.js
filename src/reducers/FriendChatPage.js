@@ -566,7 +566,7 @@ const postprocessGetBoardList = (myId, result, usersInfo) => {
     return {
       BoardType:        each.BT,
       ID:               each.ID,
-      Status:           each.Status,
+      Status:           each.S,
       Title:            each.Title,
       ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
       UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),

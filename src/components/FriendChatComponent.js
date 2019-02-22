@@ -264,7 +264,9 @@ class FriendChatComponent extends PureComponent {
                       inviteInfo.keyUpdateTS_T = invite.data('update-ts')
                       inviteInfo.keyExpiration = invite.data('expiration')
 
-                      if (!isUser && boardList.findIndex(each => each.ID === inviteInfo.boardId) >= 0) {
+                      let inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
+                      /* TODO: Need remove-board time stamp to disable rejoin */
+                      if (!isUser && inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')) {
                         messageHtml = (<span>
                           <FormattedMessage
                             id="friend-chat-component.action1"
@@ -331,13 +333,17 @@ class FriendChatComponent extends PureComponent {
                         </div>
                       )
                     } else {
+
+                      let inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
+
                       return (
                         <div key={message.ID}>
                           {divider}
                           <div className={styles['message-item']}>
                             {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
-                                boardList.findIndex(each => each.ID === inviteInfo.boardId) >= 0 ? (
+
+                                inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted') ? (
                                   <div className={styles['message-content-invitation']}
                                        onClick={() => this.props.history.push(`/board/${inviteInfo.boardId}`)}>
                                     {messageHtml}

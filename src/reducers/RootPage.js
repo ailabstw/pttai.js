@@ -465,7 +465,7 @@ function getAllArticles(dispatch, myId, articleIds) {
       return dispatch(serverUtils.getArticles(item.boardId, item.articleId, 1))
               .then(({response: aResult, type, query, error}) => {
                 let articles = aResult.result
-                if (articles.length > 0) {
+                if (articles && articles.length > 0) {
                   let article = articles[0]
                   return dispatch(serverUtils.getContent(item.boardId, item.articleId, article.ContentBlockID, 0, 0, 1))
                           .then(({response: { result }, type, query, error}) => {
@@ -483,6 +483,8 @@ function getAllArticles(dispatch, myId, articleIds) {
                                 'Status':         article.S,
                               }
                           })
+                } else {
+                  return Promise.reject(1)
                 }
               })
       })
@@ -508,8 +510,9 @@ export const getLatestArticles = (myId, limit) => {
 
         dispatch(getAllArticles(dispatch, myId, articleIds))
           .then((result) => {
-            let creatorIds = result.map(each => each.CreatorID)
-            let boardIds   = result.map(each => each.BoardID)
+
+            let creatorIds = result.filter(each => each.CreatorID).map(each => each.CreatorID)
+            let boardIds   = result.filter(each => each.BoardID).map(each => each.BoardID)
 
             // get articles
             dispatch(getMetaInfoMaps(creatorIds, boardIds))
