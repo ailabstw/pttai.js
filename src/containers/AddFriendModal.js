@@ -22,7 +22,20 @@ class AddFriendModal extends PureComponent {
       friendReqId: '',
     };
     this.onFriendIdChange = this.onFriendIdChange.bind(this);
+    this.openCamera       = this.openCamera.bind(this);
     this.onScanned        = this.onScanned.bind(this);
+  }
+
+  openCamera() {
+    window.getQRCode = code => {
+      this.setState({friendReqId: code});
+    };
+
+    let url = 'opencamera://';
+    var iframe = document.createElement("IFRAME");
+    iframe.setAttribute("src", url);
+    document.documentElement.appendChild(iframe);
+    iframe = null;
   }
 
   onScanned(data) {
@@ -80,22 +93,34 @@ class AddFriendModal extends PureComponent {
                   defaultMessage="Add friend"
                 />
               </div>
-              <div hidden={isIOS()} className={styles['submodal-signin-scanner-container']}>
-                <div className={styles['submodal-qr-code-scanner']}>
-                  <QrReader
-                    delay={300}
-                    onError={(err) => console.error(err)}
-                    onScan={this.onScanned}
-                    className={styles['submodal-qr-code-scanner']}
-                  />
-                  <div className={styles['submodal-qr-code-text']}>
-                    <FormattedMessage
-                      id="add-friend-modal.scan-code-title"
-                      defaultMessage="Scann QR Code to add friend"
-                    />
+              {
+                isIOS() ?
+                  <div className={styles['scan-btn-container']} onClick={this.openCamera} >
+                    <div className={styles['scan-btn']}>
+                      <FormattedMessage
+                        id="qrcode-scanner.tap-to-scan"
+                        defaultMessage="Tap to scan QR Code"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
+                  :
+                  <div className={styles['submodal-signin-scanner-container']}>
+                    <div className={styles['submodal-qr-code-scanner']}>
+                      <QrReader
+                        delay={300}
+                        onError={(err) => console.error(err)}
+                        onScan={this.onScanned}
+                        className={styles['submodal-qr-code-scanner']}
+                      />
+                      <div className={styles['submodal-qr-code-text']}>
+                        <FormattedMessage
+                          id="add-friend-modal.scan-code-title"
+                          defaultMessage="Scann QR Code to add friend"
+                        />
+                      </div>
+                    </div>
+                  </div>
+              }
               <div className={styles['submodal-signin-node-id']}>
                 <textarea
                   placeholder={placeholder}

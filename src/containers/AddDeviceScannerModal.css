@@ -160,6 +160,19 @@
     outline: none;
 }
 
+.scan-btn-container {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.scan-btn {
+  padding: 3ex 0;
+  background: #000000;
+  color: #fff;
+  margin: auto;
+  width: 70%;
+}
+
 .qr-code-scanner-container {
     min-width: 280px;
     position: relative;

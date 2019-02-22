@@ -37,6 +37,19 @@ class AddDeviceScannerModal extends PureComponent {
     this.onComplete         = this.onComplete.bind(this)
     this.onScanned          = this.onScanned.bind(this);
     this.onScannerClose     = this.onScannerClose.bind(this);
+    this.openCamera         = this.openCamera.bind(this);
+  }
+
+  openCamera() {
+    window.getQRCode = code => {
+      this.setState({inputNodeId: code});
+    };
+
+    let url = 'opencamera://';
+    var iframe = document.createElement("IFRAME");
+    iframe.setAttribute("src", url);
+    document.documentElement.appendChild(iframe);
+    iframe = null;
   }
 
   onScanned(data) {
@@ -220,22 +233,34 @@ class AddDeviceScannerModal extends PureComponent {
                   </div>
                   <div className={styles['slide-item']}>
                     <div className={styles['container']}>
-                      <div hidden={isIOS()} className={styles['qr-code-scanner-container']}>
-                        <div className={styles['qr-code-scanner']}>
-                          <QrReader
-                            delay={300}
-                            onError={(err) => console.error(err)}
-                            onScan={this.onScanned}
-                            className={styles['qr-code-scanner']}
-                          />
-                          <div className={styles['qr-code-text']}>
-                            <FormattedMessage
-                              id="add-device-scanner-modal.copy-device-id-4"
-                              defaultMessage="Scan QR Code to sync"
-                            />
+                      {
+                        isIOS() ?
+                          <div className={styles['scan-btn-container']} onClick={this.openCamera} >
+                            <div className={styles['scan-btn']}>
+                              <FormattedMessage
+                                id="qrcode-scanner.tap-to-scan"
+                                defaultMessage="Tap to scan QR Code"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                          :
+                          <div className={styles['qr-code-scanner-container']}>
+                            <div className={styles['qr-code-scanner']}>
+                              <QrReader
+                                delay={300}
+                                onError={(err) => console.error(err)}
+                                onScan={this.onScanned}
+                                className={styles['qr-code-scanner']}
+                              />
+                              <div className={styles['qr-code-text']}>
+                                <FormattedMessage
+                                  id="add-device-scanner-modal.copy-device-id-4"
+                                  defaultMessage="Scan QR Code to sync"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                      }
                       <div className={styles['paste-area-node-id']}>
                           <textarea
                             placeholder={placeholder2}

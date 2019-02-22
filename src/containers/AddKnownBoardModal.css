@@ -122,6 +122,19 @@
     padding-top: 100%;  /* initial ratio of 1:1*/
 }
 
+.scan-btn-container {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.scan-btn {
+  padding: 3ex 0;
+  background: #000000;
+  color: #fff;
+  margin: auto;
+  width: 70%;
+}
+
 .submodal-qr-code-scanner {
     position:  absolute;
     top: 0;
