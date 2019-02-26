@@ -147,10 +147,12 @@
     background-image: url('/images/icon_friend@2x.png');
 }
 
-.tabs .unread .tab1-icon {
+.tabs .unread .tab1-icon,
+.tabs .unread .tab2-icon {
   position: relative;
 }
-.tabs .unread .tab1-icon:after {
+.tabs .unread .tab1-icon:after,
+.tabs .unread .tab2-icon:after {
   content: '';
   display: inline-block;
   position: absolute;

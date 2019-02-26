@@ -81,8 +81,14 @@ class RootPage extends PureComponent {
     // get latest articles
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
 
+    // get frined list , sorted by last message created time
+    doRootPage.getFriendListByMsgCreateTS(myId, 1) // we just need the latest message to check unread or not
+
     // get log last seen
     doRootPage.getLogLastSeen(myId)
+
+    // get friend list last seen
+    doRootPage.getFriendListSeen(myId)
 
     this.refreshPageInterval = setInterval(() => this.refreshPage(myId), constants.REFRESH_INTERVAL);
   }
@@ -108,6 +114,15 @@ class RootPage extends PureComponent {
     else {
       doRootPage.getLogLastSeen(myId)
     }
+
+    if (this.props.match.url.indexOf(`/friend`) === 0) {
+      doRootPage.markFriendListSeen(myId)
+    }
+    else {
+      doRootPage.getFriendListSeen(myId)
+    }
+
+    doRootPage.getFriendListByMsgCreateTS(myId, 1)
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
@@ -119,18 +134,21 @@ class RootPage extends PureComponent {
     let myId = getRootId(this.props)
     if(!myId) return (<Empty />)
 
-    let me             = getRoot(this.props)
-    let userId         = me.getIn(['userInfo', 'userId'])
-    let userName       = me.getIn(['userInfo', 'userName'])
-    let userImg        = me.getIn(['userInfo', 'userImg'])
-    let profile        = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
-    let keyInfo        = me.get('keyInfo',         Immutable.Map()).toJS()
-    let deviceInfo     = me.get('deviceInfo',      Immutable.List()).toJS()
-    let latestArticles = me.get('latestArticles',  Immutable.List()).toJS()
-    let logLastSeen    = me.get('logLastSeen',  Immutable.Map()).toJS()
+    let me               = getRoot(this.props)
+    let userId           = me.getIn(['userInfo', 'userId'])
+    let userName         = me.getIn(['userInfo', 'userName'])
+    let userImg          = me.getIn(['userInfo', 'userImg'])
+    let profile          = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
+    let keyInfo          = me.get('keyInfo',          Immutable.Map()).toJS()
+    let deviceInfo       = me.get('deviceInfo',       Immutable.List()).toJS()
+    let latestArticles   = me.get('latestArticles',   Immutable.List()).toJS()
+    let latestFriendList = me.get('latestFriendList', Immutable.List()).toJS()
+    let friendLastSeen   = me.get('friendLastSeen',   Immutable.Map()).toJS()
+    let logLastSeen      = me.get('logLastSeen',      Immutable.Map()).toJS()
 
     let latestHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T,latestArticles[0].LastSeen.T):false;
     let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
 
     let onEditNameSubmit = (name, editedProfile) => {
       doRootPage.editName(myId, name)
@@ -189,6 +207,9 @@ class RootPage extends PureComponent {
     let onHubClicked = () => {
       doRootPage.markLogSeen(myId)
     }
+    let onFriendClicked = () => {
+      doRootPage.markFriendListSeen(myId)
+    }
 
     const hubPageId         = getChildId(me, 'HUB_PAGE')
     const boardPageId       = getChildId(me, 'BOARD_PAGE')
@@ -244,7 +265,11 @@ class RootPage extends PureComponent {
           onSettingClicked={onSettingClicked}
           onLatestClicked={onLatestClicked}
           hasUnread={latestHasUnread} />
-        <Navigator {...this.props} hubHasUnread={hubHasUnread} onHubClicked={onHubClicked}/>
+        <Navigator {...this.props}
+          hubHasUnread={hubHasUnread}
+          friendListHasUnread={friendListHasUnread}
+          onHubClicked={onHubClicked}
+          onFriendClicked={onFriendClicked} />
         { MAIN_PAGE }
         <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
         <ToastContainer hideProgressBar={true}/>
