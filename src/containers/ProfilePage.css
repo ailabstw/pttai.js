@@ -108,6 +108,8 @@
     background-position: center;
     background-image: url('/images/btn_setting@2x.png');
     background-repeat: no-repeat;
+
+    margin-left: 38px;
 }
 
 .profile-qr-code:hover {
