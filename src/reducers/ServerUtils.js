@@ -506,6 +506,26 @@ export const getPttMeOpLog = (logId, limit) => {
   }
 }
 
+export const getPttOpLogSeen = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "ptt_getPttOplogSeen", "params": []},
+    }
+  }
+}
+
+export const markPttOpLogSeen = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "ptt_markPttOplogSeen", "params": []},
+    }
+  }
+}
+
 export const getPeers = () => {
   return {
     [api.CALL_API]: {

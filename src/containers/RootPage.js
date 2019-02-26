@@ -81,6 +81,9 @@ class RootPage extends PureComponent {
     // get latest articles
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
 
+    // get log last seen
+    doRootPage.getLogLastSeen(myId)
+
     this.refreshPageInterval = setInterval(() => this.refreshPage(myId), constants.REFRESH_INTERVAL);
   }
 
@@ -98,6 +101,13 @@ class RootPage extends PureComponent {
       }
     }
 
+
+    if (this.props.match.url.indexOf(`/hub`) === 0) {
+      doRootPage.markLogSeen(myId)
+    }
+    else {
+      doRootPage.getLogLastSeen(myId)
+    }
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
@@ -109,16 +119,18 @@ class RootPage extends PureComponent {
     let myId = getRootId(this.props)
     if(!myId) return (<Empty />)
 
-    let me            = getRoot(this.props)
-    let userId        = me.getIn(['userInfo', 'userId'])
-    let userName      = me.getIn(['userInfo', 'userName'])
-    let userImg       = me.getIn(['userInfo', 'userImg'])
-    let profile       = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
-    let keyInfo       = me.get('keyInfo',         Immutable.Map()).toJS()
-    let deviceInfo    = me.get('deviceInfo',      Immutable.List()).toJS()
-    let latest        = me.get('latestArticles',  Immutable.List()).toJS()
+    let me             = getRoot(this.props)
+    let userId         = me.getIn(['userInfo', 'userId'])
+    let userName       = me.getIn(['userInfo', 'userName'])
+    let userImg        = me.getIn(['userInfo', 'userImg'])
+    let profile        = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
+    let keyInfo        = me.get('keyInfo',         Immutable.Map()).toJS()
+    let deviceInfo     = me.get('deviceInfo',      Immutable.List()).toJS()
+    let latestArticles = me.get('latestArticles',  Immutable.List()).toJS()
+    let logLastSeen    = me.get('logLastSeen',  Immutable.Map()).toJS()
 
-    let latestHasUnread = latest.length > 0? isUnRead(latest[0].UpdateTS.T,latest[0].LastSeen.T):false;
+    let latestHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T,latestArticles[0].LastSeen.T):false;
+    let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
 
     let onEditNameSubmit = (name, editedProfile) => {
       doRootPage.editName(myId, name)
@@ -168,11 +180,14 @@ class RootPage extends PureComponent {
       doModalContainer.setInput({
         match:        match, /* for props to detect url path changes */
         isLoading:    false,
-        articleList:  latest,
+        articleList:  latestArticles,
         prevClicked:  () => doModalContainer.closeModal(),
         itemClicked:  () => doModalContainer.closeModal(),
       })
       doModalContainer.openModal(constants.LATEST_PAGE_MODAL)
+    }
+    let onHubClicked = () => {
+      doRootPage.markLogSeen(myId)
     }
 
     const hubPageId         = getChildId(me, 'HUB_PAGE')
@@ -229,7 +244,7 @@ class RootPage extends PureComponent {
           onSettingClicked={onSettingClicked}
           onLatestClicked={onLatestClicked}
           hasUnread={latestHasUnread} />
-        <Navigator {...this.props} />
+        <Navigator {...this.props} hubHasUnread={hubHasUnread} onHubClicked={onHubClicked}/>
         { MAIN_PAGE }
         <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
         <ToastContainer hideProgressBar={true}/>

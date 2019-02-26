@@ -6,6 +6,7 @@ import styles   from './Navigator.css'
 
 class Navigator extends PureComponent {
   render() {
+    const {hubHasUnread, onHubClicked} = this.props;
     let tabOneClass = 'inactive'
     let tabTwoClass = 'inactive'
     if (this.props.match.url.indexOf(`/hub`) === 0 ||
@@ -14,6 +15,13 @@ class Navigator extends PureComponent {
     } else {
       tabTwoClass = 'active'
     }
+
+    let tabOneClasses = [styles[tabOneClass]];
+
+    if (hubHasUnread) {
+      tabOneClasses += ' ' + styles['unread'];
+    }
+
     return (
       <div className={styles['root']}>
         <div className={styles['content']}>
@@ -30,7 +38,7 @@ class Navigator extends PureComponent {
                 </div>
               </Link>
             </li>
-            <li className={styles[tabOneClass]}>
+            <li className={tabOneClasses} onClick={onHubClicked}>
               <Link to={`/hub`} className={styles['content-block']}>
                 <div className={styles['tab1-icon']}></div>
                 <div className={styles['tab1-text']}>

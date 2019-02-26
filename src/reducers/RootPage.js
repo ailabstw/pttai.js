@@ -575,6 +575,32 @@ const postprocessGetLatestArticles = (myId, result, maps) => {
   }
 }
 
+export const getLogLastSeen = myId => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.getPttOpLogSeen())
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(updateLogLastSeenData(myId, result))
+      })
+  }
+}
+
+export const markLogSeen = myId => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.markPttOpLogSeen())
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(updateLogLastSeenData(myId, result))
+      })
+  }
+}
+
+const updateLogLastSeenData = (myId, result) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: { logLastSeen: result }
+  }
+}
 
 // reducers
 const reducer = myDuck.createReducer({

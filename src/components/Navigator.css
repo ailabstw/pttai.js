@@ -146,6 +146,22 @@
 .tabs .active a .tab2-icon {
     background-image: url('/images/icon_friend@2x.png');
 }
+
+.tabs .unread .tab1-icon {
+  position: relative;
+}
+.tabs .unread .tab1-icon:after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  top: 11px;
+  background: red;
+  right: 0px;
+}
+
 .tabs a .tab1-icon {
     height: 42px;
     width: 20px;
