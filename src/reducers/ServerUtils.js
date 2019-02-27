@@ -506,6 +506,60 @@ export const getPttMeOpLog = (logId, limit) => {
   }
 }
 
+export const getPttOpLogSeen = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "ptt_getPttOplogSeen", "params": []},
+    }
+  }
+}
+
+export const markPttOpLogSeen = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "ptt_markPttOplogSeen", "params": []},
+    }
+  }
+}
+
+/*               */
+/*  Frined List  */
+/*               */
+
+export const getFriendListByMsgCreateTS = (T, NT, limit, listOrder=LIST_ORDER_PREV) => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_getFriendListByMsgCreateTS", "params": [T, NT, limit, listOrder]},
+    }
+  }
+}
+
+export const getFriendListSeen = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_getFriendListSeen", "params": []},
+    }
+  }
+}
+
+export const markFriendListSeen = () => {
+  return {
+    [api.CALL_API]: {
+      endpoint: '/',
+      method: 'post',
+      json: {"id": getUUID(false), "method": "friend_markFriendListSeen", "params": []},
+    }
+  }
+}
+
 export const getPeers = () => {
   return {
     [api.CALL_API]: {

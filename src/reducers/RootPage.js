@@ -575,6 +575,78 @@ const postprocessGetLatestArticles = (myId, result, maps) => {
   }
 }
 
+export const getLogLastSeen = myId => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.getPttOpLogSeen())
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(updateLogLastSeenData(myId, result))
+      })
+  }
+}
+
+export const markLogSeen = myId => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.markPttOpLogSeen())
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(updateLogLastSeenData(myId, result))
+      })
+  }
+}
+
+const updateLogLastSeenData = (myId, result) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: { logLastSeen: result }
+  }
+}
+
+export const getFriendListByMsgCreateTS = (myId, limit) => {
+  return (dispatch, getState) => {
+    let emptyTS = utils.emptyTimeStamp();
+    dispatch(serverUtils.getFriendListByMsgCreateTS(emptyTS.T, emptyTS.NT, limit))
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(postprocessGetFriendListByMsgCreateTS(myId, result))
+      })
+  }
+}
+
+const postprocessGetFriendListByMsgCreateTS = (myId, result) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: { latestFriendList: result || [] }
+  }
+}
+
+export const getFriendListSeen = myId => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.getFriendListSeen())
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(updateFriendLastSeenData(myId, result))
+      })
+  }
+}
+
+export const markFriendListSeen = myId => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.markFriendListSeen())
+      .then(({response: {result}, type, query, error}) => {
+        dispatch(updateFriendLastSeenData(myId, result))
+      })
+  }
+}
+
+const updateFriendLastSeenData = (myId, result) => {
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: { friendLastSeen: result }
+  }
+}
 
 // reducers
 const reducer = myDuck.createReducer({
