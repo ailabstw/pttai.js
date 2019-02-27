@@ -75,6 +75,12 @@
     cursor: pointer;
 }
 
+.platform-info {
+  padding-top: 1em;
+  font-size: .75em;
+  color: #777;
+}
+
 .overlay {
     z-index: 10;
     position: fixed;
