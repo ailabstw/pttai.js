@@ -27,8 +27,9 @@ class AddFriendModal extends PureComponent {
   }
 
   openCamera() {
+    let that = this;
     window.getQRCode = code => {
-      this.setState({friendReqId: code});
+      that.setState({friendReqId: code});
     };
 
     let url = 'opencamera://';

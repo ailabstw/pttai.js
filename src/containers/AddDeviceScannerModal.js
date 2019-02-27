@@ -41,8 +41,9 @@ class AddDeviceScannerModal extends PureComponent {
   }
 
   openCamera() {
+    let that = this;
     window.getQRCode = code => {
-      this.setState({inputNodeId: code});
+      that.setState({inputNodeId: code});
     };
 
     let url = 'opencamera://';

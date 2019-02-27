@@ -44,8 +44,9 @@ class FirstPopupModal extends PureComponent {
   }
 
   openCamera() {
+    let that = this;
     window.getQRCode = code => {
-      this.setState({nodeId: code});
+      that.setState({nodeId: code});
     };
 
     let url = 'opencamera://';

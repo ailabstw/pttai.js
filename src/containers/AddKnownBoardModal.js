@@ -24,8 +24,9 @@ class AddKnownBoardModal extends PureComponent {
   }
 
   openCamera() {
+    let that = this;
     window.getQRCode = code => {
-      this.setState({boardUrl: code});
+      that.setState({boardUrl: code});
     };
 
     let url = 'opencamera://';
