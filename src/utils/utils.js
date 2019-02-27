@@ -368,10 +368,5 @@ export const isMobile = () => {
 }
 
 export const isIOS = () => {
-  /* If true, QR code scanner will not display */
-  /* Currently, the following should return true: */
-  /* Android pttai app, iOS pttai app, iOS chrome */
-  return platform.description.indexOf('Android') !== -1 // Android app
-      || platform.description.indexOf('Windows Server') !== -1 // iOS app
-      || (platform.description.indexOf('iOS') !== -1 && platform.description.indexOf('Chrome') !== -1 )// iOS chrome
+  return platform.description.indexOf('iOS') !== -1 // iOS app
 }
