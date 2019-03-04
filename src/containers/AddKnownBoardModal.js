@@ -25,15 +25,15 @@ class AddKnownBoardModal extends PureComponent {
 
   openCamera() {
     let that = this;
+    let iframe = document.createElement('IFRAME');
+    iframe.setAttribute('src', 'opencamera://');
+
     window.getQRCode = code => {
       that.setState({boardUrl: code});
+      iframe.remove();
     };
 
-    let url = 'opencamera://';
-    var iframe = document.createElement("IFRAME");
-    iframe.setAttribute("src", url);
     document.documentElement.appendChild(iframe);
-    iframe = null;
   }
 
   onNameChange(e) {
