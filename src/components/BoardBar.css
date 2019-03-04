@@ -53,8 +53,8 @@
 .board-name {
     height: 100%;
     line-height: 30px;
-    padding: 10px 42px 10px 10px; /* 42 = 10 + 105 (prev_btn) - 73(search_btn)  */
-    width: 54%;
+    padding: 10px 60px 10px 10px; /* 60 = 10 + 105 (prev_btn) - 55(search_btn) */
+    width: calc(100% - 160px); /* 160 = 105 + 55 */
     font-weight: bolder;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -72,7 +72,7 @@
     padding: 10px 10px;
     text-align: right;
     flex-grow: 1;
-    width: 73px;
+    width: 55px;
     font-size: 20px;
     color:  #696969;
     height: 50px;
