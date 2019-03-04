@@ -14,6 +14,7 @@
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    padding-bottom: 41px;
 }
 
 .info-section {
@@ -37,7 +38,7 @@
 
 .profile-picture {
     min-width: 68px;
-    cursor: pointer;
+    height: 68px;
     position: relative;
     margin-bottom: 10px;
 }
@@ -48,6 +49,21 @@
     width: 68px;
     height: 68px;
     object-fit: contain;
+}
+
+.profile-picture-edit-icon {
+    background-color: rgba(0,0,0,0.6);
+    background-image: url('/images/icon_edit@2x.png');
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: 15px 15px;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    border: 1px solid #707070;
 }
 
 .edit-button {
@@ -69,7 +85,8 @@
     padding: 13px 20px 13px 10px;
     display: flex;
     flex-direction: column;
-    width: calc(100% - 98px)
+    width: calc(100% - 98px);
+    font-weight: 300;
 }
 
 .main-info {
@@ -86,15 +103,28 @@
     margin: auto;
 }
 
+.name > div,
+.company > div,
+.job-title > div,
+.email > div,
+.phone > div,
+.description > div {
+  padding-left: 5px;
+}
+
 .profile-input {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0px 10px 0px 0px;
+    padding: 0px 10px 10px 0px;
 }
 
-.profile-input div, .contact-input div, .desc-input div {
+.profile-input > div {
     margin-bottom: 5px;
+}
+
+.contact-input {
+  margin-bottom: 10px;
 }
 
 .name {
@@ -102,6 +132,7 @@
     height: 37px;
     line-height: 37px;
     font-size: 26px;
+    font-weight: 400;
     color: #FFF;
 
     text-overflow: ellipsis;
@@ -111,8 +142,8 @@
 
 .company, .job-title, .email, .phone, .description {
     width: 100%;
-    height: 27px;
-    line-height: 27px;
+    height: 24px;
+    line-height: 24px;
     font-size: 16px;
     color: #FFF;
 
@@ -121,10 +152,15 @@
     overflow: hidden;
 }
 
+.job-title {
+    font-weight: 400;
+}
+
 .description {
     width: 100%;
-    height: 54px;
-    line-height: 27px;
+    height: 72px;
+    margin-bottom: 19px;
+    line-height: 1.5em;
     font-size: 16px;
 }
 
@@ -144,6 +180,10 @@
     padding: 5px;
 }
 
+.company input, .phone input, .email input {
+    font-weight: 300;
+}
+
 .desc-input textarea {
     background-color: #4C474E;
     outline: none;
@@ -152,18 +192,20 @@
     margin-bottom: 5px;
     width: 100%;
     height: 100%;
+    font-weight: 300;
 
-    line-height: 1.2;
+    line-height: 1.5em;
     color: #FFF;
 
     word-wrap: break-word;
 
     background-color: rgba(0, 0, 0, 0.4);
-    padding: 5px;
+    padding: 0;
+    padding-left: 5px;
     resize: none;
 }
 
-.description span {
+.description div {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -217,7 +259,7 @@
 
 .editname-modal-submit {
     padding: 0.5ex 0;
-    margin: 5px auto;
+    margin: 5px 8px;
     font-size: 1rem;
     width: calc(50% - 10px);
     min-width: 100px;
@@ -241,7 +283,7 @@
 
 .editname-modal-cancel {
     padding: 0.5ex 0;
-    margin: 5px auto 5px auto;
+    margin: 5px 8px;
     font-size: 1rem;
     width: calc(50% - 10px);
     min-width: 100px;

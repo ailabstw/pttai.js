@@ -115,7 +115,7 @@ export const editNameModalStyles = {
     position              : 'relative',
     padding               : '0px',
     width                 : '100%',
-    height                : '100%',
+    height                : 'auto',
     maxWidth              : '414px',
     margin                : '0px auto',
     top                   : '0px',
@@ -124,7 +124,7 @@ export const editNameModalStyles = {
     bottom                : '0px',
     border                : 'none',
     borderRadius          : '0px',
-    //backgroundColor       : 'none',
+    backgroundColor       : 'rgba(0,0,0,0.35)'
   }
 };
 
