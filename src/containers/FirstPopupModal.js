@@ -27,7 +27,7 @@ class FirstPopupModal extends PureComponent {
       nodeId: '',
       showAlert: false,
       //scannerIsOpen: false,
-      submodalType: null,
+      submodalType: 'Sign-up',
       alertData: {
         message: '',
         onClose: null,
@@ -318,7 +318,7 @@ class FirstPopupModal extends PureComponent {
                         defaultMessage="Confirm"
                       />
                     </button>
-                    <button className={styles['submodal-signup-cancel']} onClick={() => this.setState({ submodalType: null })}>
+                    <button hidden={true} className={styles['submodal-signup-cancel']} onClick={() => this.setState({ submodalType: null })}>
                       <FormattedMessage
                         id="first-popup-modal.action1"
                         defaultMessage="Cancel"
