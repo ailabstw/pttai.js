@@ -449,6 +449,7 @@ input:-moz-placeholder {
     word-wrap: break-word;
     background-color: #ffffff;
     text-decoration: none;
+    font-size: 14px;
     color: #000;
     padding: 5px 10px;
     line-height: 23px;
