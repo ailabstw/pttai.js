@@ -20,6 +20,7 @@ class AddFriendModal extends PureComponent {
     this.refreshKeyInfoInterval = null
     this.state = {
       friendReqId: '',
+      modalClosable: isIOS()
     };
     this.onFriendIdChange = this.onFriendIdChange.bind(this);
     this.openCamera       = this.openCamera.bind(this);
@@ -69,7 +70,7 @@ class AddFriendModal extends PureComponent {
             onModalClose,
             modal: { currentModal },
             modalInput:{ friend } } = this.props
-    const { friendReqId } = this.state
+    const { friendReqId, modalClosable } = this.state
 
     let onSubmitAndClose = function() {
       friend.addFriendAction(friendReqId)
@@ -109,8 +110,12 @@ class AddFriendModal extends PureComponent {
                     <div className={styles['submodal-qr-code-scanner']}>
                       <QrReader
                         delay={300}
-                        onError={(err) => console.error(err)}
+                        onError={(err) => {
+                          console.error(err)
+                          this.setState({modalClosable:true})
+                        }}
                         onScan={this.onScanned}
+                        onLoad={()=>this.setState({modalClosable:true})}
                         className={styles['submodal-qr-code-scanner']}
                       />
                       <div className={styles['submodal-qr-code-text']}>
@@ -137,7 +142,13 @@ class AddFriendModal extends PureComponent {
                     defaultMessage="Add"
                   />
                 </button>
-                <button className={styles['submodal-signin-cancel']} onClick={onModalClose}>
+                <button className={styles['submodal-signin-cancel']}
+                  onClick={() => {
+                    // js would throw error if we close modal when qr-reader is not loaded yet
+                    // which would keep camera rolling.
+                    modalClosable && onModalClose();
+                  }}
+                >
                   <FormattedMessage
                     id="first-popup-modal.action1"
                     defaultMessage="Cancel"
