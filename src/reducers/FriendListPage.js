@@ -128,6 +128,7 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
     let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
     let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
     let SummaryUserImg  = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
+    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
 
     return {
       Name:             userName,
@@ -139,8 +140,8 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
       FriendStatus:     each.S,
       SummaryStatus:    summaries[index].S,
       LastSeen:         each.LT ? each.LT : utils.emptyTimeStamp(),
-      ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      SummaryUpdateTS:  summaries[index].UpdateTS ? summaries[index].UpdateTS : utils.emptyTimeStamp(),
+      ArticleCreateTS:  ArticleCreateTS,
+      SummaryUpdateTS:  summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS,
       SummaryUserID:    summaryUserId,
       SummaryUserName:  SummaryUserName,
       SummaryUserImg:   SummaryUserImg,
@@ -287,6 +288,7 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
     let userNameCard    = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
     let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
     let SummaryUserImg  = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
+    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
 
     return {
       Name:             userName,
@@ -298,8 +300,8 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
       FriendStatus:     each.S,
       SummaryStatus:    summaries[index].S,
       LastSeen:         each.LT ? each.LT : utils.emptyTimeStamp(),
-      ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      SummaryUpdateTS:  summaries[index].UpdateTS ? summaries[index].UpdateTS : utils.emptyTimeStamp(),
+      ArticleCreateTS:  ArticleCreateTS,
+      SummaryUpdateTS:  summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS,
       SummaryUserID:    summaryUserId,
       SummaryUserName:  SummaryUserName,
       SummaryUserImg:   SummaryUserImg,
