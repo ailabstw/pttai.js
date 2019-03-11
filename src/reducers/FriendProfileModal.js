@@ -30,16 +30,13 @@ export const getFriendProfile = (myId, userId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getNameCard(userId))
       .then(({response: { result }, type, query, error}) => {
-        let content = result.C ? serverUtils.b64decode(result.C) : DEFAULT_USER_NAMECARD
+        let content = result.C ? JSON.parse(serverUtils.b64decode(result.C)) : DEFAULT_USER_NAMECARD
         dispatch(postprocessGetProfile(myId, content))
       })
   }
 }
 
 const postprocessGetProfile = (myId, content) => {
-
-  content = JSON.parse(content)
-
   console.log('doFriendProfileModal.postprocessGetProfile: ', content)
 
   return {
