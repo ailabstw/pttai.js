@@ -2,7 +2,8 @@ import React, { PureComponent }   from 'react'
 import { BeatLoader, ClipLoader } from 'react-spinners'
 
 import { Link }                   from 'react-router-dom'
-import { FormattedMessage }       from 'react-intl'
+import { injectIntl,
+         FormattedMessage }        from 'react-intl'
 
 import AlertComponent             from '../components/AlertComponent'
 import { isUnRead,
@@ -75,7 +76,7 @@ class FriendListComponent extends PureComponent {
   }
 
   render() {
-    const { friendList, userName, noFriend, isLoading, onFriendDelete } = this.props
+    const { friendList, userName, noFriend, isLoading, onFriendDelete, intl } = this.props
     const { sliderInIndex, showAlert, alertData } = this.state
 
     let that = this
@@ -128,7 +129,11 @@ class FriendListComponent extends PureComponent {
                         <div className={styles['list-item-main']}>
                           <div className={styles['list-item-header']}>
                             <div className={styles['list-item-title']}>
-                              {item.Name} {constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'? '': '(' + constants.JOIN_STATUS_ARRAY[item.joinStatus].slice(10) + ')'}
+                              {item.Name}
+                              {
+                                constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'?
+                                  '': `(${intl.formatMessage({id: 'friend-list-component.syncing'})})`
+                              }
                             </div>
                             <div className={styles['list-item-time']}>
                               {
@@ -216,4 +221,4 @@ class FriendListComponent extends PureComponent {
   }
 }
 
-export default FriendListComponent
+export default injectIntl(FriendListComponent)

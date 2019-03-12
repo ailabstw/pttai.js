@@ -81,6 +81,7 @@
     "news-list-component.empty": "(No content)",
     "friend-list-component.message": "Click below button to add new friends",
     "friend-list-component.message2": "\u2605 {INVITING_USER_NAME} invited {INVITED_USER_NAME} to join a group",
+    "friend-list-component.syncing": "Syncing",
     "article-list-component.message": "Click below button to add discussions",
     "summary-template.user-upload-file": "uploaded file",
     "summary-template.user-upload-image": "uploaded image",
