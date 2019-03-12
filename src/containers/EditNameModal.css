@@ -112,6 +112,10 @@
   padding-left: 5px;
 }
 
+.phone {
+    margin-top: 1px;
+}
+
 .profile-input {
     width: 100%;
     display: flex;
