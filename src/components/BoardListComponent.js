@@ -88,7 +88,7 @@ class BoardListComponent extends PureComponent {
               />
             </div>
           ):(
-            <div>
+            <div className={styles['list']}>
             {
               isLoading? (
                 <div className={styles['loader']}>
@@ -140,8 +140,6 @@ class BoardListComponent extends PureComponent {
                 </div>
               ))
             }
-            <div className={styles['list-item-hidden']} key={activeList.length + 1}>
-            </div>
             </div>
           )
         }

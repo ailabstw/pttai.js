@@ -12,6 +12,14 @@
     font-size: 16px;
 }
 
+/* Space holder: use to avoid add-btn covering list-item */
+.list:after {
+    content: '';
+    clear: both;
+    display: block;
+    height: 94px;
+}
+
 .list-item {
     width: calc(50% - 6px);
     height: 94px;
