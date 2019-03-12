@@ -103,7 +103,7 @@ class ArticleListComponent extends PureComponent {
               />
             </div>
           ):(
-            <div>
+            <div className={styles['list']}>
               {
                 isLoading? (
                   <div className={styles['loader']}>
