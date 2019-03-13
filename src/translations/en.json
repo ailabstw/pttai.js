@@ -142,6 +142,7 @@
     "alert.message33": "[Success] Left Group",
     "alert.message34": "[Success] Group Deleted",
     "alert.message35": "Are you sure you want to leave to group?",
+    "alert.message36": "Title is too long (CJK word: 14, eng: 27)",
     "edit-name-modal.company-placeholder":"Company (press below to edit)",
     "edit-name-modal.jobtitle-placeholder":"Job Title (press below to edit)",
     "edit-name-modal.email-placeholder":"Email (press below to edit)",
