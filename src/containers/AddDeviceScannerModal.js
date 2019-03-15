@@ -3,16 +3,15 @@ import { connect }                    from 'react-redux'
 import { bindActionCreators }         from 'redux'
 import Slider                         from 'react-slick'
 import Modal                          from 'react-modal'
-import QrReader                       from 'react-qr-reader'
 import { CopyToClipboard }            from 'react-copy-to-clipboard'
 import { FormattedMessage,
          injectIntl }                 from 'react-intl'
 
+import QRScannerSubmodal              from '../components/QRScannerSubmodal'
 import AlertComponent                 from '../components/AlertComponent'
 import * as doAddDeviceScannerModal   from '../reducers/AddDeviceScannerModal'
 import * as modalConstants            from '../constants/ModalConstants'
 import * as constants                 from '../constants/Constants'
-import { isIOS }                      from '../utils/utils'
 
 import styles                         from './AddDeviceScannerModal.css'
 
@@ -37,20 +36,6 @@ class AddDeviceScannerModal extends PureComponent {
     this.onComplete         = this.onComplete.bind(this)
     this.onScanned          = this.onScanned.bind(this);
     this.onScannerClose     = this.onScannerClose.bind(this);
-    this.openCamera         = this.openCamera.bind(this);
-  }
-
-  openCamera() {
-    let that = this;
-    let iframe = document.createElement('IFRAME');
-    iframe.setAttribute('src', 'opencamera://');
-
-    window.getQRCode = code => {
-      that.setState({inputNodeId: code});
-      iframe.remove();
-    };
-
-    document.documentElement.appendChild(iframe);
   }
 
   onScanned(data) {
@@ -234,34 +219,7 @@ class AddDeviceScannerModal extends PureComponent {
                   </div>
                   <div className={styles['slide-item']}>
                     <div className={styles['container']}>
-                      {
-                        isIOS() ?
-                          <div className={styles['scan-btn-container']} onClick={this.openCamera} >
-                            <div className={styles['scan-btn']}>
-                              <FormattedMessage
-                                id="qrcode-scanner.tap-to-scan"
-                                defaultMessage="Tap to scan QR Code"
-                              />
-                            </div>
-                          </div>
-                          :
-                          <div className={styles['qr-code-scanner-container']}>
-                            <div className={styles['qr-code-scanner']}>
-                              <QrReader
-                                delay={300}
-                                onError={(err) => console.error(err)}
-                                onScan={this.onScanned}
-                                className={styles['qr-code-scanner']}
-                              />
-                              <div className={styles['qr-code-text']}>
-                                <FormattedMessage
-                                  id="add-device-scanner-modal.copy-device-id-4"
-                                  defaultMessage="Scan QR Code to sync"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                      }
+                      <QRScannerSubmodal onScanned={this.onScanned} />
                       <div className={styles['paste-area-node-id']}>
                           <textarea
                             placeholder={placeholder2}

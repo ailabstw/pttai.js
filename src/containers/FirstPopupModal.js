@@ -2,16 +2,15 @@ import React, { PureComponent }     from 'react'
 import { connect }                  from 'react-redux'
 import { bindActionCreators }       from 'redux'
 import Modal                        from 'react-modal'
-import QrReader                     from 'react-qr-reader'
 import { injectIntl,
          FormattedMessage }         from 'react-intl'
 
-import AlertComponent from '../components/AlertComponent'
+import AlertComponent        from '../components/AlertComponent'
+import QRScannerSubmodal     from '../components/QRScannerSubmodal'
 
 import * as modalConstants    from '../constants/ModalConstants'
 import * as constants         from '../constants/Constants'
 import * as doFirstPopupModal from '../reducers/FirstPopupModal'
-import { isIOS }              from '../utils/utils'
 
 import styles from './FirstPopupModal.css'
 
@@ -40,20 +39,6 @@ class FirstPopupModal extends PureComponent {
     this.onScanned      = this.onScanned.bind(this);
     this.onNodeIdChange = this.onNodeIdChange.bind(this);
     this.onSignIn       = this.onSignIn.bind(this);
-    this.openCamera     = this.openCamera.bind(this);
-  }
-
-  openCamera() {
-    let that = this;
-    let iframe = document.createElement('IFRAME');
-    iframe.setAttribute('src', 'opencamera://');
-
-    window.getQRCode = code => {
-      that.setState({nodeId: code});
-      iframe.remove();
-    };
-
-    document.documentElement.appendChild(iframe);
   }
 
   onNameChange(e) {
@@ -343,37 +328,7 @@ class FirstPopupModal extends PureComponent {
                       defaultMessage="Sign in with existing account"
                     />
                   </div>
-
-                  {
-                    isIOS() ?
-                      <div className={styles['scan-btn-container']} onClick={this.openCamera} >
-                        <div className={styles['scan-btn']}>
-                          <FormattedMessage
-                            id="qrcode-scanner.tap-to-scan"
-                            defaultMessage="Tap to scan QR Code"
-                          />
-                        </div>
-                      </div>
-                      :
-                      <div className={styles['submodal-signin-scanner-container']}>
-                        <div className={styles['submodal-qr-code-scanner']}>
-                          <QrReader
-                            delay={300}
-                            onError={(err) => console.error(err)}
-                            onScan={this.onScanned}
-                            className={styles['submodal-qr-code-scanner']}
-                          />
-
-                          <div className={styles['submodal-qr-code-text']}>
-                            <FormattedMessage
-                              id="add-device-scanner-modal.copy-device-id-4"
-                              defaultMessage="Scan QR Code to sign in"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                  }
-
+                  <QRScannerSubmodal onScanned={this.onScanned} />
                   <div className={styles['submodal-signin-node-id']}>
                       <textarea
                         placeholder={placeholder2}
