@@ -12,7 +12,7 @@ import * as doAddFriendModal    from '../reducers/AddFriendModal'
 
 import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
-import { isIOS, isMobile }      from '../utils/utils'
+import { isIOS, isAndroid, isMobile }      from '../utils/utils'
 
 import styles from './AddFriendModal.css'
 
@@ -42,15 +42,37 @@ class AddFriendModal extends PureComponent {
 
   openCamera() {
     let that = this;
-    let iframe = document.createElement('IFRAME');
-    iframe.setAttribute('src', 'opencamera://');
+    if (isIOS()) {
+      let iframe = document.createElement('IFRAME');
+      iframe.setAttribute('src', 'opencamera://');
 
-    window.getQRCode = code => {
-      that.setState({friendReqId: code});
-      iframe.remove();
-    };
+      window.getQRCode = code => {
+        that.setState({friendReqId: code});
+        iframe.remove();
+      };
 
-    document.documentElement.appendChild(iframe);
+      document.documentElement.appendChild(iframe);
+    }
+
+    if (isAndroid) {
+      // Workaround for android:
+      // play() can only be initiated by a user gesture (Android)
+      // ref: https://github.com/spotify/web-playback-sdk/issues/5
+
+      let container = event.target.parentElement
+
+      if (container.classList.contains(styles['scanner-btn'])) {
+        container = container.parentElement
+      }
+
+      if (container.classList.contains(styles['scanner-btn-container'])) {
+        container = container.parentElement
+      }
+
+      container.querySelector(`.${styles['scanner-btn-container']}`).remove()
+      container.querySelector(`.${styles['scanner-container']}`).hidden = false
+      container.querySelector('video').play()
+    }
   }
 
   onScanned(data) {
@@ -208,7 +230,7 @@ const ScannerPage = props => {
   return (
     <div className={styles['tab-page']}>
       {
-        isIOS() ?
+        isIOS() || isAndroid() ?
           <div className={styles['scan-btn-container']} onClick={openCamera} >
             <div className={styles['scan-btn']}>
               <FormattedMessage
