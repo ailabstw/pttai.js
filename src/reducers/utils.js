@@ -160,6 +160,10 @@ export const reduceUpdateData = (state, action) => {
   return state.mergeDeepIn([myId], data)
 }
 
+export const isNullTimeStamp = timestamp => {
+  return JSON.stringify(timestamp) === '{"T":0,"NT":0}'
+}
+
 export const emptyTimeStamp = () => {
   return {
     T: Date.now()/1000 | 0,

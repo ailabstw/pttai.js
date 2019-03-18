@@ -327,6 +327,9 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
+    let createTS  = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
+    let updateTS  = each.UpdateTS ? each.UpdateTS : createTS
+
     return {
       BoardID:          each.BoardID,
       ContentBlockID:   each.ContentBlockID,
@@ -339,10 +342,10 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
       NBoo:             each.NB,
       NPush:            each.NP,
       Title:            each.Title,
-      CreateTS:         each.CreateTS ? each.CreateTS : utils.emptyTimeStamp(),
-      UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
+      CreateTS:         createTS,
+      UpdateTS:         updateTS,
       LastSeen:         each.L ? each.L : utils.emptyTimeStamp(),
-      CommentCreateTS:  each.c ? each.c : utils.emptyTimeStamp(),
+      CommentCreateTS:  each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS,
     }
   });
 
@@ -443,6 +446,9 @@ const postprocessGetMoreArticles = (myId, result, usersInfo) => {
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg   = userImgMap[userId]  ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
+    let createTS  = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
+    let updateTS  = each.UpdateTS ? each.UpdateTS : createTS
+
     return {
       BoardID:          each.BoardID,
       ContentBlockID:   each.ContentBlockID,
@@ -455,10 +461,10 @@ const postprocessGetMoreArticles = (myId, result, usersInfo) => {
       NBoo:             each.NBoo,
       NPush:            each.NPush,
       Title:            each.Title,
-      CreateTS:         each.CreateTS ? each.CreateTS : utils.emptyTimeStamp(),
-      UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
+      CreateTS:         createTS,
+      UpdateTS:         updateTS,
       LastSeen:         each.L ? each.L : utils.emptyTimeStamp(),
-      CommentCreateTS:  each.c ? each.c : utils.emptyTimeStamp(),
+      CommentCreateTS:  each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS,
     }
   })
 
