@@ -27,6 +27,7 @@ class FriendChatPage extends PureComponent {
 
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), false, constants.NUM_MESSAGE_PER_REQ)
     doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
+    doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
   }
 
   componentWillMount() {
