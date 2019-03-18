@@ -142,6 +142,7 @@
     "alert.message33": "【成功】已離開群組",
     "alert.message34": "【成功】群組已刪除",
     "alert.message35": "確定要離開群組嗎?",
+    "alert.message36": "標題字數過長（中文限 14 字、英文 27 字）",
     "edit-name-modal.company-placeholder":"公司 (請點選編輯鈕)",
     "edit-name-modal.jobtitle-placeholder":"職稱 (請點選編輯鈕)",
     "edit-name-modal.email-placeholder":"E-mail (請點選編輯鈕)",

@@ -178,6 +178,15 @@ function isEmpty(htmlArray) {
   return html === ''
 }
 
+function isTitleTooLong(title) {
+  // const cjk_limit = 14
+  const en_limit = 27
+  const cjk_regex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/ // https://stackoverflow.com/a/43419070/5032696
+
+  // consider CKJ char as 2 en char
+  return title.replace(cjk_regex, '..').length > en_limit
+}
+
 class PttaiEditor extends PureComponent {
   constructor(props) {
     super(props)
@@ -246,6 +255,19 @@ class PttaiEditor extends PureComponent {
             <FormattedMessage
               id="alert.message10"
               defaultMessage="Title or content cannot be empty"
+            />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
+    } else if (isTitleTooLong(title)) {
+      let that = this
+      return this.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+              id="alert.message36"
+              defaultMessage="Title is too long (CJK word: 14, eng: 27)"
             />),
           onConfirm: () => that.setState({showAlert: false})
         }

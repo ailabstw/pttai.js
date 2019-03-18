@@ -11,6 +11,8 @@ import CommentReplyListComponent  from '../components/CommentReplyListComponent'
 import ArticleBar                 from '../components/ArticleBar'
 
 import { getRoot }            from '../utils/utils'
+import { epoch2FullDate,
+         epoch2ReadFormat } from '../utils/utilDatetime'
 import * as doArticlePage     from '../reducers/ArticlePage'
 import * as doModalContainer  from '../reducers/ModalContainer'
 import * as constants         from '../constants/Constants'
@@ -281,6 +283,15 @@ class ArticlePage extends PureComponent {
         <ArticleBar
           boardInfo={boardInfo}
           articleInfo={articleInfo} />
+        {
+          $.isEmptyObject(articleInfo) ? (
+            <div className={styles['search']}></div>
+          ):(
+            <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['search']}>
+            {epoch2ReadFormat(articleInfo.CreateTS.T)}
+          </div>
+          )
+        }
         <ArticleComponent
           boardInfo={boardInfo}
           userId={userId}

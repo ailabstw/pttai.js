@@ -7,3 +7,16 @@
     width: 100%;
     max-height: calc(100% - 120px);
 }
+
+.search {
+    background: #fff;
+    line-height: 12px;
+    font-size: 12px;
+    padding-top: 10px;
+    padding-right: 10px;
+    text-align: right;
+    flex-grow: 1;
+    width: 100%;
+    color: #b1b1b1;
+    min-width: fit-content;
+}
