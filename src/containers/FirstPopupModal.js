@@ -34,6 +34,7 @@ class FirstPopupModal extends PureComponent {
         onConfirm: null,
       },
     };
+    this.onKeydown      = this.onKeydown.bind(this);
     this.onNameChange   = this.onNameChange.bind(this);
     this.onSubmitName   = this.onSubmitName.bind(this);
     this.onScannerClose = this.onScannerClose.bind(this);
@@ -58,6 +59,12 @@ class FirstPopupModal extends PureComponent {
 
   onNameChange(e) {
     this.setState({ name:e.target.value })
+  }
+
+  onKeydown(e) {
+    if (e && !e.isComposing && e.keyCode === 13) { // press enter
+      this.onSubmitName();
+    }
   }
 
   onSignInSubmodal() {
@@ -309,6 +316,7 @@ class FirstPopupModal extends PureComponent {
                       name='title-input'
                       className={styles['profile-input-name']}
                       value={name}
+                      onKeydown={this.onSubmitName}
                       onChange={this.onNameChange}/>
                   </div>
                   <div className={styles['submodal-signup-action-section']}>

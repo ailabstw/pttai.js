@@ -31,9 +31,16 @@ class CreateBoardModal extends PureComponent {
       },
     };
 
+    this.onKeydown        = this.onKeydown.bind(this);
     this.onNameChange     = this.onNameChange.bind(this);
     this.onFriendInvited  = this.onFriendInvited.bind(this);
     this.onSubmitAndClose = this.onSubmitAndClose.bind(this);
+  }
+
+  onKeydown(e) {
+    if (e && !e.isComposing && e.keyCode === 13) { // press enter
+      this.onSubmitAndClose();
+    }
   }
 
   onNameChange(e) {
@@ -135,6 +142,7 @@ class CreateBoardModal extends PureComponent {
                 name='title-input'
                 className={styles['title-input']}
                 value={name}
+                onKeyDown={this.onKeydown}
                 onChange={this.onNameChange}/>
             </div>
 
