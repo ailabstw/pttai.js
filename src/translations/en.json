@@ -97,6 +97,7 @@
     "board-list-component.message": "Click below button to add groups",
     "board-list-component.board-type": "[Private] {name}",
     "comment-reply-list-component.action": "Delete",
+    "comment-reply-list-component.comment-length-alert": "cannot comment more than {MAX_COMMENT_SIZE} characters",
     "article-list-component.action": "Delete",
     "article-list-component.empty": "(No content)",
     "friend-chat-component.title": "Start chatting!",
