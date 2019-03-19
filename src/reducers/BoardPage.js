@@ -787,6 +787,7 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
         /* Create article with attachment Ids */
         dispatch(serverUtils.createArticle(boardId, title, articleArray, mediaIds))
           .then(({response: {result}, type, query, error}) => {
+            dispatch(serverUtils.markArticle(boardId, result.AID))
             dispatch(postprocessCreateArticle(myId, boardId, userName, userImg, title, articleArray, result))
           })
       })
