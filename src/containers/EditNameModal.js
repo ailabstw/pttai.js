@@ -113,7 +113,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'user name cannot be ' + constants.DEFAULT_USER_NAME,
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.default-user-name-alert"
+              defaultMessage="user name cannot be {DEFAULT_USER_NAME}"
+              values={{ DEFAULT_USER_NAME: constants.DEFAULT_USER_NAME }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -121,7 +126,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'user name cannot exceed ' + constants.MAX_USER_NAME_SIZE + ' characters',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.user-name-length-alert"
+              defaultMessage="user name cannot exceed {MAX_USER_NAME_SIZE} characters"
+              values={{ MAX_USER_NAME_SIZE: constants.MAX_USER_NAME_SIZE }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -129,7 +139,11 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'user name cannot be empty',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.user-name-empty-alert"
+              defaultMessage="user name cannot be empty"
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -137,7 +151,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'company name cannot exceed ' + constants.MAX_USER_COMPANY_SIZE + ' characters',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.company-name-length-alert"
+              defaultMessage="company name cannot exceed {MAX_USER_COMPANY_SIZE} characters"
+              values={{ MAX_USER_COMPANY_SIZE: constants.MAX_USER_COMPANY_SIZE }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -145,7 +164,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'job title cannot exceed ' + constants.MAX_USER_JOBTITLE_SIZE + ' characters',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.job-title-length-alert"
+              defaultMessage="job title cannot exceed {MAX_USER_JOBTITLE_SIZE} characters"
+              values={{ MAX_USER_JOBTITLE_SIZE: constants.MAX_USER_JOBTITLE_SIZE }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -153,7 +177,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'email cannot exceed ' + constants.MAX_USER_EMAIL_SIZE + ' characters',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.email-length-alert"
+              defaultMessage="email cannot exceed {MAX_USER_EMAIL_SIZE} characters"
+              values={{ MAX_USER_EMAIL_SIZE: constants.MAX_USER_EMAIL_SIZE }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -161,7 +190,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'phone cannot exceed ' + constants.MAX_USER_PHONE_SIZE + ' characters',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.phone-length-alert"
+              defaultMessage="phone cannot exceed {MAX_USER_PHONE_SIZE} characters"
+              values={{ MAX_USER_PHONE_SIZE: constants.MAX_USER_PHONE_SIZE }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -169,7 +203,12 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'description cannot exceed ' + constants.MAX_USER_DESCRIPTION_SIZE + ' characters',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.description-length-alert"
+              defaultMessage="description cannot exceed {MAX_USER_DESCRIPTION_SIZE} characters"
+              values={{ MAX_USER_DESCRIPTION_SIZE: constants.MAX_USER_DESCRIPTION_SIZE }}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
@@ -177,7 +216,11 @@ class EditNameModal extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'email invalid',
+          message: (
+            <FormattedMessage
+              id="edit-name-modal.email-format-alert"
+              defaultMessage="Email is invalid"
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })

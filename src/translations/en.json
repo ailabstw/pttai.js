@@ -97,6 +97,7 @@
     "board-list-component.message": "Click below button to add groups",
     "board-list-component.board-type": "[Private] {name}",
     "comment-reply-list-component.action": "Delete",
+    "comment-reply-list-component.comment-length-alert": "cannot comment more than {MAX_COMMENT_SIZE} characters",
     "article-list-component.action": "Delete",
     "article-list-component.empty": "(No content)",
     "friend-chat-component.title": "Start chatting!",
@@ -149,5 +150,14 @@
     "edit-name-modal.phone-placeholder":"Phone (press below to edit)",
     "edit-name-modal.description-placeholder":"About me (press below to edit)",
     "edit-name-modal.edit-button":"Edit",
-    "edit-name-modal.leave-button":"Leave"
+    "edit-name-modal.leave-button":"Leave",
+    "edit-name-modal.default-user-name-alert":"user name cannot be {DEFAULT_USER_NAME}",
+    "edit-name-modal.user-name-length-alert":"user name cannot exceed {MAX_USER_NAME_SIZE} characters",
+    "edit-name-modal.user-name-empty-alert":"user name cannot be empty",
+    "edit-name-modal.company-name-length-alert":"company name cannot exceed {MAX_USER_COMPANY_SIZE} characters",
+    "edit-name-modal.job-title-length-alert":"job title cannot exceed {MAX_USER_JOBTITLE_SIZE} characters",
+    "edit-name-modal.email-length-alert":"email cannot exceed {MAX_USER_EMAIL_SIZE} characters",
+    "edit-name-modal.phone-length-alert":"phone cannot exceed {MAX_USER_PHONE_SIZE} characters",
+    "edit-name-modal.description-length-alert":"description cannot exceed {MAX_USER_DESCRIPTION_SIZE} characters",
+    "edit-name-modal.email-format-alert":"Email is invalid"
 }

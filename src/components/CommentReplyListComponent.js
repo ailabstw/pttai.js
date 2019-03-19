@@ -115,7 +115,12 @@ class CommentReplyListComponent extends PureComponent {
       this.setState({
         showAlert: true,
         alertData: {
-          message: 'cannot comment more than ' + constants.MAX_COMMENT_SIZE + ' words',
+          message: (
+            <FormattedMessage
+              id="comment-reply-list-component.comment-length-alert"
+              defaultMessage="cannot comment more than {MAX_COMMENT_SIZE} words"
+              values={{MAX_COMMENT_SIZE:constants.MAX_COMMENT_SIZE}}
+            />),
           onConfirm: () => that.setState({showAlert: false})
         }
       })
