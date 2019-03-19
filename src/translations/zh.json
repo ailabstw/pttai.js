@@ -149,5 +149,14 @@
     "edit-name-modal.phone-placeholder":"聯絡電話 (請點選編輯鈕)",
     "edit-name-modal.description-placeholder":"請填入自我介紹 (請點選編輯鈕)",
     "edit-name-modal.edit-button":"編輯",
-    "edit-name-modal.leave-button":"離開"
+    "edit-name-modal.leave-button":"離開",
+    "edit-name-modal.default-user-name-alert":"使用者名稱不能是 {DEFAULT_USER_NAME}",
+    "edit-name-modal.user-name-length-alert":"使用者名稱不能超過 {MAX_USER_NAME_SIZE} 個字",
+    "edit-name-modal.user-name-empty-alert":"使用者名稱不可為空",
+    "edit-name-modal.company-name-length-alert":"公司名稱不能超過 {MAX_USER_COMPANY_SIZE} 個字",
+    "edit-name-modal.job-title-length-alert":"職位名稱不能超過 {MAX_USER_JOBTITLE_SIZE} 個字",
+    "edit-name-modal.email-length-alert":"Email 不能超過 {MAX_USER_EMAIL_SIZE} 個字",
+    "edit-name-modal.phone-length-alert":"電話號碼不能超過 {MAX_USER_PHONE_SIZE} 個字",
+    "edit-name-modal.description-length-alert":"描述不能超過 {MAX_USER_DESCRIPTION_SIZE} 個字",
+    "edit-name-modal.email-format-alert":"Email 格式不合法"
 }
