@@ -59,6 +59,7 @@
     "add-friend-modal.scan-code-action": "加為朋友",
     "add-friend-modal.show-qrcode": "顯示 QR Code",
     "add-friend-modal.scan-qrcide": "掃描 QR Code",
+    "add-friend-modal.add-self-alert": "不能加自己為好友",
     "add-device-scanner-modal.copy-device-id-1": "複製「登入碼」",
     "add-device-scanner-modal.copy-device-id-2": "已複製",
     "add-device-scanner-modal.copy-device-id-3": "點選按鈕，複製自己的「登入碼」並貼至下方。點選完成，將開始與主裝置同步",
