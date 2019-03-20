@@ -35,8 +35,8 @@ class CommentReplyListComponent extends PureComponent {
       },
     };
 
-    this.onCommentSubmit      = this.onCommentSubmit.bind(this);
-    this.onInputEnter         = this.onInputEnter.bind(this);
+    this.commentValidate      = this.commentValidate.bind(this)
+    this.submitComment        = this.submitComment.bind(this)
     this.handleButtonPress    = this.handleButtonPress.bind(this)
     this.handleButtonRelease  = this.handleButtonRelease.bind(this)
     this.setToEditMode        = this.setToEditMode.bind(this)
@@ -61,57 +61,14 @@ class CommentReplyListComponent extends PureComponent {
     }
   }
 
-  onInputEnter(e) {
-    const { comment } = this.state
-
-    /* isComposing is for 注音輸入法 */
-    if (e.isComposing || (e.key && e.key !== "Enter")) return
-
-    if (e.key === "Enter" && $(':focus').is('input')) {
-      /* From key pressed */
-
-      e.preventDefault()
-      if (isEmpty(comment)) {
-        return
-      } else {
-        this.onCommentSubmit(comment)
-      }
-      this.setState({comment:''})
-    } else if (!e.key) {
-      /* From button clicked */
-
-      if (isEmpty(comment)) {
-        return
-      } else {
-        this.onCommentSubmit(comment)
-      }
-      this.setState({comment:''})
-      }
-  }
-
-  componentDidMount(){
-    document.addEventListener("keydown", this.onInputEnter, false);
-    document.addEventListener("click",   this.onClick, false);
-  }
-
-  componentWillUnmount(){
-    document.removeEventListener("keydown", this.onInputEnter, false);
-    document.removeEventListener("click",   this.onClick, false);
-  }
-
-  onClick(event) {
-    if (event.target.tagName.toUpperCase() !== 'INPUT' && event.target.className.toString().indexOf('dd-list-item') === -1) {
-      this.setState({isEditIndex: -1});
-    }
-  }
-
-  onCommentSubmit(comment) {
-    const { onCommentAdded } = this.props
-
+  commentValidate(comment) {
+    // true means valid
     let that = this
-    let trimmedComment = comment.trim()
 
-    if (JSON.stringify(trimmedComment).length - 2 > constants.MAX_COMMENT_SIZE) {
+    if (isEmpty(comment)) return false
+
+    // comment too long
+    if (JSON.stringify(comment).length - 2 > constants.MAX_COMMENT_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -124,8 +81,41 @@ class CommentReplyListComponent extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else {
-      onCommentAdded(trimmedComment)
+
+      return false
+    }
+
+    return true
+  }
+
+  submitComment(e) {
+    const { onCommentAdded } = this.props
+    let { comment } = this.state
+
+    comment = comment.trim()
+
+    /* isComposing is for 注音輸入法 */
+    if (e.isComposing || (e.key && e.key !== "Enter") || !this.commentValidate(comment)) return
+
+    if ($(':focus').is('input')) e.preventDefault();
+
+    onCommentAdded(comment)
+    this.setState({comment:''})
+  }
+
+  componentDidMount(){
+    document.addEventListener("keydown", this.submitComment, false);
+    document.addEventListener("click",   this.onClick, false);
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.submitComment, false);
+    document.removeEventListener("click",   this.onClick, false);
+  }
+
+  onClick(event) {
+    if (event.target.tagName.toUpperCase() !== 'INPUT' && event.target.className.toString().indexOf('dd-list-item') === -1) {
+      this.setState({isEditIndex: -1});
     }
   }
 
@@ -263,7 +253,7 @@ class CommentReplyListComponent extends PureComponent {
                 name='comment-input'
                 onChange={(e) => this.setState({comment: e.target.value})}/>
             </div>
-            <div className={styles['comment-action-icon']} onClick={this.onInputEnter}></div>
+            <div className={styles['comment-action-icon']} onClick={this.submitComment}></div>
           </div>
         </div>
         <AlertComponent show={showAlert} alertData={alertData}/>
