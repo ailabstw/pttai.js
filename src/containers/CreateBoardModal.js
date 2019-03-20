@@ -30,8 +30,17 @@ class CreateBoardModal extends PureComponent {
         onConfirm: null,
       },
     };
-    this.onNameChange       = this.onNameChange.bind(this);
-    this.onFriendInvited = this.onFriendInvited.bind(this);
+
+    this.onKeydown        = this.onKeydown.bind(this);
+    this.onNameChange     = this.onNameChange.bind(this);
+    this.onFriendInvited  = this.onFriendInvited.bind(this);
+    this.onSubmitAndClose = this.onSubmitAndClose.bind(this);
+  }
+
+  onKeydown(e) {
+    if (e && !e.isComposing && e.keyCode === 13) { // press enter
+      this.onSubmitAndClose();
+    }
   }
 
   onNameChange(e) {
@@ -51,13 +60,52 @@ class CreateBoardModal extends PureComponent {
     this.setState({friendInvited: newFriendInvited})
   }
 
+  onSubmitAndClose() {
+    const { modalInput: {modalAddBoardSubmit}, onModalClose } = this.props
+    const { name, friendInvited } = this.state
+
+    if (JSON.stringify(name).length - 2 > constants.MAX_BOARDNAME_SIZE) {
+      let that = this
+
+      this.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+            id="alert.message12"
+            defaultMessage="Board name cannot exceed {MAX_BOARDNAME_SIZE} characters"
+            values={{ MAX_BOARDNAME_SIZE: constants.MAX_BOARDNAME_SIZE }}
+            />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
+    } else if (!name || name.replace(/\s+/g, '') === '') {
+
+      let that = this
+      this.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+            <FormattedMessage
+              id="alert.message13"
+              defaultMessage="Board name cannot be empty"
+            />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
+    } else {
+      modalAddBoardSubmit(name, friendInvited)
+      onModalClose()
+    }
+  }
+
   componentWillMount() {
     const { actions: { doCreateBoardModal }, myId } = this.props
     doCreateBoardModal.getFriendList(myId, constants.NUM_FRIEND_PER_REQ)
   }
 
   render() {
-    const { intl, modalInput: {modalAddBoardSubmit}, myId, createBoardModal, onModalClose, modal: { currentModal }} = this.props
+    const { intl, myId, createBoardModal, onModalClose, modal: { currentModal }} = this.props
     const { name, friendInvited, showAlert, alertData } = this.state
 
     const placeholder = intl.formatMessage({id: 'create-board-modal.placeholder'});
@@ -65,40 +113,6 @@ class CreateBoardModal extends PureComponent {
     let me = createBoardModal.get(myId, Immutable.Map())
 
     let friendList       = me.get('friendList', Immutable.List()).toJS()
-
-    let onSubmitAndClose = () => {
-      if (JSON.stringify(name).length - 2 > constants.MAX_BOARDNAME_SIZE) {
-        let that = this
-        this.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message12"
-                defaultMessage="Board name cannot exceed {MAX_BOARDNAME_SIZE} characters"
-                values={{ MAX_BOARDNAME_SIZE: constants.MAX_BOARDNAME_SIZE }}
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else if (!name || name.replace(/\s+/g, '') === '') {
-        let that = this
-        this.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id="alert.message13"
-                defaultMessage="Board name cannot be empty"
-              />),
-            onConfirm: () => that.setState({showAlert: false})
-          }
-        })
-      } else {
-        modalAddBoardSubmit(name, friendInvited)
-        onModalClose()
-      }
-    }
 
     return (
       <div>
@@ -128,6 +142,7 @@ class CreateBoardModal extends PureComponent {
                 name='title-input'
                 className={styles['title-input']}
                 value={name}
+                onKeyDown={this.onKeydown}
                 onChange={this.onNameChange}/>
             </div>
 
@@ -251,7 +266,7 @@ class CreateBoardModal extends PureComponent {
             <div className={styles['action-section']}>
               <div className={styles['add-icon-container']}>
                 <div className={styles['add-icon-subcontainer']}>
-                  <div className={styles['add-icon']} onClick={onSubmitAndClose}></div>
+                  <div className={styles['add-icon']} onClick={this.onSubmitAndClose}></div>
                 </div>
               </div>
             </div>
