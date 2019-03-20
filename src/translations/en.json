@@ -59,6 +59,7 @@
     "add-friend-modal.scan-code-action": "Add",
     "add-friend-modal.show-qrcode": "Show QR Code",
     "add-friend-modal.scan-qrcide": "Scan QR Code",
+    "add-friend-modal.add-self-alert": "Add yourself is not allowed",
     "add-device-scanner-modal.copy-device-id-1": "Copy \"Sign-In Code\"",
     "add-device-scanner-modal.copy-device-id-2": "Copied",
     "add-device-scanner-modal.copy-device-id-3": "Copy the above \"Sign-In Code\" and paste below",

@@ -97,8 +97,10 @@ class FriendListPage extends PureComponent {
     }
 
     let onAddFriend = (name) => {
+      let that = this
+      const myURL = keyInfo && keyInfo.friendJoinKey && keyInfo.friendJoinKey.URL
+
       if (!name || !name.startsWith('pnode://')) {
-        let that = this
         this.setState({
           showAlert: true,
           alertData: {
@@ -110,7 +112,21 @@ class FriendListPage extends PureComponent {
             onConfirm: () => that.setState({showAlert: false})
           }
         })
-      } else {
+      }
+      else if (myURL === name) {
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="add-friend-modal.add-self-alert"
+                defaultMessage="Add yourself is not allowed"
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      }
+      else {
         doFriendListPage.addFriend(myId, name, addFriendCallBack)
       }
     }
