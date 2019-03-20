@@ -2,17 +2,18 @@ import React, { PureComponent } from 'react'
 import { connect }              from 'react-redux'
 import { bindActionCreators }   from 'redux'
 import Modal                    from 'react-modal'
-import QrReader                 from 'react-qr-reader'
 import { FormattedMessage,
          injectIntl }           from 'react-intl'
-import QRCode                     from 'qrcode.react'
-import { CopyToClipboard }        from 'react-copy-to-clipboard'
+import QRCode                   from 'qrcode.react'
+import { CopyToClipboard }      from 'react-copy-to-clipboard'
+
+import QRScannerSubmodal        from '../components/QRScannerSubmodal'
 
 import * as doAddFriendModal    from '../reducers/AddFriendModal'
 
 import * as constants           from '../constants/Constants'
 import * as modalConstants      from '../constants/ModalConstants'
-import { isIOS, isMobile }      from '../utils/utils'
+import { isMobile }      from '../utils/utils'
 
 import styles from './AddFriendModal.css'
 
@@ -26,7 +27,6 @@ class AddFriendModal extends PureComponent {
       qrCodeCopied: false
     };
     this.onFriendIdChange = this.onFriendIdChange.bind(this);
-    this.openCamera       = this.openCamera.bind(this);
     this.onScanned        = this.onScanned.bind(this);
     this.onTabChange      = this.onTabChange.bind(this);
   }
@@ -38,19 +38,6 @@ class AddFriendModal extends PureComponent {
     this.setState({
       currentTab: id
     })
-  }
-
-  openCamera() {
-    let that = this;
-    let iframe = document.createElement('IFRAME');
-    iframe.setAttribute('src', 'opencamera://');
-
-    window.getQRCode = code => {
-      that.setState({friendReqId: code});
-      iframe.remove();
-    };
-
-    document.documentElement.appendChild(iframe);
   }
 
   onScanned(data) {
@@ -95,9 +82,9 @@ class AddFriendModal extends PureComponent {
           isOpen={currentModal !== null}
           onRequestClose={null}
           contentLabel="Add Friend Scanner Modal">
-          <div className={styles['submodal-signin-container']}>
-            <div className={styles['submodal-signin']}>
-              <div className={styles['submodal-signin-title']}>
+          <div className={styles['tab-pages-container']}>
+            <div className={styles['tab-pages']}>
+              <div className={styles['tab-pages-title']}>
                 <FormattedMessage
                   id="add-friend-modal.title"
                   defaultMessage="Add friend"
@@ -105,9 +92,9 @@ class AddFriendModal extends PureComponent {
               </div>
               {
                 (() => {
-                  let displayClasses = styles['tab-container-tab']
-                  let scannerClasses = styles['tab-container-tab']
-                  const activeTabClass = styles['active-tab']
+                  let displayClasses = styles['switcher-item']
+                  let scannerClasses = styles['switcher-item']
+                  const activeTabClass = styles['active-switcher-item']
 
                   if (currentTab === 'display') {
                     displayClasses += ' ' + activeTabClass
@@ -116,7 +103,7 @@ class AddFriendModal extends PureComponent {
                     scannerClasses += ' ' + activeTabClass
                   }
 
-                  return <div className={styles['tab-container']}>
+                  return <div className={styles['switcher-item-container']}>
                     <div className={displayClasses} data-id="display" onClick={this.onTabChange}>
                       <FormattedMessage
                         id="add-friend-modal.show-qrcode"
@@ -142,7 +129,6 @@ class AddFriendModal extends PureComponent {
                     onModalClose={onModalClose}
                     onScanned={this.onScanned}
                     onFriendIdChange={this.onFriendIdChange}
-                    openCamera={this.openCamera}
                   /> :
                   <QRCodePage
                     friend={friend}
@@ -166,11 +152,11 @@ const QRCodePage = props => {
                         friend.data.friendJoinKey &&
                         friend.data.friendJoinKey.URL;
   return (
-    <div className={styles['tab-page']}>
-      <div className={styles['qr-code']}>
+    <div className={styles['tab-page-container']}>
+      <div className={styles['qr-code-container']}>
         <QRCode value={addFriendUrl} size={250} />
       </div>
-      <div className={styles['submodal-signin-action-section']}>
+      <div className={styles['tab-page']}>
         <CopyToClipboard text={addFriendUrl} onCopy={onCopy}>
           <button className={styles['copy-button']} onClick={null}>
             {
@@ -188,7 +174,7 @@ const QRCodePage = props => {
             }
           </button>
         </CopyToClipboard>
-        <button className={styles['submodal-signin-cancel']} onClick={onModalClose}>
+        <button className={styles['tab-page-cancel']} onClick={onModalClose}>
           <FormattedMessage
             id="first-popup-modal.action1"
             defaultMessage="Cancel"
@@ -200,42 +186,15 @@ const QRCodePage = props => {
 }
 
 const ScannerPage = props => {
-  const { friend, friendReqId, intl, onModalClose, onScanned, onFriendIdChange, openCamera } = props
+  const { friend, friendReqId, intl, onModalClose, onFriendIdChange, onScanned } = props
 
   const placeholder = intl.formatMessage({id: 'add-friend-modal.placeholder'})
   const onSubmitAndClose = () => friend.addFriendAction(friendReqId)
 
   return (
-    <div className={styles['tab-page']}>
-      {
-        isIOS() ?
-          <div className={styles['scan-btn-container']} onClick={openCamera} >
-            <div className={styles['scan-btn']}>
-              <FormattedMessage
-                id="qrcode-scanner.tap-to-scan"
-                defaultMessage="Tap to scan QR Code"
-              />
-            </div>
-          </div>
-          :
-          <div className={styles['submodal-signin-scanner-container']}>
-            <div className={styles['submodal-qr-code-scanner']}>
-              <QrReader
-                delay={300}
-                onError={(err) => console.error(err)}
-                onScan={onScanned}
-                className={styles['submodal-qr-code-scanner']}
-              />
-              <div className={styles['submodal-qr-code-text']}>
-                <FormattedMessage
-                  id="add-friend-modal.scan-code-title"
-                  defaultMessage="Scann QR Code to add friend"
-                />
-              </div>
-            </div>
-          </div>
-      }
-      <div className={styles['submodal-signin-node-id']}>
+    <div className={styles['tab-page-container']}>
+      <QRScannerSubmodal onScanned={onScanned} />
+      <div className={styles['tab-page-node-id']}>
         <textarea
           placeholder={placeholder}
           autoFocus={!isMobile()}
@@ -243,14 +202,14 @@ const ScannerPage = props => {
           value={friendReqId}
           onChange={onFriendIdChange}/>
       </div>
-      <div className={styles['submodal-signin-action-section']}>
-        <button className={styles['submodal-signin-submit']} onClick={onSubmitAndClose}>
+      <div className={styles['tab-page']}>
+        <button className={styles['tab-page-submit']} onClick={onSubmitAndClose}>
           <FormattedMessage
             id="add-friend-modal.scan-code-action"
             defaultMessage="Add"
           />
         </button>
-        <button className={styles['submodal-signin-cancel']} onClick={onModalClose}>
+        <button className={styles['tab-page-cancel']} onClick={onModalClose}>
           <FormattedMessage
             id="first-popup-modal.action1"
             defaultMessage="Cancel"

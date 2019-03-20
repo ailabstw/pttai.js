@@ -363,10 +363,13 @@ export const isMobile = () => {
   /* Android and iOS device */
   return platform.description.indexOf('Mobile') !== -1  // Android and iOS chorome browser
       || platform.description.indexOf('Android') !== -1 // Android app
-      || platform.description.indexOf('Windows Server') !== -1 // iOS app
       || platform.description.indexOf('iOS') !== -1; // iOS safari browser
 }
 
 export const isIOS = () => {
   return platform.description.indexOf('iOS') !== -1 // iOS app
+}
+
+export const isAndroid = () => {
+  return platform.description.indexOf('Android') !== -1 // Android app
 }

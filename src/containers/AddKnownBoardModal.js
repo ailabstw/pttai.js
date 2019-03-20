@@ -4,11 +4,11 @@ import { connect }                from 'react-redux'
 import { FormattedMessage,
          injectIntl }             from 'react-intl'
 import Modal                      from 'react-modal'
-import QrReader                   from 'react-qr-reader'
 
+import QRScannerSubmodal          from '../components/QRScannerSubmodal'
 import * as modalConstants        from '../constants/ModalConstants'
 import * as doAddKnownBoardModal  from '../reducers/AddKnownBoardModal'
-import { isIOS, isMobile }        from '../utils/utils'
+import { isMobile }               from '../utils/utils'
 
 import styles from './AddKnownBoardModal.css'
 
@@ -19,21 +19,7 @@ class AddKnownBoardModal extends PureComponent {
       boardUrl: '',
     };
     this.onNameChange = this.onNameChange.bind(this);
-    this.openCamera   = this.openCamera.bind(this);
     this.onScanned    = this.onScanned.bind(this);
-  }
-
-  openCamera() {
-    let that = this;
-    let iframe = document.createElement('IFRAME');
-    iframe.setAttribute('src', 'opencamera://');
-
-    window.getQRCode = code => {
-      that.setState({boardUrl: code});
-      iframe.remove();
-    };
-
-    document.documentElement.appendChild(iframe);
   }
 
   onNameChange(e) {
@@ -76,34 +62,7 @@ class AddKnownBoardModal extends PureComponent {
                   defaultMessage="Enter Group ID to join"
                 />
               </div>
-              {
-                isIOS() ?
-                  <div className={styles['scan-btn-container']} onClick={this.openCamera} >
-                    <div className={styles['scan-btn']}>
-                      <FormattedMessage
-                        id="qrcode-scanner.tap-to-scan"
-                        defaultMessage="Tap to scan QR Code"
-                      />
-                    </div>
-                  </div>
-                  :
-                  <div className={styles['add-known-board-scanner-container']}>
-                    <div className={styles['submodal-qr-code-scanner']}>
-                      <QrReader
-                        delay={300}
-                        onError={(err) => console.error(err)}
-                        onScan={this.onScanned}
-                        className={styles['submodal-qr-code-scanner']}
-                      />
-                      <div className={styles['submodal-qr-code-text']}>
-                        <FormattedMessage
-                          id="add-known-board-modal.scan-code-title"
-                          defaultMessage="Scann QR Code to join Group"
-                        />
-                      </div>
-                    </div>
-                  </div>
-              }
+              <QRScannerSubmodal onScanned={this.onScanned} />
               <div className={styles['add-known-board-node-id']}>
                 <textarea
                   placeholder={placeholder}
