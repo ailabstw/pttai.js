@@ -47,7 +47,7 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
             let creatorIds = result.map((each) => each.C)
             dispatch(serverUtils.getUsersInfo(creatorIds))
               .then((usersInfo) => {
-                dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, isFirstFetch))
+                dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
                 if (isFirstFetch) {
                   dispatch(postprocessSetFinshLoading(myId))
                 }
@@ -57,7 +57,7 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
   }
 }
 
-const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetch) => {
+const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
 
   result = result.map((each) => {
     return {
@@ -128,7 +128,10 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
     }
   })
 
-  boardList = boardList.filter((each) => { return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') })
+  boardList = boardList.filter((each) => {
+    return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') &&
+           each.Status !== STATUS_ARRAY.indexOf('StatusDeleted')
+  })
   boardList = boardList.filter((each) => { return each.BoardType === BOARD_TYPE_PRIVATE })
 
   return {
@@ -275,7 +278,7 @@ export const setBoardName = (myId, boardId, name, friendInvited) => {
           //         let creatorIds = result.map((each) => each.C)
           //         dispatch(serverUtils.getUsersInfo(creatorIds))
           //           .then((usersInfo) => {
-          //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
+          //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
           //           })
           //       })
           //   })
