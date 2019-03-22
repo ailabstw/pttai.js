@@ -131,27 +131,11 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
   boardList = boardList.filter((each) => { return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') })
   boardList = boardList.filter((each) => { return each.BoardType === BOARD_TYPE_PRIVATE })
 
-  if (boardList.length === 0 && isFirstFetch) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: { boardList: [], noBoard: true }
-    }
-  } else if (boardList.length === 0 && !isFirstFetch) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: {}
-    }
-  } else {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: { boardList: boardList, noBoard: false }
-    }
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: { boardList, noBoard: boardList.length === 0 }
   }
 }
 
