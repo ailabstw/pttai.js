@@ -10,6 +10,7 @@ import BoardComponent         from '../components/BoardComponent'
 import AlertComponent         from '../components/AlertComponent'
 
 import { getRoot }            from '../utils/utils'
+import googleAnalytics        from '../utils/googleAnalytics'
 import * as doBoardPage       from '../reducers/BoardPage'
 import * as doModalContainer  from '../reducers/ModalContainer'
 import * as constants         from '../constants/Constants'
@@ -62,6 +63,7 @@ class BoardPage extends PureComponent {
 
     doBoardPage.markBoard(myId, decodeURIComponent(params.boardId));
     markSeen()
+    googleAnalytics.firePageView()
   }
 
   render() {
@@ -87,6 +89,7 @@ class BoardPage extends PureComponent {
     let openCreateArticleSubmit = (title, reducedArticleArray, attachments) => {
       doBoardPage.createArticleWithAttachments(myId, userName, userImg, boardId, title, reducedArticleArray, attachments)
       doBoardPage.markBoard(myId, boardId);
+      googleAnalytics.fireEvent('Article','CreateArticleSuccess')
       markSeen()
 
       doModalContainer.closeModal()

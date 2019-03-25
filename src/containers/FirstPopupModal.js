@@ -12,6 +12,8 @@ import * as modalConstants    from '../constants/ModalConstants'
 import * as constants         from '../constants/Constants'
 import * as doFirstPopupModal from '../reducers/FirstPopupModal'
 
+import googleAnalytics from '../utils/googleAnalytics'
+
 import styles from './FirstPopupModal.css'
 
 function isEmpty(name) {
@@ -25,6 +27,8 @@ class FirstPopupModal extends PureComponent {
       name: '',
       nodeId: '',
       showAlert: false,
+      gaAgree: (props.modalInput && props.modalInput.gaAgree !== undefined) ? props.modalInput.gaAgree : false,
+      termsAgree: (props.modalInput && props.modalInput.termsAgree !== undefined) ? props.modalInput.termsAgree : true,
       //scannerIsOpen: false,
       submodalType: 'Sign-up',
       alertData: {
@@ -33,13 +37,14 @@ class FirstPopupModal extends PureComponent {
         onConfirm: null,
       },
     };
-    this.onKeydown      = this.onKeydown.bind(this);
-    this.onNameChange   = this.onNameChange.bind(this);
-    this.onSubmitName   = this.onSubmitName.bind(this);
-    this.onScannerClose = this.onScannerClose.bind(this);
-    this.onScanned      = this.onScanned.bind(this);
-    this.onNodeIdChange = this.onNodeIdChange.bind(this);
-    this.onSignIn       = this.onSignIn.bind(this);
+    this.onKeydown          = this.onKeydown.bind(this);
+    this.onNameChange       = this.onNameChange.bind(this);
+    this.onSubmitSignUp     = this.onSubmitSignUp.bind(this);
+    this.onScannerClose     = this.onScannerClose.bind(this);
+    this.onScanned          = this.onScanned.bind(this);
+    this.onNodeIdChange     = this.onNodeIdChange.bind(this);
+    this.onSignIn           = this.onSignIn.bind(this);
+    this.openPrivacySetting = this.openPrivacySetting.bind(this);
   }
 
   onNameChange(e) {
@@ -48,7 +53,7 @@ class FirstPopupModal extends PureComponent {
 
   onKeydown(e) {
     if (e && !e.isComposing && e.keyCode === 13) { // press enter
-      this.onSubmitName();
+      this.onSubmitSignUp();
     }
   }
 
@@ -77,9 +82,9 @@ class FirstPopupModal extends PureComponent {
     this.setState({nodeId: e.target.value})
   }
 
-  onSubmitName() {
-    const { modalInput: { signUp } } = this.props
-    const { name } = this.state
+  onSubmitSignUp() {
+    const { modalInput: { signUp, userId } } = this.props
+    const { name, gaAgree, termsAgree } = this.state
 
     let that = this
     let trimmedName = name.trim()
@@ -122,9 +127,36 @@ class FirstPopupModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
+    } else if (!termsAgree) {
+      this.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+              <FormattedMessage
+                id="alert.message37"
+                defaultMessage="Please agree the PTT.ai Terms and Conditions"
+              />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
     } else {
+      googleAnalytics.clearConfig()
+      googleAnalytics.saveConfig(userId, gaAgree)
       signUp(trimmedName)
     }
+  }
+
+  openPrivacySetting() {
+      const { modalInput, onModalSwitch, userId } = this.props
+      const { gaAgree, termsAgree } = this.state
+
+      onModalSwitch(constants.PRIVACY_SETTING_MODAL, {
+        firstPopUpInput: modalInput,
+        fromSignInPage: true,
+        termsAgree: termsAgree,
+        gaAgree: gaAgree,
+        userId: userId,
+      })
   }
 
   onSignIn(nodeId) {
@@ -225,7 +257,7 @@ class FirstPopupModal extends PureComponent {
 
   render() {
     const { intl, onModalClose, modal: { currentModal }} = this.props
-    const { name, showAlert, alertData, submodalType, nodeId } = this.state
+    const { name, showAlert, alertData, submodalType, nodeId, gaAgree, termsAgree } = this.state
 
     const placeholder = intl.formatMessage({id: 'first-popup-modal.placeholder'});
     const placeholder2 = intl.formatMessage({id: 'sign-in-scanner-modal.placeholder2'});
@@ -305,7 +337,7 @@ class FirstPopupModal extends PureComponent {
                       onChange={this.onNameChange}/>
                   </div>
                   <div className={styles['submodal-signup-action-section']}>
-                    <button className={styles['submodal-signup-confirm']} onClick={() => this.onSubmitName() }>
+                    <button className={styles['submodal-signup-confirm']} onClick={() => this.onSubmitSignUp() }>
                       <FormattedMessage
                         id="alert-component.action2"
                         defaultMessage="Confirm"
@@ -317,6 +349,39 @@ class FirstPopupModal extends PureComponent {
                         defaultMessage="Cancel"
                       />
                     </button>
+                  </div>
+                  <div className={styles['submodal-ga-agreement']}>
+                    <div className={styles['submodal-ga-agreement-item']}>
+                      <label className={styles['submodal-checkmark-container']}>
+                        <FormattedMessage
+                          id="first-popup-modal.title3"
+                          defaultMessage="Let us collect your data"
+                        />
+                        <input type="radio"
+                               name="terms-agreemenet"
+                               checked={termsAgree}
+                               onClick={() => { this.setState({ termsAgree: !termsAgree })}}
+                        />
+                        <span className={styles['checkmark']}></span>
+                      </label>
+                    </div>
+                    <div className={styles['submodal-ga-agreement-item']}>
+                      <label className={styles['submodal-checkmark-container']}>
+                        <FormattedMessage
+                          id="first-popup-modal.title4"
+                          defaultMessage="Agree to user tracking for improving Ptt.ai's service"
+                        />
+                        <input type="radio"
+                               name="ga-agreemenet"
+                               checked={gaAgree}
+                               onClick={() => { this.setState({ gaAgree: !gaAgree })}}
+                        />
+                        <span className={styles['checkmark']}></span>
+                      </label>
+                    </div>
+                    <div className={styles['submodal-ga-agreement-see-more']} onClick={() => this.openPrivacySetting()}>
+                      了解更多
+                    </div>
                   </div>
                 </div>
               </div>

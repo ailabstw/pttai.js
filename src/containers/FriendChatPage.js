@@ -8,6 +8,7 @@ import Empty                    from '../components/Empty'
 import FriendChatBar            from '../components/FriendChatBar'
 import FriendChatComponent      from '../components/FriendChatComponent'
 import { getRoot }              from '../utils/utils'
+import googleAnalytics          from '../utils/googleAnalytics'
 
 import * as doModalContainer    from '../reducers/ModalContainer'
 import * as doFriendChatPage    from '../reducers/FriendChatPage'
@@ -62,6 +63,7 @@ class FriendChatPage extends PureComponent {
     doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
 
     markSeen()
+    googleAnalytics.firePageView()
   }
 
   render() {
@@ -91,6 +93,7 @@ class FriendChatPage extends PureComponent {
       doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
 
       markSeen()
+      googleAnalytics.fireEventOnProb('Chat','SendMessage',0.1)
     }
 
     let onGetMoreMessages = (startMessageId) => {

@@ -17,6 +17,7 @@ import * as constants         from '../constants/Constants'
 import * as doNameCardModal   from '../reducers/NameCardModal'
 import { getOrientation,
          newCanvasSize }      from '../utils/utils'
+import googleAnalytics        from '../utils/googleAnalytics'
 
 import styles from './NameCardModal.css'
 
@@ -209,6 +210,8 @@ class EditingNameCard extends PureComponent {
     doNameCardModal.editName(myId, name)
     doNameCardModal.editProfile(myId, editedProfile)
     doNameCardModal.editProfileImg(myId, userImg)
+
+    googleAnalytics.fireEvent('NameCard','EditNameCardSuccess')
   }
 
   onNameChange(e) {

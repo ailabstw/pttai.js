@@ -19,12 +19,12 @@ export const setup = () => {
 export const show = ({ title, body, icon }) => {
 
   if (!title) {
-return console.error(`TypeError: Wrong format. Param should be an object: {
-    title: <String>,
-    body: <String>,
-    icon: <URL>,
-    tag: <noti_id>
-}`)
+    return console.error(`TypeError: Wrong format. Param should be an object: {
+        title: <String>,
+        body: <String>,
+        icon: <URL>,
+        tag: <noti_id>
+    }`)
   }
 
   const createNoti = () => new Notification(title, { body, icon })

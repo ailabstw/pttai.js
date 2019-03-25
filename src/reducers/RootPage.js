@@ -129,12 +129,20 @@ export const getUserInfo = myId => {
 
     // user exist
     if ((userNameResult && userNameResult.N && serverUtils.b64decode(userNameResult.N) !== DEFAULT_USER_NAME)) {
-      resolve({ type: 'done' })
+      let keyInfo = await dispatch(getAllKeyInfo())
+
+      resolve({
+        type: 'done',
+        userId: userId,
+        value: keyInfo,
+      })
     }
     else {
       let keyInfo = await dispatch(getAllKeyInfo())
+
       resolve({
         type: 'no_user_name',
+        userId: userId,
         value: keyInfo
       })
     }

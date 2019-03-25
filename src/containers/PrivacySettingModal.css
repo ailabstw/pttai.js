@@ -1,0 +1,261 @@
+.root {
+    height: 100%;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFF;
+    position: relative;
+    text-align: center;
+    overflow-y: scroll;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(105, 105, 105, 0.5);
+}
+
+/* Custom Radio Button */
+
+/* Customize the label (the container) */
+.checkmark-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 0px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    font-size: 16px;
+    height: 30px;
+    line-height: 30px;
+    font-weight: lighter;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #707070;
+}
+
+/* Hide the browser's default radio button */
+.checkmark-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 7px;
+  left: 10px;
+  height: 16px;
+  width: 16px;
+  /*background-color: #eee;*/
+  border-radius: 50%;
+  border: 1px solid #707070;
+}
+
+/* On mouse-over, add a grey background color */
+.checkmark-container:hover input ~ .checkmark {
+  background-color: #eee;
+}
+
+/* When the radio button is checked, add a gray background */
+.checkmark-container input:checked ~ .checkmark {
+  /*background-color: #F87DA9;*/
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.checkmark-container input:checked ~ .checkmark:after {
+  display: block;
+  background-color: #707070;
+}
+
+/* Style the indicator (dot/circle) */
+.checkmark-container .checkmark:after {
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+}
+
+/* End of Custom Radio Button */
+
+.ga-bar {
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    color: #545454;
+
+    min-height: 64px;
+    border-bottom: solid 0.5px #a3a3a3;
+    line-height: 64px;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.prev-button {
+    line-height: 64px;
+    padding: 10px 0px 10px 20px;
+    width: 40px;
+    font-weight: lighter;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.prev-button:hover {
+    cursor: pointer;
+}
+
+.prev-button a, .prev-button a:hover {
+    width: 100%;
+    height: 100%;
+    color: #000;
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+}
+
+.prev-button-icon {
+    height: 14px;
+    width: 19px;
+    min-width: 19px;
+    margin: 15px auto;
+    background-size: 19px 14px;
+    background-repeat: no-repeat;
+    background-image: url('/images/icon_back@2x.png');
+}
+
+.null-space {
+    max-width: 60px;
+}
+
+.ga-title {
+    margin: auto;
+}
+
+.ga-agreement-paragraph {
+    margin-bottom: 20px;
+}
+
+.ga-agreement {
+    margin: 30px auto ;
+    width: 80%;
+    height: auto;
+    font-size: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.ga-agreement-content {
+    margin: auto;
+    height: auto;
+    font-size: 16px;
+    font-weight: lighter;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.ga-agreement-item, .ga-agreement-item-disabled {
+    margin: 5px auto;
+    font-size: 16px;
+    height: 30px;
+    font-weight: lighter;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #707070;
+}
+
+.ga-agreement-item-disabled span{
+    color: #D3D3D3;
+}
+
+.ga-agreement-item-disabled .checkmark {
+    border: 1px solid #D3D3D3;
+}
+
+.ga-agreement-item-disabled .checkmark-container input:checked ~ .checkmark:after {
+  display: block;
+  background-color: #D3D3D3;
+}
+
+.action-section {
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    margin: 30px auto 30px auto;
+    width: 80%;
+    text-align: center;
+}
+
+.confirm {
+    padding: 0.5ex 0;
+    margin: auto auto 6px auto;
+    font-size: 1rem;
+    width: 100%;
+    max-height: 45px;
+    min-height: 45px;
+
+    border-radius: 10px;
+    background-color: #7EB349;
+    color: #FFF;
+    font-weight: lighter;
+
+    cursor: pointer;
+}
+
+.cancel {
+    padding: 0.5ex 0;
+    margin: 6px auto 0px auto;
+    font-size: 1rem;
+    width: 100%;
+    max-height: 45px;
+    min-height: 45px;
+
+    border-radius: 10px;
+    background-color: #BFBFBF;
+    color: #FFF;
+    font-weight: lighter;
+
+    cursor: pointer;
+}
+
+::-webkit-input-placeholder {
+    text-align:left;
+}
+
+input:-moz-placeholder {
+    text-align:left;
+}

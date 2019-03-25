@@ -41,8 +41,6 @@ library.add(faCaretRight)
 library.add(faEllipsisH)
 library.add(faPen)
 
-// ReactGA.initialize(config.googleAnalyticsId)
-
 const store = createStore()
 
 const render = Component => {

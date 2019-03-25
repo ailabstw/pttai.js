@@ -171,6 +171,24 @@ export const firstPopupModalStyels = {
   }
 }
 
+export const privacySettingModalStyels = {
+  content : {
+    position              : 'absolute',
+    padding               : '0px',
+    width                 : '100%',
+    height                : '100%',
+    maxWidth              : '414px',
+    margin                : '0px auto',
+    top                   : '0px',
+    left                  : '0px',
+    right                 : '0px',
+    bottom                : '0px',
+    borderRadius          : '0px',
+    backgroundColor       : '#4C474E',
+    zIndex                : 40,
+  }
+}
+
 export const multiDeviceMenuStyles = {
   content : {
     position              : 'absolute',

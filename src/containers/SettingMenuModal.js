@@ -24,25 +24,31 @@ class SettingMenuModal extends PureComponent {
       <div>
         <Modal
           overlayClassName={styles['overlay']}
-          style={modalConstants.boardActionModalStyels}
+          style={modalConstants.boardSettingMenuModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
           contentLabel="Setting Menu Modal">
           <div className={styles['root']}>
             <div className={styles['action-section']}>
-              <button className={styles['join-board-button']} onClick={() => onSwitchAndClose(constants.SHOW_DEVICE_INFO)}>
+              <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.SHOW_DEVICE_INFO)}>
                 <FormattedMessage
                   id="setting-menu-modal.menu1"
                   defaultMessage="Devices setting"
                 />
               </button>
-              <button className={styles['create-board-button']} onClick={() => onSwitchAndClose(constants.SHOW_OP_LOG_MODAL)}>
+              <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.SHOW_OP_LOG_MODAL)}>
                 <FormattedMessage
                   id="setting-menu-modal.menu2"
                   defaultMessage="Op Log"
                 />
               </button>
-              <button className={styles['close-button']} onClick={onModalClose}>
+              <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.PRIVACY_SETTING_MODAL)}>
+                <FormattedMessage
+                  id="setting-menu-modal.menu4"
+                  defaultMessage="Privacy"
+                />
+              </button>
+              <button className={styles['menu-button']} onClick={onModalClose}>
                 <FormattedMessage
                   id="setting-menu-modal.menu3"
                   defaultMessage="Cancel"
