@@ -18,6 +18,7 @@
     "setting-menu-modal.menu3": "取消",
     "friend-setting-menu-modal.menu0": "刪除朋友",
     "friend-setting-menu-modal.menu1": "取消",
+    "setting-menu-modal.menu4": "隱私權管理",
     "board-setting-menu-modal.menu0": "邀請朋友",
     "board-setting-menu-modal.menu1": "成員管理",
     "board-setting-menu-modal.menu2": "更改群組名",
@@ -45,6 +46,8 @@
     "invite-to-board-modal.invite-friend-0": "{JOIN_TIME} 加入",
     "first-popup-modal.title": "以現有帳號登入",
     "first-popup-modal.title2": "讓朋友知道您是誰",
+    "first-popup-modal.title3": "同意PTT.ai 的使用者條款",
+    "first-popup-modal.title4": "同意使用行為蒐集與分析",
     "first-popup-modal.placeholder": "輸入您的姓名",
     "first-popup-modal.action1": "取消",
     "first-popup-modal.action2": "確定",
@@ -156,6 +159,8 @@
     "alert.message34": "【成功】群組已刪除",
     "alert.message35": "確定要離開群組嗎?",
     "alert.message36": "標題字數過長（中文限 14 字、英文 27 字）",
+    "alert.message37": "您尚未同意 PTT.ai 的使用者條款",
+    "alert.message38": "註冊成功！",
     "edit-name-modal.company-placeholder":"公司",
     "edit-name-modal.jobtitle-placeholder":"職稱",
     "edit-name-modal.email-placeholder":"E-mail",
@@ -171,5 +176,10 @@
     "edit-name-modal.email-length-alert":"Email 不能超過 {MAX_USER_EMAIL_SIZE} 個字",
     "edit-name-modal.phone-length-alert":"電話號碼不能超過 {MAX_USER_PHONE_SIZE} 個字",
     "edit-name-modal.description-length-alert":"描述不能超過 {MAX_USER_DESCRIPTION_SIZE} 個字",
-    "edit-name-modal.email-format-alert":"Email 格式不合法"
+    "edit-name-modal.email-format-alert":"Email 格式不合法",
+    "privacy-modal.title1": "使用者條款與使用行為搜集",
+    "privacy-modal.content1": "因去中心化儲存機制，本團隊無法審查使用者上傳之內容是否合法、無法為資料遺失負責，發表資訊前請自行斟酌分享對象，以免觸法。在接收資訊同時，自己的p.me上也會儲存一份資料，請使用者自行斟酌篩選接收資訊的對象（如加入的群組、聊天的朋友）。",
+    "privacy-modal.content2": "PTT.ai致力遵守之GDPR重要規範與原則。未經使用者同意，本團隊不會蒐集／處理／利用p.me上的「任何資料」，亦不會自動傳送匿名系統資訊。如果您願意分享使用行為（如Google Analytics）來讓PTT.ai變得更好，請按同意；若不同意，我們將完全尊重您的選擇、不收集您的使用行為，也歡迎您繼續使用 PTT.ai。PTT.ai目前持續開發中，無法保證所列功能於所有時間都完整運作、也不為軟體預期外行為負責。歡迎使用者回報與建議，本團隊會持續改進。",
+    "privacy-modal.content3": "以上詳情請見",
+    "privacy-modal.content4": "如果您願意分享你的使用者行為（如 google analytics）來讓 PTT.ai 變得更好，請按同意；若不同意，我們將完全尊重您的選擇、不收集您的使用行為，也歡迎您繼續使用 PTT.ai。"
 }

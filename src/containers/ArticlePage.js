@@ -12,7 +12,9 @@ import ArticleBar                 from '../components/ArticleBar'
 
 import { getRoot }            from '../utils/utils'
 import { epoch2FullDate,
-         epoch2ReadFormat } from '../utils/utilDatetime'
+         epoch2ReadFormat }   from '../utils/utilDatetime'
+import googleAnalytics        from '../utils/googleAnalytics'
+
 import * as doArticlePage     from '../reducers/ArticlePage'
 import * as doModalContainer  from '../reducers/ModalContainer'
 import * as constants         from '../constants/Constants'
@@ -95,6 +97,7 @@ class ArticlePage extends PureComponent {
     })
 
     doArticlePage.markArticle(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId));
+    googleAnalytics.firePageView()
   }
 
   componentWillUnmount() {
@@ -281,6 +284,8 @@ class ArticlePage extends PureComponent {
       let mediaIds = ""
       doArticlePage.addComment(myId, boardId, articleId, comment, userName, userImg, userId, mediaIds)
       doArticlePage.markArticle(myId, boardId, articleId);
+
+      googleAnalytics.fireEventOnProb('Comment','CreateCommentSuccess', 0.1)
     }
 
     const onDeleteComment = (commentId) => {

@@ -12,6 +12,7 @@ import EditArticleModal        from './EditArticleModal';
 import AddKnownBoardModal      from './AddKnownBoardModal';
 import NameCardModal           from './NameCardModal';
 import FirstPopupModal         from './FirstPopupModal';
+import PrivacySettingModal     from './PrivacySettingModal';
 import MultiDeviceModal        from './MultiDeviceModal'
 import AddFriendModal          from './AddFriendModal';
 import AddDeviceModal          from './AddDeviceModal';
@@ -93,8 +94,16 @@ class ModalContainer extends PureComponent {
       case constants.FIRST_POPUP_MODAL:
         return (<FirstPopupModal userId={myId}
                                  modalInput={modalInput}
+                                 onModalSwitch={modalSwitch}
                                  onModalClose={doModalContainer.closeModal}
                                  onModalSubmit={modalSubmit} />)
+
+      case constants.PRIVACY_SETTING_MODAL:
+        return (<PrivacySettingModal userId={myId}
+                                     modalInput={modalInput}
+                                     onModalSwitch={modalSwitch}
+                                     onModalClose={doModalContainer.closeModal}
+                                     onModalSubmit={modalSubmit} />)
 
       case constants.ADD_KNOWN_BOARD_MODAL:
         return (<AddKnownBoardModal userId={myId}

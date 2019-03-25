@@ -14,6 +14,7 @@ import * as doModalContainer  from '../reducers/ModalContainer'
 import * as constants from '../constants/Constants'
 
 import { getRoot } from '../utils/utils'
+import googleAnalytics from '../utils/googleAnalytics'
 
 import styles from './HubPage.css'
 
@@ -34,6 +35,7 @@ class HubPage extends PureComponent {
 
   componentDidMount() {
     this.props.markSeen()
+    googleAnalytics.firePageView()
   }
 
   componentWillMount() {
@@ -88,6 +90,9 @@ class HubPage extends PureComponent {
             onConfirm: () => that.setState({showAlert: false})
           }
         })
+
+        googleAnalytics.fireEvent('Group','JoinGroupFailed')
+
       } else {
         let that = this
         this.setState({
@@ -102,6 +107,8 @@ class HubPage extends PureComponent {
           }
         })
         doModalContainer.closeModal()
+
+        googleAnalytics.fireEvent('Group','JoinGroupSuccess')
       }
     }
 
@@ -128,6 +135,7 @@ class HubPage extends PureComponent {
       doModalContainer.setInput({
         modalAddBoardSubmit: (name, friendInvited) => {
           doHubPage.addBoard(myId, name, userName, friendInvited)
+          googleAnalytics.fireEvent('Group','CreateGroupSuccess')
         },
         modalJoinBoardSubmit: (boardUrl) => onJoinBoard(boardUrl),
       })

@@ -12,6 +12,7 @@ import * as constants         from '../constants/Constants'
 import * as doFriendListPage  from '../reducers/FriendListPage'
 import * as doModalContainer  from '../reducers/ModalContainer'
 import { getRoot }            from '../utils/utils'
+import googleAnalytics        from '../utils/googleAnalytics'
 
 import styles           from './FriendListPage.css'
 
@@ -31,6 +32,7 @@ class FriendListPage extends PureComponent {
 
   componentDidMount() {
     this.props.markSeen()
+    googleAnalytics.firePageView()
   }
 
   componentWillMount() {
@@ -86,6 +88,9 @@ class FriendListPage extends PureComponent {
             onConfirm: () => that.setState({showAlert: false})
           }
         })
+
+        googleAnalytics.fireEvent('Friend', 'addFriendFailed')
+
       } else {
         let that = this
         this.setState({
@@ -100,6 +105,8 @@ class FriendListPage extends PureComponent {
           }
         })
         doModalContainer.closeModal()
+
+        googleAnalytics.fireEvent('Friend', 'addFriendSucess')
       }
     }
 

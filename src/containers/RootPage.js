@@ -31,6 +31,7 @@ import {  getUUID,
           parseQueryString  } from '../utils/utils'
 
 import { show as showNotification } from '../utils/notification'
+import googleAnalytics from '../utils/googleAnalytics'
 
 import { emptyTimeStamp } from '../reducers/utils'
 
@@ -63,7 +64,7 @@ class RootPage extends PureComponent {
 
     let myId = getUUID()
 
-    let openFirstPopupModal = keyInfo => {
+    let openFirstPopupModal = (userId, keyInfo) => {
 
       let deviceJoinKeyInfo  = keyInfo.find(({key}) => key === 'deviceJoinKey').value
       let userPrivateKeyInfo = keyInfo.find(({key}) => key === 'userPrivateKey').value
@@ -71,6 +72,7 @@ class RootPage extends PureComponent {
       doModalContainer.setInput({
         deviceJoinKeyInfo:  deviceJoinKeyInfo,
         userPrivateKeyInfo: userPrivateKeyInfo,
+        userId: userId,
         // TODO: comment this because multidevice function is currenly disable.
         //
         // signIn: (nodeId, pKey, addDeviceCallBackFunc, waitingCallBackFunc, signedInCallBackFunc) => {
@@ -99,11 +101,21 @@ class RootPage extends PureComponent {
       doModalContainer.openModal(constants.FIRST_POPUP_MODAL)
     }
 
+    let openPrivacySettingModal = (userId) => {
+
+      doModalContainer.setInput({
+        userId: userId,
+      })
+
+      doModalContainer.openModal(constants.PRIVACY_SETTING_MODAL)
+    }
+
     doRootPage.init(myId, query, decodeURIObj(params))
 
     // get user name and user image
     doRootPage.getUserInfo(myId).then( res => {
-      if (res.type === 'no_user_name' ) openFirstPopupModal(res.value)
+      if (res.type === 'no_user_name' ) openFirstPopupModal(res.userId, res.value)
+      else if (!googleAnalytics.isConfigured()) openPrivacySettingModal(res.userId)
     })
 
     // get join keys for multi-device and friend
@@ -323,7 +335,8 @@ class RootPage extends PureComponent {
           constants.SHOW_PTT_ME_TAB,
           constants.SHOW_PTT_PEERS_TAB,
           constants.SHOW_LAST_ANNOUNCE_P2P_TAB,
-        ]
+        ],
+        userId: userId,
       })
       doModalContainer.openModal(constants.SETTING_MENU_MODAL)
     }
