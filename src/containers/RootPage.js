@@ -114,7 +114,7 @@ class RootPage extends PureComponent {
   }
 
   refreshPage(myId) {
-    const { actions: {doRootPage} } = this.props
+    const { intl, actions: {doRootPage} } = this.props
 
     let onConnectionLost = (message) => {
       if (!toast.isActive(this.toastId)) {
@@ -156,7 +156,8 @@ class RootPage extends PureComponent {
       this.browserTabInterval = this.browserTabInterval ? this.browserTabInterval : setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
     } else if (this.browserTabInterval) {
       clearInterval(this.browserTabInterval)
-      document.title = 'Ptt.ai'
+
+      document.title = intl.formatMessage({id: 'site-title.title'})
     }
   }
 
