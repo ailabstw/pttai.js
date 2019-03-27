@@ -3,8 +3,7 @@ import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
 import Immutable                  from 'immutable'
 import { ToastContainer, toast }  from 'react-toastify'
-import { injectIntl,
-         FormattedMessage }       from 'react-intl'
+import { injectIntl }       from 'react-intl'
 
 import Empty          from '../components/Empty'
 import Navigator      from '../components/Navigator'
@@ -104,13 +103,13 @@ class RootPage extends PureComponent {
   refreshBrowserTabTitle() {
     const { intl } = this.props
 
-    let originalTitle = intl.formatMessage({id: 'site-title.title'})
-    let notifyTitle = intl.formatMessage({id: 'site-title.notify'})
+    let notifyOneTitle = intl.formatMessage({id: 'site-title.notify1'})
+    let notifyTwoTitle = intl.formatMessage({id: 'site-title.notify2'})
 
-    if (document.title === originalTitle) {
-      document.title = notifyTitle;
+    if (document.title === notifyOneTitle) {
+      document.title = notifyTwoTitle;
     } else {
-      document.title = originalTitle;
+      document.title = notifyOneTitle;
     }
   }
 
@@ -157,6 +156,7 @@ class RootPage extends PureComponent {
       this.browserTabInterval = this.browserTabInterval ? this.browserTabInterval : setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
     } else if (this.browserTabInterval) {
       clearInterval(this.browserTabInterval)
+      document.title = 'Ptt.ai'
     }
   }
 

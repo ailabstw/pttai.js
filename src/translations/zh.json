@@ -1,6 +1,7 @@
 {
-    "site-title.title": "Ptt.ai",
-    "site-title.notify": "有新消息來囉",
+    "site-title.title": "PTT.ai",
+    "site-title.notify1": "有新消息來囉",
+    "site-title.notify2": "PTT.ai (通知)",
     "navigator.tab1": "群組",
     "navigator.tab2": "私訊",
     "newsbar.title":  "最新主題",
