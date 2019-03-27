@@ -107,7 +107,7 @@ export const getUserInfo = (myId, noUserCallBackFunc, userCallBackFunc, connecti
     dispatch(serverUtils.showMe())
       .then(({response: userInfo, type, query, error}) => {
         if (error) {
-          const errorMessage = "Backend no response: please try restarting ptt.ai"
+          const errorMessage = "Backend no response: please try restarting PTT.ai"
           connectionLostCallBackFunc(errorMessage)
 
         } else {
