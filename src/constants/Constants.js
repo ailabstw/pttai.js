@@ -27,6 +27,7 @@ export const DEFAULT_USER_IMAGE     = `${PTTAI_URL_BASE}/images/icon_avatar@2x.p
 export const DEFAULT_USER_COMPANY   = 'unknown'
 export const DEFAULT_USER_NAMECARD  = {}
 
+export const TITLE_FLASH_INTERVAL       = 1500
 export const REFRESH_INTERVAL           = 5000
 export const CONTENT_REFETCH_INTERVAL   = 1000
 export const ATTACHMENT_LOAD_INTERVAL   = 100

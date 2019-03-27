@@ -3,6 +3,8 @@ import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
 import Immutable                  from 'immutable'
 import { ToastContainer, toast }  from 'react-toastify'
+import { injectIntl,
+         FormattedMessage }       from 'react-intl'
 
 import Empty          from '../components/Empty'
 import Navigator      from '../components/Navigator'
@@ -34,9 +36,11 @@ class RootPage extends PureComponent {
   constructor(props) {
     super();
     this.toastId = null
-    this.refreshPageInterval = null
+    this.browserTabInterval   = null
+    this.refreshPageInterval  = null
 
-    this.refreshPage = this.refreshPage.bind(this)
+    this.refreshPage            = this.refreshPage.bind(this)
+    this.refreshBrowserTabTitle = this.refreshBrowserTabTitle.bind(this)
   }
 
   componentWillMount() {
@@ -93,9 +97,21 @@ class RootPage extends PureComponent {
     this.refreshPageInterval = setInterval(() => this.refreshPage(myId), constants.REFRESH_INTERVAL);
   }
 
-
   componentWillUnmount() {
     clearInterval(this.refreshPageInterval)
+  }
+
+  refreshBrowserTabTitle() {
+    const { intl } = this.props
+
+    let originalTitle = intl.formatMessage({id: 'site-title.title'})
+    let notifyTitle = intl.formatMessage({id: 'site-title.notify'})
+
+    if (document.title === originalTitle) {
+      document.title = notifyTitle;
+    } else {
+      document.title = originalTitle;
+    }
   }
 
   refreshPage(myId) {
@@ -126,6 +142,22 @@ class RootPage extends PureComponent {
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
+
+    // Web browser tab notification
+    let me                  = getRoot(this.props)
+    let latestArticles      = me.get('latestArticles',   Immutable.List()).toJS()
+    let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
+    let friendLastSeen      = me.get('friendLastSeen',   Immutable.Map()).toJS()
+    let logLastSeen         = me.get('logLastSeen',      Immutable.Map()).toJS()
+
+    let hubHasUnread        = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
+
+    if ((hubHasUnread || friendListHasUnread)) {
+      this.browserTabInterval = this.browserTabInterval ? this.browserTabInterval : setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
+    } else if (this.browserTabInterval) {
+      clearInterval(this.browserTabInterval)
+    }
   }
 
   render() {
@@ -289,4 +321,4 @@ const mapDispatchToProps = (dispatch) => ({
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(RootPage)
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(RootPage))
