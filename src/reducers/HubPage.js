@@ -40,20 +40,21 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
     if (isFirstFetch) {
       dispatch(preprocessSetStartLoading(myId))
     }
-    dispatch(serverUtils.getBoards(EMPTY_ID, limit))
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(serverUtils.getBoardRequest(EMPTY_ID))
-          .then(({response: reqResult, type, query, error}) => {
-            let creatorIds = result.map((each) => each.C)
-            dispatch(serverUtils.getUsersInfo(creatorIds))
-              .then((usersInfo) => {
-                dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, isFirstFetch))
-                if (isFirstFetch) {
-                  dispatch(postprocessSetFinshLoading(myId))
-                }
-              })
-          })
-      })
+
+    return Promise.all([
+      dispatch(serverUtils.getBoards(EMPTY_ID, limit)),
+      dispatch(serverUtils.getBoardRequest(EMPTY_ID))
+    ]).then( ([{response:{result}}, {response:reqResult}]) => {
+      let creatorIds = result.map((each) => each.C)
+
+      dispatch(serverUtils.getUsersInfo(creatorIds))
+        .then((usersInfo) => {
+          dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, isFirstFetch))
+          if (isFirstFetch) {
+            dispatch(postprocessSetFinshLoading(myId))
+          }
+        })
+    })
   }
 }
 
