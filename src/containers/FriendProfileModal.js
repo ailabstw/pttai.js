@@ -8,6 +8,8 @@ import * as constants               from '../constants/Constants'
 import * as modalConstants          from '../constants/ModalConstants'
 import * as doFriendProfileModal    from '../reducers/FriendProfileModal'
 
+import { linkParser } from '../utils/utils'
+
 import styles from './FriendProfileModal.css'
 
 class FriendProfileModal extends PureComponent {
@@ -83,17 +85,17 @@ class FriendProfileModal extends PureComponent {
               <div hidden={!profile.email && !profile.phone} className={styles['other-info']}>
                 <div className={styles['contact-input']}>
                   <div className={styles['email']}>
-                    <span>{profile.email}</span>
+                    <a href={`mainto:${profile.email}`}>{profile.email}</a>
                   </div>
                   <div className={styles['phone']}>
-                      <span>{profile.phone }</span>
+                      <span>{profile.phone}</span>
                   </div>
                 </div>
               </div>
               <div hidden={!profile.description} className={styles['other-info']}>
                 <div className={styles['desc-input']}>
                   <div className={styles['description']}>
-                    <span>{profile.description }</span>
+                    <span>{linkParser(profile.description)}</span>
                   </div>
                 </div>
               </div>
