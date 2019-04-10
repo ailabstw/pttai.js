@@ -153,9 +153,11 @@ class RootPage extends PureComponent {
     let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
 
     if ((hubHasUnread || friendListHasUnread)) {
-      this.browserTabInterval = this.browserTabInterval ? this.browserTabInterval : setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
-    } else if (this.browserTabInterval) {
+      this.browserTabInterval = this.browserTabInterval || setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
+    }
+    else if (this.browserTabInterval) {
       clearInterval(this.browserTabInterval)
+      this.browserTabInterval   = null
 
       document.title = intl.formatMessage({id: 'site-title.title'})
     }
