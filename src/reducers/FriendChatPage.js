@@ -54,15 +54,11 @@ export const getFriend = (myId, friendId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getFriend(friendId))
       .then(({response: {result}, type, error, query}) => {
-        if (error) {
-          console.warn('getFriend got error': error)
-        } else {
-          let creatorIds = [result.FID]
-          dispatch(serverUtils.getUsersInfo(creatorIds))
-            .then((usersInfo) => {
-              dispatch(postprocessGetFriend(myId, result, usersInfo))
-            })
-        }
+        if (error) return console.warn('getFriend got error': error)
+
+        let creatorIds = [result.FID]
+        dispatch(serverUtils.getUsersInfo(creatorIds))
+          .then( usersInfo => dispatch(postprocessGetFriend(myId, result, usersInfo)))
       })
   }
 }
@@ -155,22 +151,25 @@ export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
     if (isFirstFetch) {
       dispatch(preprocessSetStartLoading(myId))
     }
+
     dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
       .then(({response: {result}, type, error, query}) => {
-          let validResult   = (result && result.length > 0) ? result.filter(each => each).filter(each => (each.ID && each.BlockID && each.CreatorID)) : []
-          let messageIds    = validResult.map(each => each.ID)
-          let subContentIds = validResult.map(each => each.BlockID)
-          let creatorIds    = validResult.map(each => each.CreatorID)
-          dispatch(getMessagesContent(chatId, messageIds, subContentIds))
-            .then((messageBlockList) => {
-              dispatch(serverUtils.getUsersInfo(creatorIds))
-                .then((usersInfo) => {
-                  dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, isFirstFetch,  messageBlockList, validResult, usersInfo))
-                  if (isFirstFetch) {
-                    dispatch(postprocessSetFinshLoading(myId))
-                  }
-                })
-            })
+        let validResult   = (result && result.length > 0) ? result.filter(each => (each && each.ID && each.BlockID && each.CreatorID)) : []
+
+        let messageIds    = validResult.map(each => each.ID)
+        let subContentIds = validResult.map(each => each.BlockID)
+        let creatorIds    = validResult.map(each => each.CreatorID)
+
+        Promise.all([
+          dispatch(getMessagesContent(chatId, messageIds, subContentIds)),
+          dispatch(serverUtils.getUsersInfo(creatorIds))
+        ]).then( ([messageBlockList, usersInfo]) => {
+          dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, isFirstFetch,  messageBlockList, validResult, usersInfo))
+
+          if (isFirstFetch) {
+            dispatch(postprocessSetFinshLoading(myId))
+          }
+        })
       })
   }
 }
@@ -184,10 +183,7 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, isFirstFetch, m
 
   let messageList = []
   messageBlockList.forEach((each, index) => {
-
-    if (each.error) {
-      return
-    }
+    if (each.error) return
 
     let userId      = creatorIds[index]
     let userNameMap = usersInfo['userName'] || {}
