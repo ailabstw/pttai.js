@@ -133,14 +133,12 @@ function getMessagesContent (chatId, messageIds, subContentIds) {
               .then(({response: {result}, type, query, error}) => {
                 if (error) {
                   return { 'error': true, 'key':'messageBlock', 'value': error }
-                } else {
-                  if (result && result.length > 0) {
-                    return { 'error': false, 'key':'messageBlock', 'value': result[0] }
-                  } else {
-                    console.warn('getMessageBlockList for messageId = ', messageIds[index], ' return empty result :', result)
-                    return { 'error': true, 'key':'messageBlock', 'value': {} }
-                  }
                 }
+                if (result && result.length > 0) {
+                  return { 'error': false, 'key':'messageBlock', 'value': result[0] }
+                }
+                console.warn('getMessageBlockList for messageId = ', messageIds[index], ' return empty result :', result)
+                return { 'error': true, 'key':'messageBlock', 'value': {} }
               })
     })
   )
