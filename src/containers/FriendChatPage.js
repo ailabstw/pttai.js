@@ -33,6 +33,11 @@ class FriendChatPage extends PureComponent {
   componentWillMount() {
     const {actions: {doFriendChatPage}, match: {params}, myId} = this.props
 
+    // TODO: data for different chatroom should be stored into different array.
+    //       Currently we are using the same array for data storing, so we need
+    //       to clear the array to avoid message residual
+    doFriendChatPage.clearData(myId)
+
     doFriendChatPage.initParams(myId, params)
     doFriendChatPage.getFriend(myId, decodeURIComponent(params.friendId))
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), true, constants.NUM_MESSAGE_PER_REQ)
