@@ -40,6 +40,7 @@ class RootPage extends PureComponent {
 
     this.refreshPage            = this.refreshPage.bind(this)
     this.refreshBrowserTabTitle = this.refreshBrowserTabTitle.bind(this)
+    this.markSeen               = this.markSeen.bind(this)
   }
 
   componentWillMount() {
@@ -122,15 +123,14 @@ class RootPage extends PureComponent {
       }
     }
 
-
-    if (this.props.match.url.indexOf(`/hub`) === 0) {
+    if (this.props.match.url === (`/hub`)) {
       doRootPage.markLogSeen(myId)
     }
     else {
       doRootPage.getLogLastSeen(myId)
     }
 
-    if (this.props.match.url.indexOf(`/friend`) === 0) {
+    if (this.props.match.url === `/friend`) { // only index send
       doRootPage.markFriendListSeen(myId)
     }
     else {
@@ -160,6 +160,21 @@ class RootPage extends PureComponent {
       this.browserTabInterval   = null
 
       document.title = intl.formatMessage({id: 'site-title.title'})
+    }
+  }
+
+  markSeen() {
+    let { myId, actions: {doRootPage}, match:{params} } = this.props
+
+    let me                  = getRoot(this.props)
+    let friendLastSeen      = me.get('friendLastSeen',   Immutable.Map()).toJS()
+    let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
+
+    let ids = latestFriendList.map(lf => lf.ID)
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
+
+    if (ids.includes(params.chatId) && !friendListHasUnread) {
+      doRootPage.markFriendListSeen(myId)
     }
   }
 
@@ -239,10 +254,10 @@ class RootPage extends PureComponent {
       })
       doModalContainer.openModal(constants.LATEST_PAGE_MODAL)
     }
-    let onHubClicked = () => {
+    let markHubRead = () => {
       doRootPage.markLogSeen(myId)
     }
-    let onFriendClicked = () => {
+    let markFriendRead = () => {
       doRootPage.markFriendListSeen(myId)
     }
 
@@ -280,10 +295,10 @@ class RootPage extends PureComponent {
             MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId}/>)
             break;
         case 'FriendListPage':
-            MAIN_PAGE = (<FriendListPage {...this.props} myId={friendListPageId}/>)
+            MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId}/>)
             break;
         case 'FriendChatPage':
-            MAIN_PAGE = (<FriendChatPage {...this.props} myId={friendChatPageId}/>)
+            MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.markSeen} myId={friendChatPageId}/>)
             break;
         default:
             MAIN_PAGE = null
@@ -303,8 +318,8 @@ class RootPage extends PureComponent {
         <Navigator {...this.props}
           hubHasUnread={hubHasUnread}
           friendListHasUnread={friendListHasUnread}
-          onHubClicked={onHubClicked}
-          onFriendClicked={onFriendClicked} />
+          onHubClicked={markHubRead}
+          onFriendClicked={markFriendRead} />
         { MAIN_PAGE }
         <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
         <ToastContainer hideProgressBar={true}/>

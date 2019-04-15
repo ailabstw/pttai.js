@@ -23,11 +23,13 @@ class FriendChatPage extends PureComponent {
   }
 
   getLatestMessage() {
-    const { myId, actions: {doFriendChatPage}, match: {params} } = this.props
+    const { myId, markSeen, actions: {doFriendChatPage}, match: {params} } = this.props
 
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), false, constants.NUM_MESSAGE_PER_REQ)
     doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
     doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
+
+    markSeen()
   }
 
   componentWillMount() {
@@ -60,7 +62,7 @@ class FriendChatPage extends PureComponent {
   }
 
   render() {
-    const { myId, history, friendChatPage, actions: {doFriendChatPage, doModalContainer}, match: {params}, match } = this.props
+    const { myId, history, friendChatPage, markSeen, actions: {doFriendChatPage, doModalContainer}, match: {params}, match } = this.props
 
     let userId   = getRoot(this.props).getIn(['userInfo','userId'])
     let userName = getRoot(this.props).getIn(['userInfo','userName'])
@@ -84,6 +86,8 @@ class FriendChatPage extends PureComponent {
       }
       doFriendChatPage.postMessage(myId, userId, userName, userImg, decodeURIComponent(params.chatId), JSON.stringify(postMessage))
       doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
+
+      markSeen()
     }
 
     let onGetMoreMessages = (startMessageId) => {
