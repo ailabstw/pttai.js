@@ -29,6 +29,10 @@ class FriendListPage extends PureComponent {
     };
   }
 
+  componentDidMount() {
+    this.props.markSeen()
+  }
+
   componentWillMount() {
     const { actions: {doFriendListPage}, myId} = this.props
 
