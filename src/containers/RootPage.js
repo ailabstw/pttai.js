@@ -28,6 +28,8 @@ import {  getUUID,
           decodeURIObj,
           parseQueryString  } from '../utils/utils'
 
+import { emptyTimeStamp } from '../reducers/utils'
+
 import styles from './RootPage.css'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -38,9 +40,12 @@ class RootPage extends PureComponent {
     this.browserTabInterval   = null
     this.refreshPageInterval  = null
 
+    this.pageLastSeenTS = emptyTimeStamp()
+
     this.refreshPage            = this.refreshPage.bind(this)
     this.refreshBrowserTabTitle = this.refreshBrowserTabTitle.bind(this)
     this.markSeen               = this.markSeen.bind(this)
+    this.handleBrowserTabNotification = this.handleBrowserTabNotification.bind(this)
   }
 
   componentWillMount() {
@@ -115,7 +120,7 @@ class RootPage extends PureComponent {
   }
 
   refreshPage(myId) {
-    const { intl, actions: {doRootPage} } = this.props
+    const { actions: {doRootPage} } = this.props
 
     let onConnectionLost = (message) => {
       if (!toast.isActive(this.toastId)) {
@@ -143,23 +148,32 @@ class RootPage extends PureComponent {
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
 
     // Web browser tab notification
-    let me                  = getRoot(this.props)
-    let latestArticles      = me.get('latestArticles',   Immutable.List()).toJS()
-    let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
-    let friendLastSeen      = me.get('friendLastSeen',   Immutable.Map()).toJS()
-    let logLastSeen         = me.get('logLastSeen',      Immutable.Map()).toJS()
 
-    let hubHasUnread        = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
+    this.handleBrowserTabNotification()
+  }
 
-    if ((hubHasUnread || friendListHasUnread)) {
-      this.browserTabInterval = this.browserTabInterval || setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
-    }
-    else if (this.browserTabInterval) {
-      clearInterval(this.browserTabInterval)
-      this.browserTabInterval   = null
+  handleBrowserTabNotification() {
+    const { intl } = this.props
+
+    if (!document.hidden) {
+      // browser is browsing current tab
+      this.pageLastSeenTS = emptyTimeStamp()
+
+      // stop showing tab notification
+      if (this.browserTabInterval) {
+        clearInterval(this.browserTabInterval)
+        this.browserTabInterval   = null
+      }
 
       document.title = intl.formatMessage({id: 'site-title.title'})
+      return;
+    }
+
+    let me                  = getRoot(this.props)
+    let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
+
+    if (isUnRead(latestFriendList[0].ArticleCreateTS.T, this.pageLastSeenTS.T)) {
+      this.browserTabInterval = this.browserTabInterval || setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
     }
   }
 
