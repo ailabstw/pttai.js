@@ -1,3 +1,4 @@
+import React                from 'react'
 import uuidv4               from 'uuid/v4'
 import Immutable            from 'immutable'
 import camelCase            from 'camelcase'
@@ -355,6 +356,40 @@ export const getStatusClass = (status) => {
     statusClass = 'post-failed'
   }
   return statusClass
+}
+
+const isLink = str => {
+  // https://stackoverflow.com/a/5717133/5032696
+
+  var pattern = new RegExp('^(https?:\\/\\/)?'+         // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+                      // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+                  // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+                         // query string
+    '(\\#[-a-z\\d_]*)?$','i');                          // fragment locator
+  return !!pattern.test(str);
+}
+
+export const linkParser = (pure_message) => {
+  if (!pure_message) return '';
+
+  let messageArr = pure_message.split(/\s/).map( (msg,i) => {
+    if (isLink(msg)) {
+      let link = msg
+
+      if (!/^http(s?):\/\//.test(msg)) {
+        link = '//' + msg
+      }
+
+      return <a key={i} href={link} target='_blank'>{msg}</a>
+    }
+
+    return <span key={i}>{msg}</span>
+  })
+
+  return <span>{
+    messageArr.reduce((a, b) => a === null ? [b] : [a, ' ', b], null)
+  }</span>
 }
 
 export const isMobile = () => {

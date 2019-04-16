@@ -8,6 +8,7 @@ import styles               from './CommentReplyListComponent.css'
 import AlertComponent       from '../components/AlertComponent'
 
 import { getStatusClass,
+         linkParser,
          isMobile }                 from '../utils/utils'
 import { epoch2FullTimeFormat,
          epoch2ReadFormat }  from '../utils/utilDatetime'
@@ -52,13 +53,7 @@ class CommentReplyListComponent extends PureComponent {
   }
 
   onListItemClick(e, index) {
-    const { sliderInIndex } = this.state
-    if (sliderInIndex !== -1) {
-      this.setState({sliderInIndex: -1})
-    } else {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+    this.setState({sliderInIndex: -1})
   }
 
   commentValidate(comment) {
@@ -182,7 +177,7 @@ class CommentReplyListComponent extends PureComponent {
                         <div className={styles['comment-content']}
                              onMouseDown={() => this.handleButtonPress(index)}
                              onMouseUp={() => this.handleButtonRelease(index)} >
-                          {item.contentBlockArray[0]}
+                          {linkParser(item.contentBlockArray[0])}
                         </div>
                       )
                     }

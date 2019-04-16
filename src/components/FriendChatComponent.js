@@ -13,6 +13,7 @@ import { doesCrossDay,
 
 import { getStatusClass,
          toJson,
+         linkParser,
          isMobile }                from '../utils/utils'
 
 import AlertComponent              from '../components/AlertComponent'
@@ -326,7 +327,7 @@ class FriendChatComponent extends PureComponent {
                               messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
                                 <div className={styles['user-message-content-invitation']}>{messageHtml}</div>
                               ):(
-                                <div className={styles['user-message-content']}>{messageObj.value}</div>
+                                <div className={styles['user-message-content']}>{linkParser(messageObj.value)}</div>
                               )
                             }
                           </div>
@@ -355,7 +356,7 @@ class FriendChatComponent extends PureComponent {
                                   </div>
                                 )
                               ):(
-                                <div className={styles['message-content']}>{messageObj.value}</div>
+                                <div className={styles['message-content']}>{linkParser(messageObj.value)}</div>
                               )
                             }
                             <div className={styles['message-meta']}>
