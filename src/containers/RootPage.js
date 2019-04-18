@@ -1,5 +1,6 @@
 import React, { PureComponent }   from 'react'
 import { connect }                from 'react-redux'
+import { withRouter }             from 'react-router-dom'
 import { bindActionCreators }     from 'redux'
 import Immutable                  from 'immutable'
 import { ToastContainer, toast }  from 'react-toastify'
@@ -29,6 +30,8 @@ import {  getUUID,
           decodeBase64,
           parseQueryString  } from '../utils/utils'
 
+import { show as showNotification } from '../utils/notification'
+
 import { emptyTimeStamp } from '../reducers/utils'
 
 import styles from './RootPage.css'
@@ -42,12 +45,14 @@ class RootPage extends PureComponent {
     this.refreshPageInterval  = null
 
     this.pageLastSeenTS = emptyTimeStamp()
+    this.sentNotifications = []
 
     this.refreshPage                  = this.refreshPage.bind(this)
     this.refreshBrowserTabTitle       = this.refreshBrowserTabTitle.bind(this)
     this.markSeen                     = this.markSeen.bind(this)
     this.resetTitle                   = this.resetTitle.bind(this)
     this.handleBrowserTabNotification = this.handleBrowserTabNotification.bind(this)
+    this.handleBrowserToast           = this.handleBrowserToast.bind(this)
   }
 
   componentWillMount() {
@@ -154,6 +159,7 @@ class RootPage extends PureComponent {
 
     // Web browser tab notification
     this.handleBrowserTabNotification(latestFriendList)
+    this.handleBrowserToast(latestFriendList)
   }
 
   resetTitle() {
@@ -180,6 +186,43 @@ class RootPage extends PureComponent {
         let sender = decodeBase64(latestMessage.creatorName)
         this.refreshBrowserTabTitle(sender)
       }, constants.TITLE_FLASH_INTERVAL);
+    }
+  }
+
+  handleBrowserToast(latestFriendList) {
+    const { intl, match, history } = this.props
+    const latestMessage = latestFriendList[0]
+
+    if (
+      !latestMessage ||
+      !document.hidden ||                                         // user is browsing current tab
+      this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
+      !isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)  // msg has been read before
+    ) { return }
+
+    // prepare data for notification
+    let { messageID, friendID, chatID } = latestMessage
+    let creatorName = decodeBase64(latestMessage.creatorName)
+    let title = intl.formatMessage({id: 'site-title.notify1'}, {SENDER: creatorName})
+    let summary = latestMessage.contents
+      .map( content => JSON.parse(decodeBase64(content)) )
+      .filter( content => content.type === 1 ) // text only
+      .map( content => content.value )
+      .join(' ').substr(0, 20)
+
+    // send notification
+    let noti = showNotification({ title: title, body: summary, tag: `message${messageID}` })
+    if (noti) {
+      this.sentNotifications.push(messageID)
+      noti.addEventListener('click', event => {
+        window.focus()
+        noti.close()
+
+        if (match.url !== `/friend/${friendID}/chat/${chatID}/`) {
+          history.push(`/friend/`) // to trigger page re-render
+          history.push(`/friend/${friendID}/chat/${chatID}/`)
+        }
+      })
     }
   }
 
@@ -359,4 +402,4 @@ const mapDispatchToProps = (dispatch) => ({
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(RootPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(injectIntl(RootPage)))
