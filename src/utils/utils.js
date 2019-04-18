@@ -265,6 +265,17 @@ export const dataURLtoFile = (dataurl, filename) => {
     return new File([u8arr], filename, {type:mime});
 }
 
+export const decodeBase64 = str => {
+  try {
+    return decodeURIComponent(atob(str).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''))
+  }
+  catch(e) {
+    return ''
+  }
+}
+
 export const bytesToSize = (bytes) => {
    let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 

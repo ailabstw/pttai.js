@@ -26,6 +26,7 @@ import {  getUUID,
           getChildId,
           isUnRead,
           decodeURIObj,
+          decodeBase64,
           parseQueryString  } from '../utils/utils'
 
 import { emptyTimeStamp } from '../reducers/utils'
@@ -42,9 +43,10 @@ class RootPage extends PureComponent {
 
     this.pageLastSeenTS = emptyTimeStamp()
 
-    this.refreshPage            = this.refreshPage.bind(this)
-    this.refreshBrowserTabTitle = this.refreshBrowserTabTitle.bind(this)
-    this.markSeen               = this.markSeen.bind(this)
+    this.refreshPage                  = this.refreshPage.bind(this)
+    this.refreshBrowserTabTitle       = this.refreshBrowserTabTitle.bind(this)
+    this.markSeen                     = this.markSeen.bind(this)
+    this.resetTitle                   = this.resetTitle.bind(this)
     this.handleBrowserTabNotification = this.handleBrowserTabNotification.bind(this)
   }
 
@@ -106,10 +108,10 @@ class RootPage extends PureComponent {
     clearInterval(this.refreshPageInterval)
   }
 
-  refreshBrowserTabTitle() {
+  refreshBrowserTabTitle(sender) {
     const { intl } = this.props
 
-    let notifyOneTitle = intl.formatMessage({id: 'site-title.notify1'})
+    let notifyOneTitle = intl.formatMessage({id: 'site-title.notify1'}, {SENDER: sender})
     let notifyTwoTitle = intl.formatMessage({id: 'site-title.notify2'})
 
     if (document.title === notifyOneTitle) {
@@ -147,33 +149,37 @@ class RootPage extends PureComponent {
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
 
-    // Web browser tab notification
-
-    this.handleBrowserTabNotification()
-  }
-
-  handleBrowserTabNotification() {
-    const { intl } = this.props
-
-    if (!document.hidden) {
-      // browser is browsing current tab
-      this.pageLastSeenTS = emptyTimeStamp()
-
-      // stop showing tab notification
-      if (this.browserTabInterval) {
-        clearInterval(this.browserTabInterval)
-        this.browserTabInterval   = null
-      }
-
-      document.title = intl.formatMessage({id: 'site-title.title'})
-      return;
-    }
-
     let me                  = getRoot(this.props)
     let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
 
-    if (isUnRead(latestFriendList[0].ArticleCreateTS.T, this.pageLastSeenTS.T)) {
-      this.browserTabInterval = this.browserTabInterval || setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
+    // Web browser tab notification
+    this.handleBrowserTabNotification(latestFriendList)
+  }
+
+  resetTitle() {
+    const { intl } = this.props
+    this.pageLastSeenTS = emptyTimeStamp()
+
+    // stop showing tab notification
+    if (this.browserTabInterval) {
+      clearInterval(this.browserTabInterval)
+      this.browserTabInterval   = null
+    }
+
+    document.title = intl.formatMessage({id: 'site-title.title'})
+  }
+
+  handleBrowserTabNotification(latestFriendList) {
+    const latestMessage = latestFriendList[0]
+
+    // user is browsing current tab
+    if (!document.hidden) return this.resetTitle()
+
+    if (isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)) {
+      this.browserTabInterval = this.browserTabInterval || setInterval(() => {
+        let sender = decodeBase64(latestMessage.creatorName)
+        this.refreshBrowserTabTitle(sender)
+      }, constants.TITLE_FLASH_INTERVAL);
     }
   }
 
