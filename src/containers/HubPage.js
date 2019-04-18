@@ -32,6 +32,10 @@ class HubPage extends PureComponent {
     };
   }
 
+  componentDidMount() {
+    this.props.markSeen()
+  }
+
   componentWillMount() {
     const { myId, actions: { doHubPage }} = this.props
 
