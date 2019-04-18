@@ -268,7 +268,7 @@ class RootPage extends PureComponent {
       })
       doModalContainer.openModal(constants.LATEST_PAGE_MODAL)
     }
-    let markHubRead = () => {
+    let markHubSeen = () => {
       doRootPage.markLogSeen(myId)
     }
     let markFriendRead = () => {
@@ -300,7 +300,7 @@ class RootPage extends PureComponent {
 
     switch(myComponent) {
         case 'HubPage':
-            MAIN_PAGE = (<HubPage {...this.props} myId={hubPageId}/>)
+            MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId}/>)
             break;
         case 'BoardPage':
             MAIN_PAGE = (<BoardPage {...this.props} myId={boardPageId}/>)
@@ -332,7 +332,7 @@ class RootPage extends PureComponent {
         <Navigator {...this.props}
           hubHasUnread={hubHasUnread}
           friendListHasUnread={friendListHasUnread}
-          onHubClicked={markHubRead}
+          onHubClicked={markHubSeen}
           onFriendClicked={markFriendRead} />
         { MAIN_PAGE }
         <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
