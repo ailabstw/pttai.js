@@ -91,7 +91,7 @@ class RootPage extends PureComponent {
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
 
     // get frined list , sorted by last message created time
-    doRootPage.getFriendListByMsgCreateTS(myId, 1) // we just need the latest message to check unread or not
+    doRootPage.fetchLatestMessage(myId, 1) // we just need the latest message to check unread or not
 
     // get log last seen
     doRootPage.getLogLastSeen(myId)
@@ -142,7 +142,7 @@ class RootPage extends PureComponent {
       doRootPage.getFriendListSeen(myId)
     }
 
-    doRootPage.getFriendListByMsgCreateTS(myId, 1)
+    doRootPage.fetchLatestMessage(myId, 1)
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
@@ -185,7 +185,7 @@ class RootPage extends PureComponent {
     let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
 
     let ids = latestFriendList.map(lf => lf.ID)
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
 
     if (ids.includes(params.chatId) && !friendListHasUnread) {
       doRootPage.markFriendListSeen(myId)
@@ -212,8 +212,8 @@ class RootPage extends PureComponent {
 
     let latestHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T,latestArticles[0].LastSeen.T):false;
     let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
 
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
     let onEditNameSubmit = (name, editedProfile) => {
       doRootPage.editName(myId, name)
       doRootPage.editProfile(myId, editedProfile)
