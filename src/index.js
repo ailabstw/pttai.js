@@ -8,6 +8,7 @@ import { IntlProvider } from 'react-intl';
 import Routes from './Routes'
 import createStore from './reducers'
 import registerServiceWorker from './registerServiceWorker'
+import { setup as setupNotification } from './utils/notification'
 import { language, messages } from './utils/utils'
 //import config from 'config'
 //import DevTools from './DevTools'
@@ -68,6 +69,7 @@ const renderDevTools = () => {
 
 render(Routes)
 registerServiceWorker()
+setupNotification()
 
 if (module.hot) {
   module.hot.accept('./Routes', () => {

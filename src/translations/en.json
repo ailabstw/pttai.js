@@ -1,7 +1,7 @@
 {
     "site-title.title": "PTT.ai",
-    "site-title.notify1": "New messages/Updates!",
-    "site-title.notify2": "PTT.ai (news)",
+    "site-title.notify1": "{SENDER} messaged you",
+    "site-title.notify2": "(*) PTT.ai",
     "navigator.tab1": "Groups",
     "navigator.tab2": "Messages",
     "newsbar.title": "Latest posts",

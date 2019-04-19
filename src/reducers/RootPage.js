@@ -602,22 +602,44 @@ const updateLogLastSeenData = (myId, result) => {
   }
 }
 
-export const getFriendListByMsgCreateTS = (myId, limit) => {
+export const fetchLatestMessage = (myId, limit) => {
   return (dispatch, getState) => {
     let emptyTS = utils.emptyTimeStamp();
     dispatch(serverUtils.getFriendListByMsgCreateTS(emptyTS.T, emptyTS.NT, limit))
       .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessGetFriendListByMsgCreateTS(myId, result))
+        const chatId = result[0].ID
+        const creatorName = result[0].N
+
+        // TODO: error handling
+        dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
+          .then(({response: {result}, type, query, error}) => {
+
+            Promise.all(result.map( msg =>
+              dispatch(serverUtils.getMessageBlockList(chatId, msg.ID, msg.BlockID, 0, 0, 1))
+            )).then(results => {
+              let messages = results.map( data => data.response.result[0] )
+              dispatch(postprocessGetFriendListByMsgCreateTS(myId, chatId, creatorName, messages))
+            })
+          })
       })
   }
 }
 
-const postprocessGetFriendListByMsgCreateTS = (myId, result) => {
+const postprocessGetFriendListByMsgCreateTS = (myId, chatId, creatorName, messages) => {
   return {
     myId,
     myClass,
     type: SET_DATA,
-    data: { latestFriendList: result || [] }
+    data: {
+      latestFriendList: messages.map( message => ({
+        creatorName: creatorName,
+        chatID:      chatId,
+        friendID:    message.CID,
+        messageID:   message.AID,
+        contents:    message.B,
+        createTS:    message.CT
+      })
+    )}
   }
 }
 

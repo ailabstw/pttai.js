@@ -1,5 +1,6 @@
 import React, { PureComponent }   from 'react'
 import { connect }                from 'react-redux'
+import { withRouter }             from 'react-router-dom'
 import { bindActionCreators }     from 'redux'
 import Immutable                  from 'immutable'
 import { ToastContainer, toast }  from 'react-toastify'
@@ -26,7 +27,10 @@ import {  getUUID,
           getChildId,
           isUnRead,
           decodeURIObj,
+          decodeBase64,
           parseQueryString  } from '../utils/utils'
+
+import { show as showNotification } from '../utils/notification'
 
 import { emptyTimeStamp } from '../reducers/utils'
 
@@ -41,11 +45,14 @@ class RootPage extends PureComponent {
     this.refreshPageInterval  = null
 
     this.pageLastSeenTS = emptyTimeStamp()
+    this.sentNotifications = []
 
-    this.refreshPage            = this.refreshPage.bind(this)
-    this.refreshBrowserTabTitle = this.refreshBrowserTabTitle.bind(this)
-    this.markSeen               = this.markSeen.bind(this)
+    this.refreshPage                  = this.refreshPage.bind(this)
+    this.refreshBrowserTabTitle       = this.refreshBrowserTabTitle.bind(this)
+    this.markSeen                     = this.markSeen.bind(this)
+    this.resetTitle                   = this.resetTitle.bind(this)
     this.handleBrowserTabNotification = this.handleBrowserTabNotification.bind(this)
+    this.handleBrowserToast           = this.handleBrowserToast.bind(this)
   }
 
   componentWillMount() {
@@ -91,7 +98,7 @@ class RootPage extends PureComponent {
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
 
     // get frined list , sorted by last message created time
-    doRootPage.getFriendListByMsgCreateTS(myId, 1) // we just need the latest message to check unread or not
+    doRootPage.fetchLatestMessage(myId, 1) // we just need the latest message to check unread or not
 
     // get log last seen
     doRootPage.getLogLastSeen(myId)
@@ -106,10 +113,10 @@ class RootPage extends PureComponent {
     clearInterval(this.refreshPageInterval)
   }
 
-  refreshBrowserTabTitle() {
+  refreshBrowserTabTitle(sender) {
     const { intl } = this.props
 
-    let notifyOneTitle = intl.formatMessage({id: 'site-title.notify1'})
+    let notifyOneTitle = intl.formatMessage({id: 'site-title.notify1'}, {SENDER: sender})
     let notifyTwoTitle = intl.formatMessage({id: 'site-title.notify2'})
 
     if (document.title === notifyOneTitle) {
@@ -142,38 +149,80 @@ class RootPage extends PureComponent {
       doRootPage.getFriendListSeen(myId)
     }
 
-    doRootPage.getFriendListByMsgCreateTS(myId, 1)
+    doRootPage.fetchLatestMessage(myId, 1)
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
     doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
 
-    // Web browser tab notification
-
-    this.handleBrowserTabNotification()
-  }
-
-  handleBrowserTabNotification() {
-    const { intl } = this.props
-
-    if (!document.hidden) {
-      // browser is browsing current tab
-      this.pageLastSeenTS = emptyTimeStamp()
-
-      // stop showing tab notification
-      if (this.browserTabInterval) {
-        clearInterval(this.browserTabInterval)
-        this.browserTabInterval   = null
-      }
-
-      document.title = intl.formatMessage({id: 'site-title.title'})
-      return;
-    }
-
     let me                  = getRoot(this.props)
     let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
 
-    if (isUnRead(latestFriendList[0].ArticleCreateTS.T, this.pageLastSeenTS.T)) {
-      this.browserTabInterval = this.browserTabInterval || setInterval(this.refreshBrowserTabTitle , constants.TITLE_FLASH_INTERVAL);
+    // Web browser tab notification
+    this.handleBrowserTabNotification(latestFriendList)
+    this.handleBrowserToast(latestFriendList)
+  }
+
+  resetTitle() {
+    const { intl } = this.props
+    this.pageLastSeenTS = emptyTimeStamp()
+
+    // stop showing tab notification
+    if (this.browserTabInterval) {
+      clearInterval(this.browserTabInterval)
+      this.browserTabInterval   = null
+    }
+
+    document.title = intl.formatMessage({id: 'site-title.title'})
+  }
+
+  handleBrowserTabNotification(latestFriendList) {
+    const latestMessage = latestFriendList[0]
+
+    // user is browsing current tab
+    if (!document.hidden) return this.resetTitle()
+
+    if (isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)) {
+      this.browserTabInterval = this.browserTabInterval || setInterval(() => {
+        let sender = decodeBase64(latestMessage.creatorName)
+        this.refreshBrowserTabTitle(sender)
+      }, constants.TITLE_FLASH_INTERVAL);
+    }
+  }
+
+  handleBrowserToast(latestFriendList) {
+    const { intl, match, history } = this.props
+    const latestMessage = latestFriendList[0]
+
+    if (
+      !latestMessage ||
+      !document.hidden ||                                         // user is browsing current tab
+      this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
+      !isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)  // msg has been read before
+    ) { return }
+
+    // prepare data for notification
+    let { messageID, friendID, chatID } = latestMessage
+    let creatorName = decodeBase64(latestMessage.creatorName)
+    let title = intl.formatMessage({id: 'site-title.notify1'}, {SENDER: creatorName})
+    let summary = latestMessage.contents
+      .map( content => JSON.parse(decodeBase64(content)) )
+      .filter( content => content.type === 1 ) // text only
+      .map( content => content.value )
+      .join(' ').substr(0, 20)
+
+    // send notification
+    let noti = showNotification({ title: title, body: summary, tag: `message${messageID}` })
+    if (noti) {
+      this.sentNotifications.push(messageID)
+      noti.addEventListener('click', event => {
+        window.focus()
+        noti.close()
+
+        if (match.url !== `/friend/${friendID}/chat/${chatID}/`) {
+          history.push(`/friend/`) // to trigger page re-render
+          history.push(`/friend/${friendID}/chat/${chatID}/`)
+        }
+      })
     }
   }
 
@@ -185,7 +234,7 @@ class RootPage extends PureComponent {
     let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
 
     let ids = latestFriendList.map(lf => lf.ID)
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
 
     if (ids.includes(params.chatId) && !friendListHasUnread) {
       doRootPage.markFriendListSeen(myId)
@@ -212,8 +261,8 @@ class RootPage extends PureComponent {
 
     let latestHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T,latestArticles[0].LastSeen.T):false;
     let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].ArticleCreateTS.T, friendLastSeen.T):false;
 
+    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
     let onEditNameSubmit = (name, editedProfile) => {
       doRootPage.editName(myId, name)
       doRootPage.editProfile(myId, editedProfile)
@@ -353,4 +402,4 @@ const mapDispatchToProps = (dispatch) => ({
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(RootPage))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(injectIntl(RootPage)))
