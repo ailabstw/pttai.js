@@ -56,9 +56,11 @@ class FriendChatPage extends PureComponent {
   }
 
   componentDidMount() {
-    const {actions: {doFriendChatPage}, match: {params}, myId} = this.props
+    const {markSeen, actions: {doFriendChatPage}, match: {params}, myId} = this.props
 
     doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
+
+    markSeen()
   }
 
   render() {
