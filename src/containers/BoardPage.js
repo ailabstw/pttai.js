@@ -32,9 +32,12 @@ class BoardPage extends PureComponent {
   }
 
   getLatestArticle() {
-    const { myId, actions: {doBoardPage}, match: {params} } = this.props
+    const { myId, markSeen, actions: {doBoardPage}, match: {params} } = this.props
 
     doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), false, constants.NUM_ARTICLE_PER_REQ)
+    doBoardPage.markBoard(myId, decodeURIComponent(params.boardId));
+
+    markSeen()
   }
 
   componentWillMount() {
@@ -55,13 +58,14 @@ class BoardPage extends PureComponent {
   }
 
   componentDidMount() {
-    const {actions: {doBoardPage}, match: {params}, myId} = this.props
+    const {markSeen, actions: {doBoardPage}, match: {params}, myId} = this.props
 
     doBoardPage.markBoard(myId, decodeURIComponent(params.boardId));
+    markSeen()
   }
 
   render() {
-    const { match, myId, boardPage, actions: {doBoardPage, doModalContainer}} = this.props
+    const { match, myId, boardPage, markSeen, actions: {doBoardPage, doModalContainer}} = this.props
     const { showAlert, alertData } = this.state
 
     if(!myId) return (<Empty />)
@@ -83,6 +87,7 @@ class BoardPage extends PureComponent {
     let openCreateArticleSubmit = (title, reducedArticleArray, attachments) => {
       doBoardPage.createArticleWithAttachments(myId, userName, userImg, boardId, title, reducedArticleArray, attachments)
       doBoardPage.markBoard(myId, boardId);
+      markSeen()
 
       doModalContainer.closeModal()
     }

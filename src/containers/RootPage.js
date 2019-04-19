@@ -47,10 +47,12 @@ class RootPage extends PureComponent {
     this.pageLastSeenTS = emptyTimeStamp()
     this.sentNotifications = []
 
-    this.refreshPage                  = this.refreshPage.bind(this)
-    this.refreshBrowserTabTitle       = this.refreshBrowserTabTitle.bind(this)
-    this.markSeen                     = this.markSeen.bind(this)
-    this.resetTitle                   = this.resetTitle.bind(this)
+    this.resetTitle              = this.resetTitle.bind(this)
+    this.refreshPage             = this.refreshPage.bind(this)
+    this.refreshBrowserTabTitle  = this.refreshBrowserTabTitle.bind(this)
+    this.checkMarkFriendListSeen = this.checkMarkFriendListSeen.bind(this)
+    this.checkMarkHubSeen        = this.checkMarkHubSeen.bind(this)
+
     this.handleBrowserTabNotification = this.handleBrowserTabNotification.bind(this)
     this.handleBrowserToast           = this.handleBrowserToast.bind(this)
   }
@@ -226,6 +228,21 @@ class RootPage extends PureComponent {
     }
   }
 
+  checkMarkHubSeen() {
+    let { myId, actions: {doRootPage}, match:{params} } = this.props
+
+    let me             = getRoot(this.props)
+    let logLastSeen    = me.get('logLastSeen',      Immutable.Map()).toJS()
+    let latestArticles = me.get('latestArticles',   Immutable.List()).toJS()
+
+    let ids = latestArticles.map(la => la.BoardID)
+    let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].CreateTS.T, logLastSeen.T):false;
+
+    if (ids.includes(params.boardId) && !hubHasUnread) {
+      doRootPage.markLogSeen(myId)
+    }
+  }
+
   checkMarkFriendListSeen() {
     let { myId, actions: {doRootPage}, match:{params} } = this.props
 
@@ -352,7 +369,7 @@ class RootPage extends PureComponent {
             MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId}/>)
             break;
         case 'BoardPage':
-            MAIN_PAGE = (<BoardPage {...this.props} myId={boardPageId}/>)
+            MAIN_PAGE = (<BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId}/>)
             break;
         case 'ArticlePage':
             MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId}/>)
