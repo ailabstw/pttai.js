@@ -226,7 +226,7 @@ class RootPage extends PureComponent {
     }
   }
 
-  markSeen() {
+  checkMarkFriendListSeen() {
     let { myId, actions: {doRootPage}, match:{params} } = this.props
 
     let me                  = getRoot(this.props)
@@ -361,7 +361,7 @@ class RootPage extends PureComponent {
             MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId}/>)
             break;
         case 'FriendChatPage':
-            MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.markSeen} myId={friendChatPageId}/>)
+            MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId}/>)
             break;
         default:
             MAIN_PAGE = null
