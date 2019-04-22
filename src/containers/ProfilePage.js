@@ -31,14 +31,18 @@ class ProfilePage extends PureComponent {
             onEditName,
             // hasUnread,
             // onLatestClicked,
+            isChatRoom,
             onSettingClicked } = this.props
 
     const { alertData, showAlert } = this.state
 
     // let latestClass = hasUnread? 'profile-latest-active':'profile-latest';
 
+    let rootClass = styles['root']
+    if (isChatRoom) { rootClass += ' ' + styles['collapsed'] }
+
     return (
-      <div className={styles['root']}>
+      <div className={rootClass}>
         <div className={styles['content']}>
           <div className={styles['profile-picture']} onClick={onEditName}>
           {

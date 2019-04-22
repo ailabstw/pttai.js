@@ -4,10 +4,18 @@
     background-color: #4D474E;
     position:relative;
     z-index:1;
+    transition-duration: .3s;
 
     -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
     -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
     box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.collapsed {
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    transition-duration: .5s;
 }
 
 .content {
