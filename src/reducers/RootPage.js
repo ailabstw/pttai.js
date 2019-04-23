@@ -35,7 +35,9 @@ const REMOVE          = myDuck.defineType('REMOVE')
 const SET_DATA        = myDuck.defineType('SET_DATA')
 const UPDATE_DATA     = myDuck.defineType('UPDATE_DATA')
 
-// init
+/**
+ * @func init
+ */
 export const init = (myId, query, param) => {
   let hubPageId           = getUUID()
   let boardPageId         = getUUID()
@@ -69,76 +71,78 @@ export const init = (myId, query, param) => {
   }
 }
 
-/*                    */
-/*  Get User Info     */
-/*                    */
+/**
+ * @func getUserInfoById - fetch user info for getUserInfo
+ * @private
+ */
 
 function getUserInfoById(userId) {
   return dispatch => Promise.all([
     dispatch(serverUtils.getUserName(userId))
-      .then(({response: { result }, type, query, error}) => {
-        if (error) {
-          return { 'error': true, 'key': 'userName', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'userName', 'value': result }
-        }
-      }),
+      .then(({response:{result},error}) => ({
+        'error': !!error,
+        'key': 'userName',
+        'value': error || result
+      })),
     dispatch(serverUtils.getUserImg(userId))
-      .then(({response: { result }, type, query, error}) => {
-        if (error) {
-          return { 'error': true, 'key': 'userImg', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'userImg', 'value': result }
-        }
-      }),
+      .then(({response:{result},error}) => ({
+        'error': !!error,
+        'key': 'userImg',
+        'value': error || result
+      })),
     dispatch(serverUtils.getNameCard(userId))
-      .then(({response: { result }, type, query, error}) => {
-        if (error) {
-          return { 'error': true, 'key': 'userNameCard', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'userNameCard', 'value': result }
-        }
-      }),
+      .then(({response:{result},error}) => ({
+        'error': !!error,
+        'key': 'userNameCard',
+        'value': error || result
+      }))
   ]);
 }
 
-export const getUserInfo = (myId, noUserCallBackFunc, userCallBackFunc, connectionLostCallBackFunc) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.showMe())
-      .then(({response: userInfo, type, query, error}) => {
-        if (error) {
-          const errorMessage = "Backend no response: please try restarting PTT.ai"
-          connectionLostCallBackFunc(errorMessage)
+/**
+ * @typedef Response
+ * @property {string} type - done || no_user_name
+ * @property {value=} id - values for no_user_name
+ *
+ * @typedef Error
+ * @property {string} message
+ * @property {object} info
+ */
 
-        } else {
-          let userId = userInfo.result.ID
-          dispatch(getUserInfoById(userId))
-            .then((userMetaInfo) => {
-              let info     = userInfo.result
-              let metaInfo = userMetaInfo.filter((meta) => !meta.error)
-              let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
+/**
+ * @func getUserInfo - doRootPage.getUserInfo
+ *
+ * @param {string} myId - id for RootPage
+ * @return {Function<Promise<Response|Error>>} function for dispatch
+ *
+ */
+export const getUserInfo = myId => {
+  return (dispatch, getState) => new Promise( async (resolve, reject) => {
+    const {response: userInfo, error} = await dispatch(serverUtils.showMe())
+    if (error) return reject({ message: "Backend no response: please try restarting PTT.ai", info: error })
 
-              /* If no user name, pop up sign-in modal */
-              if (!userNameResult || !userNameResult.N || serverUtils.b64decode(userNameResult.N) === DEFAULT_USER_NAME) {
-                dispatch(getAllKeyInfo())
-                  .then(( keyInfo ) => {
-                    let deviceJoinKeyInfo   = keyInfo.find((key) => key.key === 'deviceJoinKey').value
-                    let userPrivateKeyInfo  = keyInfo.find((key) => key.key === 'userPrivateKey').value
+    let userId = userInfo.result.ID
+    let info   = userInfo.result
 
-                    noUserCallBackFunc(userPrivateKeyInfo, {
-                      URL:          deviceJoinKeyInfo.URL,
-                      UpdateTS:     deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
-                      expirePeriod: deviceJoinKeyInfo.e,
-                    })
-                  })
-              } else {
-                userCallBackFunc()
-              }
-              dispatch(postprocessGetUserInfo(myId, info, metaInfo))
-          })
-        }
+    let userMetaInfo = await dispatch(getUserInfoById(userId))
+
+    let metaInfo = userMetaInfo.filter((meta) => !meta.error)
+    let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
+
+    // user exist
+    if ((userNameResult && userNameResult.N && serverUtils.b64decode(userNameResult.N) !== DEFAULT_USER_NAME)) {
+      resolve({ type: 'done' })
+    }
+    else {
+      let keyInfo = await dispatch(getAllKeyInfo())
+      resolve({
+        type: 'no_user_name',
+        value: keyInfo
       })
-  }
+    }
+
+    dispatch(postprocessGetUserInfo(myId, info, metaInfo))
+  })
 }
 
 const postprocessGetUserInfo = (myId, info, metaInfo) => {
@@ -179,43 +183,36 @@ const postprocessGetUserInfo = (myId, info, metaInfo) => {
   }
 }
 
-/*                    */
-/*  Get Key Info      */
-/*                    */
+/**
+ * @func getAllKeyInfo
+ * @private
+ */
 
-function getAllKeyInfo() {
-  return dispatch => Promise.all([
-    dispatch(serverUtils.showMyURL())
-      .then(({response: { result }, type, query, error}) => {
-        if (error) {
-          return { 'error': true, 'key': 'deviceJoinKey', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'deviceJoinKey', 'value': result }
-        }
-      }),
-    dispatch(serverUtils.showMyKey())
-      .then(({response: { result }, type, query, error}) => {
-        if (error) {
-          return { 'error': true, 'key': 'userPrivateKey', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'userPrivateKey', 'value': result }
-        }
-      }),
-    dispatch(serverUtils.showURL())
-      .then(({response: { result }, type, query, error}) => {
-        if (error) {
-          return { 'error': true, 'key': 'friendJoinKey', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'friendJoinKey', 'value': result }
-        }
-      }),
-  ]);
-}
+const getAllKeyInfo = () => dispatch => Promise.all([
+  dispatch(serverUtils.showMyURL())
+    .then(({response:{result},error}) => ({
+      'error': !!error,
+      'key': 'deviceJoinKey',
+      'value': error || result
+    })),
+  dispatch(serverUtils.showMyKey())
+    .then(({response:{result},error}) => ({
+      'error': !!error,
+      'key': 'userPrivateKey',
+      'value': error || result
+    })),
+  dispatch(serverUtils.showURL())
+    .then(({response:{result},error}) => ({
+      'error': !!error,
+      'key': 'friendJoinKey',
+      'value': error || result
+    })),
+]);
 
 export const getKeyInfo = (myId) => {
   return (dispatch, getState) => {
     dispatch(getAllKeyInfo())
-      .then(( keyInfo ) => {
+      .then( keyInfo => {
         dispatch(postprocessGetKeyInfo(myId, keyInfo))
       })
   }
@@ -225,9 +222,9 @@ const postprocessGetKeyInfo = (myId, keyInfo) => {
 
   console.log('doRootPage.postprocessGetKeyInfo: keyInfo: ', keyInfo)
 
-  let deviceJoinKeyInfo   = keyInfo.find((key) => key.key === 'deviceJoinKey').value
-  let userPrivateKeyInfo  = keyInfo.find((key) => key.key === 'userPrivateKey').value
-  let friendJoinKeyInfo   = keyInfo.find((key) => key.key === 'friendJoinKey').value
+  let deviceJoinKeyInfo   = keyInfo.find(({key}) => key === 'deviceJoinKey').value
+  let userPrivateKeyInfo  = keyInfo.find(({key}) => key === 'userPrivateKey').value
+  let friendJoinKeyInfo   = keyInfo.find(({key}) => key === 'friendJoinKey').value
 
   const combinedKeyInfo = {
     userPrivateKey: userPrivateKeyInfo,
@@ -259,7 +256,7 @@ const postprocessGetKeyInfo = (myId, keyInfo) => {
 export const getDeviceInfo = (myId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getMyNodes())
-      .then(({response: { result }, type, query, error}) => {
+      .then(({response: { result }, error}) => {
         dispatch(postprocessGetDeviceInfo(myId, result))
       })
   }
@@ -392,137 +389,116 @@ export const addDevice = (myId, nodeId, pKey, callBackFunc) => {
       .then(({response: {result, error}, type, query}) => {
         if (error) {
           callBackFunc({error: true, data: error.message, nodeId: nodeId})
-        } else {
+        }
+        else {
           callBackFunc({error: false, data: result})
         }
       })
   }
 }
 
+/**
+ * @func getBoardMetaMap
+ * @private
+ */
+const getBoardMetaMap = boardIds => dispatch => Promise.all(
+  boardIds.map( async (item, index) => {
+    const {response: {result}, error} = await dispatch(serverUtils.getBoard(item))
+    if (error) throw error
 
-/*                        */
-/*  Get Latest Articles   */
-/*                        */
+    return {
+      ID:        result.ID,
+      LastSeen:  result.LastSeen,
+      Status:    result.Status,
+      Title:     result.Title,
+      UpdateTS:  result.UpdateTS,
+      CreatorID: result.C,
+      BoardType: result.BT,
+    }
+  })
+);
 
+const getMetaInfoMaps = (creatorIds, boardIds) => dispatch => Promise.all([
+  dispatch(serverUtils.getUserNameByIds(creatorIds))
+    .then(({response:{result},error}) => ({
+      'error': !!error,
+      'key': 'userName',
+      'value': error || result
+    })),
+  dispatch(serverUtils.getUserImgByIds(creatorIds))
+    .then(({response:{result},error}) => ({
+      'error': !!error,
+      'key': 'userImg',
+      'value': error || result
+    })),
+  dispatch(getBoardMetaMap(boardIds))
+    .then( result => {
+      result = result.map(serverUtils.deserialize)
+      let boardMap = result.reduce((acc, each) => {
+        if (!(each.ID in acc)) {
+          acc[each.ID] = each
+        }
+        return acc
+      }, {})
+      return { 'error': false, 'key': 'boardId', 'value': boardMap }
+    }),
+])
 
+const getAllArticles = (dispatch, myId, articleIds) => dispatch => Promise.all(
+  articleIds.map(async (item, index) => {
+    const {response: aResult, error} = await dispatch(serverUtils.getArticles(item.boardId, item.articleId, 1))
+    if (error) throw error;
+    let articles = aResult.result
 
-function getBoardMetaMap(boardIds) {
-  return dispatch => Promise.all(
-    boardIds.map((item, index) => {
-          return dispatch(serverUtils.getBoard(item))
-              .then(({response: {result}, type, query, error}) => {
-                return {
-                    ID:               result.ID,
-                    LastSeen:         result.LastSeen,
-                    Status:           result.Status,
-                    Title:            result.Title,
-                    UpdateTS:         result.UpdateTS,
-                    CreatorID:        result.C,
-                    BoardType:        result.BT,
-                }
-              })
-      })
-  );
-}
+    if (articles && articles.length > 0) {
+      let article = articles[0]
+      const {response: {result}, error} = await dispatch(serverUtils.getContent(item.boardId, item.articleId, article.ContentBlockID, 0, 0, 1))
 
-function getMetaInfoMaps(creatorIds, boardIds) {
-  return dispatch => {
-      return Promise.all([
-      dispatch(serverUtils.getUserNameByIds(creatorIds))
-        .then(({response: { result }, type, query, error}) => {
-          if (error) {
-            return { 'error': true, 'key': 'userName', 'value': error }
-          } else {
-            return { 'error': false, 'key': 'userName', 'value': result }
-          }
-        }),
-      dispatch(serverUtils.getUserImgByIds(creatorIds))
-        .then(({response: { result }, type, query, error}) => {
-          if (error) {
-            return { 'error': true, 'key': 'userImg', 'value': error }
-          } else {
-            return { 'error': false, 'key': 'userImg', 'value': result }
-          }
-        }),
-      dispatch(getBoardMetaMap(boardIds))
-        .then((result) => {
-          result = result.map(serverUtils.deserialize)
-          let boardMap = result.reduce((acc, each) => {
-            if (!(each.ID in acc)) {
-              acc[each.ID] = each
-            }
-            return acc
-          }, {})
-          return { 'error': false, 'key': 'boardId', 'value': boardMap }
-        }),
-    ])
-  }
-}
+      if (error) throw error;
 
-function getAllArticles(dispatch, myId, articleIds) {
-  return dispatch => Promise.all(
-    articleIds.map((item, index) => {
-      return dispatch(serverUtils.getArticles(item.boardId, item.articleId, 1))
-              .then(({response: aResult, type, query, error}) => {
-                let articles = aResult.result
-                if (articles && articles.length > 0) {
-                  let article = articles[0]
-                  return dispatch(serverUtils.getContent(item.boardId, item.articleId, article.ContentBlockID, 0, 0, 1))
-                          .then(({response: { result }, type, query, error}) => {
-                              let summary = (result && result.length > 0) ? result[0].B : ''
-                              return {
-                                'BoardID':        item.boardId,
-                                'ID':             item.articleId,
-                                'Title':          item.title,
-                                'CreatorID':      article.CreatorID,
-                                'ContentBlockID': article.ContentBlockID,
-                                'Summary':        (summary && summary.length > 0)? summary[0]:'',
-                                'UpdateTS':       article.UpdateTS,
-                                'CreateTS':       article.CreateTS,
-                                'LastSeen':       article.L,
-                                'Status':         article.S,
-                              }
-                          })
-                } else {
-                  return Promise.reject(1)
-                }
-              })
-      })
-  );
-}
+      let summary = (result && result.length > 0) ? result[0].B : ''
+      return {
+        'BoardID':        item.boardId,
+        'ID':             item.articleId,
+        'Title':          item.title,
+        'CreatorID':      article.CreatorID,
+        'ContentBlockID': article.ContentBlockID,
+        'Summary':        (summary && summary.length > 0)? summary[0]:'',
+        'UpdateTS':       article.UpdateTS,
+        'CreateTS':       article.CreateTS,
+        'LastSeen':       article.L,
+        'Status':         article.S,
+      }
+    }
+    else {
+      return Promise.reject(1)
+    }
+  })
+);
 
-export const getLatestArticles = (myId, limit) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getPttOpLogList(EMPTY_ID, limit))
-      .then(({response: {result}, type, query, error}) => {
-        let articleIds = result.map((item) => {
-                            return item['O']
-                         }).filter((item2) => {
-                            /* PttOpTypeCreateArticle == 2 */
-                            return item2['O'] === 2
-                         }).map((item3) => {
-                            return {
-                              'boardId':    item3.D.bID,
-                              'articleId':  item3.OID,
-                              'title':      item3.D.T,
-                            }
-                         })
+export const getLatestArticles = (myId, limit) => (dispatch, getState) => new Promise(async () => {
+  const pttOpLogListRes = await dispatch(serverUtils.getPttOpLogList(EMPTY_ID, limit))
+  if (pttOpLogListRes.error) throw pttOpLogListRes.error
+  const {response: { result }} = pttOpLogListRes
 
-        dispatch(getAllArticles(dispatch, myId, articleIds))
-          .then((result) => {
+  let articleIds = result
+    .map( item => item['O'])
+    .filter( item => item['O'] === 2) // PttOpTypeCreateArticle
+    .map( item => ({
+      boardId:    item.D.bID,
+      articleId:  item.OID,
+      title:      item.D.T,
+    }))
 
-            let creatorIds = result.filter(each => each.CreatorID).map(each => each.CreatorID)
-            let boardIds   = result.filter(each => each.BoardID).map(each => each.BoardID)
+  let articles = await dispatch(getAllArticles(dispatch, myId, articleIds))
 
-            // get articles
-            dispatch(getMetaInfoMaps(creatorIds, boardIds))
-              .then((maps) => {
-                  dispatch(postprocessGetLatestArticles(myId, result, maps))
-                })
-          })
-      })
-  }
-}
+  let creatorIds = articles.filter(each => each.CreatorID).map(each => each.CreatorID)
+  let boardIds   = articles.filter(each => each.BoardID).map(each => each.BoardID)
+
+  // get articles
+  let maps = await dispatch(getMetaInfoMaps(creatorIds, boardIds))
+  dispatch(postprocessGetLatestArticles(myId, articles, maps))
+})
 
 const postprocessGetLatestArticles = (myId, result, maps) => {
 
@@ -575,13 +551,11 @@ const postprocessGetLatestArticles = (myId, result, maps) => {
   }
 }
 
-export const getLogLastSeen = myId => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getPttOpLogSeen())
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(updateLogLastSeenData(myId, result))
-      })
-  }
+export const getLogLastSeen = myId => (dispatch, getState) => {
+  dispatch(serverUtils.getPttOpLogSeen())
+    .then(({response: {result}, type, query, error}) => {
+      dispatch(updateLogLastSeenData(myId, result))
+    })
 }
 
 export const markLogSeen = myId => {
@@ -602,28 +576,24 @@ const updateLogLastSeenData = (myId, result) => {
   }
 }
 
-export const fetchLatestMessage = (myId, limit) => {
-  return (dispatch, getState) => {
-    let emptyTS = utils.emptyTimeStamp();
-    dispatch(serverUtils.getFriendListByMsgCreateTS(emptyTS.T, emptyTS.NT, limit))
-      .then(({response: {result}, type, query, error}) => {
-        const chatId = result[0].ID
-        const creatorName = result[0].N
+export const fetchLatestMessage = (myId, limit) => (dispatch, getState) => new Promise( async ()=>{
+  let emptyTS = utils.emptyTimeStamp();
 
-        // TODO: error handling
-        dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
-          .then(({response: {result}, type, query, error}) => {
+  const friendListRes = await dispatch(serverUtils.getFriendListByMsgCreateTS(emptyTS.T, emptyTS.NT, limit))
+  if (friendListRes.error) throw friendListRes.error
+  const friendList = friendListRes.response.result
+  const chatId = friendList[0].ID
+  const creatorName = friendList[0].N
 
-            Promise.all(result.map( msg =>
-              dispatch(serverUtils.getMessageBlockList(chatId, msg.ID, msg.BlockID, 0, 0, 1))
-            )).then(results => {
-              let messages = results.map( data => data.response.result[0] )
-              dispatch(postprocessGetFriendListByMsgCreateTS(myId, chatId, creatorName, messages))
-            })
-          })
-      })
-  }
-}
+  const messageListRes = await dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
+  if (messageListRes.error) throw messageListRes.error
+  const messageList = messageListRes.response.result
+  const messageBlockList = await Promise.all(messageList.map( msg =>
+    dispatch(serverUtils.getMessageBlockList(chatId, msg.ID, msg.BlockID, 0, 0, 1))
+  ))
+  let messages = messageBlockList.map( data => data.response.result[0] )
+  dispatch(postprocessGetFriendListByMsgCreateTS(myId, chatId, creatorName, messages))
+})
 
 const postprocessGetFriendListByMsgCreateTS = (myId, chatId, creatorName, messages) => {
   return {
@@ -652,13 +622,11 @@ export const getFriendListSeen = myId => {
   }
 }
 
-export const markFriendListSeen = myId => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.markFriendListSeen())
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(updateFriendLastSeenData(myId, result))
-      })
-  }
+export const markFriendListSeen = myId => (dispatch, getState) => {
+  dispatch(serverUtils.markFriendListSeen())
+    .then(({response: {result}, type, query, error}) => {
+      dispatch(updateFriendLastSeenData(myId, result))
+    })
 }
 
 const updateFriendLastSeenData = (myId, result) => {
