@@ -136,7 +136,7 @@ export const friendProfileModalStyles = {
     height                : 'auto',
     maxWidth              : '414px',
     margin                : 'auto',
-    top                   : 'calc(50% - 96px)',
+    top                   : '64px',
     left                  : '0px',
     right                 : '0px',
     bottom                : '0px',

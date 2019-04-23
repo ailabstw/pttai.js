@@ -202,7 +202,7 @@ class FriendChatComponent extends PureComponent {
   }
 
   render() {
-    const { intl, messageList, isLoading, userId, noMessage, boardList } = this.props
+    const { intl, messageList, isLoading, noMessage } = this.props
     const { inputMessage, showAlert, alertData } = this.state
 
     const placeholder = intl.formatMessage({id: 'friend-chat-component.placeholder'});
@@ -211,175 +211,35 @@ class FriendChatComponent extends PureComponent {
       <div className={styles['root']}>
         <div className={styles['chat']}
              onScroll={this.handleScroll}
-             ref={(scroller) => {
-               this.scroller = scroller;
-             }}>
+             ref={(scroller) => { this.scroller = scroller; }}>
           {
-            (noMessage) ? (
-              <div className={styles['no-message']}>
-                <FormattedMessage
-                  id="friend-chat-component.title"
-                  defaultMessage="Start chatting!"
-                />
-              </div>
-            ):(
-              <div>
-                {
-                  isLoading? (
-                    <div className={styles['loader']}>
-                      <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
-                    </div>
-                  ):(null)
-                }
-                {
-                  messageList.map((message, index) => {
+            (() => {
+              if (noMessage) return (
+                <div className={styles['no-message']}>
+                  <FormattedMessage
+                    id="friend-chat-component.title"
+                    defaultMessage="Start chatting!"
+                  />
+                </div>
+              );
 
-                    /*               */
-                    /* Date divider  */
-                    /*               */
-                    let divider = null
+              if (isLoading) return (
+                <div>
+                  <div className={styles['loader']}>
+                    <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
+                  </div>
+                </div>
+              );
 
-                    if (index > 0 && doesCrossDay(messageList[index].CreateTS.T,messageList[index-1].CreateTS.T)) {
-                      divider = <div className={styles['message-divider']}>
-                                  <span>
-                                    {epoch2MessageDateFormat(messageList[index].CreateTS.T)}
-                                  </span>
-                                </div>
-                    }
-
-                    /*                */
-                    /* Invite message */
-                    /*                */
-                    let messageObj  = toJson(message.Buf)
-                    let messageHtml = messageObj.value
-                    let isUser      = (message.CreatorID === userId)
-                    let inviteInfo  = {}
-
-                    if (messageObj.type === constants.MESSAGE_TYPE_INVITE) {
-
-                      let invite = $(messageObj.value)
-                      inviteInfo.inviteType    = invite.data('action-type')
-                      inviteInfo.boardId       = invite.data('board-id')
-                      inviteInfo.boardName     = invite.data('board-name')
-                      inviteInfo.boardJoinKey  = invite.data('join-key')
-                      inviteInfo.keyUpdateTS_T = invite.data('update-ts')
-                      inviteInfo.keyExpiration = invite.data('expiration')
-
-                      let inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
-                      /* TODO: Need remove-board time stamp to disable rejoin */
-                      if (!isUser && inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')) {
-                        messageHtml = (<span>
-                          <FormattedMessage
-                            id="friend-chat-component.action1"
-                            defaultMessage="You Have Joined"
-                          />
-                          <span>{inviteInfo.boardName}</span>
-                          <FormattedMessage
-                            id="friend-chat-component.action1-2"
-                            defaultMessage="Click to go to Group"
-                          />
-                        </span>)
-                      } else if (!isUser){
-                        messageHtml = (<span>
-                          <FormattedMessage
-                            id="friend-chat-component.action2"
-                            defaultMessage="Invited to"
-                          />
-                          <span>{inviteInfo.boardName}</span>
-                          <FormattedMessage
-                            id="friend-chat-component.action2-2"
-                            defaultMessage="Click to join ({expTimeVal})"
-                            values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
-                          />
-                        </span>)
-                      } else {
-                        messageHtml = (<span>
-                          <FormattedMessage
-                            id="friend-chat-component.action3"
-                            defaultMessage="Sent Group Invitation"
-                          />
-                          <span>{inviteInfo.boardName}</span>
-                          <FormattedMessage
-                            id="friend-chat-component.action4"
-                            defaultMessage=" ({expTimeVal})"
-                            values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
-                          />
-                        </span>)
-                      }
-                    }
-
-                    /*          */
-                    /* Messages */
-                    /*          */
-                    if (isUser) {
-                      return (
-                        <div key={message.ID}>
-                          {divider}
-                          <div className={styles['user-message-item']}>
-                            <div className={styles['user-message-meta']}>
-                              <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
-                                <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]}>
-                                </div>
-                              </div>
-                              <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
-                            </div>
-                            {
-                              messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
-                                <div className={styles['user-message-content-invitation']}>{messageHtml}</div>
-                              ):(
-                                <div className={styles['user-message-content']}>{linkParser(messageObj.value)}</div>
-                              )
-                            }
-                          </div>
-                        </div>
-                      )
-                    } else {
-
-                      let inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
-
-                      return (
-                        <div key={message.ID}>
-                          {divider}
-                          <div className={styles['message-item']}>
-                            {
-                              messageObj.type === constants.MESSAGE_TYPE_INVITE ? (
-
-                                inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted') ? (
-                                  <div className={styles['message-content-invitation']}
-                                       onClick={() => this.props.history.push(`/board/${inviteInfo.boardId}`)}>
-                                    {messageHtml}
-                                  </div>
-                                ):(
-                                  <div className={styles['message-content-invitation']}
-                                       onClick={() => this.handleAcceptInvite(inviteInfo.boardJoinKey)}>
-                                    {messageHtml}
-                                  </div>
-                                )
-                              ):(
-                                <div className={styles['message-content']}>{linkParser(messageObj.value)}</div>
-                              )
-                            }
-                            <div className={styles['message-meta']}>
-                              <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
-                                <div className={styles['message-status-circle-' + getStatusClass(message.Status)]}>
-                                </div>
-                              </div>
-                              <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    }
-                  })
-                }
-              </div>
-            )
+              return <MessageListComponent
+                        messageList={messageList}
+                        boardList={this.props.boardList}
+                        userId={this.props.userId}
+                        history={this.props.history}
+                        handleAcceptInvite={this.handleAcceptInvite} />
+            })()
           }
-          <div className={styles['bottomElement']}
-             ref={(el) => {
-              this.pageEnd = el;
-            }}>
-          </div>
+          <div className={styles['bottomElement']} ref={(el) => { this.pageEnd = el; }}></div>
         </div>
         <div className={styles['message-input']}>
           <input
@@ -394,6 +254,171 @@ class FriendChatComponent extends PureComponent {
       </div>
     )
   }
+}
+
+const MessageListComponent = props => {
+  const { messageList } = props
+
+  return (
+    <div>
+      {
+        messageList.map((message, index) => {
+
+          // Date divider
+          let divider = null
+          if (index > 0 && doesCrossDay(messageList[index].CreateTS.T,messageList[index-1].CreateTS.T)) {
+            divider = (
+              <div className={styles['message-divider']}>
+                <span>{epoch2MessageDateFormat(messageList[index].CreateTS.T)}</span>
+              </div>
+            )
+          }
+
+          return (
+            <div key={message.ID}>
+              {divider}
+              <Message {...props} message={message} />
+            </div>
+          )
+        })
+      }
+    </div>
+  )
+}
+
+const Message = props => {
+  const { message, userId } = props
+
+  let messageObj  = toJson(message.Buf)
+  let isOwn       = (message.CreatorID === userId)
+
+  // is not invite message
+  if (messageObj.type !== constants.MESSAGE_TYPE_INVITE) {
+    if (isOwn) {
+      return (
+        <div className={styles['user-message-item']}>
+          <div className={styles['user-message-meta']}>
+            <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
+              <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]}>
+              </div>
+            </div>
+            <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+          </div>
+          <div className={styles['user-message-content']}>{linkParser(messageObj.value)}</div>
+        </div>
+      )
+    }
+    else {
+      return (
+        <div className={styles['message-item']}>
+          <div className={styles['message-content']}>{linkParser(messageObj.value)}</div>
+          <div className={styles['message-meta']}>
+            <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
+              <div className={styles['message-status-circle-' + getStatusClass(message.Status)]}>
+              </div>
+            </div>
+            <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  // Invite message
+
+  let invite = $(messageObj.value)
+  let inviteInfo  = {}
+  inviteInfo.inviteType    = invite.data('action-type')
+  inviteInfo.boardId       = invite.data('board-id')
+  inviteInfo.boardName     = invite.data('board-name')
+  inviteInfo.boardJoinKey  = invite.data('join-key')
+  inviteInfo.keyUpdateTS_T = invite.data('update-ts')
+  inviteInfo.keyExpiration = invite.data('expiration')
+
+  if (isOwn) {
+    return (
+      <div className={styles['user-message-item']}>
+        <div className={styles['user-message-meta']}>
+          <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
+            <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]}>
+            </div>
+          </div>
+          <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+        </div>
+        <div className={styles['user-message-content-invitation']}>
+          <span>
+            <FormattedMessage
+              id="friend-chat-component.action3"
+              defaultMessage="Sent Group Invitation"
+            />
+            <span>{inviteInfo.boardName}</span>
+            <FormattedMessage
+              id="friend-chat-component.action4"
+              defaultMessage=" ({expTimeVal})"
+              values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
+            />
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles['message-item']}>
+      <InvitationBlock
+        inviteInfo={inviteInfo}
+        handleAcceptInvite={props.handleAcceptInvite}
+        boardList={props.boardList}
+        history={props.history} />
+      <div className={styles['message-meta']}>
+        <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
+          <div className={styles['message-status-circle-' + getStatusClass(message.Status)]}></div>
+        </div>
+        <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+      </div>
+    </div>
+  )
+}
+
+const InvitationBlock = props => {
+  const { inviteInfo, boardList, handleAcceptInvite, history } = props
+
+  var inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
+  var isJoined    = inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')
+
+  /* TODO: Need remove-board time stamp to disable rejoin */
+  if (isJoined) {
+    return (
+      <div className={styles['message-content-invitation']} onClick={()=> history.push(`/board/${inviteInfo.boardId}`) }>
+        <span>
+          <FormattedMessage
+            id="friend-chat-component.action1"
+            defaultMessage="You Have Joined"
+          />
+          <span>{inviteInfo.boardName}</span>
+          <FormattedMessage
+            id="friend-chat-component.action1-2"
+            defaultMessage="Click to go to Group"
+          />
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles['message-content-invitation']} onClick={()=>handleAcceptInvite(inviteInfo.boardJoinKey)}>
+      <span>
+        <FormattedMessage
+          id="friend-chat-component.action2"
+          defaultMessage="Invited to" />
+        <span>{inviteInfo.boardName}</span>
+        <FormattedMessage
+          id="friend-chat-component.action2-2"
+          defaultMessage="Click to join ({expTimeVal})"
+          values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }} />
+      </span>
+    </div>
+  )
 }
 
 export default injectIntl(FriendChatComponent)

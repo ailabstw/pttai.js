@@ -6,7 +6,13 @@ import styles   from './Navigator.css'
 
 class Navigator extends PureComponent {
   render() {
-    const {hubHasUnread, friendListHasUnread, onHubClicked, onFriendClicked} = this.props;
+    const {hubHasUnread, friendListHasUnread, onHubClicked, onFriendClicked, isChatRoom} = this.props;
+
+    // for chatpage collapse
+    let rootClass = styles['root']
+    if (isChatRoom) { rootClass += ' ' + styles['collapsed'] }
+
+    // for active tab state change
     let tabOneClass = 'inactive'
     let tabTwoClass = 'inactive'
     if (this.props.match.url.indexOf(`/hub`) === 0 ||
@@ -28,7 +34,7 @@ class Navigator extends PureComponent {
     }
 
     return (
-      <div className={styles['root']}>
+      <div className={rootClass}>
         <div className={styles['content']}>
 
           <ul className={styles['tabs']}>

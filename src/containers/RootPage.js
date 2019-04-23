@@ -384,6 +384,8 @@ class RootPage extends PureComponent {
             MAIN_PAGE = null
     }
 
+    let isChatRoom = myComponent === 'FriendChatPage'
+
     return (
       <div className={styles['root']}>
         <ProfilePage
@@ -394,11 +396,13 @@ class RootPage extends PureComponent {
           onEditName={openEditNameModule}
           onSettingClicked={onSettingClicked}
           onLatestClicked={onLatestClicked}
+          isChatRoom={isChatRoom}
           hasUnread={latestHasUnread} />
         <Navigator {...this.props}
           hubHasUnread={hubHasUnread}
           friendListHasUnread={friendListHasUnread}
           onHubClicked={markHubSeen}
+          isChatRoom={isChatRoom}
           onFriendClicked={markFriendRead} />
         { MAIN_PAGE }
         <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
