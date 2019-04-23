@@ -299,22 +299,19 @@ class RootPage extends PureComponent {
     let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
 
     let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
-    let onEditNameSubmit = (name, editedProfile) => {
-      doRootPage.editName(myId, name)
-      doRootPage.editProfile(myId, editedProfile)
-      //doModalContainer.closeModal()
-    }
 
-    let onEditImgSubmit = (imgBase64) => {
-      doRootPage.editProfileImg(myId, imgBase64)
-    }
+    let openNameCard = () => {
+      const onEditNameSubmit = (name, editedProfile) => {
+        doRootPage.editName(myId, name)
+        doRootPage.editProfile(myId, editedProfile)
+        //doModalContainer.closeModal()
+      }
 
-    let openEditNameModule = () => {
       doModalContainer.setInput({
         userImg:  userImg,
         userName: userName,
         profile:  profile,
-        editImgSubmit:   onEditImgSubmit,
+        editImgSubmit:   imgBase64 => { doRootPage.editProfileImg(myId, imgBase64) },
         friendJoinKey:   keyInfo.friendJoinKey,
       })
       doModalContainer.setSubmit(onEditNameSubmit)
@@ -412,7 +409,7 @@ class RootPage extends PureComponent {
           userId={userId}
           userName={userName}
           userImg={userImg}
-          onEditName={openEditNameModule}
+          openNameCard={openNameCard}
           onSettingClicked={onSettingClicked}
           onLatestClicked={onLatestClicked}
           isChatRoom={isChatRoom}

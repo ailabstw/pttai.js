@@ -28,7 +28,7 @@ class ProfilePage extends PureComponent {
     const { userId,
             userName,
             userImg,
-            onEditName,
+            openNameCard,
             // hasUnread,
             // onLatestClicked,
             isChatRoom,
@@ -44,14 +44,14 @@ class ProfilePage extends PureComponent {
     return (
       <div className={rootClass}>
         <div className={styles['content']}>
-          <div className={styles['profile-picture']} onClick={onEditName}>
+          <div className={styles['profile-picture']} onClick={openNameCard}>
           {
             userImg? (
               <img src={userImg} alt={'User Profile'}/>
             ):null
           }
           </div>
-          <div className={styles['profile-description']} onClick={onEditName}>
+          <div className={styles['profile-description']} onClick={openNameCard}>
             <div title={userId} className={styles['name']} >{userName}</div>
           </div>
           {/*<div className={styles[latestClass]} onClick={onLatestClicked}></div>*/}

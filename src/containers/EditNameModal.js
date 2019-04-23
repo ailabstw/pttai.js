@@ -27,15 +27,6 @@ class EditNameModal extends PureComponent {
   constructor(props) {
     super();
     this.state = {
-
-      nameOriginal:         props.modalInput.userName,
-      userImgOriginal:      props.modalInput.userImg,
-      companyOriginal:      props.modalInput.profile.company || '',
-      jobTitleOriginal:     props.modalInput.profile.jobTitle || '',
-      emailOriginal:        props.modalInput.profile.email || '',
-      phoneOriginal:        props.modalInput.profile.phone || '',
-      descriptionOriginal:  props.modalInput.profile.description || '',
-
       name:     props.modalInput.userName,
       userImg:  props.modalInput.userImg,
       company:  props.modalInput.profile.company || '',
@@ -46,7 +37,195 @@ class EditNameModal extends PureComponent {
 
       friendJoinKey:  props.modalInput.friendJoinKey,
       isEdit:         false,
-      qrCodeCopied:         false,
+      qrCodeCopied:   false,
+    };
+  }
+
+  render() {
+    const { intl, onModalClose, modal: { currentModal } } = this.props
+    const { name, userImg, company, jobTitle, email, phone, description, isEdit, friendJoinKey, qrCodeCopied } = this.state
+
+    const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
+    const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
+    const email_placeholder       = intl.formatMessage({id: 'edit-name-modal.email-placeholder'});
+    const phone_placeholder       = intl.formatMessage({id: 'edit-name-modal.phone-placeholder'});
+    const description_placeholder = intl.formatMessage({id: 'edit-name-modal.description-placeholder'});
+
+    if (isEdit) {
+      return <EditingNameCard
+                {...this.props}
+                {...this.state}
+                finishEdit={ editedProfile => {
+                  this.setState({
+                    isEdit: false,
+                    ...editedProfile
+                  })
+                }} />
+    }
+
+    return (
+      <div>
+        <Modal
+          overlayClassName={styles['overlay']}
+          style={modalConstants.editNameModalStyles}
+          isOpen={currentModal !== null}
+          onRequestClose={onModalClose}
+          contentLabel="Edit Name Modal">
+          <div className={styles['root']}>
+            <div className={styles['wrapper']}>
+              <div className={styles['info-section']}>
+                <div className={styles['left-side']}>
+                  <div className={styles['profile-picture']}>
+                    <div>
+                      <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
+                      <div className={styles['mask']}></div>
+                    </div>
+                  </div>
+                  {/*
+                  <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
+                    <FontAwesomeIcon icon="pen" size="xs"/>
+                  </button>
+                  */}
+                </div>
+                <div className={styles['right-side']}>
+                  <div className={styles['main-info']}>
+                    <div className={styles['profile-input']}>
+                      <div className={styles['name']}>
+                        <div>{name}</div>
+                      </div>
+                      <div className={styles['company']}>
+                      {
+                        company ? (
+                          <div>{company}</div>
+                        ):(
+                          <div className={styles['unfilled']}>{company_placeholder}</div>
+                        )
+                      }
+                      </div>
+                      <div className={styles['job-title']}>
+                      {
+                        jobTitle ? (
+                          <div>{jobTitle}</div>
+                        ):(
+                          <div className={styles['unfilled']}>{jobtitle_placeholder}</div>
+                        )
+                      }
+                      </div>
+                    </div>
+                    <div hidden className={styles['qr-code']}>
+                      <QRCode value={friendJoinKey.URL} size={80} />
+                    </div>
+                  </div>
+                  <div className={styles['divider']}></div>
+                  <div className={styles['other-info']}>
+                    <div className={styles['contact-input']}>
+                      <div className={styles['email']}>
+                      {
+                        email ? (
+                          <div>{email}</div>
+                        ):(
+                          <div className={styles['unfilled']}>{email_placeholder}</div>
+                        )
+                      }
+                      </div>
+                      <div className={styles['phone']}>
+                      {
+                        phone ? (
+                          <div>{phone}</div>
+                        ):(
+                          <div className={styles['unfilled']}>{phone_placeholder}</div>
+                        )
+                      }
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles['divider']}></div>
+                  <div className={styles['other-info']}>
+                    <div className={styles['desc-input']}>
+                      <div className={styles['description']}>
+                      {
+                        description ? (
+                          description.split('\n').map((line,i) => <div key={`desc-line-${i}`}>{line}</div>)
+                        ):(
+                          <div className={styles['unfilled']}>{description_placeholder}</div>
+                        )
+                      }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles['editname-modal-action-section']}>
+                <button className={styles['editname-modal-cancel']} onClick={onModalClose}>
+                  <div className={styles['cancel-icon']}></div>
+                  <FormattedMessage
+                    id="edit-name-modal.leave-button"
+                    defaultMessage="Leave"
+                  />
+                </button>
+                <button className={styles['editname-modal-submit']} onClick={() => this.setState({ isEdit: true })}>
+                  <div className={styles['edit-icon']}></div>
+                  <FormattedMessage
+                    id="edit-name-modal.edit-button"
+                    defaultMessage="Edit"
+                  />
+                </button>
+              </div>
+              <div className={styles['qr-code-section']}>
+                <div className={styles['qr-code']}>
+                  <QRCode value={friendJoinKey.URL} size={250} />
+                </div>
+                <CopyToClipboard text={friendJoinKey.URL}
+                                 onCopy={() => this.setState({qrCodeCopied: true})}>
+                  <button className={styles['editname-modal-copy']} onClick={null}>
+                    {
+                      qrCodeCopied? (
+                        <FormattedMessage
+                          id="add-device-modal.copy-node-id-2"
+                          defaultMessage="Copied"
+                        />
+                      ): (
+                        <FormattedMessage
+                          id="add-friend-modal.copy-my-id-1"
+                          defaultMessage="Copy your ID"
+                        />
+                      )
+                    }
+                  </button>
+                </CopyToClipboard>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      </div>
+    )
+  }
+}
+
+class EditingNameCard extends PureComponent {
+  constructor(props) {
+    super();
+    this.state = {
+
+      nameOriginal:         props.name,
+      userImgOriginal:      props.userImg,
+      companyOriginal:      props.company,
+      jobTitleOriginal:     props.jobTitle,
+      emailOriginal:        props.email,
+      phoneOriginal:        props.phone,
+      descriptionOriginal:  props.descriptiom,
+
+      name:           props.name,
+      userImg:        props.userImg,
+      company:        props.company,
+      jobTitle:       props.jobTitle,
+      email:          props.email,
+      phone:          props.phone,
+      description:    props.description,
+
+      friendJoinKey:  props.friendJoinKey,
+      isEdit:         false,
+      qrCodeCopied:   false,
       showAlert:      false,
       alertData: {
         message: '',
@@ -90,6 +269,93 @@ class EditNameModal extends PureComponent {
     this.setState({description:e.target.value})
   }
 
+  onUpload(e) {
+    //let { modalInput: { editImgSubmit } } = this.props
+    let that          = this
+    let file          = document.querySelector('input[type=file]').files[0];
+    let resizeReader  = new FileReader();
+
+    if (!file) {
+      return
+    } else if (!(file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif')) {
+      that.setState({
+        showAlert: true,
+        alertData: {
+          message: (
+              <FormattedMessage
+                id="alert.message23"
+                defaultMessage="[Error] Only allow image format: jpeg / png / gif"
+              />),
+          onConfirm: () => that.setState({showAlert: false})
+        }
+      })
+    } else {
+      getOrientation(file, (orientation) => {
+        resizeReader.readAsDataURL(file);
+
+        resizeReader.onloadend = function () {
+          let image = new Image();
+
+          image.src = resizeReader.result;
+          image.onload = function (imageEvent) {
+
+            /* Resize */
+            let canvas = document.createElement('canvas'),
+              max_size = constants.MAX_USER_IMG_WIDTH,
+              width = image.width,
+              height = image.height;
+            if (width > height) {
+              if (width > max_size) {
+                height *= max_size / width;
+                width = max_size;
+              }
+            }
+            else {
+              if (height > max_size) {
+                width *= max_size / height;
+                height = max_size;
+              }
+            }
+            canvas.width  = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+
+            /* Adjust Orientation */
+            let oriWidth = width
+            let oriHeight = height
+            let degrees = 0;
+            if (orientation === 6) {
+              degrees = 90;
+            }
+            else if (orientation === 3) {
+              degrees = 180;
+            }
+            else if (orientation === 8) {
+              degrees = 270;
+            }
+            let newSize = newCanvasSize(oriWidth, oriHeight, degrees);
+            canvas.width = newSize[0];
+            canvas.height = newSize[1];
+            let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.rotate(degrees*Math.PI/180);
+            ctx.drawImage(image, -oriWidth/2, -oriHeight/2, oriWidth, oriHeight);
+            ctx.restore();
+
+            /* Update img src with data url */
+            let imgDataUrl = canvas.toDataURL('image/jpeg');
+            that.setState({ userImg: imgDataUrl })
+
+            // editImgSubmit(imgDataUrl)
+            // document.getElementById('profile-page-pic').setAttribute('src', imgDataUrl);
+          }
+        }
+      })
+    }
+  }
+
   onSubmit() {
     const { onModalSubmit/*, onModalClose*/, modalInput: { editImgSubmit } } = this.props
 
@@ -122,7 +388,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (JSON.stringify(trimmedName).length - 2 > constants.MAX_USER_NAME_SIZE) {
+    }
+    else if (JSON.stringify(trimmedName).length - 2 > constants.MAX_USER_NAME_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -135,7 +402,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (isEmpty(trimmedName)) {
+    }
+    else if (isEmpty(trimmedName)) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -147,7 +415,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (JSON.stringify(trimmedCompany).length - 2 > constants.MAX_USER_COMPANY_SIZE) {
+    }
+    else if (JSON.stringify(trimmedCompany).length - 2 > constants.MAX_USER_COMPANY_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -160,7 +429,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (JSON.stringify(trimmedJobTitle).length - 2 > constants.MAX_USER_JOBTITLE_SIZE) {
+    }
+    else if (JSON.stringify(trimmedJobTitle).length - 2 > constants.MAX_USER_JOBTITLE_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -173,7 +443,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (JSON.stringify(trimmedEmail).length - 2 > constants.MAX_USER_EMAIL_SIZE) {
+    }
+    else if (JSON.stringify(trimmedEmail).length - 2 > constants.MAX_USER_EMAIL_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -186,7 +457,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (JSON.stringify(trimmedPhone).length - 2 > constants.MAX_USER_PHONE_SIZE) {
+    }
+    else if (JSON.stringify(trimmedPhone).length - 2 > constants.MAX_USER_PHONE_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -199,7 +471,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (JSON.stringify(trimmedDescription).length - 2 > constants.MAX_USER_DESCRIPTION_SIZE) {
+    }
+    else if (JSON.stringify(trimmedDescription).length - 2 > constants.MAX_USER_DESCRIPTION_SIZE) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -212,7 +485,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else if (trimmedEmail && !validator.isEmail(trimmedEmail)) {
+    }
+    else if (trimmedEmail && !validator.isEmail(trimmedEmail)) {
       this.setState({
         showAlert: true,
         alertData: {
@@ -224,7 +498,8 @@ class EditNameModal extends PureComponent {
           onConfirm: () => that.setState({showAlert: false})
         }
       })
-    } else {
+    }
+    else {
       let editedProfile = {
         name:         trimmedName,
         company:      trimmedCompany,
@@ -236,98 +511,14 @@ class EditNameModal extends PureComponent {
 
       editImgSubmit(userImg)
       onModalSubmit(trimmedName, editedProfile)
-      this.setState({ isEdit: false })
+      this.props.finishEdit(editedProfile)
       //onModalClose()
     }
   }
 
-  onUpload(e) {
-    //let { modalInput: { editImgSubmit } } = this.props
-    let that          = this
-    let file          = document.querySelector('input[type=file]').files[0];
-    let resizeReader  = new FileReader();
-
-    if (!file) {
-      return
-    } else if (!(file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif')) {
-      that.setState({
-        showAlert: true,
-        alertData: {
-          message: (
-              <FormattedMessage
-                id="alert.message23"
-                defaultMessage="[Error] Only allow image format: jpeg / png / gif"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
-        }
-      })
-    } else {
-      getOrientation(file, (orientation) => {
-        resizeReader.readAsDataURL(file);
-
-        resizeReader.onloadend = function () {
-            let image = new Image();
-
-            image.src = resizeReader.result;
-            image.onload = function (imageEvent) {
-
-                /* Resize */
-                let canvas = document.createElement('canvas'),
-                    max_size = constants.MAX_USER_IMG_WIDTH,
-                    width = image.width,
-                    height = image.height;
-                if (width > height) {
-                    if (width > max_size) {
-                        height *= max_size / width;
-                        width = max_size;
-                    }
-                } else {
-                    if (height > max_size) {
-                        width *= max_size / height;
-                        height = max_size;
-                    }
-                }
-                canvas.width  = width;
-                canvas.height = height;
-                canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-
-                /* Adjust Orientation */
-                let oriWidth = width
-                let oriHeight = height
-                let degrees = 0;
-                if (orientation === 6) {
-                  degrees = 90;
-                } else if (orientation === 3) {
-                  degrees = 180;
-                } else if (orientation === 8) {
-                  degrees = 270;
-                }
-                let newSize = newCanvasSize(oriWidth, oriHeight, degrees);
-                canvas.width = newSize[0];
-                canvas.height = newSize[1];
-                let ctx = canvas.getContext("2d");
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.save();
-                ctx.translate(canvas.width/2, canvas.height/2);
-                ctx.rotate(degrees*Math.PI/180);
-                ctx.drawImage(image, -oriWidth/2, -oriHeight/2, oriWidth, oriHeight);
-                ctx.restore();
-
-                /* Update img src with data url */
-                let imgDataUrl = canvas.toDataURL('image/jpeg');
-                that.setState({ userImg: imgDataUrl })
-
-                // editImgSubmit(imgDataUrl)
-                // document.getElementById('profile-page-pic').setAttribute('src', imgDataUrl);
-            }
-         }
-      })
-    }
-  }
-
-  render() {
+  render(){
     const { intl, onModalClose, modal: { currentModal } } = this.props
-    const { name, userImg, company, jobTitle, email, phone, description, isEdit, showAlert, alertData, friendJoinKey, qrCodeCopied } = this.state
+    const { showAlert, alertData, name, userImg, company, jobTitle, email, phone, description, isEdit, friendJoinKey, qrCodeCopied } = this.state
 
     const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
     const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
@@ -348,85 +539,44 @@ class EditNameModal extends PureComponent {
               <div className={styles['info-section']}>
                 <div className={styles['left-side']}>
                   <div className={styles['profile-picture']}>
-                    {
-                      isEdit? (
-                        <label>
-                          <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
-                          <div className={styles['mask']}></div>
-                          <input type="file" id="getval" onChange={this.onUpload}/>
-                          <div className={styles['profile-picture-edit-icon']}></div>
-                        </label>
-                      ):(
-                        <div>
-                          <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
-                          <div className={styles['mask']}></div>
-                        </div>
-                      )
-                    }
+                    <label>
+                      <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
+                      <div className={styles['mask']}></div>
+                      <input type="file" id="getval" onChange={this.onUpload}/>
+                      <div className={styles['profile-picture-edit-icon']}></div>
+                    </label>
                   </div>
                   {/*
-                      isEdit ? (
-                        <button className={styles['edit-button']} onClick={() => {
-                          this.onSubmit()
-                        }}>
-                          <FontAwesomeIcon icon="check" size="xs"/>
-                        </button>
-                      ):(
-                        <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
-                          <FontAwesomeIcon icon="pen" size="xs"/>
-                        </button>
-                      )
+                      <button className={styles['edit-button']} onClick={() => {
+                        this.onSubmit()
+                      }}>
+                        <FontAwesomeIcon icon="check" size="xs"/>
+                      </button>
                   */}
                 </div>
                 <div className={styles['right-side']}>
                   <div className={styles['main-info']}>
                     <div className={styles['profile-input']}>
                       <div className={styles['name']}>
-                      {
-                        isEdit ? (
-                          <input
-                            name='title-input'
-                            value={name}
-                            onChange={this.onNameChange}/>
-                        ):(
-                          <div>{name}</div>
-                        )
-                      }
+                        <input
+                          name='title-input'
+                          value={name}
+                          onChange={this.onNameChange}/>
                       </div>
                       <div className={styles['company']}>
-                      {
-                        isEdit ? (
-                          <input
-                            placeholder={company_placeholder}
-                            autoFocus
-                            name='title-input'
-                            value={company}
-                            onChange={this.onCompanyChange}/>
-                        ):(
-                          company ? (
-                            <div>{company}</div>
-                          ):(
-                            <div className={styles['unfilled']}>{company_placeholder}</div>
-                          )
-                        )
-                      }
+                        <input
+                          placeholder={company_placeholder}
+                          autoFocus
+                          name='title-input'
+                          value={company}
+                          onChange={this.onCompanyChange}/>
                       </div>
                       <div className={styles['job-title']}>
-                      {
-                        isEdit ? (
-                          <input
-                            placeholder={jobtitle_placeholder}
-                            name='title-input'
-                            value={jobTitle}
-                            onChange={this.onJobTitleChange}/>
-                        ):(
-                          jobTitle ? (
-                            <div>{jobTitle}</div>
-                          ):(
-                            <div className={styles['unfilled']}>{jobtitle_placeholder}</div>
-                          )
-                        )
-                      }
+                        <input
+                          placeholder={jobtitle_placeholder}
+                          name='title-input'
+                          value={jobTitle}
+                          onChange={this.onJobTitleChange}/>
                       </div>
                     </div>
                     <div hidden className={styles['qr-code']}>
@@ -437,38 +587,18 @@ class EditNameModal extends PureComponent {
                   <div className={styles['other-info']}>
                     <div className={styles['contact-input']}>
                       <div className={styles['email']}>
-                      {
-                        isEdit ? (
-                          <input
-                            placeholder={email_placeholder}
-                            name='title-input'
-                            value={email}
-                            onChange={this.onEmailChange}/>
-                        ):(
-                          email ? (
-                            <div>{email}</div>
-                          ):(
-                            <div className={styles['unfilled']}>{email_placeholder}</div>
-                          )
-                        )
-                      }
+                        <input
+                          placeholder={email_placeholder}
+                          name='title-input'
+                          value={email}
+                          onChange={this.onEmailChange}/>
                       </div>
                       <div className={styles['phone']}>
-                      {
-                        isEdit ? (
-                          <input
-                            placeholder={phone_placeholder}
-                            name='title-input'
-                            value={phone}
-                            onChange={this.onPhoneChange}/>
-                        ):(
-                          phone ? (
-                            <div>{phone}</div>
-                          ):(
-                            <div className={styles['unfilled']}>{phone_placeholder}</div>
-                          )
-                        )
-                      }
+                        <input
+                          placeholder={phone_placeholder}
+                          name='title-input'
+                          value={phone}
+                          onChange={this.onPhoneChange}/>
                       </div>
                     </div>
                   </div>
@@ -476,85 +606,52 @@ class EditNameModal extends PureComponent {
                   <div className={styles['other-info']}>
                     <div className={styles['desc-input']}>
                       <div className={styles['description']}>
-                      {
-                        isEdit ? (
-                          <textarea
-                            placeholder={description_placeholder}
-                            name='title-input'
-                            value={description}
-                            onChange={this.onDescriptionChange}/>
-                        ):(
-                          description ? (
-                            description.split('\n').map((line,i) => <div key={`desc-line-${i}`}>{line}</div>)
-                          ):(
-                            <div className={styles['unfilled']}>{description_placeholder}</div>
-                          )
-                        )
-                      }
+                        <textarea
+                          placeholder={description_placeholder}
+                          name='title-input'
+                          value={description}
+                          onChange={this.onDescriptionChange}/>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              {
-                isEdit ? (
-                  <div className={styles['editname-modal-action-section']}>
-                    <button className={styles['editname-modal-cancel']} onClick={() => {
+              <div className={styles['editname-modal-action-section']}>
+                <button className={styles['editname-modal-cancel']} onClick={() => {
 
-                      const { nameOriginal,
-                              userImgOriginal,
-                              companyOriginal,
-                              jobTitleOriginal,
-                              emailOriginal,
-                              phoneOriginal,
-                              descriptionOriginal } = this.state
+                  const { nameOriginal,
+                          userImgOriginal,
+                          companyOriginal,
+                          jobTitleOriginal,
+                          emailOriginal,
+                          phoneOriginal,
+                          descriptionOriginal } = this.state
 
-                      this.setState({
-                        isEdit:       false,
-                        name:         nameOriginal,
-                        userImg:      userImgOriginal,
-                        company:      companyOriginal,
-                        jobTitle:     jobTitleOriginal,
-                        email:        emailOriginal,
-                        phone:        phoneOriginal,
-                        description:  descriptionOriginal
-                      })
-                    }}>
-                      <div className={styles['cancel-icon']}></div>
-                      <FormattedMessage
-                        id="first-popup-modal.action1"
-                        defaultMessage="Cancel"
-                      />
-                    </button>
-                    <button className={styles['editname-modal-submit']} onClick={() => {
-                          this.onSubmit()
-                        }}>
-                      <div className={styles['confirm-icon']}></div>
-                      <FormattedMessage
-                        id="first-popup-modal.action2"
-                        defaultMessage="Confirm"
-                      />
-                    </button>
-                  </div>
-                ):(
-                  <div className={styles['editname-modal-action-section']}>
-                    <button className={styles['editname-modal-cancel']} onClick={onModalClose}>
-                      <div className={styles['cancel-icon']}></div>
-                      <FormattedMessage
-                        id="edit-name-modal.leave-button"
-                        defaultMessage="Leave"
-                      />
-                    </button>
-                    <button className={styles['editname-modal-submit']} onClick={() => this.setState({ isEdit: true })}>
-                      <div className={styles['edit-icon']}></div>
-                      <FormattedMessage
-                        id="edit-name-modal.edit-button"
-                        defaultMessage="Edit"
-                      />
-                    </button>
-                  </div>
-                )
-              }
+                  this.props.finishEdit({
+                    isEdit:       false,
+                    name:         nameOriginal,
+                    userImg:      userImgOriginal,
+                    company:      companyOriginal,
+                    jobTitle:     jobTitleOriginal,
+                    email:        emailOriginal,
+                    phone:        phoneOriginal,
+                    description:  descriptionOriginal
+                  })
+                }}>
+                  <div className={styles['cancel-icon']}></div>
+                  <FormattedMessage
+                    id="first-popup-modal.action1"
+                    defaultMessage="Cancel"
+                  />
+                </button>
+                <button className={styles['editname-modal-submit']} onClick={() => { this.onSubmit() }}>
+                  <div className={styles['confirm-icon']}></div>
+                  <FormattedMessage
+                    id="first-popup-modal.action2"
+                    defaultMessage="Confirm"
+                  />
+                </button>
+              </div>
               <div className={styles['qr-code-section']}>
                 <div className={styles['qr-code']}>
                   <QRCode value={friendJoinKey.URL} size={250} />
