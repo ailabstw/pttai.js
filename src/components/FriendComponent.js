@@ -26,7 +26,7 @@ class FriendComponent extends PureComponent {
           <div className={styles['add-icon-subcontainer']}>
             <div className={styles['add-icon-container']}>
               <div className={styles['add-icon-subcontainer']}>
-                <div className={styles['add-icon']} onClick={addFriendAction}></div>
+                <div id='add-friend-button' className={styles['add-icon']} onClick={addFriendAction}></div>
               </div>
             </div>
           </div>

@@ -39,7 +39,7 @@ class Navigator extends PureComponent {
 
           <ul className={styles['tabs']}>
             <li className={tabTwoClasses} onClick={onFriendClicked}>
-              <Link to={`/friend`} className={styles['content-block']}>
+              <Link id="friend-tab" to={`/friend`} className={styles['content-block']}>
                 <div className={styles['tab2-icon']}></div>
                 <div className={styles['tab2-text']}>
                   <FormattedMessage

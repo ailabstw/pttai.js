@@ -2,12 +2,10 @@ import React, { PureComponent }   from 'react'
 import Modal                      from 'react-modal'
 import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
-//import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
 import { FormattedMessage,
          injectIntl }             from 'react-intl'
-import QRCode                     from 'qrcode.react'
 import validator                  from 'validator'
-import { CopyToClipboard }        from 'react-copy-to-clipboard'
 
 import AlertComponent         from '../components/AlertComponent'
 
@@ -35,15 +33,27 @@ class EditNameModal extends PureComponent {
       phone:    props.modalInput.profile.phone || '',
       description:    props.modalInput.profile.description || '',
 
-      friendJoinKey:  props.modalInput.friendJoinKey,
       isEdit:         false,
-      qrCodeCopied:   false,
     };
+
+    this.openQRCodeModal = this.openQRCodeModal.bind(this)
+  }
+
+  openQRCodeModal() {
+    this.props.onModalClose()
+    document.querySelector('#friend-tab').click();
+    let wait = setInterval(function(){
+      let button = document.querySelector('#add-friend-button')
+      if (button) {
+        button.click();
+        clearInterval(wait)
+      }
+    }, 200)
   }
 
   render() {
     const { intl, onModalClose, modal: { currentModal } } = this.props
-    const { name, userImg, company, jobTitle, email, phone, description, isEdit, friendJoinKey, qrCodeCopied } = this.state
+    const { name, userImg, company, jobTitle, email, phone, description, isEdit } = this.state
 
     const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
     const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
@@ -52,17 +62,19 @@ class EditNameModal extends PureComponent {
     const description_placeholder = intl.formatMessage({id: 'edit-name-modal.description-placeholder'});
 
     if (isEdit) {
-      return <EditingNameCard
-                {...this.props}
-                {...this.state}
-                finishEdit={ editedProfile => {
-                  this.setState({
-                    isEdit: false,
-                    ...editedProfile
-                  })
-                }} />
+      return (
+        <div>
+          <Modal
+            overlayClassName={styles['overlay']}
+            style={modalConstants.editNameModalStyles}
+            isOpen={currentModal !== null}
+            onRequestClose={onModalClose}
+            contentLabel="Edit Name Modal">
+              <EditingNameCard {...this.props} {...this.state} finishEdit={editedProfile=>this.setState({isEdit:false, ...editedProfile})} />
+            </Modal>
+        </div>
+      )
     }
-
     return (
       <div>
         <Modal
@@ -72,127 +84,57 @@ class EditNameModal extends PureComponent {
           onRequestClose={onModalClose}
           contentLabel="Edit Name Modal">
           <div className={styles['root']}>
-            <div className={styles['wrapper']}>
-              <div className={styles['info-section']}>
-                <div className={styles['left-side']}>
-                  <div className={styles['profile-picture']}>
-                    <div>
-                      <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
-                      <div className={styles['mask']}></div>
-                    </div>
-                  </div>
-                  {/*
-                  <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
-                    <FontAwesomeIcon icon="pen" size="xs"/>
-                  </button>
-                  */}
+
+            <div className={styles['modal-action-section']}>
+              <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
+                <FontAwesomeIcon icon="pen" />
+              </button>
+            </div>
+
+            <div className={styles['info-section']}>
+              <div className={styles['left-side']}>
+                <div className={styles['profile-picture']}>
+                  <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
                 </div>
-                <div className={styles['right-side']}>
-                  <div className={styles['main-info']}>
-                    <div className={styles['profile-input']}>
-                      <div className={styles['name']}>
-                        <div>{name}</div>
-                      </div>
-                      <div className={styles['company']}>
-                      {
-                        company ? (
-                          <div>{company}</div>
-                        ):(
-                          <div className={styles['unfilled']}>{company_placeholder}</div>
-                        )
-                      }
-                      </div>
-                      <div className={styles['job-title']}>
-                      {
-                        jobTitle ? (
-                          <div>{jobTitle}</div>
-                        ):(
-                          <div className={styles['unfilled']}>{jobtitle_placeholder}</div>
-                        )
-                      }
-                      </div>
-                    </div>
-                    <div hidden className={styles['qr-code']}>
-                      <QRCode value={friendJoinKey.URL} size={80} />
-                    </div>
-                  </div>
-                  <div className={styles['divider']}></div>
-                  <div className={styles['other-info']}>
-                    <div className={styles['contact-input']}>
-                      <div className={styles['email']}>
-                      {
-                        email ? (
-                          <div>{email}</div>
-                        ):(
-                          <div className={styles['unfilled']}>{email_placeholder}</div>
-                        )
-                      }
-                      </div>
-                      <div className={styles['phone']}>
-                      {
-                        phone ? (
-                          <div>{phone}</div>
-                        ):(
-                          <div className={styles['unfilled']}>{phone_placeholder}</div>
-                        )
-                      }
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['divider']}></div>
-                  <div className={styles['other-info']}>
-                    <div className={styles['desc-input']}>
-                      <div className={styles['description']}>
-                      {
-                        description ? (
-                          description.split('\n').map((line,i) => <div key={`desc-line-${i}`}>{line}</div>)
-                        ):(
-                          <div className={styles['unfilled']}>{description_placeholder}</div>
-                        )
-                      }
-                      </div>
-                    </div>
-                  </div>
+
+                <div className={styles['qr-code']} onClick={this.openQRCodeModal}>
+                  <img src="/images/btn_qrcode@2x.jpg" alt="QRCode Button" />
                 </div>
               </div>
-              <div className={styles['editname-modal-action-section']}>
-                <button className={styles['editname-modal-cancel']} onClick={onModalClose}>
-                  <div className={styles['cancel-icon']}></div>
-                  <FormattedMessage
-                    id="edit-name-modal.leave-button"
-                    defaultMessage="Leave"
-                  />
-                </button>
-                <button className={styles['editname-modal-submit']} onClick={() => this.setState({ isEdit: true })}>
-                  <div className={styles['edit-icon']}></div>
-                  <FormattedMessage
-                    id="edit-name-modal.edit-button"
-                    defaultMessage="Edit"
-                  />
-                </button>
-              </div>
-              <div className={styles['qr-code-section']}>
-                <div className={styles['qr-code']}>
-                  <QRCode value={friendJoinKey.URL} size={250} />
+              <div className={styles['right-side']}>
+                <div className={styles['main-info']}>
+                  <div className={styles['profile-input']}>
+                    <div className={styles['name']}>
+                      <div>{name}</div>
+                    </div>
+                    <div className={styles['company']}>
+                        <div>{company || company_placeholder}</div>
+                    </div>
+                    <div className={styles['job-title']}>
+                        <div>{jobTitle || jobtitle_placeholder}</div>
+                    </div>
+                  </div>
                 </div>
-                <CopyToClipboard text={friendJoinKey.URL}
-                                 onCopy={() => this.setState({qrCodeCopied: true})}>
-                  <button className={styles['editname-modal-copy']} onClick={null}>
-                    {
-                      qrCodeCopied? (
-                        <FormattedMessage
-                          id="add-device-modal.copy-node-id-2"
-                          defaultMessage="Copied"
-                        />
-                      ): (
-                        <FormattedMessage
-                          id="add-friend-modal.copy-my-id-1"
-                          defaultMessage="Copy your ID"
-                        />
-                      )
-                    }
-                  </button>
-                </CopyToClipboard>
+                <div className={styles['contact-info']}>
+                  <div className={styles['contact-input']}>
+                    <div className={styles['email']}>
+                        <div>{email || email_placeholder}</div>
+                    </div>
+                    <div className={styles['phone']}>
+                        <div>{phone || phone_placeholder}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles['other-info']}>
+                  <div className={styles['desc-input']}>
+                    <div className={styles['description']}>
+                      {
+                        // TODO: text-overlow for the third line should be ellipsis
+                        description ? description.split('\n').map((line,i) => <div key={`desc-line-${i}`}>{line}</div>) : description_placeholder
+                      }
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -206,15 +148,6 @@ class EditingNameCard extends PureComponent {
   constructor(props) {
     super();
     this.state = {
-
-      nameOriginal:         props.name,
-      userImgOriginal:      props.userImg,
-      companyOriginal:      props.company,
-      jobTitleOriginal:     props.jobTitle,
-      emailOriginal:        props.email,
-      phoneOriginal:        props.phone,
-      descriptionOriginal:  props.descriptiom,
-
       name:           props.name,
       userImg:        props.userImg,
       company:        props.company,
@@ -223,9 +156,7 @@ class EditingNameCard extends PureComponent {
       phone:          props.phone,
       description:    props.description,
 
-      friendJoinKey:  props.friendJoinKey,
       isEdit:         false,
-      qrCodeCopied:   false,
       showAlert:      false,
       alertData: {
         message: '',
@@ -517,8 +448,8 @@ class EditingNameCard extends PureComponent {
   }
 
   render(){
-    const { intl, onModalClose, modal: { currentModal } } = this.props
-    const { showAlert, alertData, name, userImg, company, jobTitle, email, phone, description, isEdit, friendJoinKey, qrCodeCopied } = this.state
+    const { intl } = this.props
+    const { showAlert, alertData, name, userImg, company, jobTitle, email, phone, description } = this.state
 
     const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
     const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
@@ -527,158 +458,83 @@ class EditingNameCard extends PureComponent {
     const description_placeholder = intl.formatMessage({id: 'edit-name-modal.description-placeholder'});
 
     return (
-      <div>
-        <Modal
-          overlayClassName={styles['overlay']}
-          style={modalConstants.editNameModalStyles}
-          isOpen={currentModal !== null}
-          onRequestClose={onModalClose}
-          contentLabel="Edit Name Modal">
-          <div className={styles['root']}>
-            <div className={styles['wrapper']}>
-              <div className={styles['info-section']}>
-                <div className={styles['left-side']}>
-                  <div className={styles['profile-picture']}>
-                    <label>
-                      <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
-                      <div className={styles['mask']}></div>
-                      <input type="file" id="getval" onChange={this.onUpload}/>
-                      <div className={styles['profile-picture-edit-icon']}></div>
-                    </label>
-                  </div>
-                  {/*
-                      <button className={styles['edit-button']} onClick={() => {
-                        this.onSubmit()
-                      }}>
-                        <FontAwesomeIcon icon="check" size="xs"/>
-                      </button>
-                  */}
-                </div>
-                <div className={styles['right-side']}>
-                  <div className={styles['main-info']}>
-                    <div className={styles['profile-input']}>
-                      <div className={styles['name']}>
-                        <input
-                          name='title-input'
-                          value={name}
-                          onChange={this.onNameChange}/>
-                      </div>
-                      <div className={styles['company']}>
-                        <input
-                          placeholder={company_placeholder}
-                          autoFocus
-                          name='title-input'
-                          value={company}
-                          onChange={this.onCompanyChange}/>
-                      </div>
-                      <div className={styles['job-title']}>
-                        <input
-                          placeholder={jobtitle_placeholder}
-                          name='title-input'
-                          value={jobTitle}
-                          onChange={this.onJobTitleChange}/>
-                      </div>
-                    </div>
-                    <div hidden className={styles['qr-code']}>
-                      <QRCode value={friendJoinKey.URL} size={80} />
-                    </div>
-                  </div>
-                  <div className={styles['divider']}></div>
-                  <div className={styles['other-info']}>
-                    <div className={styles['contact-input']}>
-                      <div className={styles['email']}>
-                        <input
-                          placeholder={email_placeholder}
-                          name='title-input'
-                          value={email}
-                          onChange={this.onEmailChange}/>
-                      </div>
-                      <div className={styles['phone']}>
-                        <input
-                          placeholder={phone_placeholder}
-                          name='title-input'
-                          value={phone}
-                          onChange={this.onPhoneChange}/>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles['divider']}></div>
-                  <div className={styles['other-info']}>
-                    <div className={styles['desc-input']}>
-                      <div className={styles['description']}>
-                        <textarea
-                          placeholder={description_placeholder}
-                          name='title-input'
-                          value={description}
-                          onChange={this.onDescriptionChange}/>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={styles['editname-modal-action-section']}>
-                <button className={styles['editname-modal-cancel']} onClick={() => {
+      <div className={`${styles['root']} ${styles['editing']}`}>
+        <div className={styles['modal-action-section']}>
+          <button className={styles['submit-button']} onClick={() => { this.onSubmit() }}>
+            <FontAwesomeIcon icon="check" size="xs"/>
+          </button>
+        </div>
 
-                  const { nameOriginal,
-                          userImgOriginal,
-                          companyOriginal,
-                          jobTitleOriginal,
-                          emailOriginal,
-                          phoneOriginal,
-                          descriptionOriginal } = this.state
-
-                  this.props.finishEdit({
-                    isEdit:       false,
-                    name:         nameOriginal,
-                    userImg:      userImgOriginal,
-                    company:      companyOriginal,
-                    jobTitle:     jobTitleOriginal,
-                    email:        emailOriginal,
-                    phone:        phoneOriginal,
-                    description:  descriptionOriginal
-                  })
-                }}>
-                  <div className={styles['cancel-icon']}></div>
-                  <FormattedMessage
-                    id="first-popup-modal.action1"
-                    defaultMessage="Cancel"
-                  />
-                </button>
-                <button className={styles['editname-modal-submit']} onClick={() => { this.onSubmit() }}>
-                  <div className={styles['confirm-icon']}></div>
-                  <FormattedMessage
-                    id="first-popup-modal.action2"
-                    defaultMessage="Confirm"
-                  />
-                </button>
-              </div>
-              <div className={styles['qr-code-section']}>
-                <div className={styles['qr-code']}>
-                  <QRCode value={friendJoinKey.URL} size={250} />
-                </div>
-                <CopyToClipboard text={friendJoinKey.URL}
-                                 onCopy={() => this.setState({qrCodeCopied: true})}>
-                  <button className={styles['editname-modal-copy']} onClick={null}>
-                    {
-                      qrCodeCopied? (
-                        <FormattedMessage
-                          id="add-device-modal.copy-node-id-2"
-                          defaultMessage="Copied"
-                        />
-                      ): (
-                        <FormattedMessage
-                          id="add-friend-modal.copy-my-id-1"
-                          defaultMessage="Copy your ID"
-                        />
-                      )
-                    }
-                  </button>
-                </CopyToClipboard>
-              </div>
-              <AlertComponent show={showAlert} alertData={alertData}/>
+        <div className={styles['info-section']}>
+          <div className={styles['left-side']}>
+            <label className={styles['profile-picture']}>
+              <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
+              <input type="file" id="getval" onChange={this.onUpload}/>
+            </label>
+            <div className={styles['qr-code']}>
+              <img src="/images/btn_qrcode@2x.jpg" alt="QRCode Button" />
             </div>
           </div>
-        </Modal>
+
+          <div className={styles['right-side']}>
+            <div className={styles['main-info']}>
+              <div className={styles['profile-input']}>
+                <div className={styles['name']}>
+                  <input
+                    name='title-input'
+                    value={name}
+                    onChange={this.onNameChange}/>
+                </div>
+                <div className={styles['company']}>
+                  <input
+                    placeholder={company_placeholder}
+                    autoFocus
+                    name='title-input'
+                    value={company}
+                    onChange={this.onCompanyChange}/>
+                </div>
+                <div className={styles['job-title']}>
+                  <input
+                    placeholder={jobtitle_placeholder}
+                    name='title-input'
+                    value={jobTitle}
+                    onChange={this.onJobTitleChange}/>
+                </div>
+              </div>
+            </div>
+            <div className={styles['contact-info']}>
+              <div className={styles['contact-input']}>
+                <div className={styles['email']}>
+                  <input
+                    placeholder={email_placeholder}
+                    name='title-input'
+                    value={email}
+                    onChange={this.onEmailChange}/>
+                </div>
+                <div className={styles['phone']}>
+                  <input
+                    placeholder={phone_placeholder}
+                    name='title-input'
+                    value={phone}
+                    onChange={this.onPhoneChange}/>
+                </div>
+              </div>
+            </div>
+            <div className={styles['other-info']}>
+              <div className={styles['desc-input']}>
+                <div className={styles['description']}>
+                  <textarea
+                    rows="3"
+                    placeholder={description_placeholder}
+                    name='title-input'
+                    value={description}
+                    onChange={this.onDescriptionChange}/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <AlertComponent show={showAlert} alertData={alertData}/>
       </div>
     )
   }

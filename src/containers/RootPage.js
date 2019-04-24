@@ -312,7 +312,6 @@ class RootPage extends PureComponent {
         userName: userName,
         profile:  profile,
         editImgSubmit:   imgBase64 => { doRootPage.editProfileImg(myId, imgBase64) },
-        friendJoinKey:   keyInfo.friendJoinKey,
       })
       doModalContainer.setSubmit(onEditNameSubmit)
       doModalContainer.openModal(constants.EDIT_NAME_MODAL)
