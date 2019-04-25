@@ -63,19 +63,33 @@ class RootPage extends PureComponent {
 
     let myId = getUUID()
 
-    let openFirstPopupModal = (userPrivateKeyInfo, deviceJoinKeyInfo) => {
+    let openFirstPopupModal = keyInfo => {
+
+      let deviceJoinKeyInfo  = keyInfo.find(({key}) => key === 'deviceJoinKey').value
+      let userPrivateKeyInfo = keyInfo.find(({key}) => key === 'userPrivateKey').value
+
       doModalContainer.setInput({
         deviceJoinKeyInfo:  deviceJoinKeyInfo,
         userPrivateKeyInfo: userPrivateKeyInfo,
-        signIn: (nodeId, pKey, addDeviceCallBackFunc, waitingCallBackFunc, signedInCallBackFunc) => {
-          doRootPage.addDevice(myId, nodeId, pKey, addDeviceCallBackFunc)
-          setInterval(() => {
-              doRootPage.getUserInfo(myId, waitingCallBackFunc, signedInCallBackFunc)
-            },
-            constants.REFRESH_INTERVAL
-          )
-          //doModalContainer.closeModal()
-        },
+        // TODO: comment this because multidevice function is currenly disable.
+        //
+        // signIn: (nodeId, pKey, addDeviceCallBackFunc, waitingCallBackFunc, signedInCallBackFunc) => {
+        //   doRootPage.addDevice(myId, nodeId, pKey, addDeviceCallBackFunc)
+        //   setInterval(() => {
+        //     doRootPage.getUserInfo(myId).then( res => {
+        //       if (res.type === 'done') { return signedInCallBackFunc() }
+        //       // no user name
+        //       let keyInfo = res.value;
+        //       let deviceJoinKeyInfo   = keyInfo.find((key) => key.key === 'deviceJoinKey').value
+        //       let userPrivateKeyInfo  = keyInfo.find((key) => key.key === 'userPrivateKey').value
+        //       waitingCallBackFunc(userPrivateKeyInfo, {
+        //         URL:          deviceJoinKeyInfo.URL,
+        //         UpdateTS:     deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : emptyTimeStamp(),
+        //         expirePeriod: deviceJoinKeyInfo.e,
+        //       })
+        //     })
+        //   }, constants.REFRESH_INTERVAL)
+        // },
         signUp: (name) => {
           doRootPage.editName(myId, name)
           doModalContainer.closeModal()
@@ -88,7 +102,9 @@ class RootPage extends PureComponent {
     doRootPage.init(myId, query, decodeURIObj(params))
 
     // get user name and user image
-    doRootPage.getUserInfo(myId, openFirstPopupModal, () => {})
+    doRootPage.getUserInfo(myId).then( res => {
+      if (res.type === 'no_user_name' ) openFirstPopupModal(res.value)
+    })
 
     // get join keys for multi-device and friend
     doRootPage.getKeyInfo(myId)
@@ -154,7 +170,10 @@ class RootPage extends PureComponent {
     doRootPage.fetchLatestMessage(myId, 1)
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
-    doRootPage.getUserInfo(myId, () => {}, () => {}, onConnectionLost)
+    doRootPage.getUserInfo(myId).catch( err => {
+      console.error(err.info)
+      onConnectionLost(err.message)
+    })
 
     let me                  = getRoot(this.props)
     let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
