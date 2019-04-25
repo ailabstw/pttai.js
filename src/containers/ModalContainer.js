@@ -11,7 +11,6 @@ import CreateArticleModal     from './CreateArticleModal';
 import EditArticleModal       from './EditArticleModal';
 import AddKnownBoardModal     from './AddKnownBoardModal';
 import NameCardModal          from './NameCardModal';
-import FriendProfileModal     from './FriendProfileModal';
 import FirstPopupModal        from './FirstPopupModal';
 import MultiDeviceModal       from './MultiDeviceModal'
 import AddFriendModal         from './AddFriendModal';
@@ -84,12 +83,6 @@ class ModalContainer extends PureComponent {
 
       case constants.NAME_CARD_MODAL:
         return (<NameCardModal userId={myId}
-                               modalInput={modalInput}
-                               onModalClose={doModalContainer.closeModal}
-                               onModalSubmit={modalSubmit} />)
-
-      case constants.FRIEND_PROFILE_MODAL:
-        return (<FriendProfileModal userId={myId}
                                modalInput={modalInput}
                                onModalClose={doModalContainer.closeModal}
                                onModalSubmit={modalSubmit} />)

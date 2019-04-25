@@ -116,12 +116,12 @@ class FriendChatPage extends PureComponent {
       doModalContainer.openModal(constants.SHOW_OP_LOG_MODAL)
     }
 
-    let onOpenFriendProfileModal = () => {
+    let openNameCard = () => {
       doModalContainer.setInput({
-        FriendID: params.friendId,
-        ...friendData
+        userId:     params.friendId,
+        isEditable: false
       })
-      doModalContainer.openModal(constants.FRIEND_PROFILE_MODAL)
+      doModalContainer.openModal(constants.NAME_CARD_MODAL)
     }
 
     return (
@@ -129,7 +129,7 @@ class FriendChatPage extends PureComponent {
         <FriendChatBar
           friendData={friendData}
           onOpenOPLogModal={onOpenOPLogModal}
-          onOpenFriendProfileModal={onOpenFriendProfileModal}
+          openNameCard={openNameCard}
         />
         <FriendChatComponent
           history={history}
@@ -144,9 +144,7 @@ class FriendChatPage extends PureComponent {
           onJoinBoard={onJoinBoard}
           onMessageAdded={onMessageAdded}
           onGetMoreMessages={onGetMoreMessages}
-          onOpenOPLogModal={onOpenOPLogModal}
-          onOpenFriendProfileModal={onOpenFriendProfileModal}
-          />
+          onOpenOPLogModal={onOpenOPLogModal} />
       </div>
     )
   }

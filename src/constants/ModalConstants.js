@@ -128,24 +128,6 @@ export const nameCardModalStyles = {
   }
 };
 
-export const friendProfileModalStyles = {
-  content : {
-    position              : 'relative',
-    padding               : '0px',
-    width                 : '396px',
-    height                : '306px',
-    maxWidth              : '414px',
-    margin                : 'auto',
-    top                   : 'calc(50% - 153px)',
-    left                  : '0px',
-    right                 : '0px',
-    bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '10px',
-    boxShadow             : '0 0 10px 0 rgba(0, 0, 0, 0.5)'
-  }
-};
-
 export const SignupModalStyels = {
   content : {
     position              : 'absolute',

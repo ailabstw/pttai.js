@@ -258,9 +258,12 @@ class ArticlePage extends PureComponent {
       doModalContainer.openModal(constants.EDIT_ARTICLE_MODAL)
     }
 
-    let onOpenFriendProfileModal = (friendData) => {
-      doModalContainer.setInput(friendData)
-      doModalContainer.openModal(constants.FRIEND_PROFILE_MODAL)
+    let openNameCard = () => {
+      doModalContainer.setInput({
+        userId: articleInfo.CreatorID,
+        isEditable: false
+      })
+      doModalContainer.openModal(constants.NAME_CARD_MODAL)
     }
 
     let onCommentAdded = (comment) => {
@@ -299,7 +302,7 @@ class ArticlePage extends PureComponent {
           articleInfo={articleInfo}
           articleContentsList={articleContentsList}
           editArticleAction={openEditArticleModal}
-          onOpenFriendProfileModal={onOpenFriendProfileModal} />
+          openNameCard={openNameCard} />
         <CommentReplyListComponent
           isLoading={isCommentLoading}
           userId={userId}

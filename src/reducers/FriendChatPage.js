@@ -78,7 +78,7 @@ const postprocessGetFriend = (myId, result, usersInfo) => {
   let userNameCardMap = usersInfo['userNameCard'] || {}
 
   let userName      = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-  let userImg       = userImgMap[userId]  ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userImg       = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
   let userNameCard  = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
 
   const friendData = {
@@ -188,7 +188,7 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, isFirstFetch, m
     let userImgMap  = usersInfo['userImg'] || {}
 
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userImg   = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     messageList.push({
       ID:             each.value.ID,
@@ -273,8 +273,7 @@ const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBloc
     let userImgMap  = usersInfo['userImg'] || {}
 
     let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-
+    let userImg   = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     messageList.push({
       ID:             each.value.ID, /* messageID */

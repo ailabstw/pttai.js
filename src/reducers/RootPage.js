@@ -15,7 +15,6 @@ import * as doCreateBoardModal  from './CreateBoardModal'
 import * as doManageBoardModal  from './ManageBoardModal'
 import * as doShowOpLogModal    from './ShowOpLogModal'
 // import * as doNameCardModal     from './NameCardModal'
-// import * as doFriendProfileModal from './FriendProfileModal'
 
 import { getUUID }              from '../utils/utils'
 import { EMPTY_ID,
@@ -67,7 +66,6 @@ export const init = (myId, query, param) => {
     dispatch(doManageBoardModal.init(manageBoardModalId, myId, myClass, myDuck))
     dispatch(doShowOpLogModal.init(showOpLogModalId, myId, myClass, myDuck))
     // dispatch(doNameCardModal.init(nameCardModalId, myId, myClass, myDuck))
-    // dispatch(doFriendProfileModal.init(friendProfileModalId, myId, myClass, myDuck))
   }
 }
 
