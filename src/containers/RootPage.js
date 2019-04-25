@@ -287,7 +287,6 @@ class RootPage extends PureComponent {
     let userId           = me.getIn(['userInfo', 'userId'])
     let userName         = me.getIn(['userInfo', 'userName'])
     let userImg          = me.getIn(['userInfo', 'userImg'])
-    let profile          = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
     let keyInfo          = me.get('keyInfo',          Immutable.Map()).toJS()
     let deviceInfo       = me.get('deviceInfo',       Immutable.List()).toJS()
     let latestArticles   = me.get('latestArticles',   Immutable.List()).toJS()
@@ -301,19 +300,10 @@ class RootPage extends PureComponent {
     let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
 
     let openNameCard = () => {
-      const onEditNameSubmit = (name, editedProfile) => {
-        doRootPage.editName(myId, name)
-        doRootPage.editProfile(myId, editedProfile)
-        //doModalContainer.closeModal()
-      }
-
       doModalContainer.setInput({
-        userImg:  userImg,
-        userName: userName,
-        profile:  profile,
-        editImgSubmit:   imgBase64 => { doRootPage.editProfileImg(myId, imgBase64) },
+        userId:     userId,
+        isEditable: true
       })
-      doModalContainer.setSubmit(onEditNameSubmit)
       doModalContainer.openModal(constants.EDIT_NAME_MODAL)
     }
 

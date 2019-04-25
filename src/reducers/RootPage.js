@@ -298,31 +298,6 @@ const postprocessGetDeviceInfo = (myId, result) => {
 /*  Update User Info  */
 /*                    */
 
-export const editProfile = (myId, profile) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.setMyNameCard(JSON.stringify(profile)))
-      .then(({response: { result }, type, query, error}) => {
-        dispatch(postprocessEditProfile(myId, profile))
-      })
-  }
-}
-
-const postprocessEditProfile = (myId, content) => {
-
-  console.log('doRootPage.postprocessEditProfile: ', JSON.stringify(content))
-
-  const combinedUserInfo = {
-    userNameCard: content
-  }
-
-  return {
-    myId,
-    myClass,
-    type: UPDATE_DATA, /* UPDATE_DATA will merge the updated object with original */
-    data: { userInfo: combinedUserInfo }
-  }
-}
-
 export const editName = (myId, name) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.editName(name))
@@ -351,30 +326,6 @@ const postprocessEditName = (myId, name, result) => {
     myId,
     myClass,
     type: UPDATE_DATA, /* UPDATE_DATA will merge the updated object with original */
-    data: { userInfo: combinedUserInfo }
-  }
-}
-
-
-export const editProfileImg = (myId, imgBase64) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.editProfileImg(imgBase64))
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessEditProfileImg(myId, imgBase64))
-      })
-  }
-}
-
-const postprocessEditProfileImg = (myId, imgBase64) => {
-
-  const combinedUserInfo = {
-    userImg: imgBase64
-  }
-
-  return {
-    myId,
-    myClass,
-    type: UPDATE_DATA,
     data: { userInfo: combinedUserInfo }
   }
 }

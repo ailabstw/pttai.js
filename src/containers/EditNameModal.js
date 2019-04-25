@@ -6,6 +6,7 @@ import { FontAwesomeIcon }        from '@fortawesome/react-fontawesome'
 import { FormattedMessage,
          injectIntl }             from 'react-intl'
 import validator                  from 'validator'
+import Immutable                  from 'immutable'
 
 import AlertComponent         from '../components/AlertComponent'
 
@@ -21,22 +22,25 @@ function isEmpty(name) {
   return name.replace(/\s\s+/g, '') === ''
 }
 
+/**
+ * @name EditNameModal
+ * @param userId
+ * @desc give userId, component would fetch all other data used by name card
+ */
+
 class EditNameModal extends PureComponent {
   constructor(props) {
     super();
     this.state = {
-      name:     props.modalInput.userName,
-      userImg:  props.modalInput.userImg,
-      company:  props.modalInput.profile.company || '',
-      jobTitle: props.modalInput.profile.jobTitle || '',
-      email:    props.modalInput.profile.email || '',
-      phone:    props.modalInput.profile.phone || '',
-      description:    props.modalInput.profile.description || '',
-
-      isEdit:         false,
+      isEditing:  false,
     };
 
     this.openQRCodeModal = this.openQRCodeModal.bind(this)
+  }
+
+  componentWillMount() {
+    const { myId, modalInput: {userId}, actions:{ doEditNameModal } } = this.props
+    doEditNameModal.getProfile(myId, userId)
   }
 
   openQRCodeModal() {
@@ -52,8 +56,13 @@ class EditNameModal extends PureComponent {
   }
 
   render() {
-    const { intl, onModalClose, modal: { currentModal } } = this.props
-    const { name, userImg, company, jobTitle, email, phone, description, isEdit } = this.state
+    const { myId, intl, editNameModal, actions, onModalClose, modal: { currentModal }, modalInput: {isEditable} } = this.props
+    const { isEditing } = this.state
+
+    let me = editNameModal.get(myId, Immutable.Map())
+    let profile = me.get('profile', Immutable.Map()).toJS()
+
+    const { name, company, jobTitle, email, phone, description, userImg } = profile
 
     const company_placeholder     = intl.formatMessage({id: 'edit-name-modal.company-placeholder'});
     const jobtitle_placeholder    = intl.formatMessage({id: 'edit-name-modal.jobtitle-placeholder'});
@@ -61,7 +70,7 @@ class EditNameModal extends PureComponent {
     const phone_placeholder       = intl.formatMessage({id: 'edit-name-modal.phone-placeholder'});
     const description_placeholder = intl.formatMessage({id: 'edit-name-modal.description-placeholder'});
 
-    if (isEdit) {
+    if (isEditable && isEditing) {
       return (
         <div>
           <Modal
@@ -70,11 +79,18 @@ class EditNameModal extends PureComponent {
             isOpen={currentModal !== null}
             onRequestClose={onModalClose}
             contentLabel="Edit Name Modal">
-              <EditingNameCard {...this.props} {...this.state} finishEdit={editedProfile=>this.setState({isEdit:false, ...editedProfile})} />
+            <EditingNameCard
+              {...profile}
+              {...this.state}
+              myId={myId}
+              intl={intl}
+              actions={actions}
+              finishEdit={() => this.setState({ isEditing: false }) } />
             </Modal>
         </div>
       )
     }
+
     return (
       <div>
         <Modal
@@ -85,11 +101,14 @@ class EditNameModal extends PureComponent {
           contentLabel="Edit Name Modal">
           <div className={styles['root']}>
 
-            <div className={styles['modal-action-section']}>
-              <button className={styles['edit-button']} onClick={() => this.setState({ isEdit: true })}>
-                <FontAwesomeIcon icon="pen" />
-              </button>
-            </div>
+            {
+              isEditable && (
+                <div className={styles['modal-action-section']}>
+                <button className={styles['edit-button']} onClick={() => this.setState({ isEditing: true })}>
+                  <FontAwesomeIcon icon="pen" />
+                </button>
+              </div> )
+            }
 
             <div className={styles['info-section']}>
               <div className={styles['left-side']}>
@@ -97,9 +116,13 @@ class EditNameModal extends PureComponent {
                   <img id="profile-page-pic" src={userImg} alt={'User Profile'}/>
                 </div>
 
-                <div className={styles['qr-code']} onClick={this.openQRCodeModal}>
-                  <img src="/images/btn_qrcode@2x.jpg" alt="QRCode Button" />
-                </div>
+                {
+                  isEditable && (
+                  <div className={styles['qr-code']} onClick={this.openQRCodeModal}>
+                    <img src="/images/btn_qrcode@2x.jpg" alt="QRCode Button" />
+                  </div> )
+                }
+
               </div>
               <div className={styles['right-side']}>
                 <div className={styles['main-info']}>
@@ -146,18 +169,19 @@ class EditNameModal extends PureComponent {
 
 class EditingNameCard extends PureComponent {
   constructor(props) {
+    const { name, userImg, company, jobTitle, email, phone, description } = props
+
     super();
     this.state = {
-      name:           props.name,
-      userImg:        props.userImg,
-      company:        props.company,
-      jobTitle:       props.jobTitle,
-      email:          props.email,
-      phone:          props.phone,
-      description:    props.description,
+      name,
+      userImg,
+      company,
+      jobTitle,
+      email,
+      phone,
+      description,
 
-      isEdit:         false,
-      showAlert:      false,
+      showAlert: false,
       alertData: {
         message: '',
         onClose: null,
@@ -174,6 +198,15 @@ class EditingNameCard extends PureComponent {
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onUpload = this.onUpload.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
+  }
+
+  updateProfile(name, editedProfile, userImg) {
+    const { myId, actions:{ doEditNameModal } } = this.props
+
+    doEditNameModal.editName(myId, name)
+    doEditNameModal.editProfile(myId, editedProfile)
+    doEditNameModal.editProfileImg(myId, userImg)
   }
 
   onNameChange(e) {
@@ -201,7 +234,6 @@ class EditingNameCard extends PureComponent {
   }
 
   onUpload(e) {
-    //let { modalInput: { editImgSubmit } } = this.props
     let that          = this
     let file          = document.querySelector('input[type=file]').files[0];
     let resizeReader  = new FileReader();
@@ -288,8 +320,6 @@ class EditingNameCard extends PureComponent {
   }
 
   onSubmit() {
-    const { onModalSubmit/*, onModalClose*/, modalInput: { editImgSubmit } } = this.props
-
     const { name }          = this.state
     const { userImg }       = this.state
     const { company }       = this.state
@@ -440,10 +470,8 @@ class EditingNameCard extends PureComponent {
         description:  trimmedDescription
       }
 
-      editImgSubmit(userImg)
-      onModalSubmit(trimmedName, editedProfile)
-      this.props.finishEdit(editedProfile)
-      //onModalClose()
+      this.updateProfile(trimmedName, editedProfile, userImg)
+      this.props.finishEdit()
     }
   }
 
