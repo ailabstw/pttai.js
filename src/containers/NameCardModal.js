@@ -12,23 +12,23 @@ import AlertComponent         from '../components/AlertComponent'
 
 import * as modalConstants    from '../constants/ModalConstants'
 import * as constants         from '../constants/Constants'
-import * as doEditNameModal   from '../reducers/EditNameModal'
+import * as doNameCardModal   from '../reducers/NameCardModal'
 import { getOrientation,
          newCanvasSize }      from '../utils/utils'
 
-import styles from './EditNameModal.css'
+import styles from './NameCardModal.css'
 
 function isEmpty(name) {
   return name.replace(/\s\s+/g, '') === ''
 }
 
 /**
- * @name EditNameModal
+ * @name NameCardModal
  * @param userId
  * @desc give userId, component would fetch all other data used by name card
  */
 
-class EditNameModal extends PureComponent {
+class NameCardModal extends PureComponent {
   constructor(props) {
     super();
     this.state = {
@@ -39,8 +39,8 @@ class EditNameModal extends PureComponent {
   }
 
   componentWillMount() {
-    const { myId, modalInput: {userId}, actions:{ doEditNameModal } } = this.props
-    doEditNameModal.getProfile(myId, userId)
+    const { myId, modalInput: {userId}, actions:{ doNameCardModal } } = this.props
+    doNameCardModal.getProfile(myId, userId)
   }
 
   openQRCodeModal() {
@@ -56,10 +56,10 @@ class EditNameModal extends PureComponent {
   }
 
   render() {
-    const { myId, intl, editNameModal, actions, onModalClose, modal: { currentModal }, modalInput: {isEditable} } = this.props
+    const { myId, intl, nameCardModal, actions, onModalClose, modal: { currentModal }, modalInput: {isEditable} } = this.props
     const { isEditing } = this.state
 
-    let me = editNameModal.get(myId, Immutable.Map())
+    let me = nameCardModal.get(myId, Immutable.Map())
     let profile = me.get('profile', Immutable.Map()).toJS()
 
     const { name, company, jobTitle, email, phone, description, userImg } = profile
@@ -75,7 +75,7 @@ class EditNameModal extends PureComponent {
         <div>
           <Modal
             overlayClassName={styles['overlay']}
-            style={modalConstants.editNameModalStyles}
+            style={modalConstants.nameCardModalStyles}
             isOpen={currentModal !== null}
             onRequestClose={onModalClose}
             contentLabel="Edit Name Modal">
@@ -95,7 +95,7 @@ class EditNameModal extends PureComponent {
       <div>
         <Modal
           overlayClassName={styles['overlay']}
-          style={modalConstants.editNameModalStyles}
+          style={modalConstants.nameCardModalStyles}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
           contentLabel="Edit Name Modal">
@@ -202,11 +202,11 @@ class EditingNameCard extends PureComponent {
   }
 
   updateProfile(name, editedProfile, userImg) {
-    const { myId, actions:{ doEditNameModal } } = this.props
+    const { myId, actions:{ doNameCardModal } } = this.props
 
-    doEditNameModal.editName(myId, name)
-    doEditNameModal.editProfile(myId, editedProfile)
-    doEditNameModal.editProfileImg(myId, userImg)
+    doNameCardModal.editName(myId, name)
+    doNameCardModal.editProfile(myId, editedProfile)
+    doNameCardModal.editProfileImg(myId, userImg)
   }
 
   onNameChange(e) {
@@ -574,8 +574,8 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doEditNameModal: bindActionCreators(doEditNameModal, dispatch),
+    doNameCardModal: bindActionCreators(doNameCardModal, dispatch),
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(EditNameModal))
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(NameCardModal))

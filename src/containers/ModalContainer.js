@@ -10,7 +10,7 @@ import InviteToBoardModal     from './InviteToBoardModal';
 import CreateArticleModal     from './CreateArticleModal';
 import EditArticleModal       from './EditArticleModal';
 import AddKnownBoardModal     from './AddKnownBoardModal';
-import EditNameModal          from './EditNameModal';
+import NameCardModal          from './NameCardModal';
 import FriendProfileModal     from './FriendProfileModal';
 import FirstPopupModal        from './FirstPopupModal';
 import MultiDeviceModal       from './MultiDeviceModal'
@@ -82,8 +82,8 @@ class ModalContainer extends PureComponent {
                                   onModalClose={doModalContainer.closeModal}
                                   onModalSubmit={modalSubmit} />)
 
-      case constants.EDIT_NAME_MODAL:
-        return (<EditNameModal userId={myId}
+      case constants.NAME_CARD_MODAL:
+        return (<NameCardModal userId={myId}
                                modalInput={modalInput}
                                onModalClose={doModalContainer.closeModal}
                                onModalSubmit={modalSubmit} />)

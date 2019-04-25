@@ -8,7 +8,7 @@ import { myDuck as appDuck }    from './App'
 import { DEFAULT_USER_NAMECARD,
          DEFAULT_USER_IMAGE }   from '../constants/Constants'
 
-export const myClass = 'EDIT_NAME_MODAL'
+export const myClass = 'NAME_CARD_MODAL'
 
 export const myDuck = createDuck(myClass, 'Edit_Name_Modal')
 

@@ -14,7 +14,7 @@ import * as doFriendChatPage    from './FriendChatPage'
 import * as doCreateBoardModal  from './CreateBoardModal'
 import * as doManageBoardModal  from './ManageBoardModal'
 import * as doShowOpLogModal    from './ShowOpLogModal'
-// import * as doEditNameModal     from './EditNameModal'
+// import * as doNameCardModal     from './NameCardModal'
 // import * as doFriendProfileModal from './FriendProfileModal'
 
 import { getUUID }              from '../utils/utils'
@@ -49,7 +49,7 @@ export const init = (myId, query, param) => {
   let createBoardModalId  = getUUID()
   let manageBoardModalId  = getUUID()
   let showOpLogModalId    = getUUID()
-  // let editNameModalId     = getUUID()
+  // let nameCardModalId     = getUUID()
   // let friendProfileModalId = getUUID()
 
   return (dispatch, getState) => {
@@ -66,7 +66,7 @@ export const init = (myId, query, param) => {
     dispatch(doCreateBoardModal.init(createBoardModalId, myId, myClass, myDuck))
     dispatch(doManageBoardModal.init(manageBoardModalId, myId, myClass, myDuck))
     dispatch(doShowOpLogModal.init(showOpLogModalId, myId, myClass, myDuck))
-    // dispatch(doEditNameModal.init(editNameModalId, myId, myClass, myDuck))
+    // dispatch(doNameCardModal.init(nameCardModalId, myId, myClass, myDuck))
     // dispatch(doFriendProfileModal.init(friendProfileModalId, myId, myClass, myDuck))
   }
 }

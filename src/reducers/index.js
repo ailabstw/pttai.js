@@ -19,7 +19,7 @@ import createBoardModal       from './CreateBoardModal'
 import manageBoardModal       from './ManageBoardModal'
 import manageBoardMemberModal from './ManageBoardMemberModal'
 import inviteToBoardModal     from './InviteToBoardModal'
-import editNameModal          from './EditNameModal'
+import nameCardModal          from './NameCardModal'
 import friendProfileModal     from './FriendProfileModal'
 import showOpLogModal         from './ShowOpLogModal'
 
@@ -30,7 +30,7 @@ export const reducers = combineReducers({
   manageBoardModal,
   manageBoardMemberModal,
   inviteToBoardModal,
-  editNameModal,
+  nameCardModal,
   friendProfileModal,
   showOpLogModal,
   rootPage,

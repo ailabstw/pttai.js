@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import EditNameModal from './EditNameModal'
+import NameCardModal from './NameCardModal'
 
 it.skip('should pass', () => {
 })

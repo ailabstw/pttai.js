@@ -304,7 +304,7 @@ class RootPage extends PureComponent {
         userId:     userId,
         isEditable: true
       })
-      doModalContainer.openModal(constants.EDIT_NAME_MODAL)
+      doModalContainer.openModal(constants.NAME_CARD_MODAL)
     }
 
     let onSettingClicked = () => {
