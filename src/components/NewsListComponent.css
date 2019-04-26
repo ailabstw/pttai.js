@@ -12,13 +12,17 @@
     font-size: 16px;
     background-color: #FFF;
     line-height: 30px;
-    border-bottom: 1px solid #A9A9A9;
+    border-bottom: 1px solid #dddddd;
     position: relative;
     display: flex;
     flex-direction: row;
 
     position: relative;
     overflow: hidden;
+}
+
+.read {
+    background: #ececec;
 }
 
 .no-content-message {
@@ -87,7 +91,7 @@
     cursor: default;
 }
 
-.list-item-title-unread {
+.unread .list-item-title {
     color: #000;
     text-overflow: ellipsis;
     white-space: nowrap;

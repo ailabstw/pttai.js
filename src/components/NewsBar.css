@@ -1,10 +1,10 @@
 .root {
-    height: 50px;
+    height: 43.5px;
     width: 100%;
 }
 
 .content {
-    height: 50px;
+    height: 43.5px;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -14,7 +14,6 @@
 }
 
 .left-button {
-    line-height: 30px;
     padding: 10px 20px;
     min-width: 64px;
     max-width: 64px;
@@ -22,6 +21,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    box-sizing: border-box;
+    height: 43.5px;
 }
 
 .right-button a, .right-button-button a:hover {
@@ -51,8 +52,7 @@
 }
 
 .board-name {
-    height: 100%;
-    line-height: 30px;
+    height: 43.5px;
     padding: 10px 20px;
     font-weight: bolder;
     text-overflow: ellipsis;
@@ -72,6 +72,7 @@
     min-width: 64px;
     font-size: 20px;
     color:  #696969;
-    height: 50px;
+    height: 43.5px;
     position: relative;
+    box-sizing: border-box;
 }

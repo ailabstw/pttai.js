@@ -347,7 +347,7 @@ class RootPage extends PureComponent {
       doModalContainer.setInput({
         match:        match, /* for props to detect url path changes */
         isLoading:    false,
-        articleList:  latestArticles,
+        articleList:  latestArticles, // FIXME: 應該是最新推文們
         exitClicked:  () => doModalContainer.closeModal(),
         itemClicked:  () => doModalContainer.closeModal(),
       })

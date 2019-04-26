@@ -54,8 +54,20 @@ class NewsListComponent extends PureComponent {
                 summary = getSummaryTemplate(sData, { CreatorName: item.CreatorName, boardId: item.BoardID })
               }
 
+              let isUnread = isUnRead(item.CreateTS.T, item.LastSeen.T)
+
+              let listItemClass = styles['list-item']
+
+              if (isUnread) {
+                listItemClass += ' ' + styles['unread']
+              }
+              else {
+                listItemClass += ' ' + styles['read']
+              }
+
+
               return (
-                <div className={styles['list-item']} key={index} onClick={(e) => this.onListItemClick(e, index, itemLink)}>
+                <div className={listItemClass} key={index} onClick={(e) => this.onListItemClick(e, index, itemLink)}>
                   <Link to={itemLink}>
                     <div className={styles['list-item-author']}>
                       <div className={styles['list-item-author-pic']}>
@@ -67,7 +79,7 @@ class NewsListComponent extends PureComponent {
                     </div>
                     <div className={styles['list-item-main']}>
                       <div className={styles['list-item-header']}>
-                        <div title={item.Title} className={isUnRead(item.CreateTS.T, item.LastSeen.T)? styles['list-item-title-unread']:styles['list-item-title']}>
+                        <div title={item.Title} className={styles['list-item-title']}>
                           {item.Title}
                         </div>
                         <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>

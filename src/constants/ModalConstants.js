@@ -214,18 +214,18 @@ export const latestPageModalStyles = {
     position              : 'absolute',
     padding               : '0px',
     backgroundColor       : '#FFF',
-    width                 : '90%',
-    height                : 'calc(100% - 120px)',
-    maxWidth              : 'calc(414px - 2px)',
+    width                 : '100%',
+    maxWidth              : '396px',
+    height                : '439px',
     margin                : '0px auto',
-    top                   : '78px',
+    top                   : '85px',
     left                  : '0px',
     right                 : '0px',
     bottom                : '0px',
     border                : 'none',
-    borderRadius          : '5px',
+    borderRadius          :'10px',
     zIndex                : 40,
-    boxShadow             : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
+    boxShadow             : '0 0 10px 0 rgba(0, 0, 0, 0.5)'
   }
 }
 
