@@ -29,14 +29,14 @@ class ProfilePage extends PureComponent {
             userName,
             userImg,
             onEditName,
-            // hasUnread,
-            // onLatestClicked,
+            hasUnread,
+            onLatestClicked,
             isChatRoom,
             onSettingClicked } = this.props
 
     const { alertData, showAlert } = this.state
 
-    // let latestClass = hasUnread? 'profile-latest-active':'profile-latest';
+    let bellClass = hasUnread? 'profile-latest-active':'profile-latest';
 
     let rootClass = styles['root']
     if (isChatRoom) { rootClass += ' ' + styles['collapsed'] }
@@ -54,7 +54,7 @@ class ProfilePage extends PureComponent {
           <div className={styles['profile-description']} onClick={onEditName}>
             <div title={userId} className={styles['name']} >{userName}</div>
           </div>
-          {/*<div className={styles[latestClass]} onClick={onLatestClicked}></div>*/}
+          <div className={styles[bellClass]} onClick={onLatestClicked}></div>
           <div className={styles['profile-qr-code']} onClick={onSettingClicked}></div>
         </div>
         <AlertComponent show={showAlert} alertData={alertData}/>

@@ -6,12 +6,12 @@ import NewsListComponent  from '../components/NewsListComponent'
 
 class NewsComponent extends PureComponent {
   render() {
-    const { articleList, isLoading, itemClicked, prevClicked } = this.props
+    const { articleList, isLoading, itemClicked, exitClicked } = this.props
 
     return (
       <div className={styles['root']}>
         <NewsBar
-          prevClicked={prevClicked} />
+          exitClicked={exitClicked} />
         <NewsListComponent
           itemClicked={itemClicked}
           listData={articleList}

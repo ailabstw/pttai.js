@@ -13,7 +13,7 @@
     z-index: 10;
 }
 
-.prev-button {
+.left-button {
     line-height: 30px;
     padding: 10px 20px;
     min-width: 64px;
@@ -24,11 +24,7 @@
     overflow: hidden;
 }
 
-.prev-button:hover {
-    cursor: pointer;
-}
-
-.prev-button a, .prev-button a:hover {
+.right-button a, .right-button-button a:hover {
     width: 100%;
     height: 100%;
     color: #000;
@@ -37,18 +33,19 @@
     flex-direction: row;
 }
 
-.prev-button-icon {
+.exit-button-icon {
     height: 100%;
     width: 100%;
     min-width: 19px;
-    margin: auto 5px auto auto;
-    background-size: 19px 14px;
+    margin: auto;
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_back@2x.png');
+    background-image: url('/images/exit@2x.png');
+    cursor: pointer;
 }
 
-.prev-button-text {
+.exit-button-text {
     min-width: 65px;
     margin-left: 5px;
 }
@@ -66,7 +63,7 @@
     flex-grow: 1;
 }
 
-.search {
+.right-button {
     line-height: 30px;
     padding: 10px 20px;
     text-align: right;

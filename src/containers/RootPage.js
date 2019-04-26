@@ -348,7 +348,7 @@ class RootPage extends PureComponent {
         match:        match, /* for props to detect url path changes */
         isLoading:    false,
         articleList:  latestArticles,
-        prevClicked:  () => doModalContainer.closeModal(),
+        exitClicked:  () => doModalContainer.closeModal(),
         itemClicked:  () => doModalContainer.closeModal(),
       })
       doModalContainer.openModal(constants.LATEST_PAGE_MODAL)

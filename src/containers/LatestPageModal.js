@@ -11,7 +11,7 @@ import styles from './LatestPageModal.css'
 
 class LatestPageModal extends PureComponent {
   render() {
-    const { modalInput:{ articleList, isLoading, itemClicked, prevClicked },
+    const { modalInput:{ articleList, isLoading, itemClicked, exitClicked },
             onModalClose,
             modal: { currentModal }} = this.props
 
@@ -28,7 +28,7 @@ class LatestPageModal extends PureComponent {
                 articleList={articleList}
                 isLoading={isLoading}
                 itemClicked={itemClicked}
-                prevClicked={prevClicked} />
+                exitClicked={exitClicked} />
             </div>
           </Modal>
       </div>

@@ -5,18 +5,11 @@ import styles from './NewsBar.css'
 
 class NewsBar extends PureComponent {
   render() {
-    const { prevClicked } = this.props
+    const { exitClicked } = this.props
     return (
       <div className={styles['root']}>
         <div className={styles['content']}>
-            <div className={styles['prev-button']} onClick={prevClicked}>
-              <div className={styles['prev-button-icon']}></div>
-              <div hidden className={styles['prev-button-text']}>
-                <FormattedMessage
-                  id="newsbar.prev-button"
-                  defaultMessage="Boards"
-                />
-              </div>
+            <div className={styles['left-button']}>
             </div>
             <div className={styles['board-name']}>
               <FormattedMessage
@@ -24,7 +17,14 @@ class NewsBar extends PureComponent {
                 defaultMessage="Latest posts"
               />
             </div>
-            <div className={styles['search']}>
+            <div className={styles['right-button']} onClick={exitClicked}>
+              <div className={styles['exit-button-icon']}></div>
+              <div hidden className={styles['exit-button-text']}>
+                <FormattedMessage
+                  id="newsbar.exit-button"
+                  defaultMessage="Boards"
+                />
+              </div>
             </div>
         </div>
       </div>
