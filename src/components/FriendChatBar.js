@@ -9,7 +9,7 @@ import * as constants              from '../constants/Constants'
 class FriendChatBar extends PureComponent {
 
   render() {
-    const { friendData, /*onOpenOPLogModal,*/ onOpenFriendProfileModal } = this.props
+    const { friendData, /*onOpenOPLogModal,*/ openNameCard } = this.props
 
     return (
       <div className={styles['root']}>
@@ -19,12 +19,12 @@ class FriendChatBar extends PureComponent {
               <div className={styles['prev-button-icon']}></div>
             </Link>
           </div>
-          <div className={styles['main-content']} onClick={onOpenFriendProfileModal}>
+          <div className={styles['main-content']} onClick={openNameCard}>
             <div className={styles['profile-pic']}>
               <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
             </div>
             <div className={styles['friend-content']}>
-              <div className={styles['name']} onClick={onOpenFriendProfileModal}>
+              <div className={styles['name']} onClick={openNameCard}>
                 {friendData.Name || constants.DEFAULT_USER_NAME }
               </div>
               <div title={friendData.ID} className={styles['job']} onClick={null/*onOpenOPLogModal*/}>

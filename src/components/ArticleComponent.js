@@ -51,7 +51,7 @@ class ArticleComponent extends PureComponent {
   // }
 
   render() {
-    const { articleContentsList, pullCount, editArticleAction, articleInfo, userId, boardInfo, onOpenFriendProfileModal } = this.props
+    const { articleContentsList, pullCount, editArticleAction, articleInfo, userId, boardInfo, openNameCard } = this.props
     const { noResult } = this.state
 
     let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
@@ -79,16 +79,10 @@ class ArticleComponent extends PureComponent {
                //onMouseUp={this.handleLongPressRelease}
                >
             <div className={styles['author']}>
-              <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'} onClick={() => onOpenFriendProfileModal({
-              FriendID: articleInfo.CreatorID,
-              Name:     articleInfo.CreatorName || constants.DEFAULT_USER_NAME,
-              Img:      articleInfo.CreatorImg  || constants.DEFAULT_USER_IMAGE
-            })}/>
-              <div title={articleInfo.CreatorName} onClick={() => onOpenFriendProfileModal({
-              FriendID: articleInfo.CreatorID,
-              Name:     articleInfo.CreatorName || constants.DEFAULT_USER_NAME,
-              Img:      articleInfo.CreatorImg  || constants.DEFAULT_USER_IMAGE
-            })}> {articleInfo.CreatorName} </div>
+              <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'} onClick={openNameCard}/>
+              <div title={articleInfo.CreatorName} onClick={openNameCard}>
+                {articleInfo.CreatorName}
+              </div>
               {
                 articleInfo.CreatorID === userId ? (
                   <div className={styles['edit-button']} onClick={editArticleAction}></div>

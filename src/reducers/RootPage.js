@@ -14,8 +14,7 @@ import * as doFriendChatPage    from './FriendChatPage'
 import * as doCreateBoardModal  from './CreateBoardModal'
 import * as doManageBoardModal  from './ManageBoardModal'
 import * as doShowOpLogModal    from './ShowOpLogModal'
-// import * as doEditNameModal     from './EditNameModal'
-// import * as doFriendProfileModal from './FriendProfileModal'
+// import * as doNameCardModal     from './NameCardModal'
 
 import { getUUID }              from '../utils/utils'
 import { EMPTY_ID,
@@ -49,7 +48,7 @@ export const init = (myId, query, param) => {
   let createBoardModalId  = getUUID()
   let manageBoardModalId  = getUUID()
   let showOpLogModalId    = getUUID()
-  // let editNameModalId     = getUUID()
+  // let nameCardModalId     = getUUID()
   // let friendProfileModalId = getUUID()
 
   return (dispatch, getState) => {
@@ -66,8 +65,7 @@ export const init = (myId, query, param) => {
     dispatch(doCreateBoardModal.init(createBoardModalId, myId, myClass, myDuck))
     dispatch(doManageBoardModal.init(manageBoardModalId, myId, myClass, myDuck))
     dispatch(doShowOpLogModal.init(showOpLogModalId, myId, myClass, myDuck))
-    // dispatch(doEditNameModal.init(editNameModalId, myId, myClass, myDuck))
-    // dispatch(doFriendProfileModal.init(friendProfileModalId, myId, myClass, myDuck))
+    // dispatch(doNameCardModal.init(nameCardModalId, myId, myClass, myDuck))
   }
 }
 
@@ -298,31 +296,6 @@ const postprocessGetDeviceInfo = (myId, result) => {
 /*  Update User Info  */
 /*                    */
 
-export const editProfile = (myId, profile) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.setMyNameCard(JSON.stringify(profile)))
-      .then(({response: { result }, type, query, error}) => {
-        dispatch(postprocessEditProfile(myId, profile))
-      })
-  }
-}
-
-const postprocessEditProfile = (myId, content) => {
-
-  console.log('doRootPage.postprocessEditProfile: ', JSON.stringify(content))
-
-  const combinedUserInfo = {
-    userNameCard: content
-  }
-
-  return {
-    myId,
-    myClass,
-    type: UPDATE_DATA, /* UPDATE_DATA will merge the updated object with original */
-    data: { userInfo: combinedUserInfo }
-  }
-}
-
 export const editName = (myId, name) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.editName(name))
@@ -351,30 +324,6 @@ const postprocessEditName = (myId, name, result) => {
     myId,
     myClass,
     type: UPDATE_DATA, /* UPDATE_DATA will merge the updated object with original */
-    data: { userInfo: combinedUserInfo }
-  }
-}
-
-
-export const editProfileImg = (myId, imgBase64) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.editProfileImg(imgBase64))
-      .then(({response: {result}, type, query, error}) => {
-        dispatch(postprocessEditProfileImg(myId, imgBase64))
-      })
-  }
-}
-
-const postprocessEditProfileImg = (myId, imgBase64) => {
-
-  const combinedUserInfo = {
-    userImg: imgBase64
-  }
-
-  return {
-    myId,
-    myClass,
-    type: UPDATE_DATA,
     data: { userInfo: combinedUserInfo }
   }
 }

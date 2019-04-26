@@ -1,0 +1,244 @@
+.root {
+    position:relative;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: auto;
+}
+
+.modal-action-section {
+    float: right;
+    margin: 10px 20px 0 0;
+}
+
+.modal-action-section button {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: #fff;
+    border: none;
+    text-decoration: none;
+    outline: none;
+}
+
+.modal-action-section button:active,
+.modal-action-section button:focus {
+    outline: none;
+}
+
+.edit-button { background: #7eb349; }
+.submit-button { background: #dda200; }
+
+.info-section {
+    display: flex;
+    flex-direction: row;
+}
+
+.left-side {
+    min-width: 100px;
+    padding: 13px 10px 13px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-picture {
+    min-width: 68px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.profile-picture img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+}
+
+.right-side {
+    padding: 15px 20px 13px 10px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 110px)
+}
+
+.main-info {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 12px;
+    position: relative;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    position: relative;
+}
+
+.other-info {
+    padding-top: 12px;
+}
+
+/* Divider */
+.main-info:after,
+.contact-info:after {
+    content: '';
+    border-bottom: 1px solid #ccc;
+    width: 125%;
+    position: absolute;
+    bottom: 0;
+    left: -7px;
+}
+
+.right-side input {
+    width: 100%;
+    max-width: 100%;
+    height: 1em;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-weight: inherit;
+}
+.right-side textarea  {
+    width: 100%;
+    max-width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    resize: none;
+    padding: 0;
+}
+
+.profile-input {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 10px 0px 0px;
+}
+
+.name {
+    width: 100%;
+    line-height: 1em;
+    font-size: 24px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+
+    padding: 5px 0 5px 6px;
+    margin: 0 0 3px -6px;
+    color: #484848;
+}
+
+.company,
+.job-title,
+.email,
+.phone,
+.description {
+    width: 100%;
+    line-height: 1em;
+    font-size: 16px;
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+
+    padding: 3px 0 3px 6px;
+    margin: 0 0 3px -6px;
+    color: #484848;
+}
+
+.description {
+    line-height: 1.5em;
+    max-height: calc(1.5em * 3);
+    overflow: hidden;
+}
+
+.company div,
+.job-title div,
+.email div,
+.phone div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.qr-code {
+    position: absolute;
+    left: 26px;
+    bottom: 26px;
+    cursor: pointer;
+}
+
+.qr-code img {
+    height: 59px;
+    width: 59px;
+}
+
+.overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px #2F2B2F inset !important;
+}
+
+input:-webkit-autofill {
+    -webkit-text-fill-color: white !important;
+}
+
+/* EDIT */
+
+.editing .profile-picture:after {
+    content: '';
+    display: inline-block;
+    background-color: rgba(0,0,0,0.6);
+    background-image: url('/images/icon_edit@2x.png');
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: 15px 15px;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    border: 1px solid #707070;
+}
+
+.editing .name,
+.editing .company,
+.editing .job-title,
+.editing .email,
+.editing .phone,
+.editing .description {
+    background: rgba(0, 0, 0, 0.07);
+}
+
+.editing .qr-code {
+    cursor: not-allowed;
+}
+

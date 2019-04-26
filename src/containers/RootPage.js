@@ -287,7 +287,6 @@ class RootPage extends PureComponent {
     let userId           = me.getIn(['userInfo', 'userId'])
     let userName         = me.getIn(['userInfo', 'userName'])
     let userImg          = me.getIn(['userInfo', 'userImg'])
-    let profile          = me.getIn(['userInfo', 'userNameCard'], Immutable.Map()).toJS()
     let keyInfo          = me.get('keyInfo',          Immutable.Map()).toJS()
     let deviceInfo       = me.get('deviceInfo',       Immutable.List()).toJS()
     let latestArticles   = me.get('latestArticles',   Immutable.List()).toJS()
@@ -299,26 +298,13 @@ class RootPage extends PureComponent {
     let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
 
     let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
-    let onEditNameSubmit = (name, editedProfile) => {
-      doRootPage.editName(myId, name)
-      doRootPage.editProfile(myId, editedProfile)
-      //doModalContainer.closeModal()
-    }
 
-    let onEditImgSubmit = (imgBase64) => {
-      doRootPage.editProfileImg(myId, imgBase64)
-    }
-
-    let openEditNameModule = () => {
+    let openNameCard = () => {
       doModalContainer.setInput({
-        userImg:  userImg,
-        userName: userName,
-        profile:  profile,
-        editImgSubmit:   onEditImgSubmit,
-        friendJoinKey:   keyInfo.friendJoinKey,
+        userId:     userId,
+        isEditable: true
       })
-      doModalContainer.setSubmit(onEditNameSubmit)
-      doModalContainer.openModal(constants.EDIT_NAME_MODAL)
+      doModalContainer.openModal(constants.NAME_CARD_MODAL)
     }
 
     let onSettingClicked = () => {
@@ -412,7 +398,7 @@ class RootPage extends PureComponent {
           userId={userId}
           userName={userName}
           userImg={userImg}
-          onEditName={openEditNameModule}
+          openNameCard={openNameCard}
           onSettingClicked={onSettingClicked}
           onLatestClicked={onLatestClicked}
           isChatRoom={isChatRoom}

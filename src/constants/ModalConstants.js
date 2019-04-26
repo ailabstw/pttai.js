@@ -110,39 +110,21 @@ export const joinBoardModalStyles ={
   }
 }
 
-export const editNameModalStyles = {
+export const nameCardModalStyles = {
   content : {
     position              : 'relative',
     padding               : '0px',
-    width                 : '100%',
-    height                : 'auto',
-    maxWidth              : '414px',
-    margin                : '0px auto',
-    top                   : '0px',
-    left                  : '0px',
-    right                 : '0px',
-    bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '0px',
-    backgroundColor       : 'rgba(0,0,0,0.35)'
-  }
-};
-
-export const friendProfileModalStyles = {
-  content : {
-    position              : 'relative',
-    padding               : '0px',
-    width                 : '100%',
-    height                : 'auto',
+    width                 : '396px',
+    height                : '306px',
     maxWidth              : '414px',
     margin                : 'auto',
-    top                   : '64px',
+    top                   : 'calc(50% - 153px)',
     left                  : '0px',
     right                 : '0px',
     bottom                : '0px',
     border                : 'none',
-    borderRadius          : '0px',
-    //backgroundColor       : 'none',
+    borderRadius          : '10px',
+    boxShadow             : '0 0 10px 0 rgba(0, 0, 0, 0.5)'
   }
 };
 
