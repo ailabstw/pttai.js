@@ -67,6 +67,8 @@ class BoardListComponent extends PureComponent {
     }
 
     let activeList = listData
+      .filter( item => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted') )
+      .sort( (a,b) => b.UpdateTS.T - a.UpdateTS.T )
 
     return (
       <div className={styles['root']}
@@ -97,7 +99,7 @@ class BoardListComponent extends PureComponent {
               ):(null)
             }
             {
-              activeList.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => (
+              activeList.map((item, index) => (
                 <div className={styles['list-item']} key={index}>
                   <div className={styles['list-item-label' + boardType(item)]}></div>
                   <Link to={`/board/${encodeURIComponent(item.ID)}`}>
