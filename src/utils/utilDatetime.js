@@ -181,17 +181,19 @@ export const epoch2ReadFormat = (epochTS) => {
   return readableTime
 }
 
+export const isValid = (updateTS_T, period) => {
+  let targetTime  = moment.unix(updateTS_T)
+  let expiredTime = targetTime.add(period, 'seconds')
+  return moment().isBefore(expiredTime)
+}
+
 export const expiredFormat = (updateTS_T, period) => {
 
+  let isZh = language === 'zh'
   let result = ''
 
   if (!updateTS_T || !period) {
-    if (language === 'zh') {
-      result = '日期錯誤'
-    } else {
-      result = 'Wrong Date'
-    }
-    return result
+    result = isZh ? '日期錯誤' : 'Wrong Date'
   }
 
   // updateTS + period - current
@@ -199,17 +201,10 @@ export const expiredFormat = (updateTS_T, period) => {
   let expiredTime = targetTime.add(period, 'seconds')
 
   if ( moment().isAfter(expiredTime)) {
-    if (language === 'zh') {
-      result = '已過期'
-    } else {
-      result = 'Expired'
-    }
+    result = isZh ? '已過期' : 'Expired'
   } else {
-    if (language === 'zh') {
-      result = expiredTime.toNow(true) + '後過期'
-    } else {
-      result = 'Expired in ' + expiredTime.toNow(true)
-    }
+    let timeleft = expiredTime.toNow(true)
+    result = isZh ? `${timeleft} 後過期` : `Expired in ${timeleft}`
   }
 
   return result

@@ -9,6 +9,7 @@ import { ClipLoader }              from 'react-spinners'
 import { doesCrossDay,
          epoch2MessageTimeFormat,
          epoch2MessageDateFormat,
+         isValid,
          expiredFormat           } from '../utils/utilDatetime'
 
 import { getStatusClass,
@@ -189,13 +190,15 @@ class FriendChatComponent extends PureComponent {
   componentDidUpdate(prevProps) {
 
     if ((prevProps.messageList.length === 0 && this.props.messageList.length > 0) ||
-        (prevProps.match.path !== this.props.match.path)) {
-      /* First load */
-      this.scrollToBottom("instant")
-    } else if (this.topItem && prevProps.isLoading && !this.props.isLoading) {
+      (prevProps.match.path !== this.props.match.path)) {
+      /* First load: wait for expand */
+      setTimeout(() => this.scrollToBottom("instant"), 300)
+    }
+    else if (this.topItem && prevProps.isLoading && !this.props.isLoading) {
       /* More loaded */
       ReactDOM.findDOMNode(this.topItem).scrollIntoView();
-    } else if ((prevProps.messageList.length > 0 && this.props.messageList.length === prevProps.messageList.length + 1)) {
+    }
+    else if ((prevProps.messageList.length > 0 && this.props.messageList.length === prevProps.messageList.length + 1)) {
       /* New user message */
       this.scrollToBottom("smooth")
     }
@@ -405,8 +408,26 @@ const InvitationBlock = props => {
     )
   }
 
+  // not joined, invitation still valid
+  if (isValid(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration)) {
+    return (
+      <div className={styles['message-content-invitation']} onClick={()=>handleAcceptInvite(inviteInfo.boardJoinKey)}>
+        <span>
+          <FormattedMessage
+            id="friend-chat-component.action2"
+            defaultMessage="Invited to" />
+          <span>{inviteInfo.boardName}</span>
+          <FormattedMessage
+            id="friend-chat-component.action2-2"
+            defaultMessage="Click to join ({expTimeVal})"
+            values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }} />
+        </span>
+      </div>
+    )
+  }
+
   return (
-    <div className={styles['message-content-invitation']} onClick={()=>handleAcceptInvite(inviteInfo.boardJoinKey)}>
+    <div className={`${styles['message-content-invitation']} ${styles['expired']}`} >
       <span>
         <FormattedMessage
           id="friend-chat-component.action2"

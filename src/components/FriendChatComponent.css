@@ -244,7 +244,13 @@
     border-radius: 5px;
 }
 
-.message-content-invitation:hover {
+.message-content-invitation.expired {
+    background: #b9b9b9;
+    color: rgba(255,255,255,0.55);
+    cursor: default;
+}
+
+.message-content-invitation:not(.expired):hover {
     background-color: #716C71;
 }
 
