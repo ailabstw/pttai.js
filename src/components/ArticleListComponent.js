@@ -21,7 +21,6 @@ class ArticleListComponent extends PureComponent {
     this.state = {
       sliderInIndex: -1,
     };
-    this.onSliderClick    = this.onSliderClick.bind(this)
     this.onListItemClick  = this.onListItemClick.bind(this)
     this.scrollToBottom   = this.scrollToBottom.bind(this)
     this.needFetchMore    = this.needFetchMore.bind(this)
@@ -50,13 +49,7 @@ class ArticleListComponent extends PureComponent {
     }
   }
 
-  onSliderClick(e, index) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.setState({sliderInIndex: index})
-  }
-
-  onListItemClick(e, index) {
+  onListItemClick(e) {
     const { onListItemClick } = this.state
     if (onListItemClick !== -1) {
       this.setState({sliderInIndex: -1})
@@ -88,106 +81,112 @@ class ArticleListComponent extends PureComponent {
     const { boardId, listData, summaryData, isLoading, noArticle } = this.props
     const { sliderInIndex } = this.state
 
-    return (
-      <div className={styles['root']}
-           onScroll={ this.handleScroll }
-           ref={(scroller) => {
-              this.scroller = scroller;
-           }}>
-        {
-          (noArticle) ? (
+    let aliveArticles = listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted'))
+
+    if (noArticle) {
+      return (
+        <div className={styles['root']}
+             onScroll={ this.handleScroll }
+             ref={ scroller => { this.scroller = scroller; }}>
             <div className={styles['no-content-message']}>
               <FormattedMessage
                 id="article-list-component.message"
                 defaultMessage="You have no articles yet, click below button to add"
               />
             </div>
-          ):(
-            <div className={styles['list']}>
-              {
-                isLoading? (
-                  <div className={styles['loader']}>
-                    <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
-                  </div>
-                ):(null)
-              }
-              {
-                listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
-                  //let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
-                  let itemLink = (sliderInIndex === -1)? `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(item.ID)}`:false
+         </div>
+      )
+    }
 
-                  let summary = ''
-                  if (item.PreviewText) {
-                    summary = item.PreviewText
-                  } else if (summaryData[item.ID] && summaryData[item.ID].B) {
-                    let sData = toJson(serverUtils.b64decode(summaryData[item.ID].B[0]))
-                    summary = getSummaryTemplate(sData, { CreatorName: item.CreatorName, boardId: boardId })
-                  }
-
-                  return (
-                    <div className={styles['list-item']} key={item.ID} onClick={(e) => this.onListItemClick(e, index)}>
-                      <Link to={itemLink}>
-                        <div hidden className={styles['list-item-blocker']}></div>
-                        <div className={styles['list-item-author']}>
-                          <div className={styles['list-item-author-pic']}>
-                            <img src={item.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Creator Profile'}/>
-                          </div>
-                          <div title={item.CreatorName} className={styles['list-item-author-name']}>
-                            {item.CreatorName}
-                          </div>
-                        </div>
-                        <div className={styles['list-item-main']}>
-                          <div className={styles['list-item-header']}>
-                            <div title={item.Title} className={isUnRead(item.CommentCreateTS.T, item.LastSeen.T)? styles['list-item-title-unread']:styles['list-item-title']}>
-                              {item.Title}
-                            </div>
-                            <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>
-                              {epoch2ReadFormat(item.UpdateTS.T)}
-                            </div>
-                          </div>
-                          <div className={styles['list-item-content']}>
-                          {
-                            summary ? (
-                              <div dangerouslySetInnerHTML={{__html: summary}} />
-                            ): (
-                              <FormattedMessage id="article-list-component.empty" defaultMessage="(No content)"/>
-                            )
-                          }
-                          </div>
-                        </div>
-                        <div className={styles['list-item-meta']}>
-                          <span className={styles['list-item-circle']}>{item.NPush || 0}</span>
-                          <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-status']}>
-                            <div className={styles['list-item-status-' + getStatusClass(item.Status)]}></div>
-                          </div>
-                        </div>
-                      </Link>
-                      {/*
-                      <div className={styles[menuClass]}>
-                        <div className={styles['list-item-menu-item']}
-                             onClick={()=> {
-                              deleteArticle(item.ID)
-                              that.setState({sliderInIndex: -1})
-                            }}>
-                          <FormattedMessage
-                            id="article-list-component.action"
-                            defaultMessage="Delete"
-                          />
-                        </div>
-                      </div>
-                      */}
-                    </div>
-                  )
-                })
-              }
-            </div>
-          )
-        }
-        <div className={styles['bottomElement']}
-           ref={(el) => {
-            this.pageEnd = el;
-          }}>
+    return (
+      <div className={styles['root']} onScroll={ this.handleScroll } ref={ scroller => { this.scroller = scroller; }}>
+        <div className={styles['list']}>
+          {
+            isLoading? (
+              <div className={styles['loader']}>
+                <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
+              </div>
+            ):(null)
+          }
+          {
+            aliveArticles.map( item => (
+              <ArticleComponent data={item} summaryData={summaryData} key={item.ID}
+                onClick={this.onListItemClick} sliderInIndex={sliderInIndex} boardId={boardId} />
+            ))
+          }
         </div>
+        <div className={styles['bottomElement']} ref={(el) => { this.pageEnd = el; }}> </div>
+      </div>
+    )
+  }
+}
+
+
+class ArticleComponent extends PureComponent {
+  render() {
+    let { data, onClick, sliderInIndex, boardId, summaryData } = this.props
+    let isUnreadArticle = isUnRead(data.CommentCreateTS.T, data.LastSeen.T)
+    let listItemClass = styles['list-item'] + ' ' + (isUnreadArticle ? styles['unread'] : styles['read'])
+    let itemLink = (sliderInIndex === -1)? `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(data.ID)}`:false
+    // let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
+
+    let summary = ''
+    if (data.PreviewText) {
+      summary = data.PreviewText
+    }
+    else if (summaryData[data.ID] && summaryData[data.ID].B) {
+      let sData = toJson(serverUtils.b64decode(summaryData[data.ID].B[0]))
+      summary = getSummaryTemplate(sData, { CreatorName: data.CreatorName, boardId: boardId })
+    }
+
+    return (
+      <div className={listItemClass} onClick={onClick}>
+        <Link to={itemLink}>
+          <div hidden className={styles['list-item-blocker']}></div>
+          <div className={styles['list-item-author']}>
+            <div className={styles['list-item-author-pic']}>
+              <img src={data.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Creator Profile'}/>
+            </div>
+            <div title={data.CreatorName} className={styles['list-item-author-name']}>{data.CreatorName}</div>
+          </div>
+          <div className={styles['list-item-main']}>
+            <div className={styles['list-item-header']}>
+              <div title={data.Title} className={styles['list-item-title']}>{data.Title}</div>
+              <div title={epoch2FullDate(data.UpdateTS.T)} className={styles['list-item-time']}>
+                {epoch2ReadFormat(data.UpdateTS.T)}
+              </div>
+            </div>
+            <div className={styles['list-item-content']}>
+            {
+              summary ? (
+                <div dangerouslySetInnerHTML={{__html: summary}} />
+              ): (
+                <FormattedMessage id="article-list-component.empty" defaultMessage="(No content)"/>
+              )
+            }
+            </div>
+          </div>
+          <div className={styles['list-item-meta']}>
+            <div className={styles['list-item-circle']}>{data.NPush || 0}</div>
+            <div title={constants.STATUS_ARRAY[data.Status]} className={styles['list-item-status']}>
+              <div className={styles['list-item-status-' + getStatusClass(data.Status)]}></div>
+            </div>
+          </div>
+        </Link>
+        {/*
+        <div className={styles[menuClass]}>
+          <div className={styles['list-item-menu-item']}
+               onClick={()=> {
+                deleteArticle(item.ID)
+                that.setState({sliderInIndex: -1})
+              }}>
+            <FormattedMessage
+              id="article-list-component.action"
+              defaultMessage="Delete"
+            />
+          </div>
+        </div>
+        */}
       </div>
     )
   }

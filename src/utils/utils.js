@@ -64,17 +64,17 @@ export const getSummaryTemplate = (rowData, extraParams) => {
                 <div style="line-height: 20px; border-bottom: 0px solid #000;">
                   ${extraParams.CreatorName} ${messages['summary-template.user-upload-file']}</div>
                 </div>`
-  } else if (rowData.type === constants.CONTENT_TYPE_IMAGE) {
+  }
+  else if (rowData.type === constants.CONTENT_TYPE_IMAGE) {
     template = `<div style="display: flex; flex-direction: row;">
                   <img src="${PTTAI_APP_ROOT + '/api/img/' + extraParams.boardId + '/' + params.id}" style="height: 20px; width: 20px; margin-right: 10px; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border-radius: 3px;">
                   <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
                     ${extraParams.CreatorName} ${messages['summary-template.user-upload-image']}
                   </div>
                 </div>`
-  } else {
-    template = `<div>
-                  ${sanitizeDirtyHtml(rowData.content)}
-                </div>`
+  }
+  else {
+    template = sanitizeDirtyHtml(rowData.content)
   }
 
   return template.replace(/\s+/g, ' ')
