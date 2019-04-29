@@ -301,7 +301,7 @@ class FirstPopupModal extends PureComponent {
                       name='title-input'
                       className={styles['profile-input-name']}
                       value={name}
-                      onKeydown={this.onSubmitName}
+                      onKeyDown={this.onKeydown}
                       onChange={this.onNameChange}/>
                   </div>
                   <div className={styles['submodal-signup-action-section']}>

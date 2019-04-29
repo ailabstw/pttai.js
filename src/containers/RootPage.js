@@ -202,6 +202,8 @@ class RootPage extends PureComponent {
     // user is browsing current tab
     if (!document.hidden) return this.resetTitle()
 
+    if (!latestMessage) return
+
     if (isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)) {
       this.browserTabInterval = this.browserTabInterval || setInterval(() => {
         let sender = decodeBase64(latestMessage.creatorName)
