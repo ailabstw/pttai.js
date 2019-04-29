@@ -6,7 +6,8 @@ import styles               from './ArticleBar.css'
 
 class ArticleBar extends PureComponent {
   render() {
-    const { boardInfo, articleInfo } = this.props
+    const { boardInfo, articleInfo, userId, openManageArticleModal} = this.props
+    const isCreator = userId === articleInfo.CreatorID
 
     return (
       <div className={styles['root']}>
@@ -23,7 +24,11 @@ class ArticleBar extends PureComponent {
           </div>
 
           <div className={styles['menu-button']}>
-            <div className={styles['menu-button-icon']}></div>
+            {
+              isCreator ? (
+                <div className={styles['menu-button-icon']} onClick={openManageArticleModal}></div>
+              ): null
+            }
           </div>
         </div>
       </div>
