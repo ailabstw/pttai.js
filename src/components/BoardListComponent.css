@@ -23,18 +23,44 @@
 .list-item {
     width: calc(50% - 6px);
     height: 94px;
-	padding: 15px 10px 15px 24px;
     margin: 3px 3px;
 	font-size: 16px;
-    background-color: #FFF;
     line-height: 30px;
-    border: 0.5px solid #A3A3A3;
+    border: 0.5px solid #bbb;
     border-radius: 4px;
     box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.16);
 
     position: relative;
     float: left;
-    overflow:hidden;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.list-item.read {
+    background-color: #f2f2f2;
+}
+.list-item.unread {
+    background-color: #FFF;
+}
+.list-item:hover {
+    background-color: #e8e8e8;
+}
+
+.list-item a:hover {
+    text-decoration: none;
+}
+
+.list-item a:focus {
+    outline: none;
+}
+
+.list-item > a {
+    width: 100%;
+    height: 100%;
+	padding: 15px 10px 15px 24px;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .list-item-hidden {
@@ -56,28 +82,6 @@
     float: none;
     margin: 7px auto;
   }
-}
-
-.list-item > a {
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-}
-
-.list-item a:hover {
-    text-decoration: none;
-}
-
-.list-item:hover {
-    background-color: #EFEFEF;
-    cursor: pointer;
-}
-
-.list-item a:focus {
-    outline: none;
 }
 
 .list-item-label-green {
@@ -108,10 +112,13 @@
 }
 
 .list-item-board-status {
-    height: 10px;
-    width: 10px;
-    min-width: 10px;
-    margin: auto 5px auto auto;
+    height: 8px;
+    width: 8px;
+    min-width: 8px;
+
+    position: absolute;
+    left: 10px;
+    top: 10px;
 }
 
 .list-item-board-status:hover {
@@ -151,28 +158,17 @@
     height: 23px;
     width: auto;
     padding: 0px 5px;
-    margin-right: auto;
-    /*margin-bottom: 5px;*/
-    color: #000;
+    margin: auto;
+    color: #484848;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     text-align: center;
     line-height: 20px;
+    font-size: 18px;
 }
 
-.list-item-title-unread {
-    height: 23px;
-    width: auto;
-    padding: 0px 5px;
-    margin-right: auto;
-    /*margin-bottom: 5px;*/
-    color: #000;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    text-align: center;
-    line-height: 20px;
+.unread .list-item-title {
     font-weight: bold;
 }
 
@@ -183,7 +179,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: visible;
-    font-weight: lighter;
     font-size: 14px;
     text-align: center;
     line-height: 22px;
@@ -196,21 +191,21 @@
 }
 
 .list-item-time {
-    /*width: 33%;*/
+    color: #414141;
+    font-size: 13px;
     margin: auto;
 }
 
 .list-item-author {
     width: 100%;
     height: 30px;
-    color: #808080;
+    color: #7f7f7f;
     padding: 0px 5px;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    font-weight: lighter;
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
     line-height: 20px;
 }

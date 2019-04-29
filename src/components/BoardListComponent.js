@@ -55,59 +55,53 @@ class BoardListComponent extends PureComponent {
   render() {
     const { userId, /*userName,*/ listData, isLoading, /*createBoard,*/ noBoard } = this.props
 
+    if (noBoard) {
+      return (
+        <div className={styles['root']} onScroll={ this.handleScroll } ref={(scroller) => { this.scroller = scroller; }}>
+          <div className={styles['no-content-message']}>
+            <FormattedMessage
+              id="board-list-component.message"
+              defaultMessage="You have no group yet, click below button to add"
+            />
+          </div>
+        </div>
+      )
+    }
+
     let boardType  = (board) => {
       if (board.BoardType === constants.BOARD_TYPE_PERSONAL) {
-        if (board.CreatorID === userId) {
-          return '-green'
-        } else {
-          return '-yellow'
-        }
+        return board.CreatorID === userId ? '-green' : '-yellow'
       }
       return ''
     }
 
-    let activeList = listData
-      .filter( item => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted') )
-      .sort( (a,b) => b.UpdateTS.T - a.UpdateTS.T )
+    let activeList = listData.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted'))
 
     return (
-      <div className={styles['root']}
-           onScroll={ this.handleScroll }
-           ref={(scroller) => {
-              this.scroller = scroller;
-           }}>
-        {/*
-        <div className={styles['list-item']} onClick={createBoard}>
-          <div className={styles['plus-button']} ></div>
-        </div>
-        */}
-        {
-          (noBoard)? (
-            <div className={styles['no-content-message']}>
-              <FormattedMessage
-                id="board-list-component.message"
-                defaultMessage="You have no group yet, click below button to add"
-              />
-            </div>
-          ):(
-            <div className={styles['list']}>
-            {
-              isLoading? (
-                <div className={styles['loader']}>
-                  <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
-                </div>
-              ):(null)
-            }
-            {
-              activeList.map((item, index) => (
-                <div className={styles['list-item']} key={index}>
+      <div className={styles['root']} onScroll={ this.handleScroll } ref={(scroller) => { this.scroller = scroller; }}>
+       {
+          <div className={styles['list']}>
+          {
+            isLoading? (
+              <div className={styles['loader']}>
+                <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
+              </div>
+            ):(null)
+          }
+          {
+            activeList.map((item, index) => {
+              let isBoardUnread = isUnRead(item.ArticleCreateTS.T, item.LastSeen.T)
+              let itemStatus = isBoardUnread ? styles['unread'] : styles['read']
+
+              return (
+                <div className={`${styles['list-item']} ${itemStatus}`} key={index}>
                   <div className={styles['list-item-label' + boardType(item)]}></div>
                   <Link to={`/board/${encodeURIComponent(item.ID)}`}>
+                    <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-board-status']}>
+                      <div className={styles['list-item-board-status-' + getStatusClass(item.Status)]}></div>
+                    </div>
                     <div className={styles['list-item-title-wrapper']}>
-                      <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-board-status']}>
-                        <div className={styles['list-item-board-status-' + getStatusClass(item.Status)]}></div>
-                      </div>
-                      <div className={isUnRead(item.ArticleCreateTS.T, item.LastSeen.T)? styles['list-item-title-unread']: styles['list-item-title'] }>
+                      <div className={styles['list-item-title'] }>
                         {item.Title} {constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'? '': '(' + constants.JOIN_STATUS_ARRAY[item.joinStatus].slice(10) + ')'}
                       </div>
                     </div>
@@ -140,10 +134,10 @@ class BoardListComponent extends PureComponent {
                     </div>
                   </Link>
                 </div>
-              ))
-            }
-            </div>
-          )
+              )
+            })
+          }
+          </div>
         }
       </div>
     )
