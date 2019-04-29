@@ -18,11 +18,23 @@
 
 .prev-button {
     line-height: 30px;
-    padding: 10px 20px 10px 10px;
-    max-width: 33%;
+    padding: 10px;
+    width: 50px;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    cursor: pointer;
+}
+
+.prev-button-icon {
+    height: 30px;
+    width: 30px;
+    min-width: 30px;
+
+    background-size: 19px 14px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_back@2x.png');
 }
 
 .prev-button a, .prev-button a:hover {
@@ -30,6 +42,28 @@
     height: 100%;
     color: #FFF;
     text-decoration: none;
+}
+
+.menu-button {
+    line-height: 30px;
+    padding: 10px;
+    width: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.menu-button-icon {
+    height: 30px;
+    width: 30px;
+    min-width: 30px;
+
+    background-size: 19px 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/images/icon_action@2x.png');
+
+    cursor: pointer;
 }
 
 .prev-tag {
@@ -50,9 +84,10 @@
 }
 
 .board-name {
+    color: #484848;
     line-height: 30px;
-    padding: 10px 0;
-    width: 66%;
+    padding: 10px;
+    width: 100%;
     font-weight: bolder;
     text-overflow: ellipsis;
     white-space: nowrap;

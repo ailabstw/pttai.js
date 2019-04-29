@@ -72,23 +72,17 @@
     font-size: 13px;
 }
 
-.comment-prefix {
-    padding: 2px 0px;
-    margin: 0px 2px;
-    min-width: 10px;
-    min-height: 40px;
-}
-
 .comment-creator-profile {
     min-width: 30px;
     position: relative;
+    padding: 10px;
 }
 
 .comment-creator-profile img {
     max-width: 100%;
     max-height: 100%;
-    width: 30px;
-    height: 30px;
+    width: 33px;
+    height: 33px;
     margin: auto;
     object-fit: contain;
 }
@@ -105,9 +99,12 @@
 .comment-creator {
     flex-basis: auto;
     line-height: 18px;
-    padding: 2px 8px;
+    padding: 4px 5px 4px 0;
     width: auto;
     max-width: 130px;
+    display: inline-block;
+
+    vertical-align: top;
 }
 
 .comment-creator-name {
@@ -120,7 +117,7 @@
 
 .comment-creator-id-prefix {
     font-size: 10px;
-    color: #aaa;
+    color: #b1b1b1;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -129,11 +126,11 @@
 
 .comment-content {
     flex-grow: 1;
-    color: #000;
+    color: #484848;
     overflow: auto;
     word-wrap: break-word;
     padding: 0px 10px;
-    font-weight: lighter;
+    display: inline-block;
 }
 
 .comment-content-input {
@@ -165,8 +162,10 @@
     font-weight: lighter;
 }
 
-.comment-content-wrapper {
+.comment-content-container {
     flex-grow: 1;
+}
+.comment-content-wrapper {
     color: #000;
     word-wrap: break-word;
     padding: 0px 10px;
@@ -175,43 +174,34 @@
     flex-direction: row;
 }
 
-.comment-status {
+.comment-status-wrapper {
     height: 10px;
     min-width: 10px;
     margin: auto;
+}
+
+.comment-status {
+    opacity: 0.5;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
 }
 
 .comment-status:hover {
     cursor: default;
 }
 
-.comment-status-pre-alive {
+.comment-status.pre-alive {
     background-color: #ffc107;
-    opacity: 0.5;
-    border-radius: 50%;
-    width: 100%;
-    height: 100%;
 }
-.comment-status-alive {
+.comment-status.alive {
     background-color: #28a745;
-    opacity: 0.5;
-    border-radius: 50%;
-    width: 100%;
-    height: 100%;
 }
-.comment-status-failed {
+.comment-status.failed {
     background-color: #bbb;
-    opacity: 0.5;
-    border-radius: 50%;
-    width: 100%;
-    height: 100%;
 }
-.comment-status-post-failed {
+.comment-status.post-failed {
     background-color: #212529;
-    opacity: 0.5;
-    border-radius: 50%;
-    width: 100%;
-    height: 100%;
 }
 
 .comment-manage {

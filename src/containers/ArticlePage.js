@@ -288,9 +288,9 @@ class ArticlePage extends PureComponent {
           articleInfo={articleInfo} />
         {
           $.isEmptyObject(articleInfo) ? (
-            <div className={styles['search']}></div>
+            <div className={styles['time']}></div>
           ):(
-            <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['search']}>
+            <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['time']}>
             {epoch2ReadFormat(articleInfo.CreateTS.T)}
           </div>
           )
