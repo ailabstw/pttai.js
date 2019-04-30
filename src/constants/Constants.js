@@ -24,7 +24,15 @@ export const EMPTY_ID               = ''
 export const DEFAULT_USER_NAME      = 'guest'
 export const DEFAULT_USER_IMAGE     = `${PTTAI_URL_BASE}/images/icon_avatar@2x.png`
 export const DEFAULT_USER_COMPANY   = 'unknown'
-export const DEFAULT_USER_NAMECARD  = {}
+export const DEFAULT_USER_NAMECARD  = {
+                                        name:        DEFAULT_USER_NAME,
+                                        userImg:     DEFAULT_USER_IMAGE,
+                                        company:     '',
+                                        description: '',
+                                        email:       '',
+                                        jobTitle:    '',
+                                        phone:       ''
+                                      }
 
 export const TITLE_FLASH_INTERVAL       = 1200
 export const REFRESH_INTERVAL           = 5000

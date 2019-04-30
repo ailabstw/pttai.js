@@ -31,15 +31,24 @@ export const init = (myId, query) => {
 export const getProfile = (myId, userId) => {
   return (dispatch, getState) => {
     Promise.all([
+      dispatch(serverUtils.getUserName(userId)),
       dispatch(serverUtils.getNameCard(userId)),
       dispatch(serverUtils.getUserImg(userId))
     ]).then( data => {
-      const [nameCardData, userImgData] = data
+      const [nameData, nameCardData, userImgData] = data
 
-      let nameCard = nameCardData.response.result.C ? JSON.parse(serverUtils.b64decode(nameCardData.response.result.C)) : DEFAULT_USER_NAMECARD
+      let name     = nameData.response.result.N ? serverUtils.b64decode(nameData.response.result.N) : ''
       let userImg  = userImgData.response.result.I ? userImgData.response.result.I : DEFAULT_USER_IMAGE
+      let nameCard = null
 
-      dispatch(postprocessGetProfile(myId, { ...nameCard, userImg }))
+      if (nameCardData.response.result.C) {
+        nameCard = Object.assign(DEFAULT_USER_NAMECARD, JSON.parse(serverUtils.b64decode(nameCardData.response.result.C)))
+      }
+      else {
+        nameCard = DEFAULT_USER_NAMECARD
+      }
+
+      dispatch(postprocessGetProfile(myId, { ...nameCard, name, userImg }))
     })
   }
 }
