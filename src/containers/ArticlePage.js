@@ -240,6 +240,17 @@ class ArticlePage extends PureComponent {
       this.props.history.push(`/board/${boardId}`)
     }
 
+    let openManageArticleModal = (modalData) => {
+      doModalContainer.setInput({
+        isCreator:  articleInfo.CreatorID === userId,
+        articleId:  articleInfo.ID,
+        onEditArticle: openEditArticleModal,
+        onDeleteArticle: deleteArticle
+      })
+
+      doModalContainer.openModal(constants.ARTICLE_SETTING_MENU_MODAL)
+    }
+
     let openEditArticleSubmit = (title, reducedArticleArray, attachments) => {
       doArticlePage.createArticleWithAttachments(myId, userName, userImg, boardId, articleId, reducedArticleArray, attachments)
       doArticlePage.markArticle(myId, boardId, articleId);
@@ -247,7 +258,7 @@ class ArticlePage extends PureComponent {
       doModalContainer.closeModal()
     }
 
-    let openEditArticleModal = () => {
+    const openEditArticleModal = () => {
       doModalContainer.setInput({
         boardId:              boardInfo.ID,
         articleTitle:         articleInfo.Title,
@@ -283,14 +294,16 @@ class ArticlePage extends PureComponent {
            ref={(scroller) => {
               this.scroller = scroller;
            }}>
-        <ArticleBar
+      <ArticleBar
+          userId={userId}
           boardInfo={boardInfo}
-          articleInfo={articleInfo} />
+          articleInfo={articleInfo}
+          openManageArticleModal={openManageArticleModal} />
         {
           $.isEmptyObject(articleInfo) ? (
-            <div className={styles['search']}></div>
+            <div className={styles['time']}></div>
           ):(
-            <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['search']}>
+            <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['time']}>
             {epoch2ReadFormat(articleInfo.CreateTS.T)}
           </div>
           )
@@ -301,7 +314,6 @@ class ArticlePage extends PureComponent {
           pullCount={count}
           articleInfo={articleInfo}
           articleContentsList={articleContentsList}
-          editArticleAction={openEditArticleModal}
           openNameCard={openNameCard} />
         <CommentReplyListComponent
           isLoading={isCommentLoading}

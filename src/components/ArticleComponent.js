@@ -39,19 +39,8 @@ class ArticleComponent extends PureComponent {
     //$("#article-main-content").off("touchend", this.handleLongPressRelease);
   }
 
-  // handleLongPress () {
-  //   const { editArticleAction, articleInfo, userId } = this.props
-  //   if (articleInfo.CreatorID === userId) {
-  //     this.longPressTimer = setTimeout(() => editArticleAction(), constants.PRESS_TO_EDIT_DELAY);
-  //   }
-  // }
-
-  // handleLongPressRelease () {
-  //   clearTimeout(this.longPressTimer);
-  // }
-
   render() {
-    const { articleContentsList, pullCount, editArticleAction, articleInfo, userId, boardInfo, openNameCard } = this.props
+    const { articleContentsList, pullCount, articleInfo, boardInfo, openNameCard } = this.props
     const { noResult } = this.state
 
     let htmlContent = array2Html(articleContentsList.reduce((final, piece) => {
@@ -83,11 +72,6 @@ class ArticleComponent extends PureComponent {
               <div title={articleInfo.CreatorName} onClick={openNameCard}>
                 {articleInfo.CreatorName}
               </div>
-              {
-                articleInfo.CreatorID === userId ? (
-                  <div className={styles['edit-button']} onClick={editArticleAction}></div>
-                ):null
-              }
             </div>
             <div id='quill-id' className={styles['content']}>
               {

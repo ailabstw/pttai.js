@@ -145,44 +145,49 @@ class CommentReplyListComponent extends PureComponent {
                 let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
                 return (
                   <div className={styles['list-item']} key={index} onClick={(e) => this.onListItemClick(e, index)}>
-                    <div className={styles['comment-prefix']}></div>
                     <div className={styles['comment-creator-profile']}>
                       <img src={item.creatorImg || constants.DEFAULT_USER_IMAGE} alt={'Commenter Profile'}/>
                     </div>
-                    <div className={styles['comment-creator']}>
-                      <div className={styles['comment-creator-name']}>
-                        {item.creatorName}
+
+                    <div className={styles['comment-content-container']}>
+                      <div>
+                        <div className={styles['comment-creator']}>
+                          <div className={styles['comment-creator-name']}>
+                            {item.creatorName}
+                          </div>
+                        </div>
+                        {
+                          (index === isEditIndex) ? (
+                            <div className={styles['comment-content-wrapper']}>
+                              <div className={styles['comment-content-input']}>
+                                <span>
+                                  <input
+                                    autoFocus
+                                    name='comment-input'
+                                    className={styles['comment-action-content-input']}
+                                    value={editComment}
+                                    onChange={(e) => this.setState({editComment:e.target.value})}/>
+                                </span>
+                              </div>
+                              <div className={styles['comment-action-input-enter']}></div>
+                            </div>
+                          ):(
+                            <div className={styles['comment-content']}
+                                 onMouseDown={() => this.handleButtonPress(index)}
+                                 onMouseUp={() => this.handleButtonRelease(index)} >
+                              {linkParser(item.contentBlockArray[0])}
+                            </div>
+                          )
+                        }
                       </div>
                       <div title={epoch2FullTimeFormat(item.createTS.T)} className={styles['comment-creator-id-prefix']}>
                         {epoch2ReadFormat(item.createTS.T)}
                         {/*item.creatorId && item.creatorId.length >= 8? item.creatorId.substring(0, 8):'null'*/}
                       </div>
                     </div>
-                    {
-                      (index === isEditIndex) ? (
-                        <div className={styles['comment-content-wrapper']}>
-                          <div className={styles['comment-content-input']}>
-                            <span>
-                              <input
-                                autoFocus
-                                name='comment-input'
-                                className={styles['comment-action-content-input']}
-                                value={editComment}
-                                onChange={(e) => this.setState({editComment:e.target.value})}/>
-                            </span>
-                          </div>
-                          <div className={styles['comment-action-input-enter']}></div>
-                        </div>
-                      ):(
-                        <div className={styles['comment-content']}
-                             onMouseDown={() => this.handleButtonPress(index)}
-                             onMouseUp={() => this.handleButtonRelease(index)} >
-                          {linkParser(item.contentBlockArray[0])}
-                        </div>
-                      )
-                    }
-                    <div title={constants.STATUS_ARRAY[item.status]} className={styles['comment-status']}>
-                      <div className={styles['comment-status-' + getStatusClass(item.status)]}></div>
+
+                    <div title={constants.STATUS_ARRAY[item.status]} className={styles['comment-status-wrapper']}>
+                      <div className={`${styles['comment-status']} ${styles[getStatusClass(item.status)]}`}></div>
                     </div>
                     <div className={styles['comment-manage']}>
                     {
@@ -234,11 +239,9 @@ class CommentReplyListComponent extends PureComponent {
             ):(null)
           }
           <div className={styles['action-section']}>
-            <div className={styles['comment-prefix']}></div>
             <div className={styles['comment-creator-profile']}>
               <label >
                 <img id="profile-pic" src={userImg || constants.DEFAULT_USER_IMAGE} alt={'Commenter Profile'}/>
-                <div className={styles['mask']}></div>
               </label>
             </div>
             <div className={styles['comment-input']}>

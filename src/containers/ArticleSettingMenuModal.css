@@ -1,0 +1,57 @@
+.root {
+    height: 100%;
+    background-color: #FFF;
+    position:relative;
+    text-align: center;
+
+    -webkit-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    -moz-box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+    box-shadow: 0px 12px 22px -2px rgba(0,0,0,0.32);
+}
+
+.action-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    justify-content: space-between;
+}
+
+.menu-button {
+    font-size: 1rem;
+    width: 100%;
+    max-height: 50px;
+    min-height: 50px;
+    min-width: 200px;
+    flex-grow: 1;
+
+    color: #565555;
+    font-weight: lighter;
+
+    cursor: pointer;
+    border: 0px;
+    border-bottom: 1px solid #e2e0e0;
+}
+
+.menu-button:last-child {
+    border-bottom: 0px;
+}
+
+.menu-button:hover {
+    background-color: #e2e0e0;
+}
+
+.menu-button:focus {
+    outline: none;
+}
+
+.overlay {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(105, 105, 105, 0.5);
+}

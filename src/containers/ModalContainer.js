@@ -3,24 +3,25 @@ import { connect }                from 'react-redux'
 import { bindActionCreators }     from 'redux'
 import Modal                      from 'react-modal'
 
-import CreateBoardModal       from './CreateBoardModal';
-import ManageBoardModal       from './ManageBoardModal';
-import ManageBoardMemberModal from './ManageBoardMemberModal';
-import InviteToBoardModal     from './InviteToBoardModal';
-import CreateArticleModal     from './CreateArticleModal';
-import EditArticleModal       from './EditArticleModal';
-import AddKnownBoardModal     from './AddKnownBoardModal';
-import NameCardModal          from './NameCardModal';
-import FirstPopupModal        from './FirstPopupModal';
-import MultiDeviceModal       from './MultiDeviceModal'
-import AddFriendModal         from './AddFriendModal';
-import AddDeviceModal         from './AddDeviceModal';
-import AddDeviceScannerModal  from './AddDeviceScannerModal';
-import BoardActionModal       from './BoardActionModal';
-import SettingMenuModal       from './SettingMenuModal';
-import BoardSettingMenuModal  from './BoardSettingMenuModal';
-import LatestPageModal        from './LatestPageModal';
-import ShowOpLogModal         from './ShowOpLogModal';
+import CreateBoardModal        from './CreateBoardModal';
+import ManageBoardModal        from './ManageBoardModal';
+import ManageBoardMemberModal  from './ManageBoardMemberModal';
+import InviteToBoardModal      from './InviteToBoardModal';
+import CreateArticleModal      from './CreateArticleModal';
+import EditArticleModal        from './EditArticleModal';
+import AddKnownBoardModal      from './AddKnownBoardModal';
+import NameCardModal           from './NameCardModal';
+import FirstPopupModal         from './FirstPopupModal';
+import MultiDeviceModal        from './MultiDeviceModal'
+import AddFriendModal          from './AddFriendModal';
+import AddDeviceModal          from './AddDeviceModal';
+import AddDeviceScannerModal   from './AddDeviceScannerModal';
+import BoardActionModal        from './BoardActionModal';
+import SettingMenuModal        from './SettingMenuModal';
+import BoardSettingMenuModal   from './BoardSettingMenuModal';
+import ArticleSettingMenuModal from './ArticleSettingMenuModal'
+import LatestPageModal         from './LatestPageModal';
+import ShowOpLogModal          from './ShowOpLogModal';
 
 import Empty                  from '../components/Empty'
 
@@ -140,6 +141,11 @@ class ModalContainer extends PureComponent {
                                         onModalSwitch={modalSwitch}
                                         onModalClose={doModalContainer.closeModal}
                                         onModalSubmit={modalSubmit} />)
+
+      case constants.ARTICLE_SETTING_MENU_MODAL:
+        return (<ArticleSettingMenuModal  modalInput={modalInput}
+                                          onModalSwitch={modalSwitch}
+                                          onModalClose={doModalContainer.closeModal} />)
 
       case constants.LATEST_PAGE_MODAL:
         return (<LatestPageModal modalInput={modalInput}
