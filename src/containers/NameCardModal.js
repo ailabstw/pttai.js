@@ -320,13 +320,13 @@ class EditingNameCard extends PureComponent {
   }
 
   onSubmit() {
-    const { name }          = this.state
-    const { userImg }       = this.state
-    const { company }       = this.state
-    const { jobTitle }      = this.state
-    const { email }         = this.state
-    const { phone }         = this.state
-    const { description }   = this.state
+    const name        = this.state.name        || ''
+    const userImg     = this.state.userImg     || ''
+    const company     = this.state.company     || ''
+    const jobTitle    = this.state.jobTitle    || ''
+    const email       = this.state.email       || ''
+    const phone       = this.state.phone       || ''
+    const description = this.state.description || ''
 
     let that = this
     let trimmedName         = name.trim()

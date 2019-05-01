@@ -531,7 +531,10 @@ export const fetchLatestMessage = (myId, limit) => (dispatch, getState) => new P
   const friendListRes = await dispatch(serverUtils.getFriendListByMsgCreateTS(emptyTS.T, emptyTS.NT, limit))
   if (friendListRes.error) throw friendListRes.error
   const friendList = friendListRes.response.result
-  const chatId = friendList[0].ID
+
+  if (!friendList || !friendList[0]) return
+
+  const chatId =  friendList[0].ID
   const creatorName = friendList[0].N
 
   const messageListRes = await dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
