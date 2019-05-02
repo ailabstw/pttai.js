@@ -8,6 +8,8 @@ import { FormattedMessage,
 import validator                  from 'validator'
 import Immutable                  from 'immutable'
 
+import { PTTAI_URL_BASE }   from 'config'
+
 import AlertComponent         from '../components/AlertComponent'
 
 import * as modalConstants    from '../constants/ModalConstants'
@@ -119,7 +121,7 @@ class NameCardModal extends PureComponent {
                 {
                   isEditable && (
                   <div className={styles['qr-code']} onClick={this.openQRCodeModal}>
-                    <img src="/images/btn_qrcode@2x.jpg" alt="QRCode Button" />
+                    <img src={`${PTTAI_URL_BASE}/images/btn_qrcode@2x.jpg`} alt="QRCode Button" />
                   </div> )
                 }
 
@@ -500,7 +502,7 @@ class EditingNameCard extends PureComponent {
               <input type="file" id="getval" onChange={this.onUpload}/>
             </label>
             <div className={styles['qr-code']}>
-              <img src="/images/btn_qrcode@2x.jpg" alt="QRCode Button" />
+              <img src={`${PTTAI_URL_BASE}/images/btn_qrcode@2x.jpg`} alt="QRCode Button" />
             </div>
           </div>
 
