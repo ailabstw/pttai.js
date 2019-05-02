@@ -42,7 +42,8 @@ export const getProfile = (myId, userId) => {
       let nameCard = null
 
       if (nameCardData.response.result.C) {
-        nameCard = Object.assign(DEFAULT_USER_NAMECARD, JSON.parse(serverUtils.b64decode(nameCardData.response.result.C)))
+        nameCard = {...DEFAULT_USER_NAMECARD}
+        Object.assign(nameCard, JSON.parse(serverUtils.b64decode(nameCardData.response.result.C)))
       }
       else {
         nameCard = DEFAULT_USER_NAMECARD
