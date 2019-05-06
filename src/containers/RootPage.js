@@ -175,12 +175,15 @@ class RootPage extends PureComponent {
       onConnectionLost(err.message)
     })
 
-    let me                  = getRoot(this.props)
-    let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
+    let me            = getRoot(this.props)
+    let userId        = me.getIn(['userInfo', 'userId'])
+    let latestMessage = me.getIn(['latestFriendList', '0'], Immutable.Map()).toJS()
+
+    if (!latestMessage || latestMessage.creatorID === userId) { return }
 
     // Web browser tab notification
-    this.handleBrowserTabNotification(latestFriendList)
-    this.handleBrowserToast(latestFriendList)
+    this.handleBrowserTabNotification(latestMessage)
+    this.handleBrowserToast(latestMessage)
   }
 
   resetTitle() {
@@ -196,13 +199,9 @@ class RootPage extends PureComponent {
     document.title = intl.formatMessage({id: 'site-title.title'})
   }
 
-  handleBrowserTabNotification(latestFriendList) {
-    const latestMessage = latestFriendList[0]
-
+  handleBrowserTabNotification(latestMessage) {
     // user is browsing current tab
     if (!document.hidden) return this.resetTitle()
-
-    if (!latestMessage) return
 
     if (isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)) {
       this.browserTabInterval = this.browserTabInterval || setInterval(() => {
@@ -212,12 +211,10 @@ class RootPage extends PureComponent {
     }
   }
 
-  handleBrowserToast(latestFriendList) {
+  handleBrowserToast(latestMessage) {
     const { intl, match, history } = this.props
-    const latestMessage = latestFriendList[0]
 
     if (
-      !latestMessage ||
       !document.hidden ||                                         // user is browsing current tab
       this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
       !isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)  // msg has been read before

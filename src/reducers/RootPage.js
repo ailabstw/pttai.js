@@ -555,6 +555,7 @@ const postprocessGetFriendListByMsgCreateTS = (myId, chatId, creatorName, messag
     data: {
       latestFriendList: messages.map( message => ({
         creatorName: creatorName,
+        creatorID:   message.CID,
         chatID:      chatId,
         friendID:    message.CID,
         messageID:   message.AID,
