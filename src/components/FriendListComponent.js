@@ -80,9 +80,8 @@ class FriendListComponent extends PureComponent {
     const { sliderInIndex, showAlert, alertData } = this.state
 
     let that = this
-    let friendSortedList = friendList.sort((a,b) => {
-      return b.SummaryUpdateTS.T - a.SummaryUpdateTS.T
-    })
+    let friendSortedList = friendList.sort((a,b) => b.SummaryUpdateTS.T - a.SummaryUpdateTS.T)
+                                     .filter((friend) => friend.FriendStatus < constants.STATUS_ARRAY.indexOf('StatusDeleted'))
 
     return (
       <div className={styles['root']}
@@ -108,7 +107,7 @@ class FriendListComponent extends PureComponent {
                 ):(null)
               }
               {
-                friendSortedList.filter((friend) => friend.FriendStatus < constants.STATUS_ARRAY.indexOf('StatusDeleted')).map((item, index) => {
+                friendSortedList.map((item, index) => {
                   let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
 
                   const friendLink = (sliderInIndex === -1 && item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}`: '#';
