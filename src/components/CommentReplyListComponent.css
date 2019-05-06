@@ -131,6 +131,7 @@
     word-wrap: break-word;
     padding: 0px 10px;
     display: inline-block;
+    max-width: 100%;
 }
 
 .comment-content-input {
@@ -164,6 +165,7 @@
 
 .comment-content-container {
     flex-grow: 1;
+    max-width: 300px;
 }
 .comment-content-wrapper {
     color: #000;

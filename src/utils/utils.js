@@ -398,9 +398,7 @@ export const linkParser = (pure_message) => {
     return <span key={i}>{msg}</span>
   })
 
-  return <span>{
-    messageArr.reduce((a, b) => a === null ? [b] : [a, ' ', b], null)
-  }</span>
+  return messageArr.reduce((a, b) => a === null ? [b] : [a, ' ', b], null)
 }
 
 export const isMobile = () => {
