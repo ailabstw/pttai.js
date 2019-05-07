@@ -203,7 +203,7 @@ class RootPage extends PureComponent {
     // user is browsing current tab
     if (!document.hidden) return this.resetTitle()
 
-    if (isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)) {
+    if (isUnRead(latestMessage.createTS && latestMessage.createTS.T, this.pageLastSeenTS && this.pageLastSeenTS.T)) {
       this.browserTabInterval = this.browserTabInterval || setInterval(() => {
         let sender = decodeBase64(latestMessage.creatorName)
         this.refreshBrowserTabTitle(sender)
@@ -217,7 +217,7 @@ class RootPage extends PureComponent {
     if (
       !document.hidden ||                                         // user is browsing current tab
       this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
-      !isUnRead(latestMessage.createTS.T, this.pageLastSeenTS.T)  // msg has been read before
+      !isUnRead(latestMessage.createTS && latestMessage.createTS.T, this.pageLastSeenTS && this.pageLastSeenTS.T) // msg has been read before
     ) { return }
 
     // prepare data for notification
