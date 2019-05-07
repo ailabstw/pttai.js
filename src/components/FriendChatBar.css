@@ -124,21 +124,19 @@
     overflow: hidden;
 }
 
-.friend-name {
+.menu-wrapper {
+    position: relative;
     line-height: 30px;
     padding: 10px 20px;
-    font-weight: bolder;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
     text-align: center;
+    width: 20px;
+    font-size: 20px;
 }
 
-.search {
-    line-height: 30px;
-    padding: 10px 20px;
-    text-align: right;
-    width: 34%;
-    font-size: 20px;
+.menu {
+    position: absolute;
     color:  #696969;
+    top: 17.5px;
+    right: 25px;
+    cursor: pointer;
 }

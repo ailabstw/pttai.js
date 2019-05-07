@@ -1,50 +1,49 @@
-import React, { PureComponent } from 'react'
-import { Link }                 from 'react-router-dom'
-import { FontAwesomeIcon }      from '@fortawesome/react-fontawesome'
+import React               from 'react'
+import { Link }            from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import styles from './FriendChatBar.css'
 
-import * as constants              from '../constants/Constants'
+import * as constants      from '../constants/Constants'
 
-class FriendChatBar extends PureComponent {
+const FriendChatBar = props => {
+  const { friendData, /*onOpenOPLogModal,*/ openNameCard, openFriendSettingMenuModal } = props
 
-  render() {
-    const { friendData, /*onOpenOPLogModal,*/ openNameCard } = this.props
+  return (
+    <div className={styles['root']}>
+      <div className={styles['content']}>
 
-    return (
-      <div className={styles['root']}>
-        <div className={styles['content']}>
-          <div className={styles['prev-button']}>
-            <Link to={`/friend`}>
-              <div className={styles['prev-button-icon']}></div>
-            </Link>
+        <div className={styles['prev-button']}>
+          <Link to={`/friend`}>
+            <div className={styles['prev-button-icon']}></div>
+          </Link>
+        </div>
+
+        <div className={styles['main-content']} onClick={openNameCard}>
+          <div className={styles['profile-pic']}>
+            <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
           </div>
-          <div className={styles['main-content']} onClick={openNameCard}>
-            <div className={styles['profile-pic']}>
-              <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'}/>
+          <div className={styles['friend-content']}>
+            <div className={styles['name']} onClick={openNameCard}>
+              {friendData.Name || constants.DEFAULT_USER_NAME }
             </div>
-            <div className={styles['friend-content']}>
-              <div className={styles['name']} onClick={openNameCard}>
-                {friendData.Name || constants.DEFAULT_USER_NAME }
-              </div>
-              <div title={friendData.ID} className={styles['job']} onClick={null/*onOpenOPLogModal*/}>
-                {friendData.NameCard && friendData.NameCard.company ? friendData.NameCard.company : constants.DEFAULT_USER_COMPANY}
-              </div>
-              <div hidden className={styles['description']}>
-               {friendData.description}
-              </div>
+            <div title={friendData.ID} className={styles['job']} onClick={null/*onOpenOPLogModal*/}>
+              {(friendData.NameCard && friendData.NameCard.company) || constants.DEFAULT_USER_COMPANY}
+            </div>
+            <div hidden className={styles['description']}>
+             {friendData.description}
             </div>
           </div>
+        </div>
 
-          <div hidden className={styles['friend-name']}>
-          </div>
-          <div hidden className={styles['search']}>
-            <FontAwesomeIcon icon="search" />
+        <div className={styles['menu-wrapper']}>
+          <div className={styles['menu']} onClick={() => openFriendSettingMenuModal(friendData.ID) }>
+            <FontAwesomeIcon icon='ellipsis-h' />
           </div>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default FriendChatBar
