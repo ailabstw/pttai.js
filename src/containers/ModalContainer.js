@@ -18,6 +18,7 @@ import AddDeviceModal          from './AddDeviceModal';
 import AddDeviceScannerModal   from './AddDeviceScannerModal';
 import BoardActionModal        from './BoardActionModal';
 import SettingMenuModal        from './SettingMenuModal';
+import FriendSettingMenuModal  from './FriendSettingMenuModal';
 import BoardSettingMenuModal   from './BoardSettingMenuModal';
 import ArticleSettingMenuModal from './ArticleSettingMenuModal'
 import LatestPageModal         from './LatestPageModal';
@@ -135,6 +136,11 @@ class ModalContainer extends PureComponent {
                                   onModalSwitch={modalSwitch}
                                   onModalClose={doModalContainer.closeModal}
                                   onModalSubmit={modalSubmit} />)
+
+      case constants.FRIEND_SETTING_MENU_MODAL:
+        return (<FriendSettingMenuModal modalInput={modalInput}
+                                        onModalClose={doModalContainer.closeModal}
+                                        onModalSubmit={modalSubmit} />)
 
       case constants.BOARD_SETTING_MENU_MODAL:
         return (<BoardSettingMenuModal  modalInput={modalInput}
