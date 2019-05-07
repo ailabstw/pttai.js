@@ -21,6 +21,7 @@ import SettingMenuModal        from './SettingMenuModal';
 import FriendSettingMenuModal  from './FriendSettingMenuModal';
 import BoardSettingMenuModal   from './BoardSettingMenuModal';
 import ArticleSettingMenuModal from './ArticleSettingMenuModal'
+import CommentSettingMenuModal from './CommentSettingMenuModal'
 import LatestPageModal         from './LatestPageModal';
 import ShowOpLogModal          from './ShowOpLogModal';
 
@@ -150,6 +151,11 @@ class ModalContainer extends PureComponent {
 
       case constants.ARTICLE_SETTING_MENU_MODAL:
         return (<ArticleSettingMenuModal  modalInput={modalInput}
+                                          onModalSwitch={modalSwitch}
+                                          onModalClose={doModalContainer.closeModal} />)
+
+      case constants.COMMENT_SETTING_MENU_MODAL:
+        return (<CommentSettingMenuModal  modalInput={modalInput}
                                           onModalSwitch={modalSwitch}
                                           onModalClose={doModalContainer.closeModal} />)
 

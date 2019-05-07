@@ -352,6 +352,24 @@ export const articleSettingMenuModalStyels = {
   }
 }
 
+export const commentSettingMenuModalStyels = {
+  content : {
+    position              : 'relative',
+    padding               : '0px',
+    width                 : '90%',
+    maxWidth              : '400px',
+    margin                : 'auto',
+    top                   : 'calc(50% - 127px)',
+    left                  : '0px',
+    right                 : '0px',
+    bottom                : '0px',
+    border                : 'none',
+    borderRadius          : '5px',
+    backgroundColor       : '#FFFFFF',
+    boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
+  }
+}
+
 export const boardActionModalStyels = {
   content : {
     position              : 'absolute',
