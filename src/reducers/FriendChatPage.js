@@ -25,6 +25,7 @@ const SET_DATA          = myDuck.defineType('SET_DATA')
 const ADD_MESSAGE       = myDuck.defineType('ADD_MESSAGE')
 const PREPEND_MESSAGES  = myDuck.defineType('PREPEND_MESSAGES')
 const APPEND_MESSAGES   = myDuck.defineType('APPEND_MESSAGES')
+const DELETE_FRIEND     = myDuck.defineType('DELETE_FRIEND')
 
 // init
 export const init = (myId, parentId, parentClass, parentDuck) => {
@@ -580,6 +581,35 @@ const postprocessGetBoardList = (myId, result, usersInfo) => {
   }
 }
 
+
+export const deleteFriend = (myId, chatId, callBackFunc) => {
+  return (dispatch, getState) => {
+    dispatch(serverUtils.deleteFriend(chatId))
+      .then(({response: {result, error}, type, query}) => {
+        if (error) {
+          callBackFunc({error: true, data: error.message, chatId: chatId})
+        } else {
+          callBackFunc({error: false, data: result})
+          dispatch(serverUtils.getUsersInfo([result.C]))
+            .then((usersInfo) => {
+              dispatch(postprocessDeleteFriend(myId, chatId))
+            })
+        }
+      })
+  }
+}
+
+const postprocessDeleteFriend = (myId, chatId) => {
+
+  // console.log('doFriendListPage.postprocessDeleteFriend: chatId:', chatId)
+
+  return {
+    myId,
+    myClass,
+    type: DELETE_FRIEND,
+    data: { chatId: chatId }
+  }
+}
 
 /*                      */
 /*  Update Board List   */

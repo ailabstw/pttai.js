@@ -283,18 +283,22 @@ class ArticlePage extends PureComponent {
       doArticlePage.markArticle(myId, boardId, articleId);
     }
 
-    let onCommentDelete = (commentId) => {
+    const onDeleteComment = (commentId) => {
       let mediaIds = ""
       doArticlePage.deleteComment(myId, boardId, articleId, commentId, mediaIds)
     }
 
+    const openCommentSettingMenuModal = (commentId, setToEditMode) => {
+      doModalContainer.setInput({
+        onDeleteComment: () => onDeleteComment(commentId),
+        onEditComment: setToEditMode
+      })
+      doModalContainer.openModal(constants.COMMENT_SETTING_MENU_MODAL)
+    }
+
     return (
-      <div className={styles['root']}
-           onScroll={ this.handleScroll }
-           ref={(scroller) => {
-              this.scroller = scroller;
-           }}>
-      <ArticleBar
+      <div className={styles['root']} onScroll={ this.handleScroll } ref={(scroller) => { this.scroller = scroller; }}>
+        <ArticleBar
           userId={userId}
           boardInfo={boardInfo}
           articleInfo={articleInfo}
@@ -321,7 +325,7 @@ class ArticlePage extends PureComponent {
           userImg={userImg}
           commentContents={commentContentsList}
           onCommentAdded={onCommentAdded}
-          onCommentDelete={onCommentDelete} />
+          openCommentSettingMenuModal={openCommentSettingMenuModal} />
       </div>
     )
   }

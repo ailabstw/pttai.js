@@ -29,6 +29,7 @@ import {  faMinus,
           faArrowCircleLeft,
           faCheck,
           faCaretRight,
+          faEllipsisH,
           faPen } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faMinus)
@@ -37,6 +38,7 @@ library.add(faArrowLeft)
 library.add(faArrowCircleLeft)
 library.add(faCheck)
 library.add(faCaretRight)
+library.add(faEllipsisH)
 library.add(faPen)
 
 // ReactGA.initialize(config.googleAnalyticsId)

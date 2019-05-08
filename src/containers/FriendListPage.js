@@ -64,6 +64,9 @@ class FriendListPage extends PureComponent {
     let noFriend          = me.get('noFriend', false)
     let allFriendsLoaded  = me.get('allFriendsLoaded', false)
 
+
+    // < start of Add-Friend-Modal
+
     let refreshKeyInfo = () => {
       doFriendListPage.getKeyInfo(myId)
     }
@@ -158,7 +161,13 @@ class FriendListPage extends PureComponent {
       doFriendListPage.getMoreFriendlist(myId, startFriendId, constants.NUM_FRIEND_PER_REQ)
     }
 
-    let deleteFriendCallBack = (response) => {
+    // end of Add-Friend-Modal >
+
+
+
+    // < start of Friend-Setting-Modal
+
+    const deleteFriendCallBack = (response) => {
       if (response.error) {
         let that = this
         this.setState({
@@ -190,9 +199,19 @@ class FriendListPage extends PureComponent {
       }
     }
 
-    let onFriendDelete = (chatId) => {
+    const onDeleteFriend = (chatId) => {
       doFriendListPage.deleteFriend(myId, chatId, deleteFriendCallBack)
     }
+
+
+    let openFriendSettingMenuModal = chatId => {
+      doModalContainer.setInput({
+        onDeleteFriend: () => onDeleteFriend(chatId)
+      })
+      doModalContainer.openModal(constants.FRIEND_SETTING_MENU_MODAL)
+    }
+
+    // start of Friend-Setting-Modal >
 
     return (
       <div className={styles['root']}>
@@ -202,7 +221,7 @@ class FriendListPage extends PureComponent {
           noFriend={noFriend}
           friendList={friendList}
           addFriendAction={openAddFriendModal}
-          onFriendDelete={onFriendDelete}
+          openFriendSettingMenuModal={openFriendSettingMenuModal}
           onGetMoreFriends={onGetMoreFriends}
           allFriendsLoaded={allFriendsLoaded} />
         <AlertComponent show={showAlert} alertData={alertData}/>

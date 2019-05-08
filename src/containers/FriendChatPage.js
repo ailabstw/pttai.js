@@ -2,6 +2,7 @@ import React, { PureComponent }     from 'react'
 import { connect }                  from 'react-redux'
 import { bindActionCreators }       from 'redux'
 import Immutable                    from 'immutable'
+import { FormattedMessage }         from 'react-intl'
 
 import Empty                    from '../components/Empty'
 import FriendChatBar            from '../components/FriendChatBar'
@@ -124,12 +125,58 @@ class FriendChatPage extends PureComponent {
       doModalContainer.openModal(constants.NAME_CARD_MODAL)
     }
 
+    const deleteFriendCallBack = (response) => {
+      if (response.error) {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message31"
+                defaultMessage="[Failed] {data}:{chatId}"
+                values={{ data: response.data, chatId: response.chatId }}
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+      }
+      else {
+        let that = this
+        this.setState({
+          showAlert: true,
+          alertData: {
+            message: (
+              <FormattedMessage
+                id="alert.message30"
+                defaultMessage="[Success] Friend Deleted"
+              />),
+            onConfirm: () => that.setState({showAlert: false})
+          }
+        })
+        doModalContainer.closeModal()
+        history.push('/friend')
+      }
+    }
+
+    const onDeleteFriend = (chatId) => {
+      doFriendChatPage.deleteFriend(myId, chatId, deleteFriendCallBack)
+    }
+
+    let openFriendSettingMenuModal = chatId => {
+      doModalContainer.setInput({
+        onDeleteFriend: () => onDeleteFriend(chatId)
+      })
+      doModalContainer.openModal(constants.FRIEND_SETTING_MENU_MODAL)
+    }
+
     return (
       <div className={styles['root']}>
         <FriendChatBar
           friendData={friendData}
           onOpenOPLogModal={onOpenOPLogModal}
           openNameCard={openNameCard}
+          openFriendSettingMenuModal={openFriendSettingMenuModal}
         />
         <FriendChatComponent
           history={history}
