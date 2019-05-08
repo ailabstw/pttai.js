@@ -114,9 +114,9 @@ export const nameCardModalStyles = {
   content : {
     position              : 'relative',
     padding               : '0px',
-    width                 : '396px',
     height                : '306px',
-    maxWidth              : '414px',
+    width                 : '396px',
+    maxWidth              : '95%',
     margin                : 'auto',
     top                   : 'calc(50% - 153px)',
     left                  : '0px',
