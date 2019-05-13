@@ -1,8 +1,6 @@
 .root {
     height: 100%;
-    /*min-height: 255px;*/
     background-color: #FFF;
-    /*padding: 10px 10px 2px 10px;*/
     position:relative;
     text-align: center;
 
@@ -48,64 +46,7 @@
     outline: none;
 }
 
-/*
-.join-board-button {
-    padding: 0px;
-    margin: 5px;
-    font-size: 1rem;
-    width: 50%;
-    max-height: 100%;
-    min-width: 200px;
-    height: 45px;
-
-    border-radius: 10px;
-    background-color: #88B9D5;
-    color: #FFF;
-    font-weight: lighter;
-
-    margin: auto;
-    cursor: pointer;
-}
-
-.create-board-button {
-    padding: 0px;
-    margin: 5px;
-    font-size: 1rem;
-    width: 50%;
-    max-height: 100%;
-    min-width: 200px;
-    height: 45px;
-
-    border-radius: 10px;
-    background-color: #7EB349;
-    color: #FFF;
-    font-weight: lighter;
-
-    margin: auto;
-    cursor: pointer;
-}
-
-.close-button {
-    padding: 0px;
-    margin: 5px;
-    font-size: 1rem;
-    width: 50%;
-    max-height: 100%;
-    min-width: 200px;
-    height: 45px;
-
-    border-radius: 10px;
-    background-color: #A9A9A9;
-    color: #FFF;
-    font-weight: lighter;
-
-    margin: auto;
-    cursor: pointer;
-}
-*/
-
 .platform-info {
-  /*padding-top: 1em;*/
   font-size: .75em;
   line-height: 30px;
   min-height: 30px;

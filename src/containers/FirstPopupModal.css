@@ -4,7 +4,6 @@
     display: flex;
     flex-direction: column;
     background-color: #FFF;
-    /*padding: 10px 10px 10px 10px;*/
     position: relative;
     text-align: center;
 
@@ -108,10 +107,8 @@
 .divider {
     width: 100%;
     height: 10px;
-    /*border-bottom: 1px solid #707070;*/
     text-align: center;
     position: relative;
-    /*margin: 0px 0px 10px 0px;*/
 }
 
 .divider span {
@@ -132,9 +129,6 @@
 }
 
 .signin-action {
-/*    flex-basis: 50px;
-    display: flex;
-    flex-direction: row;*/
     display: flex;
     flex-direction: column;
     margin: 58px auto;
@@ -238,7 +232,6 @@
   left: 10px;
   height: 16px;
   width: 16px;
-  /*background-color: #eee;*/
   border-radius: 50%;
   border: 1px solid #707070;
 }
@@ -250,7 +243,6 @@
 
 /* When the radio button is checked, add a gray background */
 .submodal-checkmark-container input:checked ~ .checkmark {
-  /*background-color: #F87DA9;*/
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
