@@ -10,8 +10,7 @@ import createStore from './reducers'
 import registerServiceWorker from './registerServiceWorker'
 import { setup as setupNotification } from './utils/notification'
 import { language, messages } from './utils/utils'
-//import config from 'config'
-//import DevTools from './DevTools'
+import DevTools from './DevTools'
 //import ReactGA from 'react-ga'
 
 import 'normalize.css/normalize.css'
@@ -48,10 +47,10 @@ const render = Component => {
     <AppContainer>
       <IntlProvider locale={language} messages={messages}>
         <Provider store={store}>
-        <div>
-        <Component />
-        {renderDevTools()}
-        </div>
+          <div>
+            <Component />
+            {renderDevTools()}
+          </div>
         </Provider>
       </IntlProvider>
     </AppContainer>,
@@ -59,13 +58,7 @@ const render = Component => {
   )
 }
 
-const renderDevTools = () => {
-  if(process.env.NODE_ENV === 'production') return (<Empty />)
-  return (<Empty />)
-  /*return (
-    <DevTools />
-  )*/
-}
+const renderDevTools = () => <Empty /> || process.env.NODE_ENV === 'production' ? (<Empty />) : (<DevTools />)
 
 render(Routes)
 registerServiceWorker()
