@@ -137,7 +137,7 @@ class ShowOpLogModal extends PureComponent {
       <div>
         <Modal
           overlayClassName="ShowOpLogModal__Overlay"
-          style={modalConstants.ShowOpLogModalStyels}
+          style={modalConstants.showOpLogModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={null}
           contentLabel="Show Op Log Modal">

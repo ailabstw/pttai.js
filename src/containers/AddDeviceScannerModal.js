@@ -148,7 +148,7 @@ class AddDeviceScannerModal extends PureComponent {
       <div>
         <Modal
           overlayClassName="AddDeviceScannerModal__Overlay"
-          style={modalConstants.AddDeviceScannerModalStyels}
+          style={modalConstants.scannerModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={this.onScannerClose}
           contentLabel="Add Device Scanner Modal">

@@ -57,7 +57,7 @@ class ArticleSettingMenuModal extends PureComponent {
       <div>
         <Modal
           overlayClassName={styles['overlay']}
-          style={modalConstants.articleSettingMenuModalStyels}
+          style={modalConstants.settingMenuModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
           contentLabel="Setting Menu Modal">

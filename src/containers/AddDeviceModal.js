@@ -46,7 +46,7 @@ class AddDeviceModal extends PureComponent {
       <div>
         <Modal
           overlayClassName="AddDeviceModal__Overlay"
-          style={modalConstants.AddDeviceModalStyels}
+          style={modalConstants.addDeviceModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onSwtichToMultiDevices}
           contentLabel="Add Device Modal">

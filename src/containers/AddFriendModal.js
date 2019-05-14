@@ -78,7 +78,7 @@ class AddFriendModal extends PureComponent {
       <div>
         <Modal
           overlayClassName="SignInModal__Overlay"
-          style={modalConstants.AddDeviceScannerModalStyels}
+          style={modalConstants.scannerModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={null}
           contentLabel="Add Friend Scanner Modal">

@@ -50,7 +50,7 @@ class AddKnownBoardModal extends PureComponent {
       <div>
         <Modal
           overlayClassName={styles['overlay']}
-          style={modalConstants.AddDeviceScannerModalStyels}
+          style={modalConstants.scannerModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={null}
           contentLabel="Add Known Board Modal">
