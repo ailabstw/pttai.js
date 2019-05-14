@@ -314,7 +314,7 @@ class FirstPopupModal extends PureComponent {
 
             <Modal
               overlayClassName="SignUpModal__Overlay"
-              style={modalConstants.SignupModalStyels}
+              style={modalConstants.signupModalStyels}
               isOpen={submodalType === 'Sign-up'}
               onRequestClose={this.onScannerClose}
               contentLabel="Sign Up Scanner Modal">
@@ -389,7 +389,7 @@ class FirstPopupModal extends PureComponent {
 
             <Modal
               overlayClassName="SignInModal__Overlay"
-              style={modalConstants.AddDeviceScannerModalStyels}
+              style={modalConstants.scannerModalStyels}
               isOpen={submodalType === 'Sign-in'}
               onRequestClose={this.onScannerClose}
               contentLabel="Sign In Scanner Modal">

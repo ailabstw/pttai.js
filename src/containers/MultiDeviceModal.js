@@ -54,7 +54,7 @@ class MultiDeviceModal extends PureComponent {
       <div>
         <Modal
           overlayClassName="MultiDeviceModal__Overlay"
-          style={modalConstants.MultiDeviceModalStyels}
+          style={modalConstants.multiDeviceModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={null}
           contentLabel="Multi Device Modal">

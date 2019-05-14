@@ -57,7 +57,7 @@ class CommentSettingMenuModal extends PureComponent {
       <div>
         <Modal
           overlayClassName={styles['overlay']}
-          style={modalConstants.commentSettingMenuModalStyels}
+          style={modalConstants.settingMenuModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
           contentLabel="Setting Menu Modal">

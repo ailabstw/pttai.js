@@ -92,7 +92,7 @@ export const manageBoardModalStyles = {
   }
 };
 
-export const joinBoardModalStyles ={
+export const joinBoardModalStyles = {
   content : {
     position              : 'absolute',
     padding               : '0px',
@@ -128,7 +128,7 @@ export const nameCardModalStyles = {
   }
 };
 
-export const SignupModalStyels = {
+export const signupModalStyels = {
   content : {
     position              : 'absolute',
     padding               : '0px',
@@ -136,16 +136,12 @@ export const SignupModalStyels = {
     height                : '100%',
     maxWidth              : '414px',
     margin                : '0px auto',
-    //top                   : 'calc(50% - 182px)',
     top                   : '0px',
     left                  : '0px',
     right                 : '0px',
     bottom                : '0px',
-    //border                : 'none',
-    //borderRadius          : '5px',
     borderRadius          : '0px',
-    backgroundColor       : '#4C474E',
-    //boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
+    backgroundColor       : '#4C474E'
   }
 }
 
@@ -157,17 +153,13 @@ export const firstPopupModalStyels = {
     height                : '100%',
     maxWidth              : '414px',
     margin                : '0px auto',
-    //top                   : 'calc(50% - 182px)',
     top                   : '0px',
     left                  : '0px',
     right                 : '0px',
     bottom                : '0px',
-    //border                : 'none',
-    //borderRadius          : '5px',
     borderRadius          : '0px',
     backgroundColor       : '#4C474E',
     zIndex                : 40,
-    //boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
   }
 }
 
@@ -186,26 +178,6 @@ export const privacySettingModalStyels = {
     borderRadius          : '0px',
     backgroundColor       : '#4C474E',
     zIndex                : 40,
-  }
-}
-
-export const multiDeviceMenuStyles = {
-  content : {
-    position              : 'absolute',
-    padding               : '0px',
-    backgroundColor       : '#FFF',
-    width                 : '90%',
-    height                : '200px',
-    maxWidth              : '498px',
-    margin                : '0px auto',
-    top                   : 'calc(50% - 100px)',
-    left                  : '0px',
-    right                 : '0px',
-    bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '5px',
-    zIndex                : 40,
-    boxShadow             : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
   }
 }
 
@@ -248,7 +220,7 @@ export const addDeviceCompleteStyles = {
   }
 }
 
-export const AddFriendModalStyels = {
+export const showOpLogModalStyels = {
   content : {
     position              : 'absolute',
     padding               : '0px',
@@ -265,7 +237,7 @@ export const AddFriendModalStyels = {
   }
 }
 
-export const ShowOpLogModalStyels = {
+export const scannerModalStyels = {
   content : {
     position              : 'absolute',
     padding               : '0px',
@@ -282,7 +254,7 @@ export const ShowOpLogModalStyels = {
   }
 }
 
-export const AddDeviceScannerModalStyels = {
+export const addDeviceModalStyels = {
   content : {
     position              : 'absolute',
     padding               : '0px',
@@ -299,24 +271,7 @@ export const AddDeviceScannerModalStyels = {
   }
 }
 
-export const AddDeviceModalStyels = {
-  content : {
-    position              : 'absolute',
-    padding               : '0px',
-    width                 : '100%',
-    height                : '100%',
-    maxWidth              : '414px',
-    margin                : '0px auto',
-    top                   : '0px',
-    left                  : '0px',
-    right                 : '0px',
-    bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '0px',
-  }
-}
-
-export const MultiDeviceModalStyels = {
+export const multiDeviceModalStyels = {
   content : {
     position              : 'absolute',
     padding               : '0px',
@@ -334,43 +289,7 @@ export const MultiDeviceModalStyels = {
   }
 }
 
-export const boardSettingMenuModalStyels = {
-  content : {
-    position              : 'relative',
-    padding               : '0px',
-    width                 : '90%',
-    maxWidth              : '400px',
-    margin                : 'auto',
-    top                   : 'calc(50% - 127px)',
-    left                  : '0px',
-    right                 : '0px',
-    bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '5px',
-    backgroundColor       : '#FFFFFF',
-    boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
-  }
-}
-
-export const articleSettingMenuModalStyels = {
-  content : {
-    position              : 'relative',
-    padding               : '0px',
-    width                 : '90%',
-    maxWidth              : '400px',
-    margin                : 'auto',
-    top                   : 'calc(50% - 127px)',
-    left                  : '0px',
-    right                 : '0px',
-    bottom                : '0px',
-    border                : 'none',
-    borderRadius          : '5px',
-    backgroundColor       : '#FFFFFF',
-    boxShadow            : '0 0 6px 0 rgba(0, 0, 0, 0.35)',
-  }
-}
-
-export const commentSettingMenuModalStyels = {
+export const settingMenuModalStyels = {
   content : {
     position              : 'relative',
     padding               : '0px',
