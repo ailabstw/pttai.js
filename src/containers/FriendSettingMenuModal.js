@@ -9,7 +9,7 @@ import AlertComponent                 from '../components/AlertComponent'
 import * as doFriendSettingMenuModal   from '../reducers/FriendSettingMenuModal'
 import * as modalConstants            from '../constants/ModalConstants'
 
-import styles from './FriendSettingMenuModal.css'
+import styles from './SettingMenuModal.css'
 
 class FriendSettingMenuModal extends PureComponent {
   constructor(props) {

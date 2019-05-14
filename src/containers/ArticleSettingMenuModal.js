@@ -9,7 +9,7 @@ import AlertComponent                 from '../components/AlertComponent'
 import * as doArticleSettingMenuModal   from '../reducers/ArticleSettingMenuModal'
 import * as modalConstants            from '../constants/ModalConstants'
 
-import styles from './ArticleSettingMenuModal.css'
+import styles from './SettingMenuModal.css'
 
 class ArticleSettingMenuModal extends PureComponent {
   constructor(props) {
