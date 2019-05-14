@@ -3,7 +3,6 @@ import { connect }              from 'react-redux'
 import { bindActionCreators }   from 'redux'
 import { FormattedMessage }     from 'react-intl'
 import Modal                    from 'react-modal'
-import platform                 from 'platform'
 
 import * as doSettingMenuModal  from '../reducers/SettingMenuModal'
 import * as modalConstants      from '../constants/ModalConstants'
@@ -54,7 +53,6 @@ class SettingMenuModal extends PureComponent {
                   defaultMessage="Cancel"
                 />
               </button>
-              <div className={styles['platform-info']}>{platform.description}</div>
             </div>
           </div>
         </Modal>
