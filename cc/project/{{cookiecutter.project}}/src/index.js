@@ -29,10 +29,10 @@ const render = Component => {
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
-      <div>
-      <Component />
-      {renderDevTools()}
-      </div>
+        <div>
+          <Component />
+          {renderDevTools()}
+        </div>
       </Provider>
     </AppContainer>,
     document.getElementById('root')
@@ -40,8 +40,8 @@ const render = Component => {
 }
 
 const renderDevTools = () => {
-  if(process.env.NODE_ENV === 'production') return (<Empty />)
-  //return (<Empty />)
+  if (process.env.NODE_ENV === 'production') return (<Empty />)
+  // return (<Empty />)
   return (
     <DevTools />
   )

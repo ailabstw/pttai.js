@@ -1,30 +1,30 @@
-import Immutable        from 'immutable'
-import { createDuck }   from 'redux-duck'
+import Immutable from 'immutable'
+import { createDuck } from 'redux-duck'
 
-import * as utils       from './utils'
+import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
 
 import { EMPTY_ID,
-         STATUS_ARRAY,
-         DEFAULT_USER_IMAGE,
-         DEFAULT_USER_NAME,
-         NUM_MEMBER_PER_REQ }     from '../constants/Constants'
+  STATUS_ARRAY,
+  DEFAULT_USER_IMAGE,
+  DEFAULT_USER_NAME,
+  NUM_MEMBER_PER_REQ } from '../constants/Constants'
 
-export const myClass  = 'MANAGE_BOARD_MEMBER_MODAL'
+export const myClass = 'MANAGE_BOARD_MEMBER_MODAL'
 
-export const myDuck   = createDuck(myClass, 'Manage_Board_Member_Modal')
+export const myDuck = createDuck(myClass, 'Manage_Board_Member_Modal')
 
-const INIT            = myDuck.defineType('INIT')
-const ADD_CHILD       = myDuck.defineType('ADD_CHILD')
-const SET_ROOT        = myDuck.defineType('SET_ROOT')
-const REMOVE_CHILDS   = myDuck.defineType('REMOVE_CHILDS')
-const REMOVE          = myDuck.defineType('REMOVE')
-const SET_DATA        = myDuck.defineType('SET_DATA')
+const INIT = myDuck.defineType('INIT')
+const ADD_CHILD = myDuck.defineType('ADD_CHILD')
+const SET_ROOT = myDuck.defineType('SET_ROOT')
+const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
+const REMOVE = myDuck.defineType('REMOVE')
+const SET_DATA = myDuck.defineType('SET_DATA')
 
 // init
 export const init = (myId, parentId, parentClass, parentDuck) => {
   return (dispatch, getState) => {
-    dispatch(utils.init({myId, myClass, myDuck, parentId, parentClass, parentDuck}))
+    dispatch(utils.init({ myId, myClass, myDuck, parentId, parentClass, parentDuck }))
   }
 }
 
@@ -35,23 +35,22 @@ export const init = (myId, parentId, parentClass, parentDuck) => {
 export const getBoardInfo = (myId, boardId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getBoard(boardId))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessGetBoardInfo(myId, result))
       })
   }
 }
 
 const postprocessGetBoardInfo = (myId, result) => {
-
   result = serverUtils.deserialize(result)
 
   const boardInfo = {
-      ArticleCreateTS:  result.ArticleCreateTS ? result.ArticleCreateTS : utils.emptyTimeStamp(),
-      ID:               result.ID,
-      LastSeen:         result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
-      Status:           result.Status,
-      Title:            result.Title,
-      UpdateTS:         result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp(),
+    ArticleCreateTS: result.ArticleCreateTS ? result.ArticleCreateTS : utils.emptyTimeStamp(),
+    ID: result.ID,
+    LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
+    Status: result.Status,
+    Title: result.Title,
+    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp()
   }
 
   console.log('doBoardPage.postprocessGetBoardInfo: boardInfo:', boardInfo)
@@ -71,12 +70,12 @@ const postprocessGetBoardInfo = (myId, result) => {
 export const getMemberList = (myId, boardId, limit) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getFriends(EMPTY_ID, limit))
-      .then(({response: friendResult, type, query, error}) => {
+      .then(({ response: friendResult, type, query, error }) => {
         /* Get member list to match friends in this board */
         dispatch(serverUtils.getMemberList(boardId, EMPTY_ID, NUM_MEMBER_PER_REQ))
-          .then(({response: memberResult, type, query, error}) => {
-            let friendIds   = friendResult.result.map((each) => each.FID)
-            let memeberIds  = memberResult.result.map((each) => each.b.ID)
+          .then(({ response: memberResult, type, query, error }) => {
+            let friendIds = friendResult.result.map((each) => each.FID)
+            let memeberIds = memberResult.result.map((each) => each.b.ID)
             dispatch(serverUtils.getUsersInfo([...friendIds, ...memeberIds]))
               .then((usersInfo) => {
                 dispatch(postprocessGetMembers(myId, friendResult.result, memberResult.result, usersInfo))
@@ -87,7 +86,6 @@ export const getMemberList = (myId, boardId, limit) => {
 }
 
 const postprocessGetMembers = (myId, friendListResult, memeberListResult, usersInfo) => {
-
   friendListResult = friendListResult.map((each) => {
     return {
       friendID: each.FID,
@@ -108,25 +106,24 @@ const postprocessGetMembers = (myId, friendListResult, memeberListResult, usersI
   }, {})
 
   const memberList = friendListResult.filter(friend => { return (friend.friendID in memberMap) && memberMap[friend.friendID].S < STATUS_ARRAY.indexOf('StatusDeleted') }).map(each => {
-
-    let userId      = each.friendID
+    let userId = each.friendID
     let userNameMap = usersInfo['userName'] || {}
-    let userImgMap  = usersInfo['userImg'] || {}
+    let userImgMap = usersInfo['userImg'] || {}
 
-    let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     return {
-      Name:             userName,
-      Img:              userImg,
-      friendID:         each.friendID,
-      chatID:           each.ID,
-      BoardID:          each.BID,
-      FriendStatus:     each.S,
-      LastSeen:         each.LT ? each.LT : utils.emptyTimeStamp(),
-      isBoardMember:    true,
-      memberStatus:     (userId in memberMap) ? memberMap[userId].S : null,
-      memberUpdateTS:   (userId in memberMap) ? memberMap[userId].UT : utils.emptyTimeStamp(),
+      Name: userName,
+      Img: userImg,
+      friendID: each.friendID,
+      chatID: each.ID,
+      BoardID: each.BID,
+      FriendStatus: each.S,
+      LastSeen: each.LT ? each.LT : utils.emptyTimeStamp(),
+      isBoardMember: true,
+      memberStatus: (userId in memberMap) ? memberMap[userId].S : null,
+      memberUpdateTS: (userId in memberMap) ? memberMap[userId].UT : utils.emptyTimeStamp()
       /* ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(), */
     }
   })
@@ -143,12 +140,12 @@ const postprocessGetMembers = (myId, friendListResult, memeberListResult, usersI
 
 // reducers
 const reducer = myDuck.createReducer({
-  [INIT]:           utils.reduceInit,
-  [ADD_CHILD]:      utils.reduceAddChild,
-  [SET_ROOT]:       utils.reduceSetRoot,
-  [REMOVE_CHILDS]:  utils.reduceRemoveChilds,
-  [REMOVE]:         utils.reduceRemove,
-  [SET_DATA]:       utils.reduceSetData,
+  [INIT]: utils.reduceInit,
+  [ADD_CHILD]: utils.reduceAddChild,
+  [SET_ROOT]: utils.reduceSetRoot,
+  [REMOVE_CHILDS]: utils.reduceRemoveChilds,
+  [REMOVE]: utils.reduceRemove,
+  [SET_DATA]: utils.reduceSetData
 }, Immutable.Map())
 
 export default reducer

@@ -1,34 +1,34 @@
-import React, { PureComponent }    from 'react'
-import ReactDOM                    from 'react-dom'
+import React, { PureComponent } from 'react'
+import ReactDOM from 'react-dom'
 import { injectIntl,
-         FormattedMessage }        from 'react-intl'
-import $                           from 'jquery'
-import { ClipLoader }              from 'react-spinners'
-//import { PTTAI_URL_BASE }          from 'config'
+  FormattedMessage } from 'react-intl'
+import $ from 'jquery'
+import { ClipLoader } from 'react-spinners'
+// import { PTTAI_URL_BASE }          from 'config'
 
 import { doesCrossDay,
-         epoch2MessageTimeFormat,
-         epoch2MessageDateFormat,
-         isValid,
-         expiredFormat           } from '../utils/utilDatetime'
+  epoch2MessageTimeFormat,
+  epoch2MessageDateFormat,
+  isValid,
+  expiredFormat } from '../utils/utilDatetime'
 
 import { getStatusClass,
-         toJson,
-         linkParser,
-         isMobile }                from '../utils/utils'
+  toJson,
+  linkParser,
+  isMobile } from '../utils/utils'
 
-import AlertComponent              from '../components/AlertComponent'
-import * as constants              from '../constants/Constants'
+import AlertComponent from '../components/AlertComponent'
+import * as constants from '../constants/Constants'
 
 import styles from './FriendChatComponent.css'
 
-function isEmpty(message) {
+function isEmpty (message) {
   return message.replace(/\s+/g, '') === ''
 }
 
 class FriendChatComponent extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.topItem = null
     this.state = {
       inputMessage: '',
@@ -36,25 +36,25 @@ class FriendChatComponent extends PureComponent {
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
 
-    this.onInputEnter         = this.onInputEnter.bind(this);
-    this.handleMessageSubmit  = this.handleMessageSubmit.bind(this);
-    this.handleAcceptInvite   = this.handleAcceptInvite.bind(this);
-    this.handleScroll         = this.handleScroll.bind(this);
-    this.needFetchMore        = this.needFetchMore.bind(this);
-    this.scrollToBottom       = this.scrollToBottom.bind(this);
+    this.onInputEnter = this.onInputEnter.bind(this)
+    this.handleMessageSubmit = this.handleMessageSubmit.bind(this)
+    this.handleAcceptInvite = this.handleAcceptInvite.bind(this)
+    this.handleScroll = this.handleScroll.bind(this)
+    this.needFetchMore = this.needFetchMore.bind(this)
+    this.scrollToBottom = this.scrollToBottom.bind(this)
   }
 
-  onInputEnter(e) {
+  onInputEnter (e) {
     const { inputMessage } = this.state
 
     /* isComposing is for 注音輸入法 */
-    if (e.isComposing || (e.key && e.key !== "Enter")) return
+    if (e.isComposing || (e.key && e.key !== 'Enter')) return
 
-    if (e.key === "Enter" && $(':focus').is('input')) {
+    if (e.key === 'Enter' && $(':focus').is('input')) {
       /* From key pressed */
       e.preventDefault()
 
@@ -63,8 +63,7 @@ class FriendChatComponent extends PureComponent {
       } else {
         this.handleMessageSubmit(inputMessage)
       }
-      this.setState({inputMessage:''})
-
+      this.setState({ inputMessage: '' })
     } else if (!e.key) {
       /* From button clicked */
 
@@ -73,11 +72,11 @@ class FriendChatComponent extends PureComponent {
       } else {
         this.handleMessageSubmit(inputMessage)
       }
-      this.setState({inputMessage:''})
+      this.setState({ inputMessage: '' })
     }
   }
 
-  handleAcceptInvite(boardJoinKey) {
+  handleAcceptInvite (boardJoinKey) {
     const { onJoinBoard } = this.props
 
     let that = this
@@ -88,11 +87,11 @@ class FriendChatComponent extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message7"
-                defaultMessage="[Error] {data}:{boardUrl}"
-                values={{ data: response.data, boardUrl: response.boardUrl}}
+                id='alert.message7'
+                defaultMessage='[Error] {data}:{boardUrl}'
+                values={{ data: response.data, boardUrl: response.boardUrl }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       } else {
@@ -101,10 +100,10 @@ class FriendChatComponent extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message25"
-                defaultMessage="[Success] Board Joined"
+                id='alert.message25'
+                defaultMessage='[Success] Board Joined'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       }
@@ -116,10 +115,10 @@ class FriendChatComponent extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message8"
-              defaultMessage="Board name empty or invalid"
+              id='alert.message8'
+              defaultMessage='Board name empty or invalid'
             />),
-          onConfirm: () => that.setState({showAlert: false})
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else {
@@ -127,7 +126,7 @@ class FriendChatComponent extends PureComponent {
     }
   }
 
-  handleMessageSubmit(message) {
+  handleMessageSubmit (message) {
     const { onMessageAdded } = this.props
 
     let that = this
@@ -139,20 +138,20 @@ class FriendChatComponent extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message2"
-              defaultMessage="Input message cannot exceed {MAX_COMMENT_SIZE} words"
+              id='alert.message2'
+              defaultMessage='Input message cannot exceed {MAX_COMMENT_SIZE} words'
               values={{ MAX_COMMENT_SIZE: constants.MAX_COMMENT_SIZE }}
             />),
-          onConfirm: () => that.setState({showAlert: false})
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else {
       onMessageAdded(trimmedMessage)
-      //this.scrollToBottom("smooth")
+      // this.scrollToBottom("smooth")
     }
   }
 
-  needFetchMore() {
+  needFetchMore () {
     const { isLoading, allMessagesLoaded } = this.props
     const { scrollTop } = this.scroller
     return (
@@ -163,97 +162,98 @@ class FriendChatComponent extends PureComponent {
     )
   }
 
-  handleScroll() {
+  handleScroll () {
     if (this.needFetchMore()) {
       const { onGetMoreMessages, messageList } = this.props
 
       let startMessageId = messageList[0].MessageID
 
-      this.topItem = this.scroller.childNodes[0].childNodes.length === 0? null : this.scroller.childNodes[0].childNodes[0];
+      this.topItem = this.scroller.childNodes[0].childNodes.length === 0 ? null : this.scroller.childNodes[0].childNodes[0]
 
       onGetMoreMessages(startMessageId)
     }
   }
 
-  componentDidMount(){
-    document.addEventListener("keydown", this.onInputEnter, false);
+  componentDidMount () {
+    document.addEventListener('keydown', this.onInputEnter, false)
   }
 
-  componentWillUnmount(){
-    document.removeEventListener("keydown", this.onInputEnter, false);
+  componentWillUnmount () {
+    document.removeEventListener('keydown', this.onInputEnter, false)
   }
 
-  scrollToBottom(mode) {
-    this.pageEnd.scrollIntoView({ behavior: mode });
+  scrollToBottom (mode) {
+    this.pageEnd.scrollIntoView({ behavior: mode })
   }
 
-  componentDidUpdate(prevProps) {
-
+  componentDidUpdate (prevProps) {
     if ((prevProps.messageList.length === 0 && this.props.messageList.length > 0) ||
       (prevProps.match.path !== this.props.match.path)) {
       /* First load: wait for expand */
-      setTimeout(() => this.scrollToBottom("instant"), 300)
-    }
-    else if (this.topItem && prevProps.isLoading && !this.props.isLoading) {
+      setTimeout(() => this.scrollToBottom('instant'), 300)
+    } else if (this.topItem && prevProps.isLoading && !this.props.isLoading) {
       /* More loaded */
-      ReactDOM.findDOMNode(this.topItem).scrollIntoView();
-    }
-    else if ((prevProps.messageList.length > 0 && this.props.messageList.length === prevProps.messageList.length + 1)) {
+      ReactDOM.findDOMNode(this.topItem).scrollIntoView()
+    } else if ((prevProps.messageList.length > 0 && this.props.messageList.length === prevProps.messageList.length + 1)) {
       /* New user message */
-      this.scrollToBottom("smooth")
+      this.scrollToBottom('smooth')
     }
   }
 
-  render() {
+  render () {
     const { intl, messageList, isLoading, noMessage } = this.props
     const { inputMessage, showAlert, alertData } = this.state
 
-    const placeholder = intl.formatMessage({id: 'friend-chat-component.placeholder'});
+    const placeholder = intl.formatMessage({ id: 'friend-chat-component.placeholder' })
 
     return (
       <div className={styles['root']}>
         <div className={styles['chat']}
-             onScroll={this.handleScroll}
-             ref={(scroller) => { this.scroller = scroller; }}>
+          onScroll={this.handleScroll}
+          ref={(scroller) => { this.scroller = scroller }}>
           {
             (() => {
-              if (noMessage) return (
-                <div className={styles['no-message']}>
-                  <FormattedMessage
-                    id="friend-chat-component.title"
-                    defaultMessage="Start chatting!"
-                  />
-                </div>
-              );
-
-              if (isLoading) return (
-                <div>
-                  <div className={styles['loader']}>
-                    <ClipLoader color={'#aaa'} size={35} loading={isLoading}/>
+              if (noMessage) {
+                return (
+                  <div className={styles['no-message']}>
+                    <FormattedMessage
+                      id='friend-chat-component.title'
+                      defaultMessage='Start chatting!'
+                    />
                   </div>
-                </div>
-              );
+                )
+              }
+
+              if (isLoading) {
+                return (
+                  <div>
+                    <div className={styles['loader']}>
+                      <ClipLoader color={'#aaa'} size={35} loading={isLoading} />
+                    </div>
+                  </div>
+                )
+              }
 
               return <MessageListComponent
-                        messageList={messageList}
-                        boardList={this.props.boardList}
-                        userId={this.props.userId}
-                        history={this.props.history}
-                        handleAcceptInvite={this.handleAcceptInvite} />
+                messageList={messageList}
+                boardList={this.props.boardList}
+                userId={this.props.userId}
+                history={this.props.history}
+                handleAcceptInvite={this.handleAcceptInvite} />
             })()
           }
-          <div className={styles['bottomElement']} ref={(el) => { this.pageEnd = el; }}></div>
+          <div className={styles['bottomElement']} ref={(el) => { this.pageEnd = el }} />
         </div>
         <div className={styles['message-input']}>
           <input
             autoFocus={!isMobile()}
             placeholder={placeholder}
             value={inputMessage}
-            onChange={(e) => this.setState({inputMessage:e.target.value})}
+            onChange={(e) => this.setState({ inputMessage: e.target.value })}
           />
-          <div className={styles['message-action']} onClick={this.onInputEnter}></div>
+          <div className={styles['message-action']} onClick={this.onInputEnter} />
         </div>
-        <AlertComponent show={showAlert} alertData={alertData}/>
+        <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
   }
@@ -266,10 +266,9 @@ const MessageListComponent = props => {
     <div>
       {
         messageList.map((message, index) => {
-
           // Date divider
           let divider = null
-          if (index > 0 && doesCrossDay(messageList[index].CreateTS.T,messageList[index-1].CreateTS.T)) {
+          if (index > 0 && doesCrossDay(messageList[index].CreateTS.T, messageList[index - 1].CreateTS.T)) {
             divider = (
               <div className={styles['message-divider']}>
                 <span>{epoch2MessageDateFormat(messageList[index].CreateTS.T)}</span>
@@ -292,8 +291,8 @@ const MessageListComponent = props => {
 const Message = props => {
   const { message, userId } = props
 
-  let messageObj  = toJson(message.Buf)
-  let isOwn       = (message.CreatorID === userId)
+  let messageObj = toJson(message.Buf)
+  let isOwn = (message.CreatorID === userId)
 
   // is not invite message
   if (messageObj.type !== constants.MESSAGE_TYPE_INVITE) {
@@ -302,23 +301,20 @@ const Message = props => {
         <div className={styles['user-message-item']}>
           <div className={styles['user-message-meta']}>
             <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
-              <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]}>
-              </div>
+              <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]} />
             </div>
             <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
           </div>
           <div className={styles['user-message-content']}>{linkParser(messageObj.value)}</div>
         </div>
       )
-    }
-    else {
+    } else {
       return (
         <div className={styles['message-item']}>
           <div className={styles['message-content']}>{linkParser(messageObj.value)}</div>
           <div className={styles['message-meta']}>
             <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
-              <div className={styles['message-status-circle-' + getStatusClass(message.Status)]}>
-              </div>
+              <div className={styles['message-status-circle-' + getStatusClass(message.Status)]} />
             </div>
             <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
           </div>
@@ -330,11 +326,11 @@ const Message = props => {
   // Invite message
 
   let invite = $(messageObj.value)
-  let inviteInfo  = {}
-  inviteInfo.inviteType    = invite.data('action-type')
-  inviteInfo.boardId       = invite.data('board-id')
-  inviteInfo.boardName     = invite.data('board-name')
-  inviteInfo.boardJoinKey  = invite.data('join-key')
+  let inviteInfo = {}
+  inviteInfo.inviteType = invite.data('action-type')
+  inviteInfo.boardId = invite.data('board-id')
+  inviteInfo.boardName = invite.data('board-name')
+  inviteInfo.boardJoinKey = invite.data('join-key')
   inviteInfo.keyUpdateTS_T = invite.data('update-ts')
   inviteInfo.keyExpiration = invite.data('expiration')
 
@@ -343,21 +339,20 @@ const Message = props => {
       <div className={styles['user-message-item']}>
         <div className={styles['user-message-meta']}>
           <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
-            <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]}>
-            </div>
+            <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]} />
           </div>
           <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
         </div>
         <div className={styles['user-message-content-invitation']}>
           <span>
             <FormattedMessage
-              id="friend-chat-component.action3"
-              defaultMessage="Sent Group Invitation"
+              id='friend-chat-component.action3'
+              defaultMessage='Sent Group Invitation'
             />
             <span>{inviteInfo.boardName}</span>
             <FormattedMessage
-              id="friend-chat-component.action4"
-              defaultMessage=" ({expTimeVal})"
+              id='friend-chat-component.action4'
+              defaultMessage=' ({expTimeVal})'
               values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
             />
           </span>
@@ -375,7 +370,7 @@ const Message = props => {
         history={props.history} />
       <div className={styles['message-meta']}>
         <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
-          <div className={styles['message-status-circle-' + getStatusClass(message.Status)]}></div>
+          <div className={styles['message-status-circle-' + getStatusClass(message.Status)]} />
         </div>
         <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
       </div>
@@ -387,21 +382,21 @@ const InvitationBlock = props => {
   const { inviteInfo, boardList, handleAcceptInvite, history } = props
 
   var inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
-  var isJoined    = inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')
+  var isJoined = inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')
 
   /* TODO: Need remove-board time stamp to disable rejoin */
   if (isJoined) {
     return (
-      <div className={styles['message-content-invitation']} onClick={()=> history.push(`/board/${inviteInfo.boardId}`) }>
+      <div className={styles['message-content-invitation']} onClick={() => history.push(`/board/${inviteInfo.boardId}`)}>
         <span>
           <FormattedMessage
-            id="friend-chat-component.action1"
-            defaultMessage="You Have Joined"
+            id='friend-chat-component.action1'
+            defaultMessage='You Have Joined'
           />
           <span>{inviteInfo.boardName}</span>
           <FormattedMessage
-            id="friend-chat-component.action1-2"
-            defaultMessage="Click to go to Group"
+            id='friend-chat-component.action1-2'
+            defaultMessage='Click to go to Group'
           />
         </span>
       </div>
@@ -411,15 +406,15 @@ const InvitationBlock = props => {
   // not joined, invitation still valid
   if (isValid(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration)) {
     return (
-      <div className={styles['message-content-invitation']} onClick={()=>handleAcceptInvite(inviteInfo.boardJoinKey)}>
+      <div className={styles['message-content-invitation']} onClick={() => handleAcceptInvite(inviteInfo.boardJoinKey)}>
         <span>
           <FormattedMessage
-            id="friend-chat-component.action2"
-            defaultMessage="Invited to" />
+            id='friend-chat-component.action2'
+            defaultMessage='Invited to' />
           <span>{inviteInfo.boardName}</span>
           <FormattedMessage
-            id="friend-chat-component.action2-2"
-            defaultMessage="Click to join ({expTimeVal})"
+            id='friend-chat-component.action2-2'
+            defaultMessage='Click to join ({expTimeVal})'
             values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }} />
         </span>
       </div>
@@ -430,12 +425,12 @@ const InvitationBlock = props => {
     <div className={`${styles['message-content-invitation']} ${styles['expired']}`} >
       <span>
         <FormattedMessage
-          id="friend-chat-component.action2"
-          defaultMessage="Invited to" />
+          id='friend-chat-component.action2'
+          defaultMessage='Invited to' />
         <span>{inviteInfo.boardName}</span>
         <FormattedMessage
-          id="friend-chat-component.action2-2"
-          defaultMessage="Click to join ({expTimeVal})"
+          id='friend-chat-component.action2-2'
+          defaultMessage='Click to join ({expTimeVal})'
           values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }} />
       </span>
     </div>

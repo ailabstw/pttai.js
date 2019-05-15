@@ -8,14 +8,12 @@ const GLOBAL_IDS = new Set()
 
 export const getUUID = () => {
   let theID = ''
-  while(true) {
+  while (true) {
     theID = uuid.v4()
-    if(GLOBAL_IDS.has(theID))
-      continue
+    if (GLOBAL_IDS.has(theID)) { continue }
 
     GLOBAL_IDS.add(theID)
     break
-
   }
   return theID
 }
@@ -34,19 +32,19 @@ export const dictListToMap = (dictList, key) => {
 }
 
 export const purifyDictListEmptyToStr = (item) => {
-  if(typeof item === 'object') return ''
+  if (typeof item === 'object') return ''
 
   return item
 }
 
 export const delay = (milliseconds) => new Promise(() => {
-  setTimeout(() => {Promise.resolve()}, milliseconds)
+  setTimeout(() => { Promise.resolve() }, milliseconds)
 })
 
-export const delayFunc = (func, params, milliseconds=200) => setTimeout(() => {func(...params)}, milliseconds)
+export const delayFunc = (func, params, milliseconds = 200) => setTimeout(() => { func(...params) }, milliseconds)
 
 export const queryToString = (query) => {
-  if(!query) return ''
+  if (!query) return ''
 
   return Object.keys(query).reduce((acc, cur) => {
     if (!query[cur]) return acc
@@ -57,19 +55,19 @@ export const queryToString = (query) => {
 export const parseQueryString = (str) => QueryString.parse(str)
 
 export const getRoot = (state) => {
-  const {app} = state
+  const { app } = state
   let rootId = app.get('rootId', '')
   let rootClass = app.get('rootClass', '')
   let camelCasedClass = toCamelCase(rootClass)
 
-  if(!state[camelCasedClass]) return Immutable.Map()
+  if (!state[camelCasedClass]) return Immutable.Map()
 
   return state[camelCasedClass].get(rootId, Immutable.Map())
 }
 
 export const getRootId = (state) => {
-  const {app} = state
-  if(!app) return ''
+  const { app } = state
+  if (!app) return ''
   return app.get('rootId', '')
 }
 

@@ -7,12 +7,12 @@ import simple from './Simple'
 
 const reducers = combineReducers({
   app,
-  simple,
+  simple
 })
 
 const enhancer = compose(
   applyMiddleware(...middleware),
-  DevTools.instrument(),
+  DevTools.instrument()
 )
 
 const configure = (initialState) => {

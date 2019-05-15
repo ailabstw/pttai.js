@@ -1,95 +1,95 @@
-import React, { PureComponent }     from 'react'
-import { connect }                  from 'react-redux'
-import { bindActionCreators }       from 'redux'
-import Immutable                    from 'immutable'
-import { FormattedMessage }         from 'react-intl'
-//import { PTTAI_URL_BASE }           from 'config'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Immutable from 'immutable'
+import { FormattedMessage } from 'react-intl'
+// import { PTTAI_URL_BASE }           from 'config'
 
-import Empty                  from '../components/Empty'
-import BoardComponent         from '../components/BoardComponent'
-import AlertComponent         from '../components/AlertComponent'
+import Empty from '../components/Empty'
+import BoardComponent from '../components/BoardComponent'
+import AlertComponent from '../components/AlertComponent'
 
-import { getRoot }            from '../utils/utils'
-import googleAnalytics        from '../utils/googleAnalytics'
-import * as doBoardPage       from '../reducers/BoardPage'
-import * as doModalContainer  from '../reducers/ModalContainer'
-import * as constants         from '../constants/Constants'
+import { getRoot } from '../utils/utils'
+import googleAnalytics from '../utils/googleAnalytics'
+import * as doBoardPage from '../reducers/BoardPage'
+import * as doModalContainer from '../reducers/ModalContainer'
+import * as constants from '../constants/Constants'
 
 import styles from './BoardPage.css'
 
 class BoardPage extends PureComponent {
-  constructor(props) {
-    super();
-    this.refreshPageInterval  = null
+  constructor (props) {
+    super()
+    this.refreshPageInterval = null
     this.state = {
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
-    this.getLatestArticle     = this.getLatestArticle.bind(this);
+        onConfirm: null
+      }
+    }
+    this.getLatestArticle = this.getLatestArticle.bind(this)
   }
 
-  getLatestArticle() {
-    const { myId, markSeen, actions: {doBoardPage}, match: {params} } = this.props
+  getLatestArticle () {
+    const { myId, markSeen, actions: { doBoardPage }, match: { params } } = this.props
 
     doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), false, constants.NUM_ARTICLE_PER_REQ)
-    doBoardPage.markBoard(myId, decodeURIComponent(params.boardId));
+    doBoardPage.markBoard(myId, decodeURIComponent(params.boardId))
 
     markSeen()
   }
 
-  componentWillMount() {
-    const { actions: {doBoardPage}, match: {params}, myId} = this.props
+  componentWillMount () {
+    const { actions: { doBoardPage }, match: { params }, myId } = this.props
 
     doBoardPage.initParams(myId, params)
     doBoardPage.getBoardInfo(myId, decodeURIComponent(params.boardId))
     doBoardPage.getArticleList(myId, decodeURIComponent(params.boardId), true, constants.NUM_ARTICLE_PER_REQ)
 
-    this.refreshPageInterval = setInterval(this.getLatestArticle, constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(this.getLatestArticle, constants.REFRESH_INTERVAL)
   }
 
-  componentWillUnmount() {
-    const { actions: {doBoardPage}, myId} = this.props
+  componentWillUnmount () {
+    const { actions: { doBoardPage }, myId } = this.props
 
     doBoardPage.clearData(myId)
     clearInterval(this.refreshPageInterval)
   }
 
-  componentDidMount() {
-    const {markSeen, actions: {doBoardPage}, match: {params}, myId} = this.props
+  componentDidMount () {
+    const { markSeen, actions: { doBoardPage }, match: { params }, myId } = this.props
 
-    doBoardPage.markBoard(myId, decodeURIComponent(params.boardId));
+    doBoardPage.markBoard(myId, decodeURIComponent(params.boardId))
     markSeen()
     googleAnalytics.firePageView()
   }
 
-  render() {
-    const { match, myId, boardPage, markSeen, actions: {doBoardPage, doModalContainer}} = this.props
+  render () {
+    const { match, myId, boardPage, markSeen, actions: { doBoardPage, doModalContainer } } = this.props
     const { showAlert, alertData } = this.state
 
-    if(!myId) return (<Empty />)
+    if (!myId) return (<Empty />)
 
-    let userId    = getRoot(this.props).getIn(['userInfo','userId'])
-    let userName  = getRoot(this.props).getIn(['userInfo','userName'])
-    let userImg   = getRoot(this.props).getIn(['userInfo','userImg'])
+    let userId = getRoot(this.props).getIn(['userInfo', 'userId'])
+    let userName = getRoot(this.props).getIn(['userInfo', 'userName'])
+    let userImg = getRoot(this.props).getIn(['userInfo', 'userImg'])
 
     let me = boardPage.get(myId, Immutable.Map())
 
-    let boardId           = me.get('boardId',     '')
-    let boardInfo         = me.get('boardInfo', Immutable.Map()).toJS()
-    let articleList       = me.getIn(['boardArticles','articleList'], Immutable.List()).toJS()
-    let articleSummaries  = me.get('articleSummaries', Immutable.Map()).toJS()
-    let isLoading         = me.get('isLoading',   false)
-    let noArticle         = me.get('noArticle', false)
+    let boardId = me.get('boardId', '')
+    let boardInfo = me.get('boardInfo', Immutable.Map()).toJS()
+    let articleList = me.getIn(['boardArticles', 'articleList'], Immutable.List()).toJS()
+    let articleSummaries = me.get('articleSummaries', Immutable.Map()).toJS()
+    let isLoading = me.get('isLoading', false)
+    let noArticle = me.get('noArticle', false)
     let allArticlesLoaded = me.get('allArticlesLoaded', false)
 
     let openCreateArticleSubmit = (title, reducedArticleArray, attachments) => {
       doBoardPage.createArticleWithAttachments(myId, userName, userImg, boardId, title, reducedArticleArray, attachments)
-      doBoardPage.markBoard(myId, boardId);
-      googleAnalytics.fireEvent('Article','CreateArticleSuccess')
+      doBoardPage.markBoard(myId, boardId)
+      googleAnalytics.fireEvent('Article', 'CreateArticleSuccess')
       markSeen()
 
       doModalContainer.closeModal()
@@ -109,11 +109,11 @@ class BoardPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message32"
-                defaultMessage="[Failed] {data}"
+                id='alert.message32'
+                defaultMessage='[Failed] {data}'
                 values={{ data: response.data }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       } else {
@@ -123,11 +123,11 @@ class BoardPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message33"
-                defaultMessage="[Success] Left Group"
+                id='alert.message33'
+                defaultMessage='[Success] Left Group'
               />),
             onConfirm: () => {
-              that.setState({showAlert: false})
+              that.setState({ showAlert: false })
               that.props.history.push(`/hub`)
             }
           }
@@ -144,11 +144,11 @@ class BoardPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message32"
-                defaultMessage="[Failed] {data}"
+                id='alert.message32'
+                defaultMessage='[Failed] {data}'
                 values={{ data: response.data }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       } else {
@@ -158,11 +158,11 @@ class BoardPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message34"
-                defaultMessage="[Success] Group Deleted"
+                id='alert.message34'
+                defaultMessage='[Success] Group Deleted'
               />),
             onConfirm: () => {
-              that.setState({showAlert: false})
+              that.setState({ showAlert: false })
               that.props.history.push(`/hub`)
             }
           }
@@ -173,9 +173,9 @@ class BoardPage extends PureComponent {
 
     let openManageBoardModal = (modalData) => {
       doModalContainer.setInput({
-        isCreator:  boardInfo.CreatorID === userId,
-        boardId:    boardInfo.ID,
-        boardName:  boardInfo.Title,
+        isCreator: boardInfo.CreatorID === userId,
+        boardId: boardInfo.ID,
+        boardName: boardInfo.Title,
         onEditBoardName: (boardId, name) => {
           doBoardPage.setBoardName(myId, boardId, name)
         },
@@ -190,7 +190,7 @@ class BoardPage extends PureComponent {
         },
         onLeaveBoard: () => {
           doBoardPage.leaveBoard(myId, boardInfo.ID, leaveBoardCallBack)
-        },
+        }
       })
       doModalContainer.openModal(constants.BOARD_SETTING_MENU_MODAL)
     }
@@ -202,11 +202,11 @@ class BoardPage extends PureComponent {
           constants.SHOW_CONTENT_MASTER_TAB,
           constants.SHOW_CONTENT_MEMBER_TAB,
           constants.SHOW_CONTENT_OPKEY_TAB,
-          constants.SHOW_CONTENT_PEERS_TAB,
+          constants.SHOW_CONTENT_PEERS_TAB
         ],
         params: {
-          boardId: boardId,
-        },
+          boardId: boardId
+        }
       })
       doModalContainer.openModal(constants.SHOW_OP_LOG_MODAL)
     }
@@ -231,20 +231,20 @@ class BoardPage extends PureComponent {
           manageBoardAction={openManageBoardModal}
           onOpenOPLogModal={onOpenOPLogModal}
           deleteArticleAction={(articleId) => doBoardPage.deleteArticle(myId, boardInfo.ID, articleId)} />
-        <AlertComponent show={showAlert} alertData={alertData}/>
+        <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
     doBoardPage: bindActionCreators(doBoardPage, dispatch),
-    doModalContainer: bindActionCreators(doModalContainer, dispatch),
+    doModalContainer: bindActionCreators(doModalContainer, dispatch)
   }
 })
 

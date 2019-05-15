@@ -20,23 +20,23 @@ import * as doSimple from '../reducers/Simple'
 const cx = classnames.bind(styles)
 
 class App extends PureComponent {
-  componentWillMount() {
-    const {location: {search}, actions: {doApp}} = this.props
+  componentWillMount () {
+    const { location: { search }, actions: { doApp } } = this.props
     const query = parseQueryString(search)
-    
+
     let myId = getUUID()
-    
+
     doApp.init(myId, query)
   }
-  
-  render() {
-    const {app, actions: { doApp }} = this.props
+
+  render () {
+    const { app, actions: { doApp } } = this.props
 
     let myId = getRootId(this.props)
     let me = getRoot(this.props)
 
-    if(!myId) return (<Empty />)
-    
+    if (!myId) return (<Empty />)
+
     const simpleIds = getChildIds(me, 'SIMPLE').toJS()
     const count = me.get('count', 0)
 
@@ -49,7 +49,7 @@ class App extends PureComponent {
       console.log('onClickInc2: start: myId:', myId)
       doApp.increaseCount2(myId)
     }
-    
+
     var onClickAddSimple = (e) => {
       console.log('onClickAddSimple: start: myId:', myId)
       doApp.addSimple(myId)
@@ -59,11 +59,11 @@ class App extends PureComponent {
       console.log('onClickRemoveSimples: start: myId:', myId)
       doApp.removeSimples(myId, simpleIds)
     }
-    
+
     return (
       <div className={cx('App')}>
         <div className={cx('header')}>
-          <img src={logo} className={cx('logo')} alt="logo" />
+          <img src={logo} className={cx('logo')} alt='logo' />
           <h2>Welcome to React</h2>
         </div>
         <p className={cx('intro')}>
@@ -71,9 +71,9 @@ class App extends PureComponent {
         </p>
         <code>
           <a
-            href="https://github.com/chhsiao1981/frontend_template"
-            target="_blank"
-            rel="noopener noreferrer"
+            href='https://github.com/chhsiao1981/frontend_template'
+            target='_blank'
+            rel='noopener noreferrer'
           >
           Frontend-template
           </a>
@@ -96,7 +96,7 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = (dispatch) => ({
   actions: {
     doApp: bindActionCreators(doApp, dispatch),
-    doSimple: bindActionCreators(doSimple, dispatch),
+    doSimple: bindActionCreators(doSimple, dispatch)
   }
 })
 

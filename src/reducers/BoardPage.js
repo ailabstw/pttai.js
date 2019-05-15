@@ -1,39 +1,38 @@
-import Immutable                from 'immutable'
-import { createDuck }           from 'redux-duck'
-import LRU                      from 'lru-cache'
+import Immutable from 'immutable'
+import { createDuck } from 'redux-duck'
+import LRU from 'lru-cache'
 
-import * as utils               from './utils'
-import * as serverUtils         from './ServerUtils'
+import * as utils from './utils'
+import * as serverUtils from './ServerUtils'
 
-import * as constants           from '../constants/Constants'
+import * as constants from '../constants/Constants'
 import { DEFAULT_USER_NAME,
-         DEFAULT_USER_IMAGE,
-         MESSAGE_TYPE_INVITE }  from '../constants/Constants'
+  DEFAULT_USER_IMAGE,
+  MESSAGE_TYPE_INVITE } from '../constants/Constants'
 import { toJson,
-         getSummaryTemplate }   from '../utils/utils'
+  getSummaryTemplate } from '../utils/utils'
 
 export const myClass = 'BOARD_PAGE'
 
 export const myDuck = createDuck(myClass, 'board_page')
 
-const INIT              = myDuck.defineType('INIT')
-const ADD_CHILD         = myDuck.defineType('ADD_CHILD')
-const SET_ROOT          = myDuck.defineType('SET_ROOT')
-const REMOVE_CHILDS     = myDuck.defineType('REMOVE_CHILDS')
-const REMOVE            = myDuck.defineType('REMOVE')
-const SET_DATA          = myDuck.defineType('SET_DATA')
-const UPDATE_DATA       = myDuck.defineType('UPDATE_DATA')
+const INIT = myDuck.defineType('INIT')
+const ADD_CHILD = myDuck.defineType('ADD_CHILD')
+const SET_ROOT = myDuck.defineType('SET_ROOT')
+const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
+const REMOVE = myDuck.defineType('REMOVE')
+const SET_DATA = myDuck.defineType('SET_DATA')
+const UPDATE_DATA = myDuck.defineType('UPDATE_DATA')
 
-const ADD_ARTICLE       = myDuck.defineType('ADD_ARTICLE')
-const DELETE_ARTICLE    = myDuck.defineType('DELETE_ARTICLE')
-const PREPEND_ARTICLES  = myDuck.defineType('PREPEND_ARTICLES')
-const APPEND_ARTICLES   = myDuck.defineType('APPEND_ARTICLES')
-const INSERT_SUMMARIES  = myDuck.defineType('INSERT_SUMMARIES')
-
+const ADD_ARTICLE = myDuck.defineType('ADD_ARTICLE')
+const DELETE_ARTICLE = myDuck.defineType('DELETE_ARTICLE')
+const PREPEND_ARTICLES = myDuck.defineType('PREPEND_ARTICLES')
+const APPEND_ARTICLES = myDuck.defineType('APPEND_ARTICLES')
+const INSERT_SUMMARIES = myDuck.defineType('INSERT_SUMMARIES')
 
 export const init = (myId, parentId, parentClass, parentDuck) => {
   return (dispatch, getState) => {
-    dispatch(utils.init({myId, myClass, myDuck, parentId, parentClass, parentDuck}))
+    dispatch(utils.init({ myId, myClass, myDuck, parentId, parentClass, parentDuck }))
   }
 }
 
@@ -43,11 +42,10 @@ export const initParams = (myId, params) => {
       myId,
       myClass,
       type: SET_DATA,
-      data: {boardId:decodeURIComponent(params.boardId)}
+      data: { boardId: decodeURIComponent(params.boardId) }
     })
   }
 }
-
 
 /*                          */
 /*  Get Board level Info    */
@@ -56,23 +54,22 @@ export const initParams = (myId, params) => {
 export const getBoardInfo = (myId, boardId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getBoard(boardId))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessGetBoardInfo(myId, result))
       })
   }
 }
 
 const postprocessGetBoardInfo = (myId, result) => {
-
   let boardInfo = {
-      ID:               result.ID,
-      Title:            result.Title,
-      CreatorID:        result.C,
-      BoardType:        result.BT,
-      Status:           result.Status,
-      LastSeen:         result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
-      UpdateTS:         result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp(),
-      ArticleCreateTS:  result.ArticleCreateTS ? result.ArticleCreateTS : utils.emptyTimeStamp(),
+    ID: result.ID,
+    Title: result.Title,
+    CreatorID: result.C,
+    BoardType: result.BT,
+    Status: result.Status,
+    LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
+    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp(),
+    ArticleCreateTS: result.ArticleCreateTS ? result.ArticleCreateTS : utils.emptyTimeStamp()
   }
 
   boardInfo = serverUtils.deserialize(boardInfo)
@@ -91,53 +88,52 @@ const postprocessGetBoardInfo = (myId, result) => {
 /*  Update Board  Info      */
 /*                          */
 
-function sentInviteMessages(inviteMessages) {
+function sentInviteMessages (inviteMessages) {
   return dispatch => Promise.all(inviteMessages.map((invite) => {
-      return dispatch(serverUtils.postMessage(invite.chatId, [invite.message], []))
-        .then(({response: {result}, type, query, error}) => {
-          return { 'chatId': invite.chatId }
-        })
-  }));
+    return dispatch(serverUtils.postMessage(invite.chatId, [invite.message], []))
+      .then(({ response: { result }, type, query, error }) => {
+        return { 'chatId': invite.chatId }
+      })
+  }))
 }
 
-function removeBoardMembers(boardId, memberToRemove) {
+function removeBoardMembers (boardId, memberToRemove) {
   return dispatch => Promise.all(memberToRemove.map((member) => {
-      return dispatch(serverUtils.removeBoardMember(boardId, member.userId))
-        .then(({response: {result}, type, query, error}) => {
-          return { 'userId': member.userId }
-        })
-  }));
+    return dispatch(serverUtils.removeBoardMember(boardId, member.userId))
+      .then(({ response: { result }, type, query, error }) => {
+        return { 'userId': member.userId }
+      })
+  }))
 }
 
 export const inviteFriend = (myId, boardId, boardName, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getBoardUrl(boardId))
-      .then(({response: boardUrlResult, type, query, error}) => {
-
+      .then(({ response: boardUrlResult, type, query, error }) => {
         const boardJoinKey = {
-          C:            boardUrlResult.result.C,
-          ID:           boardUrlResult.result.ID,
-          Pn:           boardUrlResult.result.Pn,
-          T:            boardUrlResult.result.T,
-          URL:          boardUrlResult.result.URL,
-          UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-          expirePeriod: boardUrlResult.result.e,
+          C: boardUrlResult.result.C,
+          ID: boardUrlResult.result.ID,
+          Pn: boardUrlResult.result.Pn,
+          T: boardUrlResult.result.T,
+          URL: boardUrlResult.result.URL,
+          UpdateTS: boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
+          expirePeriod: boardUrlResult.result.e
         }
 
         let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
           let chatId = friendInvited[friendId]
           let message = {
-            type:   MESSAGE_TYPE_INVITE,
-            value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${boardName}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+            type: MESSAGE_TYPE_INVITE,
+            value: `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${boardName}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
           }
           return {
             chatId: chatId,
-            message: JSON.stringify(message),
+            message: JSON.stringify(message)
           }
         })
 
         dispatch(sentInviteMessages(inviteMessages))
-          .then(({response: inviteResult, type, error, query}) => {
+          .then(({ response: inviteResult, type, error, query }) => {
             dispatch(postprocessInviteFriend(myId, boardId))
           })
       })
@@ -156,17 +152,16 @@ const postprocessInviteFriend = (myId, boardId) => {
 export const setBoardName = (myId, boardId, name) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.setBoardName(boardId, name))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessSetBoardName(myId, boardId, name))
       })
   }
 }
 
 const postprocessSetBoardName = (myId, boardId, name) => {
-
   const combinedBoardInfo = {
-      ID:     boardId,
-      Title:  name,
+    ID: boardId,
+    Title: name
   }
 
   return {
@@ -180,7 +175,7 @@ const postprocessSetBoardName = (myId, boardId, name) => {
 export const markBoard = (myId, boardId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.markBoard(boardId))
-      .then(({response: {result}, type, error, query}) => {
+      .then(({ response: { result }, type, error, query }) => {
         dispatch(postprocessMarkBoard(myId, result))
       })
   }
@@ -199,11 +194,11 @@ const postprocessMarkBoard = (myId, result) => {
 export const leaveBoard = (myId, boardId, callBackFunc) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.leaveBoard(boardId))
-      .then(({response: {result, error}, type, query}) => {
+      .then(({ response: { result, error }, type, query }) => {
         if (error) {
-          callBackFunc({error: true, data: error.message })
+          callBackFunc({ error: true, data: error.message })
         } else {
-          callBackFunc({error: false, data: result})
+          callBackFunc({ error: false, data: result })
           dispatch(postprocessLeaveBoard(myId, boardId))
         }
       })
@@ -223,11 +218,11 @@ const postprocessLeaveBoard = (myId, boardId) => {
 export const deleteBoard = (myId, boardId, callBackFunc) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.deleteBoard(boardId))
-      .then(({response: {result, error}, type, query}) => {
+      .then(({ response: { result, error }, type, query }) => {
         if (error) {
-          callBackFunc({error: true, data: error.message })
+          callBackFunc({ error: true, data: error.message })
         } else {
-          callBackFunc({error: false, data: result})
+          callBackFunc({ error: false, data: result })
           dispatch(postprocessDeleteBoard(myId, boardId))
         }
       })
@@ -246,17 +241,16 @@ const postprocessDeleteBoard = (myId, boardId) => {
 
 export const removeMember = (myId, boardId, memberToRemove) => {
   return (dispatch, getState) => {
-
     let memberIds = Object.keys(memberToRemove).filter(mID => memberToRemove[mID]).map(memberId => {
       let chatId = memberToRemove[memberId]
       return {
         userId: memberId,
-        chatId: chatId,
+        chatId: chatId
       }
     })
 
     dispatch(removeBoardMembers(boardId, memberIds))
-      .then(({response: removeResult, type, error, query}) => {
+      .then(({ response: removeResult, type, error, query }) => {
         dispatch(postprocessRemoveMember(myId, boardId))
       })
   }
@@ -281,10 +275,10 @@ export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
       dispatch(preprocessSetStartLoading(myId))
     }
     dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, limit, constants.LIST_ORDER_PREV))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         let creatorIds = result.map(each => each.CreatorID)
         let articleIds = result.map(each => each.ID)
-        let cBlockIds  = result.map(each => each.ContentBlockID)
+        let cBlockIds = result.map(each => each.ContentBlockID)
         dispatch(serverUtils.getUsersInfo(creatorIds))
           .then((usersInfo) => {
             dispatch(postprocessGetArticleList(myId, result, isFirstFetch, usersInfo))
@@ -293,11 +287,11 @@ export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
         for (let i = 0; i < articleIds.length; i++) {
           articleInfos.push({
             'A': articleIds[i],
-            'B': cBlockIds[i],
+            'B': cBlockIds[i]
           })
         }
         dispatch(serverUtils.getArticleSummaryByIds(boardId, articleInfos))
-          .then(({response: summariesResult, type, query, error}) => {
+          .then(({ response: summariesResult, type, query, error }) => {
             let summaries = summariesResult.result
             dispatch(postprocessGetSummaries(myId, summaries))
             if (isFirstFetch) {
@@ -309,7 +303,6 @@ export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
 }
 
 const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
-
   result = result.map(serverUtils.deserialize)
 
   usersInfo = usersInfo.reduce((acc, each) => {
@@ -317,37 +310,35 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
     return acc
   }, {})
 
-
   const articleList = result.map(each => {
-
-    let userId      = each.CreatorID
+    let userId = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
-    let userImgMap  = usersInfo['userImg'] || {}
+    let userImgMap = usersInfo['userImg'] || {}
 
-    let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg   = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
-    let createTS  = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
-    let updateTS  = each.UpdateTS ? each.UpdateTS : createTS
+    let createTS = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
+    let updateTS = each.UpdateTS ? each.UpdateTS : createTS
 
     return {
-      BoardID:          each.BoardID,
-      ContentBlockID:   each.ContentBlockID,
-      CreatorID:        each.CID,
-      CreatorName:      userName,
-      CreatorImg:       userImg,
-      Status:           each.S,
-      ID:               each.ID,
-      NBlock:           each.NBlock,
-      NBoo:             each.NB,
-      NPush:            each.NP,
-      Title:            each.Title,
-      CreateTS:         createTS,
-      UpdateTS:         updateTS,
-      LastSeen:         each.L ? each.L : utils.emptyTimeStamp(),
-      CommentCreateTS:  each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS,
+      BoardID: each.BoardID,
+      ContentBlockID: each.ContentBlockID,
+      CreatorID: each.CID,
+      CreatorName: userName,
+      CreatorImg: userImg,
+      Status: each.S,
+      ID: each.ID,
+      NBlock: each.NBlock,
+      NBoo: each.NB,
+      NPush: each.NP,
+      Title: each.Title,
+      CreateTS: createTS,
+      UpdateTS: updateTS,
+      LastSeen: each.L ? each.L : utils.emptyTimeStamp(),
+      CommentCreateTS: each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
     }
-  });
+  })
 
   console.log('doBoardPage.postprocessGetArticleList: articleList:', articleList)
 
@@ -378,7 +369,6 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
 }
 
 const postprocessGetSummaries = (myId, summaries) => {
-
   console.log('doBoardPage.postprocessGetSummaries: summaries:', summaries)
 
   return {
@@ -390,22 +380,21 @@ const postprocessGetSummaries = (myId, summaries) => {
 }
 
 export const _insertSummaries = (state, action) => {
-  const {myId, data: { summaries }} = action
+  const { myId, data: { summaries } } = action
 
   let articleSummaries = state.getIn([myId, 'articleSummaries'], Immutable.Map())
 
   return state.setIn([myId, 'articleSummaries'], articleSummaries.merge(summaries))
 }
 
-
 export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
   return (dispatch, getState) => {
     dispatch(preprocessSetStartLoading(myId))
     dispatch(serverUtils.getArticles(boardId, startArticleId, limit, constants.LIST_ORDER_PREV))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         let creatorIds = result.map(each => each.CreatorID)
         let articleIds = result.map(each => each.ID)
-        let cBlockIds  = result.map(each => each.ContentBlockID)
+        let cBlockIds = result.map(each => each.ContentBlockID)
         dispatch(serverUtils.getUsersInfo(creatorIds))
           .then((usersInfo) => {
             dispatch(postprocessGetMoreArticles(myId, result, usersInfo))
@@ -414,11 +403,11 @@ export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
         for (let i = 0; i < articleIds.length; i++) {
           articleInfos.push({
             'A': articleIds[i],
-            'B': cBlockIds[i],
+            'B': cBlockIds[i]
           })
         }
         dispatch(serverUtils.getArticleSummaryByIds(boardId, articleInfos))
-          .then(({response: summariesResult, type, query, error}) => {
+          .then(({ response: summariesResult, type, query, error }) => {
             let summaries = summariesResult.result
             dispatch(postprocessGetSummaries(myId, summaries))
             dispatch(postprocessSetFinshLoading(myId))
@@ -428,7 +417,6 @@ export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
 }
 
 const postprocessGetMoreArticles = (myId, result, usersInfo) => {
-
   result = result.map(serverUtils.deserialize)
   result = result.slice(1)
 
@@ -438,33 +426,32 @@ const postprocessGetMoreArticles = (myId, result, usersInfo) => {
   }, {})
 
   const articleList = result.map(each => {
-
-    let userId      = each.CreatorID
+    let userId = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
-    let userImgMap  = usersInfo['userImg'] || {}
+    let userImgMap = usersInfo['userImg'] || {}
 
-    let userName  = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg   = userImgMap[userId]  ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
-    let createTS  = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
-    let updateTS  = each.UpdateTS ? each.UpdateTS : createTS
+    let createTS = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
+    let updateTS = each.UpdateTS ? each.UpdateTS : createTS
 
     return {
-      BoardID:          each.BoardID,
-      ContentBlockID:   each.ContentBlockID,
-      CreatorID:        each.CreatorID,
-      CreatorName:      userName,
-      CreatorImg:       userImg,
-      Status:           each.S,
-      ID:               each.ID,
-      NBlock:           each.NBlock,
-      NBoo:             each.NBoo,
-      NPush:            each.NPush,
-      Title:            each.Title,
-      CreateTS:         createTS,
-      UpdateTS:         updateTS,
-      LastSeen:         each.L ? each.L : utils.emptyTimeStamp(),
-      CommentCreateTS:  each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS,
+      BoardID: each.BoardID,
+      ContentBlockID: each.ContentBlockID,
+      CreatorID: each.CreatorID,
+      CreatorName: userName,
+      CreatorImg: userImg,
+      Status: each.S,
+      ID: each.ID,
+      NBlock: each.NBlock,
+      NBoo: each.NBoo,
+      NPush: each.NPush,
+      Title: each.Title,
+      CreateTS: createTS,
+      UpdateTS: updateTS,
+      LastSeen: each.L ? each.L : utils.emptyTimeStamp(),
+      CommentCreateTS: each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
     }
   })
 
@@ -488,11 +475,10 @@ const postprocessGetMoreArticles = (myId, result, usersInfo) => {
 }
 
 export const _prependArticles = (state, action) => {
-
-  const {myId, data: { articles }} = action
+  const { myId, data: { articles } } = action
 
   let articleList = state.getIn([myId, 'boardArticles', 'articleList'], Immutable.List())
-  let oriOffset   = state.getIn([myId, 'boardArticles', 'offset'], 0)
+  let oriOffset = state.getIn([myId, 'boardArticles', 'offset'], 0)
 
   state = state.setIn([myId, 'boardArticles', 'offset'], oriOffset + articles.length)
   state = state.setIn([myId, 'boardArticles', 'articleList'], Immutable.List(articles).concat(articleList))
@@ -501,20 +487,19 @@ export const _prependArticles = (state, action) => {
 }
 
 export const _appendArticles = (state, action) => {
-
   /* merge the newly fetched artilces to existing artilce list */
-  const {myId, data: { articles, noArticle }} = action
+  const { myId, data: { articles, noArticle } } = action
 
   if (!articles || articles.length <= 0) {
     return state
   }
 
-  let boardArticles   = state.getIn([myId, 'boardArticles'], Immutable.Map()).toJS()
-  let articleList     = boardArticles.articleList || []
-  let lruCache        = boardArticles.lru || new LRU(constants.NUM_CACHE_ARTILCE)
-  let offset          = boardArticles.offset || 0
+  let boardArticles = state.getIn([myId, 'boardArticles'], Immutable.Map()).toJS()
+  let articleList = boardArticles.articleList || []
+  let lruCache = boardArticles.lru || new LRU(constants.NUM_CACHE_ARTILCE)
+  let offset = boardArticles.offset || 0
 
-  let resultArticleList  = []
+  let resultArticleList = []
   if (articleList.length === 0) {
     /* append message */
     articles.forEach((article, index) => {
@@ -523,26 +508,26 @@ export const _appendArticles = (state, action) => {
     })
   } else {
     /* 1. find earlist start node and save to local lru */
-    let localLRU     = new LRU(constants.NUM_ARTICLE_PER_REQ)
+    let localLRU = new LRU(constants.NUM_ARTICLE_PER_REQ)
 
     let startArticle = null
-    let earlistTS    = 2147483648 /* year 2038 */
+    let earlistTS = 2147483648 /* year 2038 */
     articles.forEach((article, index) => {
       localLRU.set(article.ID, article)
       if (lruCache.get(article.ID) && lruCache.get(article.ID).article.CreateTS.T < earlistTS) {
-        startArticle  = lruCache.get(article.ID)
-        earlistTS     = startArticle.article.CreateTS.T
+        startArticle = lruCache.get(article.ID)
+        earlistTS = startArticle.article.CreateTS.T
       }
     })
     /* 2. start merge  */
-    let oriIndex    = startArticle ? startArticle.index : articleList.length - offset
-    let newIndex    = 0
-    let mergeIndex  = oriIndex
+    let oriIndex = startArticle ? startArticle.index : articleList.length - offset
+    let newIndex = 0
+    let mergeIndex = oriIndex
 
-    let oriList    = articleList.slice(0, offset + oriIndex)
+    let oriList = articleList.slice(0, offset + oriIndex)
     let mergedList = []
 
-    while(articleList.length > offset + oriIndex || articles.length > newIndex){
+    while (articleList.length > offset + oriIndex || articles.length > newIndex) {
       if (articleList.length > offset + oriIndex && articles.length > newIndex) {
         let oriArticle = articleList[offset + oriIndex]
         let newArticle = articles[newIndex]
@@ -594,38 +579,36 @@ export const _appendArticles = (state, action) => {
 /*  Update Article List    */
 /*                         */
 
-
 export const addArticle = (myId, userName, userImg, boardId, title, article, mediaStr) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.createArticle(boardId, title, article, mediaStr))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessCreateArticle(myId, boardId, userName, userImg, title, article, result))
       })
   }
 }
 
 const postprocessCreateArticle = (myId, boardId, userName, userImg, title, articleArray, result) => {
-
   let sData = articleArray && articleArray.length > 0 ? toJson(articleArray[0]) : {}
   let previewText = getSummaryTemplate(sData, { CreatorName: userName, boardId: boardId })
 
   let newArticle = {
-      BoardID:        result.BID,
-      ContentBlockID: result.cID,
-      CreateTS:       utils.emptyTimeStamp(),
-      CreatorID:      null,
-      CreatorName:    userName,
-      CreatorImg:     userImg,
-      PreviewText:    previewText,
-      Status:         0,
-      ID:             result.AID,
-      LastSeen:       utils.emptyTimeStamp(),
-      NBlock:         null,
-      NBoo:           0,
-      NPush:          0,
-      Title:          title,
-      CommentCreateTS:utils.emptyTimeStamp(),
-      UpdateTS:       utils.emptyTimeStamp(),
+    BoardID: result.BID,
+    ContentBlockID: result.cID,
+    CreateTS: utils.emptyTimeStamp(),
+    CreatorID: null,
+    CreatorName: userName,
+    CreatorImg: userImg,
+    PreviewText: previewText,
+    Status: 0,
+    ID: result.AID,
+    LastSeen: utils.emptyTimeStamp(),
+    NBlock: null,
+    NBoo: 0,
+    NPush: 0,
+    Title: title,
+    CommentCreateTS: utils.emptyTimeStamp(),
+    UpdateTS: utils.emptyTimeStamp()
   }
 
   console.log('doBoardPage.postprocessCreateArticle: result:', newArticle)
@@ -638,18 +621,17 @@ const postprocessCreateArticle = (myId, boardId, userName, userImg, title, artic
 }
 
 export const _addArticle = (state, action) => {
+  const { myId, data: { article, noArticle } } = action
 
-  const {myId, data:{article, noArticle}} = action
-
-  if (!article || !article.ID || !article.BoardID ) {
+  if (!article || !article.ID || !article.BoardID) {
     return state
   }
 
-  let boardArticles  = state.getIn([myId, 'boardArticles'], Immutable.Map()).toJS()
+  let boardArticles = state.getIn([myId, 'boardArticles'], Immutable.Map()).toJS()
 
-  let lruCache        = boardArticles.lru || new LRU(constants.NUM_CACHE_ARTILCE)
-  let offset          = boardArticles.offset || 0
-  let articleList     = boardArticles.articleList || []
+  let lruCache = boardArticles.lru || new LRU(constants.NUM_CACHE_ARTILCE)
+  let offset = boardArticles.offset || 0
+  let articleList = boardArticles.articleList || []
 
   lruCache.set(article.ID, { index: articleList.length - offset, article: article })
 
@@ -663,14 +645,13 @@ export const _addArticle = (state, action) => {
 export const deleteArticle = (myId, boardId, articleId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.deleteArticle(boardId, articleId))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessDeleteArticle(myId, boardId, articleId))
       })
   }
 }
 
 const postprocessDeleteArticle = (myId, boardId, articleId) => {
-
   console.log('doBoardPage.postprocessDeleteArticle: result:', articleId)
 
   return {
@@ -682,7 +663,7 @@ const postprocessDeleteArticle = (myId, boardId, articleId) => {
 }
 
 export const _deteleArticle = (state, action) => {
-  const {myId, data:{articleId}} = action
+  const { myId, data: { articleId } } = action
 
   let articleList = state.getIn([myId, 'boardArticles', 'articleList'], Immutable.List())
   articleList = articleList.filter(each => { return each.get('ID') !== articleId })
@@ -704,7 +685,6 @@ const postprocessClearData = (myId) => {
   }
 }
 
-
 /*             */
 /*  Loading    */
 /*             */
@@ -716,7 +696,7 @@ const preprocessSetStartLoading = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: {isLoading: true}
+    data: { isLoading: true }
   }
 }
 
@@ -727,7 +707,7 @@ const postprocessSetFinshLoading = (myId) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: {isLoading: false}
+    data: { isLoading: false }
   }
 }
 
@@ -735,38 +715,36 @@ const postprocessSetFinshLoading = (myId) => {
 /*  Download/Upload File/Image    */
 /*                                */
 
-function uploadAttachments(boardId, attachments) {
+function uploadAttachments (boardId, attachments) {
   return dispatch => Promise.all(attachments.map((attachment) => {
     if (attachment.type === 'IMAGE') {
       /* for image */
       return dispatch(serverUtils.uploadImg(boardId, attachment))
-        .then(({response: {result}, type, query, error}) => {
-          return { 'attachmentId':attachment.id, 'mediaId': result.ID, 'boardId': result.BID, 'type':'IMAGE' }
+        .then(({ response: { result }, type, query, error }) => {
+          return { 'attachmentId': attachment.id, 'mediaId': result.ID, 'boardId': result.BID, 'type': 'IMAGE' }
         })
     } else {
       /* for file */
       return dispatch(serverUtils.uploadFile(boardId, attachment))
-        .then(({response: {result}, type, query, error}) => {
-          return { 'attachmentId':attachment.id, 'mediaId': result.ID, 'boardId': result.BID, 'type':'FILE' }
+        .then(({ response: { result }, type, query, error }) => {
+          return { 'attachmentId': attachment.id, 'mediaId': result.ID, 'boardId': result.BID, 'type': 'FILE' }
         })
     }
-  }));
+  }))
 }
 
 export const createArticleWithAttachments = (myId, userName, userImg, boardId, title, reducedArticleArray, attachments) => {
   return (dispatch, getState) => {
     dispatch(uploadAttachments(boardId, attachments))
       .then((attachmentIdObjs) => {
-
         /* Attachment ID - data url map */
         let attachmentIdMap = attachmentIdObjs.reduce((acc, current) => {
           acc[current.attachmentId] = current.mediaId
           return acc
-        },{})
+        }, {})
 
         /* Replace attachment ID with medaiId */
         let articleArray = reducedArticleArray.map((each) => {
-
           if (each.type === constants.CONTENT_TYPE_FILE || each.type === constants.CONTENT_TYPE_IMAGE) {
             let params = each.param
             attachments.forEach((attachment) => {
@@ -786,7 +764,7 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
 
         /* Create article with attachment Ids */
         dispatch(serverUtils.createArticle(boardId, title, articleArray, mediaIds))
-          .then(({response: {result}, type, query, error}) => {
+          .then(({ response: { result }, type, query, error }) => {
             dispatch(serverUtils.markArticle(boardId, result.AID))
             dispatch(postprocessCreateArticle(myId, boardId, userName, userImg, title, articleArray, result))
           })
@@ -796,18 +774,18 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
 
 // reducers
 const reducer = myDuck.createReducer({
-  [INIT]:             utils.reduceInit,
-  [ADD_CHILD]:        utils.reduceAddChild,
-  [SET_ROOT]:         utils.reduceSetRoot,
-  [REMOVE_CHILDS]:    utils.reduceRemoveChilds,
-  [REMOVE]:           utils.reduceRemove,
-  [SET_DATA]:         utils.reduceSetData,
-  [UPDATE_DATA]:      utils.reduceUpdateData,
-  [ADD_ARTICLE]:      _addArticle,
-  [DELETE_ARTICLE]:   _deteleArticle,
+  [INIT]: utils.reduceInit,
+  [ADD_CHILD]: utils.reduceAddChild,
+  [SET_ROOT]: utils.reduceSetRoot,
+  [REMOVE_CHILDS]: utils.reduceRemoveChilds,
+  [REMOVE]: utils.reduceRemove,
+  [SET_DATA]: utils.reduceSetData,
+  [UPDATE_DATA]: utils.reduceUpdateData,
+  [ADD_ARTICLE]: _addArticle,
+  [DELETE_ARTICLE]: _deteleArticle,
   [PREPEND_ARTICLES]: _prependArticles,
-  [APPEND_ARTICLES]:  _appendArticles,
-  [INSERT_SUMMARIES]: _insertSummaries,
+  [APPEND_ARTICLES]: _appendArticles,
+  [INSERT_SUMMARIES]: _insertSummaries
 }, Immutable.Map())
 
 export default reducer

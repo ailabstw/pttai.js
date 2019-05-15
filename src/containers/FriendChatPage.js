@@ -1,41 +1,40 @@
-import React, { PureComponent }     from 'react'
-import { connect }                  from 'react-redux'
-import { bindActionCreators }       from 'redux'
-import Immutable                    from 'immutable'
-import { FormattedMessage }         from 'react-intl'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Immutable from 'immutable'
+import { FormattedMessage } from 'react-intl'
 
-import Empty                    from '../components/Empty'
-import FriendChatBar            from '../components/FriendChatBar'
-import FriendChatComponent      from '../components/FriendChatComponent'
-import { getRoot }              from '../utils/utils'
-import googleAnalytics          from '../utils/googleAnalytics'
+import Empty from '../components/Empty'
+import FriendChatBar from '../components/FriendChatBar'
+import FriendChatComponent from '../components/FriendChatComponent'
+import { getRoot } from '../utils/utils'
+import googleAnalytics from '../utils/googleAnalytics'
 
-import * as doModalContainer    from '../reducers/ModalContainer'
-import * as doFriendChatPage    from '../reducers/FriendChatPage'
-import * as constants           from '../constants/Constants'
+import * as doModalContainer from '../reducers/ModalContainer'
+import * as doFriendChatPage from '../reducers/FriendChatPage'
+import * as constants from '../constants/Constants'
 
 import styles from './FriendChatPage.css'
 
 class FriendChatPage extends PureComponent {
-
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.refreshPageInterval = null
     this.getLatestMessage = this.getLatestMessage.bind(this)
   }
 
-  getLatestMessage() {
-    const { myId, markSeen, actions: {doFriendChatPage}, match: {params} } = this.props
+  getLatestMessage () {
+    const { myId, markSeen, actions: { doFriendChatPage }, match: { params } } = this.props
 
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), false, constants.NUM_MESSAGE_PER_REQ)
     doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
-    doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
+    doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId))
 
     markSeen()
   }
 
-  componentWillMount() {
-    const {actions: {doFriendChatPage}, match: {params}, myId} = this.props
+  componentWillMount () {
+    const { actions: { doFriendChatPage }, match: { params }, myId } = this.props
 
     // TODO: data for different chatroom should be stored into different array.
     //       Currently we are using the same array for data storing, so we need
@@ -47,53 +46,53 @@ class FriendChatPage extends PureComponent {
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), true, constants.NUM_MESSAGE_PER_REQ)
     doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
 
-    this.refreshPageInterval = setInterval(this.getLatestMessage, constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(this.getLatestMessage, constants.REFRESH_INTERVAL)
   }
 
-  componentWillUnmount() {
-    const {actions: {doFriendChatPage}, myId} = this.props
+  componentWillUnmount () {
+    const { actions: { doFriendChatPage }, myId } = this.props
     doFriendChatPage.clearData(myId)
 
     clearInterval(this.refreshPageInterval)
   }
 
-  componentDidMount() {
-    const {markSeen, actions: {doFriendChatPage}, match: {params}, myId} = this.props
+  componentDidMount () {
+    const { markSeen, actions: { doFriendChatPage }, match: { params }, myId } = this.props
 
-    doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
+    doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId))
 
     markSeen()
     googleAnalytics.firePageView()
   }
 
-  render() {
-    const { myId, history, friendChatPage, markSeen, actions: {doFriendChatPage, doModalContainer}, match: {params}, match } = this.props
+  render () {
+    const { myId, history, friendChatPage, markSeen, actions: { doFriendChatPage, doModalContainer }, match: { params }, match } = this.props
 
-    let userId   = getRoot(this.props).getIn(['userInfo','userId'])
-    let userName = getRoot(this.props).getIn(['userInfo','userName'])
-    let userImg  = getRoot(this.props).getIn(['userInfo','userImg'])
+    let userId = getRoot(this.props).getIn(['userInfo', 'userId'])
+    let userName = getRoot(this.props).getIn(['userInfo', 'userName'])
+    let userImg = getRoot(this.props).getIn(['userInfo', 'userImg'])
 
-    if(!myId) return (<Empty />)
+    if (!myId) return (<Empty />)
 
     let me = friendChatPage.get(myId, Immutable.Map())
-    let friendData          = me.get('friendData',  Immutable.Map()).toJS()
-    let messageList         = me.getIn(['friendMessages', 'messageList'], Immutable.List()).toJS()
+    let friendData = me.get('friendData', Immutable.Map()).toJS()
+    let messageList = me.getIn(['friendMessages', 'messageList'], Immutable.List()).toJS()
 
-    let boardList           = me.get('boardList', Immutable.List()).toJS()
-    let isLoading           = me.get('isLoading', false)
-    let noMessage           = me.get('noMessage', false)
-    let allMessagesLoaded   = me.get('allMessagesLoaded', false)
+    let boardList = me.get('boardList', Immutable.List()).toJS()
+    let isLoading = me.get('isLoading', false)
+    let noMessage = me.get('noMessage', false)
+    let allMessagesLoaded = me.get('allMessagesLoaded', false)
 
     let onMessageAdded = (message) => {
       let postMessage = {
-        type:   constants.MESSAGE_TYPE_TEXT,
-        value:  message,
+        type: constants.MESSAGE_TYPE_TEXT,
+        value: message
       }
       doFriendChatPage.postMessage(myId, userId, userName, userImg, decodeURIComponent(params.chatId), JSON.stringify(postMessage))
-      doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId));
+      doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId))
 
       markSeen()
-      googleAnalytics.fireEventOnProb('Chat','SendMessage',0.1)
+      googleAnalytics.fireEventOnProb('Chat', 'SendMessage', 0.1)
     }
 
     let onGetMoreMessages = (startMessageId) => {
@@ -111,18 +110,18 @@ class FriendChatPage extends PureComponent {
           constants.SHOW_FRIEND_MASTER_TAB,
           constants.SHOW_FRIEND_MEMBER_TAB,
           constants.SHOW_FRIEND_OPKEY_TAB,
-          constants.SHOW_FRIEND_PEERS_TAB,
+          constants.SHOW_FRIEND_PEERS_TAB
         ],
         params: {
-          friendId: friendData.ID,
-        },
+          friendId: friendData.ID
+        }
       })
       doModalContainer.openModal(constants.SHOW_OP_LOG_MODAL)
     }
 
     let openNameCard = () => {
       doModalContainer.setInput({
-        userId:     params.friendId,
+        userId: params.friendId,
         isEditable: false
       })
       doModalContainer.openModal(constants.NAME_CARD_MODAL)
@@ -136,25 +135,24 @@ class FriendChatPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message31"
-                defaultMessage="[Failed] {data}:{chatId}"
+                id='alert.message31'
+                defaultMessage='[Failed] {data}:{chatId}'
                 values={{ data: response.data, chatId: response.chatId }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
-      }
-      else {
+      } else {
         let that = this
         this.setState({
           showAlert: true,
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message30"
-                defaultMessage="[Success] Friend Deleted"
+                id='alert.message30'
+                defaultMessage='[Success] Friend Deleted'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
         doModalContainer.closeModal()
@@ -201,13 +199,13 @@ class FriendChatPage extends PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
     doFriendChatPage: bindActionCreators(doFriendChatPage, dispatch),
-    doModalContainer: bindActionCreators(doModalContainer, dispatch),
+    doModalContainer: bindActionCreators(doModalContainer, dispatch)
   }
 })
 

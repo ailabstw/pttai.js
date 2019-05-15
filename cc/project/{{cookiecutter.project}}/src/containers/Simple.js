@@ -7,10 +7,10 @@ import Empty from '../components/Empty'
 import styles from './Simple.css'
 
 class Simple extends PureComponent {
-  render() {
-    const {myId, simple, actions: {doSimple}} = this.props
-    if(!myId) return (<Empty />)
-    
+  render () {
+    const { myId, simple, actions: { doSimple } } = this.props
+    if (!myId) return (<Empty />)
+
     let me = simple.get(myId, Immutable.Map())
 
     const onClickRemove = (e) => {
@@ -18,9 +18,9 @@ class Simple extends PureComponent {
     }
 
     return (
-        <div>Hello Simple: {myId}
-          <button onClick={onClickRemove}>Remove</button>
-        </div>
+      <div>Hello Simple: {myId}
+        <button onClick={onClickRemove}>Remove</button>
+      </div>
     )
   }
 }

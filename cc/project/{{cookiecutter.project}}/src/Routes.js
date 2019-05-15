@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import App from './containers/App'
 
 class Routes extends Component {
-  render() {
+  render () {
     return (
       <Router >
-        <Route path="/" component={App} />
+        <Route path='/' component={App} />
       </Router>
-    );
+    )
   }
 }
 

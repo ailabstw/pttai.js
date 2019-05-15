@@ -1,88 +1,88 @@
-import React, { PureComponent }     from 'react'
-import { connect }                  from 'react-redux'
-import { bindActionCreators }       from 'redux'
-import Modal                        from 'react-modal'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Modal from 'react-modal'
 import { injectIntl,
-         FormattedMessage }         from 'react-intl'
+  FormattedMessage } from 'react-intl'
 
-import AlertComponent        from '../components/AlertComponent'
-import QRScannerSubmodal     from '../components/QRScannerSubmodal'
+import AlertComponent from '../components/AlertComponent'
+import QRScannerSubmodal from '../components/QRScannerSubmodal'
 
-import * as modalConstants    from '../constants/ModalConstants'
-import * as constants         from '../constants/Constants'
+import * as modalConstants from '../constants/ModalConstants'
+import * as constants from '../constants/Constants'
 import * as doFirstPopupModal from '../reducers/FirstPopupModal'
 
 import googleAnalytics from '../utils/googleAnalytics'
 
 import styles from './FirstPopupModal.css'
 
-function isEmpty(name) {
+function isEmpty (name) {
   return name.replace(/\s\s+/g, '') === ''
 }
 
 class FirstPopupModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
       name: '',
       nodeId: '',
       showAlert: false,
       gaAgree: (props.modalInput && props.modalInput.gaAgree !== undefined) ? props.modalInput.gaAgree : false,
       termsAgree: (props.modalInput && props.modalInput.termsAgree !== undefined) ? props.modalInput.termsAgree : true,
-      //scannerIsOpen: false,
+      // scannerIsOpen: false,
       submodalType: 'Sign-up',
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
-    this.onKeydown          = this.onKeydown.bind(this);
-    this.onNameChange       = this.onNameChange.bind(this);
-    this.onSubmitSignUp     = this.onSubmitSignUp.bind(this);
-    this.onScannerClose     = this.onScannerClose.bind(this);
-    this.onScanned          = this.onScanned.bind(this);
-    this.onNodeIdChange     = this.onNodeIdChange.bind(this);
-    this.onSignIn           = this.onSignIn.bind(this);
-    this.openPrivacySetting = this.openPrivacySetting.bind(this);
+        onConfirm: null
+      }
+    }
+    this.onKeydown = this.onKeydown.bind(this)
+    this.onNameChange = this.onNameChange.bind(this)
+    this.onSubmitSignUp = this.onSubmitSignUp.bind(this)
+    this.onScannerClose = this.onScannerClose.bind(this)
+    this.onScanned = this.onScanned.bind(this)
+    this.onNodeIdChange = this.onNodeIdChange.bind(this)
+    this.onSignIn = this.onSignIn.bind(this)
+    this.openPrivacySetting = this.openPrivacySetting.bind(this)
   }
 
-  onNameChange(e) {
-    this.setState({ name:e.target.value })
+  onNameChange (e) {
+    this.setState({ name: e.target.value })
   }
 
-  onKeydown(e) {
+  onKeydown (e) {
     if (e && !e.isComposing && e.keyCode === 13) { // press enter
-      this.onSubmitSignUp();
+      this.onSubmitSignUp()
     }
   }
 
-  onSignInSubmodal() {
+  onSignInSubmodal () {
     this.setState({ submodalType: 'Sign-in' })
   }
 
-  onSignUpSubmodal() {
+  onSignUpSubmodal () {
     this.setState({ submodalType: 'Sign-up' })
   }
 
-  onScannerClose() {
+  onScannerClose () {
     this.setState({ scannerIsOpen: false })
   }
 
-  onScanned(data) {
+  onScanned (data) {
     if (data) {
       this.setState({
         nodeId: data
-      });
+      })
       this.onSignIn(data)
     }
   }
 
-  onNodeIdChange(e) {
-    this.setState({nodeId: e.target.value})
+  onNodeIdChange (e) {
+    this.setState({ nodeId: e.target.value })
   }
 
-  onSubmitSignUp() {
+  onSubmitSignUp () {
     const { modalInput: { signUp, userId } } = this.props
     const { name, gaAgree, termsAgree } = this.state
 
@@ -94,12 +94,12 @@ class FirstPopupModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message17"
-                defaultMessage="User name cannot be '{DEFAULT_USER_NAME}'"
-                values={{ DEFAULT_USER_NAME: constants.DEFAULT_USER_NAME }}
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message17'
+              defaultMessage="User name cannot be '{DEFAULT_USER_NAME}'"
+              values={{ DEFAULT_USER_NAME: constants.DEFAULT_USER_NAME }}
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else if (JSON.stringify(trimmedName).length - 2 > constants.MAX_USER_NAME_SIZE) {
@@ -107,12 +107,12 @@ class FirstPopupModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message18"
-                defaultMessage="User name cannot exceed {MAX_USER_NAME_SIZE} characters"
-                values={{ MAX_USER_NAME_SIZE: constants.MAX_USER_NAME_SIZE }}
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message18'
+              defaultMessage='User name cannot exceed {MAX_USER_NAME_SIZE} characters'
+              values={{ MAX_USER_NAME_SIZE: constants.MAX_USER_NAME_SIZE }}
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else if (isEmpty(trimmedName)) {
@@ -120,11 +120,11 @@ class FirstPopupModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message19"
-                defaultMessage="User name cannot be empty"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message19'
+              defaultMessage='User name cannot be empty'
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else if (!termsAgree) {
@@ -132,11 +132,11 @@ class FirstPopupModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message37"
-                defaultMessage="Please agree the PTT.ai Terms and Conditions"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message37'
+              defaultMessage='Please agree the PTT.ai Terms and Conditions'
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else {
@@ -146,23 +146,23 @@ class FirstPopupModal extends PureComponent {
     }
   }
 
-  openPrivacySetting() {
-      const { modalInput, onModalSwitch, userId } = this.props
-      const { gaAgree, termsAgree } = this.state
+  openPrivacySetting () {
+    const { modalInput, onModalSwitch, userId } = this.props
+    const { gaAgree, termsAgree } = this.state
 
-      onModalSwitch(constants.PRIVACY_SETTING_MODAL, {
-        firstPopUpInput: modalInput,
-        fromSignInPage: true,
-        termsAgree: termsAgree,
-        gaAgree: gaAgree,
-        userId: userId,
-      })
+    onModalSwitch(constants.PRIVACY_SETTING_MODAL, {
+      firstPopUpInput: modalInput,
+      fromSignInPage: true,
+      termsAgree: termsAgree,
+      gaAgree: gaAgree,
+      userId: userId
+    })
   }
 
-  onSignIn(nodeId) {
-    const { onModalClose, modalInput:{ userPrivateKeyInfo, signIn } } = this.props
+  onSignIn (nodeId) {
+    const { onModalClose, modalInput: { userPrivateKeyInfo, signIn } } = this.props
 
-    let inputNodeId     = nodeId
+    let inputNodeId = nodeId
     let inputPrivateKey = userPrivateKeyInfo
 
     let that = this
@@ -173,9 +173,9 @@ class FirstPopupModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message28"
-              defaultMessage="[Wait] Signing..."
-            />),
+              id='alert.message28'
+              defaultMessage='[Wait] Signing...'
+            />)
         }
       })
     }
@@ -187,11 +187,11 @@ class FirstPopupModal extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message3"
-                defaultMessage="[Error] {data}:{nodeId}"
-                values={{ data: response.data, nodeId: response.nodeId}}
+                id='alert.message3'
+                defaultMessage='[Error] {data}:{nodeId}'
+                values={{ data: response.data, nodeId: response.nodeId }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       } else {
@@ -200,9 +200,9 @@ class FirstPopupModal extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message28"
-                defaultMessage="[Wait] Signing..."
-              />),
+                id='alert.message28'
+                defaultMessage='[Wait] Signing...'
+              />)
           }
         })
       }
@@ -214,11 +214,11 @@ class FirstPopupModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message27"
-              defaultMessage="[Success] Signed In"
+              id='alert.message27'
+              defaultMessage='[Success] Signed In'
             />),
           onConfirm: () => {
-            that.setState({showAlert: false})
+            that.setState({ showAlert: false })
             that.onScannerClose()
             onModalClose()
           }
@@ -231,11 +231,11 @@ class FirstPopupModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message5"
-                defaultMessage="Node id empty or invalid"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message5'
+              defaultMessage='Node id empty or invalid'
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else if (!inputPrivateKey) {
@@ -243,11 +243,11 @@ class FirstPopupModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message6"
-                defaultMessage="Private key empty or invalid"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message6'
+              defaultMessage='Private key empty or invalid'
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else {
@@ -255,12 +255,12 @@ class FirstPopupModal extends PureComponent {
     }
   }
 
-  render() {
-    const { intl, onModalClose, modal: { currentModal }} = this.props
+  render () {
+    const { intl, onModalClose, modal: { currentModal } } = this.props
     const { name, showAlert, alertData, submodalType, nodeId, gaAgree, termsAgree } = this.state
 
-    const placeholder = intl.formatMessage({id: 'first-popup-modal.placeholder'});
-    const placeholder2 = intl.formatMessage({id: 'sign-in-scanner-modal.placeholder2'});
+    const placeholder = intl.formatMessage({ id: 'first-popup-modal.placeholder' })
+    const placeholder2 = intl.formatMessage({ id: 'sign-in-scanner-modal.placeholder2' })
 
     return (
       <div>
@@ -269,29 +269,29 @@ class FirstPopupModal extends PureComponent {
           style={modalConstants.firstPopupModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={null}
-          contentLabel="First Popup Modal">
+          contentLabel='First Popup Modal'>
           <div className={styles['root']}>
             <div className={styles['sign-in']}>
               <div className={styles['signin-action']}>
                 <div className={styles['profile-title']}>
                   <FormattedMessage
-                    id="first-popup-modal.title"
-                    defaultMessage="Sign in with existing account"
+                    id='first-popup-modal.title'
+                    defaultMessage='Sign in with existing account'
                   />
                 </div>
                 <button className={styles['signin-button']} onClick={() => this.setState({ submodalType: 'Sign-in' })}>
-                <FormattedMessage
-                  id="first-popup-modal.action3"
-                  defaultMessage="Sign In"
-                />
+                  <FormattedMessage
+                    id='first-popup-modal.action3'
+                    defaultMessage='Sign In'
+                  />
                 </button>
               </div>
             </div>
 
             <div className={styles['divider']}>
               <FormattedMessage
-                id="first-popup-modal.divider"
-                defaultMessage="Or"
+                id='first-popup-modal.divider'
+                defaultMessage='Or'
               />
             </div>
 
@@ -299,31 +299,31 @@ class FirstPopupModal extends PureComponent {
               <div className={styles['signup-action']}>
                 <button className={styles['close-button']} hidden onClick={onModalClose}>
                   <FormattedMessage
-                    id="first-popup-modal.action1"
-                    defaultMessage="Cancel"
+                    id='first-popup-modal.action1'
+                    defaultMessage='Cancel'
                   />
                 </button>
                 <button className={styles['submit-button']} onClick={() => this.setState({ submodalType: 'Sign-up' })}>
-                <FormattedMessage
-                  id="first-popup-modal.action4"
-                  defaultMessage="Sign up as new user"
-                />
+                  <FormattedMessage
+                    id='first-popup-modal.action4'
+                    defaultMessage='Sign up as new user'
+                  />
                 </button>
               </div>
             </div>
 
             <Modal
-              overlayClassName="SignUpModal__Overlay"
+              overlayClassName='SignUpModal__Overlay'
               style={modalConstants.signupModalStyels}
               isOpen={submodalType === 'Sign-up'}
               onRequestClose={this.onScannerClose}
-              contentLabel="Sign Up Scanner Modal">
+              contentLabel='Sign Up Scanner Modal'>
               <div className={styles['submodal-signup-container']}>
                 <div className={styles['submodal-signup']}>
                   <div className={styles['submodal-signup-title']}>
                     <FormattedMessage
-                      id="first-popup-modal.title2"
-                      defaultMessage="Let others know your name"
+                      id='first-popup-modal.title2'
+                      defaultMessage='Let others know your name'
                     />
                   </div>
                   <div className={styles['submodal-signup-profile-input']}>
@@ -334,19 +334,19 @@ class FirstPopupModal extends PureComponent {
                       className={styles['profile-input-name']}
                       value={name}
                       onKeyDown={this.onKeydown}
-                      onChange={this.onNameChange}/>
+                      onChange={this.onNameChange} />
                   </div>
                   <div className={styles['submodal-signup-action-section']}>
-                    <button className={styles['submodal-signup-confirm']} onClick={() => this.onSubmitSignUp() }>
+                    <button className={styles['submodal-signup-confirm']} onClick={() => this.onSubmitSignUp()}>
                       <FormattedMessage
-                        id="alert-component.action2"
-                        defaultMessage="Confirm"
+                        id='alert-component.action2'
+                        defaultMessage='Confirm'
                       />
                     </button>
-                    <button hidden={true} className={styles['submodal-signup-cancel']} onClick={() => this.setState({ submodalType: null })}>
+                    <button hidden className={styles['submodal-signup-cancel']} onClick={() => this.setState({ submodalType: null })}>
                       <FormattedMessage
-                        id="first-popup-modal.action1"
-                        defaultMessage="Cancel"
+                        id='first-popup-modal.action1'
+                        defaultMessage='Cancel'
                       />
                     </button>
                   </div>
@@ -354,29 +354,29 @@ class FirstPopupModal extends PureComponent {
                     <div className={styles['submodal-ga-agreement-item']}>
                       <label className={styles['submodal-checkmark-container']}>
                         <FormattedMessage
-                          id="first-popup-modal.title3"
-                          defaultMessage="Let us collect your data"
+                          id='first-popup-modal.title3'
+                          defaultMessage='Let us collect your data'
                         />
-                        <input type="radio"
-                               name="terms-agreemenet"
-                               checked={termsAgree}
-                               onClick={() => { this.setState({ termsAgree: !termsAgree })}}
+                        <input type='radio'
+                          name='terms-agreemenet'
+                          checked={termsAgree}
+                          onClick={() => { this.setState({ termsAgree: !termsAgree }) }}
                         />
-                        <span className={styles['checkmark']}></span>
+                        <span className={styles['checkmark']} />
                       </label>
                     </div>
                     <div className={styles['submodal-ga-agreement-item']}>
                       <label className={styles['submodal-checkmark-container']}>
                         <FormattedMessage
-                          id="first-popup-modal.title4"
+                          id='first-popup-modal.title4'
                           defaultMessage="Agree to user tracking for improving Ptt.ai's service"
                         />
-                        <input type="radio"
-                               name="ga-agreemenet"
-                               checked={gaAgree}
-                               onClick={() => { this.setState({ gaAgree: !gaAgree })}}
+                        <input type='radio'
+                          name='ga-agreemenet'
+                          checked={gaAgree}
+                          onClick={() => { this.setState({ gaAgree: !gaAgree }) }}
                         />
-                        <span className={styles['checkmark']}></span>
+                        <span className={styles['checkmark']} />
                       </label>
                     </div>
                     <div className={styles['submodal-ga-agreement-see-more']} onClick={() => this.openPrivacySetting()}>
@@ -388,39 +388,39 @@ class FirstPopupModal extends PureComponent {
             </Modal>
 
             <Modal
-              overlayClassName="SignInModal__Overlay"
+              overlayClassName='SignInModal__Overlay'
               style={modalConstants.scannerModalStyels}
               isOpen={submodalType === 'Sign-in'}
               onRequestClose={this.onScannerClose}
-              contentLabel="Sign In Scanner Modal">
+              contentLabel='Sign In Scanner Modal'>
               <div className={styles['submodal-signin-container']}>
                 <div className={styles['submodal-signin']}>
                   <div className={styles['submodal-signin-title']}>
                     <FormattedMessage
-                      id="first-popup-modal.title"
-                      defaultMessage="Sign in with existing account"
+                      id='first-popup-modal.title'
+                      defaultMessage='Sign in with existing account'
                     />
                   </div>
                   <QRScannerSubmodal onScanned={this.onScanned} />
                   <div className={styles['submodal-signin-node-id']}>
-                      <textarea
-                        placeholder={placeholder2}
-                        autoFocus
-                        name='title-input'
-                        value={nodeId}
-                        onChange={this.onNodeIdChange}/>
+                    <textarea
+                      placeholder={placeholder2}
+                      autoFocus
+                      name='title-input'
+                      value={nodeId}
+                      onChange={this.onNodeIdChange} />
                   </div>
                   <div className={styles['submodal-signin-action-section']}>
                     <button className={styles['submodal-signin-submit']} onClick={() => this.onSignIn(nodeId)}>
                       <FormattedMessage
-                        id="first-popup-modal.action2"
-                        defaultMessage="Confirm"
+                        id='first-popup-modal.action2'
+                        defaultMessage='Confirm'
                       />
                     </button>
                     <button className={styles['submodal-signin-cancel']} onClick={() => this.setState({ submodalType: null })}>
                       <FormattedMessage
-                        id="first-popup-modal.action1"
-                        defaultMessage="Cancel"
+                        id='first-popup-modal.action1'
+                        defaultMessage='Cancel'
                       />
                     </button>
                   </div>
@@ -430,19 +430,19 @@ class FirstPopupModal extends PureComponent {
 
           </div>
         </Modal>
-        <AlertComponent show={showAlert} alertData={alertData}/>
+        <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doFirstPopupModal: bindActionCreators(doFirstPopupModal, dispatch),
+    doFirstPopupModal: bindActionCreators(doFirstPopupModal, dispatch)
   }
 })
 

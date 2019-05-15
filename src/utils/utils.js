@@ -1,38 +1,38 @@
-import React                from 'react'
-import uuidv4               from 'uuid/v4'
-import Immutable            from 'immutable'
-import camelCase            from 'camelcase'
-import decamelize           from 'decamelize'
-import QueryString          from 'query-string'
-import moment               from 'moment'
-import sanitizeHtml         from 'sanitize-html'
+import React from 'react'
+import uuidv4 from 'uuid/v4'
+import Immutable from 'immutable'
+import camelCase from 'camelcase'
+import decamelize from 'decamelize'
+import QueryString from 'query-string'
+import moment from 'moment'
+import sanitizeHtml from 'sanitize-html'
 import { PTTAI_APP_ROOT,
-         PTTAI_URL_BASE }   from 'config'
-import platform             from 'platform'
-import { addLocaleData } from 'react-intl';
+  PTTAI_URL_BASE } from 'config'
+import platform from 'platform'
+import { addLocaleData } from 'react-intl'
 
-import * as constants   from '../constants/Constants'
+import * as constants from '../constants/Constants'
 
-import locale_en from 'react-intl/locale-data/en';
-import locale_zh from 'react-intl/locale-data/zh';
+import locale_en from 'react-intl/locale-data/en'
+import locale_zh from 'react-intl/locale-data/zh'
 import messages_zh from '../translations/zh.json'
 import messages_en from '../translations/en.json'
 
-addLocaleData([...locale_en, ...locale_zh]);
+addLocaleData([...locale_en, ...locale_zh])
 
 // Localization
 const all_messages = {
   'zh': messages_zh,
   'en': messages_en
-};
+}
 
 // language without region code
 export const language = (() => {
-  let lang = navigator.language.split(/[-_]/)[0];
-  return (lang in all_messages) ? lang : 'en';
-})();
+  let lang = navigator.language.split(/[-_]/)[0]
+  return (lang in all_messages) ? lang : 'en'
+})()
 
-export const messages = all_messages[language];
+export const messages = all_messages[language]
 
 const GLOBAL_IDS = new Set()
 
@@ -48,12 +48,11 @@ export const getFileTemplate = (file) => {
                           ${bytesToSize(file.fileSize)}
                         </div>
                       </div>
-                    </div>`;
+                    </div>`
   return fileHTML.replace(/\s+/g, ' ')
 }
 
 export const getSummaryTemplate = (rowData, extraParams) => {
-
   let template = `<div></div>`
   let params = rowData.param
 
@@ -64,16 +63,14 @@ export const getSummaryTemplate = (rowData, extraParams) => {
                 <div style="line-height: 20px; border-bottom: 0px solid #000;">
                   ${extraParams.CreatorName} ${messages['summary-template.user-upload-file']}</div>
                 </div>`
-  }
-  else if (rowData.type === constants.CONTENT_TYPE_IMAGE) {
+  } else if (rowData.type === constants.CONTENT_TYPE_IMAGE) {
     template = `<div style="display: flex; flex-direction: row;">
                   <img src="${PTTAI_APP_ROOT + '/api/img/' + extraParams.boardId + '/' + params.id}" style="height: 20px; width: 20px; margin-right: 10px; margin-left: 5px; margin-top: 0px; margin-bottom: 0px; border-radius: 3px;">
                   <div style="height: 20px; line-height: 20px; border-bottom: 0px solid #000;">
                     ${extraParams.CreatorName} ${messages['summary-template.user-upload-image']}
                   </div>
                 </div>`
-  }
-  else {
+  } else {
     template = sanitizeDirtyHtml(rowData.content)
   }
 
@@ -83,46 +80,44 @@ export const getSummaryTemplate = (rowData, extraParams) => {
 export const toJson = (data) => {
   let result = {}
   try {
-    result = JSON.parse(data);
+    result = JSON.parse(data)
   } catch (e) {
-      return result;
+    return result
   }
-  return result;
+  return result
 }
 
 export const sanitizeDirtyHtml = (dirtyHtml) => {
-  let cleanHtml =  sanitizeHtml(dirtyHtml, {
+  let cleanHtml = sanitizeHtml(dirtyHtml, {
     allowedTags: ['li', 'ol', 'ul', 'a', 'p', 'br'],
     allowedAttributes: {
-      'a': [ 'href', 'target' ],
+      'a': [ 'href', 'target' ]
     },
     allowedClasses: {
-      'li': [ 'ql-indent-1', 'ql-indent-2', 'ql-indent-3'],
-    },
-  });
+      'li': [ 'ql-indent-1', 'ql-indent-2', 'ql-indent-3']
+    }
+  })
   return cleanHtml
 }
 
 export const array2Html = (array, boardId) => {
-
   return array.reduce((acc, each, index) => {
     if (each.type === constants.CONTENT_TYPE_FILE) {
-
       const fileInfo = {
-          fileId:     each.param.id,
-          fileClass:  each.param.class,
-          fileName:   each.param.name,
-          fileSize:   each.param.size,
-          fileType:   each.param.type,
+        fileId: each.param.id,
+        fileClass: each.param.class,
+        fileName: each.param.name,
+        fileSize: each.param.size,
+        fileType: each.param.type
       }
 
-      let iframe = document.createElement('iframe');
-      iframe.className        = constants.IFRAME_CLASS_NAME
-      iframe.srcdoc           = getFileTemplate(fileInfo)
-      iframe.frameborder      = 0
-      iframe.allowfullscreen  = true
-      iframe.width            = '100%'
-      iframe.height           = '84px'
+      let iframe = document.createElement('iframe')
+      iframe.className = constants.IFRAME_CLASS_NAME
+      iframe.srcdoc = getFileTemplate(fileInfo)
+      iframe.frameborder = 0
+      iframe.allowfullscreen = true
+      iframe.width = '100%'
+      iframe.height = '84px'
       iframe.setAttribute('style', 'border-width: 0px')
       iframe.setAttribute('data-id', fileInfo.fileId)
       iframe.setAttribute('data-class', fileInfo.fileClass)
@@ -132,21 +127,20 @@ export const array2Html = (array, boardId) => {
 
       return acc + iframe.outerHTML.replace(/\s\s+/g, ' ')
     } else if (each.type === constants.CONTENT_TYPE_IMAGE) {
-
       const imageInfo = {
-          imageId:     each.param.id,
-          imageClass:  each.param.class,
+        imageId: each.param.id,
+        imageClass: each.param.class
       }
 
-      let image = document.createElement('img');
-      image.src              = PTTAI_APP_ROOT + '/api/img/' + boardId + '/' + imageInfo.imageId
-      image.alt              = 'not working'
-      image.style.width      = '100%'
+      let image = document.createElement('img')
+      image.src = PTTAI_APP_ROOT + '/api/img/' + boardId + '/' + imageInfo.imageId
+      image.alt = 'not working'
+      image.style.width = '100%'
       image.setAttribute('data-id', imageInfo.imageId)
       image.setAttribute('data-class', imageInfo.imageClass)
 
       return acc + image.outerHTML.replace(/\s\s+/g, ' ')
-    } else if (each.type === constants.CONTENT_TYPE_TEXT){
+    } else if (each.type === constants.CONTENT_TYPE_TEXT) {
       return acc + sanitizeDirtyHtml(each.content)
     } else {
       return acc
@@ -154,18 +148,16 @@ export const array2Html = (array, boardId) => {
   }, '')
 }
 
-export const getUUID = (isCheck=true) => {
+export const getUUID = (isCheck = true) => {
   let theID = ''
-  while(true) {
+  while (true) {
     theID = uuidv4()
-    if(!isCheck) break
+    if (!isCheck) break
 
-    if(GLOBAL_IDS.has(theID))
-      continue
+    if (GLOBAL_IDS.has(theID)) { continue }
 
     GLOBAL_IDS.add(theID)
     break
-
   }
   return theID
 }
@@ -173,13 +165,13 @@ export const getUUID = (isCheck=true) => {
 export const isUUID = (val) => typeof val === 'string' && val.length === 36
 
 export const delay = (milliseconds) => new Promise(() => {
-  setTimeout(() => {Promise.resolve()}, milliseconds)
+  setTimeout(() => { Promise.resolve() }, milliseconds)
 })
 
-export const delayFunc = (func, params, milliseconds=200) => setTimeout(() => {func(...params)}, milliseconds)
+export const delayFunc = (func, params, milliseconds = 200) => setTimeout(() => { func(...params) }, milliseconds)
 
 export const queryToString = (query) => {
-  if(!query) return ''
+  if (!query) return ''
 
   return Object.keys(query).reduce((acc, cur) => {
     if (!query[cur]) return acc
@@ -190,13 +182,13 @@ export const queryToString = (query) => {
 export const parseQueryString = (str) => QueryString.parse(str)
 
 export const getRoot = (state) => {
-  const {app} = state
+  const { app } = state
 
   let rootId = app.get('rootId', '')
   let rootClass = app.get('rootClass', '')
   let camelCasedClass = toCamelCase(rootClass)
 
-  if(!state[camelCasedClass]) return Immutable.Map()
+  if (!state[camelCasedClass]) return Immutable.Map()
 
   return state[camelCasedClass].get(rootId, Immutable.Map())
 }
@@ -206,8 +198,8 @@ export const getStateChild = (state, child) => {
 }
 
 export const getRootId = (state) => {
-  const {app} = state
-  if(!app) return ''
+  const { app } = state
+  if (!app) return ''
   return app.get('rootId', '')
 }
 
@@ -228,7 +220,7 @@ export const toUnderscore = (str) => decamelize(str)
 export const encodeURIObj = (data) => {
   return Object.keys(data).reduce((r, eachIdx, i) => {
     let v = data[eachIdx]
-    if(typeof data[eachIdx] === "string" && !eachIdx.endsWith('ID')) {
+    if (typeof data[eachIdx] === 'string' && !eachIdx.endsWith('ID')) {
       v = encodeURIComponent(data[eachIdx])
     }
     r[eachIdx] = v
@@ -239,7 +231,7 @@ export const encodeURIObj = (data) => {
 export const decodeURIObj = (data) => {
   return Object.keys(data).reduce((r, eachIdx, i) => {
     let v = data[eachIdx]
-    if(typeof data[eachIdx] === "string" && !eachIdx.endsWith('ID')) {
+    if (typeof data[eachIdx] === 'string' && !eachIdx.endsWith('ID')) {
       v = decodeURIComponent(data[eachIdx])
     }
     r[eachIdx] = v
@@ -255,96 +247,92 @@ export const isUnRead = (updateTS, lastSeen) => {
 }
 
 export const dataURLtoFile = (dataurl, filename) => {
-    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  let arr = dataurl.split(','); let mime = arr[0].match(/:(.*?);/)[1]
 
-    while(n--){
-        u8arr[n] = bstr.charCodeAt(n);
-    }
+  let bstr = atob(arr[1]); let n = bstr.length; let u8arr = new Uint8Array(n)
 
-    return new File([u8arr], filename, {type:mime});
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+
+  return new File([u8arr], filename, { type: mime })
 }
 
 export const decodeBase64 = str => {
   try {
-    return decodeURIComponent(atob(str).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    return decodeURIComponent(atob(str).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
     }).join(''))
-  }
-  catch(e) {
+  } catch (e) {
     return ''
   }
 }
 
 export const bytesToSize = (bytes) => {
-   let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
 
-   if (bytes === 0) return '0 Byte';
+  if (bytes === 0) return '0 Byte'
 
-   let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10)
 
-   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
 }
 
 export const isWhitespace = (ch) => {
   let whiteSpace = false
   if ((ch === ' ') || (ch === '\t') || (ch === '\n')) {
-    whiteSpace = true;
+    whiteSpace = true
   }
-  return whiteSpace;
+  return whiteSpace
 }
 
 export const getOrientation = (file, callback) => {
-  let reader = new FileReader();
+  let reader = new FileReader()
 
-  reader.onload = function(e) {
-
-    let view = new DataView(e.target.result);
-    if (view.getUint16(0, false) !== 0xFFD8) return callback(-2);
-    let length = view.byteLength, offset = 2;
+  reader.onload = function (e) {
+    let view = new DataView(e.target.result)
+    if (view.getUint16(0, false) !== 0xFFD8) return callback(-2)
+    let length = view.byteLength; let offset = 2
 
     while (offset < length) {
-      let marker = view.getUint16(offset, false);
-      offset += 2;
+      let marker = view.getUint16(offset, false)
+      offset += 2
       if (marker === 0xFFE1) {
-        if (view.getUint32(offset += 2, false) !== 0x45786966) return callback(-1);
-        let little = view.getUint16(offset += 6, false) === 0x4949;
-        offset += view.getUint32(offset + 4, little);
-        let tags = view.getUint16(offset, little);
-        offset += 2;
-        for (let i = 0; i < tags; i++)
-          if (view.getUint16(offset + (i * 12), little) === 0x0112)
-            return callback(view.getUint16(offset + (i * 12) + 8, little));
-      }
-      else if ((marker & 0xFF00) !== 0xFF00) break;
-      else offset += view.getUint16(offset, false);
+        if (view.getUint32(offset += 2, false) !== 0x45786966) return callback(-1)
+        let little = view.getUint16(offset += 6, false) === 0x4949
+        offset += view.getUint32(offset + 4, little)
+        let tags = view.getUint16(offset, little)
+        offset += 2
+        for (let i = 0; i < tags; i++) {
+          if (view.getUint16(offset + (i * 12), little) === 0x0112) { return callback(view.getUint16(offset + (i * 12) + 8, little)) }
+        }
+      } else if ((marker & 0xFF00) !== 0xFF00) break
+      else offset += view.getUint16(offset, false)
     }
-    return callback(-1);
-  };
+    return callback(-1)
+  }
 
-  reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(file)
 }
 
 export const newCanvasSize = (w, h, rotation) => {
+  /* normalize image size by rotation */
+  let rads = rotation * Math.PI / 180
 
-    /* normalize image size by rotation */
-    let rads = rotation * Math.PI / 180;
+  let c = Math.cos(rads)
+  let s = Math.sin(rads)
 
-    let c = Math.cos(rads);
-    let s = Math.sin(rads);
+  if (s < 0) {
+    s = -s
+  }
+  if (c < 0) {
+    c = -c
+  }
 
-    if (s < 0) {
-        s = -s;
-    }
-    if (c < 0) {
-        c = -c;
-    }
-
-    return [h * s + w * c, h * c + w * s];
+  return [h * s + w * c, h * c + w * s]
 }
 
 export const getStatusClass = (status) => {
-
   let statusClass = 'pre-alive'
 
   if (status !== 0 && !status) {
@@ -372,19 +360,19 @@ export const getStatusClass = (status) => {
 const isLink = str => {
   // https://stackoverflow.com/a/5717133/5032696
 
-  var pattern = new RegExp('^(https?:\\/\\/)?'+         // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+                      // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+                  // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+                         // query string
-    '(\\#[-a-z\\d_]*)?$','i');                          // fragment locator
-  return !!pattern.test(str);
+  var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+    '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
+  return !!pattern.test(str)
 }
 
 export const linkParser = (pure_message) => {
-  if (!pure_message) return '';
+  if (!pure_message) return ''
 
-  let messageArr = pure_message.split(/\s/).map( (msg,i) => {
+  let messageArr = pure_message.split(/\s/).map((msg, i) => {
     if (isLink(msg)) {
       let link = msg
 
@@ -405,9 +393,9 @@ export const isMobile = () => {
   /* If true, autofocus will be disabled */
   /* Currently, the following should return true: */
   /* Android and iOS device */
-  return platform.description.indexOf('Mobile') !== -1  // Android and iOS chorome browser
-      || platform.description.indexOf('Android') !== -1 // Android app
-      || platform.description.indexOf('iOS') !== -1; // iOS safari browser
+  return platform.description.indexOf('Mobile') !== -1 || // Android and iOS chorome browser
+      platform.description.indexOf('Android') !== -1 || // Android app
+      platform.description.indexOf('iOS') !== -1 // iOS safari browser
 }
 
 export const isIOS = () => {

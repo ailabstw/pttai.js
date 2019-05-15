@@ -1,43 +1,43 @@
-import React, { PureComponent }       from 'react'
-import { connect }                    from 'react-redux'
-import { bindActionCreators }         from 'redux'
-import Modal                          from 'react-modal'
-import { CopyToClipboard }            from 'react-copy-to-clipboard';
-import QRCode                         from 'qrcode.react';
-import { FormattedMessage }           from 'react-intl';
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Modal from 'react-modal'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import QRCode from 'qrcode.react'
+import { FormattedMessage } from 'react-intl'
 
-import * as doAddDeviceModal          from '../reducers/AddDeviceModal'
-import * as modalConstants            from '../constants/ModalConstants'
-import * as constants                 from '../constants/Constants'
-import { expiredFormat }              from '../utils/utilDatetime'
+import * as doAddDeviceModal from '../reducers/AddDeviceModal'
+import * as modalConstants from '../constants/ModalConstants'
+import * as constants from '../constants/Constants'
+import { expiredFormat } from '../utils/utilDatetime'
 
 import styles from './AddDeviceModal.css'
 
 class AddDeviceModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.refreshKeyInfoInterval = null
     this.state = {
-      copied: false,
-    };
+      copied: false
+    }
   }
 
-  componentWillMount() {
-    const { modalInput:{ keyInfo }} = this.props
+  componentWillMount () {
+    const { modalInput: { keyInfo } } = this.props
 
-    this.refreshKeyInfoInterval = setInterval(() => keyInfo.refreshKeyInfo(), constants.REFRESH_INTERVAL);
+    this.refreshKeyInfoInterval = setInterval(() => keyInfo.refreshKeyInfo(), constants.REFRESH_INTERVAL)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.refreshKeyInfoInterval)
   }
 
-  render() {
-    const { modalInput:{ device, keyInfo }, onModalSwitch, modal: { currentModal }} = this.props
+  render () {
+    const { modalInput: { device, keyInfo }, onModalSwitch, modal: { currentModal } } = this.props
     const { copied } = this.state
 
-    let onSwtichToMultiDevices = function() {
-      onModalSwitch(constants.SHOW_DEVICE_INFO, {device:device, keyInfo: keyInfo})
+    let onSwtichToMultiDevices = function () {
+      onModalSwitch(constants.SHOW_DEVICE_INFO, { device: device, keyInfo: keyInfo })
     }
 
     const expTimeVal = expiredFormat(keyInfo.data.deviceJoinKey.UpdateTS.T, keyInfo.data.deviceJoinKey.expirePeriod)
@@ -45,21 +45,21 @@ class AddDeviceModal extends PureComponent {
     return (
       <div>
         <Modal
-          overlayClassName="AddDeviceModal__Overlay"
+          overlayClassName='AddDeviceModal__Overlay'
           style={modalConstants.addDeviceModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onSwtichToMultiDevices}
-          contentLabel="Add Device Modal">
+          contentLabel='Add Device Modal'>
           <div className={styles['root']}>
             <div className={styles['top-bar']}>
-              <div className={styles['prev-button']} onClick={onSwtichToMultiDevices}></div>
+              <div className={styles['prev-button']} onClick={onSwtichToMultiDevices} />
               <div className={styles['title']}>
                 <FormattedMessage
-                  id="add-device-modal.title"
-                  defaultMessage="Add Device"
+                  id='add-device-modal.title'
+                  defaultMessage='Add Device'
                 />
               </div>
-              <div className={styles['null-space']}></div>
+              <div className={styles['null-space']} />
             </div>
             <div className={styles['content']}>
               <div hidden className={styles['content-title']}>Node ID</div>
@@ -69,24 +69,24 @@ class AddDeviceModal extends PureComponent {
               <div className={styles['node-id']}>
                 <div className={styles['expiration']}>
                   <FormattedMessage
-                    id="add-device-modal.expiration"
-                    defaultMessage="{expTimeVal}"
+                    id='add-device-modal.expiration'
+                    defaultMessage='{expTimeVal}'
                     values={{ expTimeVal: expTimeVal }}
                   />
                 </div>
                 <CopyToClipboard text={keyInfo.data.deviceJoinKey.URL}
-                                 onCopy={() => this.setState({copied: true})}>
+                  onCopy={() => this.setState({ copied: true })}>
                   <button className={styles['copy-button']}>
                     {
-                      copied? (
+                      copied ? (
                         <FormattedMessage
-                          id="add-device-modal.copy-node-id-2"
-                          defaultMessage="Copied"
+                          id='add-device-modal.copy-node-id-2'
+                          defaultMessage='Copied'
                         />
-                      ): (
+                      ) : (
                         <FormattedMessage
-                          id="add-device-modal.copy-node-id-1"
-                          defaultMessage="Copy Node ID"
+                          id='add-device-modal.copy-node-id-1'
+                          defaultMessage='Copy Node ID'
                         />
                       )
                     }
@@ -96,12 +96,12 @@ class AddDeviceModal extends PureComponent {
                   <input
                     readOnly
                     value={keyInfo.data.deviceJoinKey.URL}
-                    />
+                  />
                 </div>
                 <div className={styles['helper-text']}>
                   <FormattedMessage
-                    id="add-device-modal.copy-node-id-3"
-                    defaultMessage="Scan QR Code or send the above Node ID"
+                    id='add-device-modal.copy-node-id-3'
+                    defaultMessage='Scan QR Code or send the above Node ID'
                   />
                 </div>
               </div>
@@ -114,12 +114,12 @@ class AddDeviceModal extends PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doAddDeviceModal: bindActionCreators(doAddDeviceModal, dispatch),
+    doAddDeviceModal: bindActionCreators(doAddDeviceModal, dispatch)
   }
 })
 

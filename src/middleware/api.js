@@ -15,12 +15,11 @@ const FAILURE = myDuck.defineType('FAILURE')
 
 export const API_TYPES = [REQUEST, SUCCESS, FAILURE]
 
-const callApi = (endpoint, { query, method = 'get', params, files, json }, isWithCredentials=true) => {
+const callApi = (endpoint, { query, method = 'get', params, files, json }, isWithCredentials = true) => {
   // XXX hack for adding jsonrpc method info into endpoint
   if (method === 'post' && json) {
     endpoint = endpoint + json['method'].replace('_', '/')
   }
-
 
   if (endpoint.indexOf(PTTAI_API_ROOT) === -1 && endpoint.indexOf(PTTAI_APP_ROOT) === -1) {
     endpoint = PTTAI_API_ROOT + endpoint
@@ -106,7 +105,7 @@ const callApi = (endpoint, { query, method = 'get', params, files, json }, isWit
 const _stringifyParams = (params) => {
   return Object.keys(params).reduce((r, x, i) => {
     let val = params[x]
-    if(typeof val === 'object') {
+    if (typeof val === 'object') {
       val = JSON.stringify(val)
     }
     r[x] = val

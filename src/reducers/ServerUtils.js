@@ -1,8 +1,8 @@
 import { PTTAI_APP_ROOT } from 'config'
-import { Base64 }         from 'js-base64'
+import { Base64 } from 'js-base64'
 
-import * as api           from '../middleware/api'
-import { getUUID }        from '../utils/utils'
+import * as api from '../middleware/api'
+import { getUUID } from '../utils/utils'
 
 import { LIST_ORDER_PREV, LIST_ORDER_NEXT } from '../constants/Constants'
 
@@ -15,7 +15,7 @@ export const createBoard = (title) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_createBoard", "params": [b64encode(title), true]},
+      json: { 'id': getUUID(false), 'method': 'content_createBoard', 'params': [b64encode(title), true] }
     }
   }
 }
@@ -25,7 +25,7 @@ export const getBoard = (boardId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getBoard", "params": [boardId]},
+      json: { 'id': getUUID(false), 'method': 'content_getBoard', 'params': [boardId] }
     }
   }
 }
@@ -35,7 +35,7 @@ export const getBoardUrl = (boardId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_showBoardURL", "params": [boardId]},
+      json: { 'id': getUUID(false), 'method': 'content_showBoardURL', 'params': [boardId] }
     }
   }
 }
@@ -45,7 +45,7 @@ export const getBoards = (startBoardId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getBoardList", "params": [startBoardId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'content_getBoardList', 'params': [startBoardId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -55,7 +55,7 @@ export const joinBoard = (boardUrl) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_joinBoard", "params": [boardUrl]},
+      json: { 'id': getUUID(false), 'method': 'me_joinBoard', 'params': [boardUrl] }
     }
   }
 }
@@ -65,7 +65,7 @@ export const getBoardRequest = (entityID) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"me_getBoardRequests", "params":[entityID]},
+      json: { 'id': getUUID(false), 'method': 'me_getBoardRequests', 'params': [entityID] }
     }
   }
 }
@@ -75,7 +75,7 @@ export const markBoard = (boardId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_markBoardSeen", "params": [boardId]},
+      json: { 'id': getUUID(false), 'method': 'content_markBoardSeen', 'params': [boardId] }
     }
   }
 }
@@ -85,7 +85,7 @@ export const setBoardName = (boardId, boardName) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_setTitle", "params": [boardId, b64encode(boardName)]},
+      json: { 'id': getUUID(false), 'method': 'content_setTitle', 'params': [boardId, b64encode(boardName)] }
     }
   }
 }
@@ -95,7 +95,7 @@ export const getMemberList = (boardId, starUserId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getMemberList", "params": [boardId, starUserId, limit, LIST_ORDER_PREV]},
+      json: { 'id': getUUID(false), 'method': 'content_getMemberList', 'params': [boardId, starUserId, limit, LIST_ORDER_PREV] }
     }
   }
 }
@@ -105,7 +105,7 @@ export const leaveBoard = (boardId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_leaveBoard", "params": [boardId]},
+      json: { 'id': getUUID(false), 'method': 'content_leaveBoard', 'params': [boardId] }
     }
   }
 }
@@ -115,7 +115,7 @@ export const deleteBoard = (boardId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_deleteBoard", "params": [boardId]},
+      json: { 'id': getUUID(false), 'method': 'content_deleteBoard', 'params': [boardId] }
     }
   }
 }
@@ -129,7 +129,7 @@ export const createArticle = (boardId, title, articleArray, mediaStr) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_createArticle", "params": [boardId, b64encode(title), articleArray.map(b64encode), mediaStr]},
+      json: { 'id': getUUID(false), 'method': 'content_createArticle', 'params': [boardId, b64encode(title), articleArray.map(b64encode), mediaStr] }
     }
   }
 }
@@ -139,7 +139,7 @@ export const updateArticle = (boardId, articleId, articleArray, mediaIds) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_updateArticle", "params": [boardId, articleId, articleArray.map(b64encode), mediaIds]},
+      json: { 'id': getUUID(false), 'method': 'content_updateArticle', 'params': [boardId, articleId, articleArray.map(b64encode), mediaIds] }
     }
   }
 }
@@ -149,7 +149,7 @@ export const deleteArticle = (boardId, articleId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_deleteArticle", "params": [boardId, articleId]},
+      json: { 'id': getUUID(false), 'method': 'content_deleteArticle', 'params': [boardId, articleId] }
     }
   }
 }
@@ -159,17 +159,17 @@ export const getArticle = (boardId, articleId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getArticle", "params": [boardId, articleId]},
+      json: { 'id': getUUID(false), 'method': 'content_getArticle', 'params': [boardId, articleId] }
     }
   }
 }
 
-export const getArticles = (boardId, startArticleId, limit, listOrder=LIST_ORDER_NEXT) => {
+export const getArticles = (boardId, startArticleId, limit, listOrder = LIST_ORDER_NEXT) => {
   return {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getArticleList", "params": [boardId, startArticleId, limit, listOrder]},
+      json: { 'id': getUUID(false), 'method': 'content_getArticleList', 'params': [boardId, startArticleId, limit, listOrder] }
     }
   }
 }
@@ -179,7 +179,7 @@ export const getArticleSummaryByIds = (boardId, articleInfos) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getArticleSummaryByIDs", "params": [boardId, articleInfos]},
+      json: { 'id': getUUID(false), 'method': 'content_getArticleSummaryByIDs', 'params': [boardId, articleInfos] }
     }
   }
 }
@@ -189,7 +189,7 @@ export const markArticle = (boardId, articleId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_markArticleSeen", "params": [boardId, articleId]},
+      json: { 'id': getUUID(false), 'method': 'content_markArticleSeen', 'params': [boardId, articleId] }
     }
   }
 }
@@ -199,7 +199,7 @@ export const removeBoardMember = (boardId, userId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_deleteMember", "params": [boardId, userId]},
+      json: { 'id': getUUID(false), 'method': 'content_deleteMember', 'params': [boardId, userId] }
     }
   }
 }
@@ -215,7 +215,7 @@ export const getContent = (boardId, articleId, subContentId, contentType, blockI
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getArticleBlockList", "params": [boardId, articleId, subContentId, contentType, blockId, limit, listOrder]},
+      json: { 'id': getUUID(false), 'method': 'content_getArticleBlockList', 'params': [boardId, articleId, subContentId, contentType, blockId, limit, listOrder] }
     }
   }
 }
@@ -225,7 +225,7 @@ export const createComment = (boardId, articleId, comment, mediaId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"content_createComment", "params":[boardId, articleId, 0 , b64encode(comment), mediaId]},
+      json: { 'id': getUUID(false), 'method': 'content_createComment', 'params': [boardId, articleId, 0, b64encode(comment), mediaId] }
     }
   }
 }
@@ -235,11 +235,10 @@ export const deleteComment = (boardId, articleId, commentId, mediaId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"content_deleteComment", "params":[boardId, articleId, commentId]},
+      json: { 'id': getUUID(false), 'method': 'content_deleteComment', 'params': [boardId, articleId, commentId] }
     }
   }
 }
-
 
 /*           */
 /*  Friend   */
@@ -250,7 +249,7 @@ export const getFriend = (friendId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"friend_getFriendByFriendID", "params":[friendId]},
+      json: { 'id': getUUID(false), 'method': 'friend_getFriendByFriendID', 'params': [friendId] }
     }
   }
 }
@@ -260,7 +259,7 @@ export const getFriends = (startFriendId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getFriendList", "params": [startFriendId, limit]},
+      json: { 'id': getUUID(false), 'method': 'friend_getFriendList', 'params': [startFriendId, limit] }
     }
   }
 }
@@ -270,7 +269,7 @@ export const addNewFriend = (name) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_joinFriend", "params": [name]},
+      json: { 'id': getUUID(false), 'method': 'me_joinFriend', 'params': [name] }
     }
   }
 }
@@ -280,7 +279,7 @@ export const markFriendSeen = (chatId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_markFriendSeen", "params": [chatId]},
+      json: { 'id': getUUID(false), 'method': 'friend_markFriendSeen', 'params': [chatId] }
     }
   }
 }
@@ -290,7 +289,7 @@ export const getFriendRequest = (entityID) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"me_getFriendRequests", "params":[entityID]},
+      json: { 'id': getUUID(false), 'method': 'me_getFriendRequests', 'params': [entityID] }
     }
   }
 }
@@ -300,7 +299,7 @@ export const deleteFriend = (chatId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"friend_deleteFriend", "params":[chatId]},
+      json: { 'id': getUUID(false), 'method': 'friend_deleteFriend', 'params': [chatId] }
     }
   }
 }
@@ -314,7 +313,7 @@ export const getMessageList = (chatId, startMessageId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"friend_getMessageList", "params":[chatId, startMessageId, limit, LIST_ORDER_PREV]},
+      json: { 'id': getUUID(false), 'method': 'friend_getMessageList', 'params': [chatId, startMessageId, limit, LIST_ORDER_PREV] }
     }
   }
 }
@@ -324,7 +323,7 @@ export const getMessageBlockList = (friendId, messageId, subContentId, contentTy
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"friend_getMessageBlockList", "params":[friendId, messageId, subContentId, contentType, blockID, limit]},
+      json: { 'id': getUUID(false), 'method': 'friend_getMessageBlockList', 'params': [friendId, messageId, subContentId, contentType, blockID, limit] }
     }
   }
 }
@@ -334,7 +333,7 @@ export const postMessage = (friendId, message, mediaIds) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"friend_createMessage", "params":[friendId, message.map(b64encode), mediaIds]},
+      json: { 'id': getUUID(false), 'method': 'friend_createMessage', 'params': [friendId, message.map(b64encode), mediaIds] }
     }
   }
 }
@@ -348,7 +347,7 @@ export const getUserNameByIds = (userIds) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"account_getUserNameByIDs", "params":[userIds]},
+      json: { 'id': getUUID(false), 'method': 'account_getUserNameByIDs', 'params': [userIds] }
     }
   }
 }
@@ -358,7 +357,7 @@ export const getUserName = (userId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"account_getUserName", "params":[userId]},
+      json: { 'id': getUUID(false), 'method': 'account_getUserName', 'params': [userId] }
     }
   }
 }
@@ -368,7 +367,7 @@ export const getUserImgByIds = (userIds) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"account_getUserImgByIDs", "params":[userIds]},
+      json: { 'id': getUUID(false), 'method': 'account_getUserImgByIDs', 'params': [userIds] }
     }
   }
 }
@@ -378,7 +377,7 @@ export const getUserImg = (userId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"account_getUserImg", "params":[userId]},
+      json: { 'id': getUUID(false), 'method': 'account_getUserImg', 'params': [userId] }
     }
   }
 }
@@ -388,7 +387,7 @@ export const editName = (name) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_setMyName", "params": [b64encode(name)]},
+      json: { 'id': getUUID(false), 'method': 'me_setMyName', 'params': [b64encode(name)] }
     }
   }
 }
@@ -396,30 +395,30 @@ export const editName = (name) => {
 export const getUsersInfo = (userIds) => {
   return dispatch => Promise.all([
     dispatch(getUserNameByIds(userIds))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         if (error) {
-          return { 'error': true, 'key':'userName', 'value': error }
+          return { 'error': true, 'key': 'userName', 'value': error }
         } else {
-          return { 'error': false, 'key':'userName', 'value': result }
+          return { 'error': false, 'key': 'userName', 'value': result }
         }
       }),
     dispatch(getUserImgByIds(userIds))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         if (error) {
-          return { 'error': true, 'key':'userImg', 'value': error }
+          return { 'error': true, 'key': 'userImg', 'value': error }
         } else {
-          return { 'error': false, 'key':'userImg', 'value': result }
+          return { 'error': false, 'key': 'userImg', 'value': result }
         }
       }),
     dispatch(getNameCardByIds(userIds))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         if (error) {
-          return { 'error': true, 'key':'userNameCard', 'value': error }
+          return { 'error': true, 'key': 'userNameCard', 'value': error }
         } else {
-          return { 'error': false, 'key':'userNameCard', 'value': result }
+          return { 'error': false, 'key': 'userNameCard', 'value': result }
         }
-      }),
-  ]);
+      })
+  ])
 }
 
 export const editProfileImg = (myImg) => {
@@ -427,7 +426,7 @@ export const editProfileImg = (myImg) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_setMyImage", "params": [myImg]},
+      json: { 'id': getUUID(false), 'method': 'me_setMyImage', 'params': [myImg] }
     }
   }
 }
@@ -437,7 +436,7 @@ export const getNameCard = (userId) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "account_getNameCard", "params": [userId]},
+      json: { 'id': getUUID(false), 'method': 'account_getNameCard', 'params': [userId] }
     }
   }
 }
@@ -447,7 +446,7 @@ export const getNameCardByIds = (userIds) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "account_getNameCardByIDs", "params": [userIds]},
+      json: { 'id': getUUID(false), 'method': 'account_getNameCardByIDs', 'params': [userIds] }
     }
   }
 }
@@ -457,7 +456,7 @@ export const setMyNameCard = (content) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_setMyNameCard", "params": [b64encode(content)]},
+      json: { 'id': getUUID(false), 'method': 'me_setMyNameCard', 'params': [b64encode(content)] }
     }
   }
 }
@@ -467,7 +466,7 @@ export const getMe = (entityID) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_getRawMe", "params": [entityID]},
+      json: { 'id': getUUID(false), 'method': 'me_getRawMe', 'params': [entityID] }
     }
   }
 }
@@ -481,7 +480,7 @@ export const getPttOpLogList = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getPttOplogList", "params": [logId, limit, LIST_ORDER_PREV]},
+      json: { 'id': getUUID(false), 'method': 'ptt_getPttOplogList', 'params': [logId, limit, LIST_ORDER_PREV] }
     }
   }
 }
@@ -491,7 +490,7 @@ export const getPttMasterOpLog = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_getMasterOplogList", "params": [logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'me_getMasterOplogList', 'params': [logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -501,7 +500,7 @@ export const getPttMeOpLog = (logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_getMeOplogList", "params": [logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'me_getMeOplogList', 'params': [logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -511,7 +510,7 @@ export const getPttOpLogSeen = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getPttOplogSeen", "params": []},
+      json: { 'id': getUUID(false), 'method': 'ptt_getPttOplogSeen', 'params': [] }
     }
   }
 }
@@ -521,7 +520,7 @@ export const markPttOpLogSeen = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_markPttOplogSeen", "params": []},
+      json: { 'id': getUUID(false), 'method': 'ptt_markPttOplogSeen', 'params': [] }
     }
   }
 }
@@ -530,12 +529,12 @@ export const markPttOpLogSeen = () => {
 /*  Frined List  */
 /*               */
 
-export const getFriendListByMsgCreateTS = (T, NT, limit, listOrder=LIST_ORDER_PREV) => {
+export const getFriendListByMsgCreateTS = (T, NT, limit, listOrder = LIST_ORDER_PREV) => {
   return {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getFriendListByMsgCreateTS", "params": [T, NT, limit, listOrder]},
+      json: { 'id': getUUID(false), 'method': 'friend_getFriendListByMsgCreateTS', 'params': [T, NT, limit, listOrder] }
     }
   }
 }
@@ -545,7 +544,7 @@ export const getFriendListSeen = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getFriendListSeen", "params": []},
+      json: { 'id': getUUID(false), 'method': 'friend_getFriendListSeen', 'params': [] }
     }
   }
 }
@@ -555,7 +554,7 @@ export const markFriendListSeen = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_markFriendListSeen", "params": []},
+      json: { 'id': getUUID(false), 'method': 'friend_markFriendListSeen', 'params': [] }
     }
   }
 }
@@ -565,7 +564,7 @@ export const getPeers = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getPeers", "params": []},
+      json: { 'id': getUUID(false), 'method': 'ptt_getPeers', 'params': [] }
     }
   }
 }
@@ -575,7 +574,7 @@ export const getContentPeers = (entityID) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getPeers", "params": [entityID]},
+      json: { 'id': getUUID(false), 'method': 'content_getPeers', 'params': [entityID] }
     }
   }
 }
@@ -585,7 +584,7 @@ export const getFriendPeers = (entityID) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getPeers", "params": [entityID]},
+      json: { 'id': getUUID(false), 'method': 'friend_getPeers', 'params': [entityID] }
     }
   }
 }
@@ -595,7 +594,7 @@ export const getContentBoardOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getBoardOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'content_getBoardOplogList', 'params': [boardId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -605,7 +604,7 @@ export const getContentOpkeyOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getOpKeyOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'content_getOpKeyOplogList', 'params': [boardId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -615,7 +614,7 @@ export const getContentMasterOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getMasterOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'content_getMasterOplogList', 'params': [boardId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -625,7 +624,7 @@ export const getContentMemberOpLog = (boardId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "content_getMemberOplogList", "params": [boardId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'content_getMemberOplogList', 'params': [boardId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -635,7 +634,7 @@ export const getFriendFriendOpLog = (entityId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getFriendOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'friend_getFriendOplogList', 'params': [entityId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -645,7 +644,7 @@ export const getFriendMasterOpLog = (entityId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getMasterOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'friend_getMasterOplogList', 'params': [entityId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -655,7 +654,7 @@ export const getFriendMemberOpLog = (entityId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getMemberOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'friend_getMemberOplogList', 'params': [entityId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -665,7 +664,7 @@ export const getFriendOpKeyOpLog = (entityId, logId, limit) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "friend_getOpKeyOplogList", "params": [entityId, logId, limit, LIST_ORDER_NEXT]},
+      json: { 'id': getUUID(false), 'method': 'friend_getOpKeyOplogList', 'params': [entityId, logId, limit, LIST_ORDER_NEXT] }
     }
   }
 }
@@ -675,7 +674,7 @@ export const getLastAnnounceP2PTS = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "ptt_getLastAnnounceP2PTS", "params": []},
+      json: { 'id': getUUID(false), 'method': 'ptt_getLastAnnounceP2PTS', 'params': [] }
     }
   }
 }
@@ -689,7 +688,7 @@ export const getMyNodes = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method":"me_getMyNodes", "params":[]},
+      json: { 'id': getUUID(false), 'method': 'me_getMyNodes', 'params': [] }
     }
   }
 }
@@ -699,7 +698,7 @@ export const showMyURL = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_showMeURL", "params": []},
+      json: { 'id': getUUID(false), 'method': 'me_showMeURL', 'params': [] }
     }
   }
 }
@@ -709,7 +708,7 @@ export const showURL = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_showURL", "params": []},
+      json: { 'id': getUUID(false), 'method': 'me_showURL', 'params': [] }
     }
   }
 }
@@ -719,7 +718,7 @@ export const showMyKey = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_showMyKey", "params": []},
+      json: { 'id': getUUID(false), 'method': 'me_showMyKey', 'params': [] }
     }
   }
 }
@@ -729,7 +728,7 @@ export const showMe = () => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_get", "params": []},
+      json: { 'id': getUUID(false), 'method': 'me_get', 'params': [] }
     }
   }
 }
@@ -739,7 +738,7 @@ export const joinMe = (nodeId, key) => {
     [api.CALL_API]: {
       endpoint: '/',
       method: 'post',
-      json: {"id": getUUID(false), "method": "me_joinMe", "params": [nodeId, key, false]},
+      json: { 'id': getUUID(false), 'method': 'me_joinMe', 'params': [nodeId, key, false] }
     }
   }
 }
@@ -753,7 +752,7 @@ export const uploadImg = (boardId, image) => {
     [api.CALL_API]: {
       endpoint: PTTAI_APP_ROOT + '/api/upload/' + boardId,
       method: 'post',
-      files: { 'file': image.file },
+      files: { 'file': image.file }
     }
   }
 }
@@ -763,7 +762,7 @@ export const uploadFile = (boardId, file) => {
     [api.CALL_API]: {
       endpoint: PTTAI_APP_ROOT + '/api/uploadfile/' + boardId,
       method: 'post',
-      files: { 'file': file.file },
+      files: { 'file': file.file }
     }
   }
 }
@@ -774,7 +773,7 @@ export const downloadFile = (boardId, mediaId) => {
       endpoint: PTTAI_APP_ROOT + '/api/file/' + boardId + '/' + mediaId,
       method: 'get',
       files: { 'gzip': true },
-      gzip: true,
+      gzip: true
     }
   }
 }
@@ -786,7 +785,7 @@ export const downloadFile = (boardId, mediaId) => {
 export const deserialize = (data) => {
   return Object.keys(data).reduce((r, eachIdx, i) => {
     let v = data[eachIdx]
-    if(typeof data[eachIdx] === "string" && !eachIdx.endsWith('ID')) {
+    if (typeof data[eachIdx] === 'string' && !eachIdx.endsWith('ID')) {
       v = b64decode(data[eachIdx])
     }
     r[eachIdx] = v
@@ -797,7 +796,7 @@ export const deserialize = (data) => {
 export const serialize = (data) => {
   return Object.keys(data).reduce((r, eachIdx, i) => {
     let v = data[eachIdx]
-    if(typeof data[eachIdx] === "string" && !eachIdx.endsWith('ID')) {
+    if (typeof data[eachIdx] === 'string' && !eachIdx.endsWith('ID')) {
       v = b64encode(data[eachIdx])
     }
     r[eachIdx] = v

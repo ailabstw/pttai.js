@@ -1,6 +1,6 @@
 export const setup = () => {
   if (!('Notification' in window)) {
-    console.log('This browser does not support notification');
+    console.log('This browser does not support notification')
     return Promise.reject()
   }
 
@@ -17,7 +17,6 @@ export const setup = () => {
 }
 
 export const show = ({ title, body, icon }) => {
-
   if (!title) {
     return console.error(`TypeError: Wrong format. Param should be an object: {
         title: <String>,
@@ -33,6 +32,5 @@ export const show = ({ title, body, icon }) => {
     return setup().then(createNoti)
   }
 
-  return createNoti();
+  return createNoti()
 }
-

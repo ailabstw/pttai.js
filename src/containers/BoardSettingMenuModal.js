@@ -1,35 +1,35 @@
 import React, { PureComponent } from 'react'
-import { connect }              from 'react-redux'
-import { bindActionCreators }   from 'redux'
-import { FormattedMessage }     from 'react-intl'
-import Modal                    from 'react-modal'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { FormattedMessage } from 'react-intl'
+import Modal from 'react-modal'
 
-import AlertComponent                 from '../components/AlertComponent'
+import AlertComponent from '../components/AlertComponent'
 
-import * as doBoardSettingMenuModal   from '../reducers/BoardSettingMenuModal'
-import * as modalConstants            from '../constants/ModalConstants'
-import * as constants                 from '../constants/Constants'
+import * as doBoardSettingMenuModal from '../reducers/BoardSettingMenuModal'
+import * as modalConstants from '../constants/ModalConstants'
+import * as constants from '../constants/Constants'
 
 import styles from './SettingMenuModal.css'
 
 class BoardSettingMenuModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
   }
 
-  render() {
-    const { modalInput, onModalClose, onModalSwitch, modal: { currentModal }} = this.props
+  render () {
+    const { modalInput, onModalClose, onModalSwitch, modal: { currentModal } } = this.props
     const { showAlert, alertData } = this.state
 
-    let onSwitchAndClose = function(modal) {
+    let onSwitchAndClose = function (modal) {
       onModalSwitch(modal, modalInput)
     }
 
@@ -40,14 +40,14 @@ class BoardSettingMenuModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message1"
-              defaultMessage="Are you sure you want to delete?"
+              id='alert.message1'
+              defaultMessage='Are you sure you want to delete?'
             />),
           onConfirm: () => {
             modalInput.onDeleteBoard()
-            that.setState({showAlert: false})
+            that.setState({ showAlert: false })
           },
-          onClose: () => that.setState({showAlert: false}),
+          onClose: () => that.setState({ showAlert: false })
         }
       })
     }
@@ -59,14 +59,14 @@ class BoardSettingMenuModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message35"
-              defaultMessage="Are you sure you want to leave the Group?"
+              id='alert.message35'
+              defaultMessage='Are you sure you want to leave the Group?'
             />),
           onConfirm: () => {
             modalInput.onLeaveBoard()
-            that.setState({showAlert: false})
+            that.setState({ showAlert: false })
           },
-          onClose: () => that.setState({showAlert: false}),
+          onClose: () => that.setState({ showAlert: false })
         }
       })
     }
@@ -78,54 +78,54 @@ class BoardSettingMenuModal extends PureComponent {
           style={modalConstants.settingMenuModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
-          contentLabel="Setting Menu Modal">
+          contentLabel='Setting Menu Modal'>
           <div className={styles['root']}>
             {
               modalInput.isCreator ? (
                 <div className={styles['action-section']}>
                   <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.INVITE_TO_BOARD_MODAL)}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu0"
-                      defaultMessage="Invite"
+                      id='board-setting-menu-modal.menu0'
+                      defaultMessage='Invite'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.MANAGE_BOARD_MEMBER_MODAL)}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu1"
-                      defaultMessage="Members"
+                      id='board-setting-menu-modal.menu1'
+                      defaultMessage='Members'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={() => onSwitchAndClose(constants.MANAGE_BOARD_MODAL)}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu2"
-                      defaultMessage="Edit Name"
+                      id='board-setting-menu-modal.menu2'
+                      defaultMessage='Edit Name'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={onDeleteBoard}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu3"
-                      defaultMessage="Delete Group"
+                      id='board-setting-menu-modal.menu3'
+                      defaultMessage='Delete Group'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={onModalClose}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu5"
-                      defaultMessage="Cancel"
+                      id='board-setting-menu-modal.menu5'
+                      defaultMessage='Cancel'
                     />
                   </button>
                 </div>
-              ):(
+              ) : (
                 <div className={styles['action-section']}>
                   <button className={styles['menu-button']} onClick={onLeaveBoard}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu4"
-                      defaultMessage="Leave Board"
+                      id='board-setting-menu-modal.menu4'
+                      defaultMessage='Leave Board'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={onModalClose}>
                     <FormattedMessage
-                      id="board-setting-menu-modal.menu5"
-                      defaultMessage="Cancel"
+                      id='board-setting-menu-modal.menu5'
+                      defaultMessage='Cancel'
                     />
                   </button>
                 </div>
@@ -133,19 +133,19 @@ class BoardSettingMenuModal extends PureComponent {
             }
           </div>
         </Modal>
-        <AlertComponent show={showAlert} alertData={alertData}/>
+        <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doBoardSettingMenuModal: bindActionCreators(doBoardSettingMenuModal, dispatch),
+    doBoardSettingMenuModal: bindActionCreators(doBoardSettingMenuModal, dispatch)
   }
 })
 

@@ -1,12 +1,12 @@
 import React,
-       { PureComponent }    from 'react'
-import { Link }             from 'react-router-dom'
+{ PureComponent } from 'react'
+import { Link } from 'react-router-dom'
 
-import styles               from './ArticleBar.css'
+import styles from './ArticleBar.css'
 
 class ArticleBar extends PureComponent {
-  render() {
-    const { boardInfo, articleInfo, userId, openManageArticleModal} = this.props
+  render () {
+    const { boardInfo, articleInfo, userId, openManageArticleModal } = this.props
     const isCreator = userId === articleInfo.CreatorID
 
     return (
@@ -15,7 +15,7 @@ class ArticleBar extends PureComponent {
 
           <div className={styles['prev-button']}>
             <Link to={`/board/${boardInfo.ID}`}>
-              <div className={styles['prev-button-icon']}></div>
+              <div className={styles['prev-button-icon']} />
             </Link>
           </div>
 
@@ -26,8 +26,8 @@ class ArticleBar extends PureComponent {
           <div className={styles['menu-button']}>
             {
               isCreator ? (
-                <div className={styles['menu-button-icon']} onClick={openManageArticleModal}></div>
-              ): null
+                <div className={styles['menu-button-icon']} onClick={openManageArticleModal} />
+              ) : null
             }
           </div>
         </div>

@@ -1,13 +1,13 @@
 import * as api from '../middleware/api'
 import { toCamelCase, toUnderscore } from '../utils/utils'
 
-export const getDummy = (query=null) => {
-  if(query === null) query = {}
+export const getDummy = (query = null) => {
+  if (query === null) query = {}
 
   return {
     [api.CALL_API]: {
       endpoint: '/dummy',
-      query: {},
+      query: {}
     }
   }
 }
@@ -17,7 +17,7 @@ export const postDummy = (data) => {
     [api.CALL_API]: {
       endpoint: '/dummy',
       method: 'post',
-      params: data,
+      params: data
     }
   }
 }

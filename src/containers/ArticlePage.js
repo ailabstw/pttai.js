@@ -1,48 +1,48 @@
-import React, { PureComponent }   from 'react'
-import { connect }                from 'react-redux'
-import { bindActionCreators }     from 'redux'
-import Immutable                  from 'immutable'
-import $                          from 'jquery'
-//import { PTTAI_URL_BASE }         from 'config'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Immutable from 'immutable'
+import $ from 'jquery'
+// import { PTTAI_URL_BASE }         from 'config'
 
-import Empty                      from '../components/Empty'
-import ArticleComponent           from '../components/ArticleComponent'
-import CommentReplyListComponent  from '../components/CommentReplyListComponent'
-import ArticleBar                 from '../components/ArticleBar'
+import Empty from '../components/Empty'
+import ArticleComponent from '../components/ArticleComponent'
+import CommentReplyListComponent from '../components/CommentReplyListComponent'
+import ArticleBar from '../components/ArticleBar'
 
-import { getRoot }            from '../utils/utils'
+import { getRoot } from '../utils/utils'
 import { epoch2FullDate,
-         epoch2ReadFormat }   from '../utils/utilDatetime'
-import googleAnalytics        from '../utils/googleAnalytics'
+  epoch2ReadFormat } from '../utils/utilDatetime'
+import googleAnalytics from '../utils/googleAnalytics'
 
-import * as doArticlePage     from '../reducers/ArticlePage'
-import * as doModalContainer  from '../reducers/ModalContainer'
-import * as constants         from '../constants/Constants'
+import * as doArticlePage from '../reducers/ArticlePage'
+import * as doModalContainer from '../reducers/ModalContainer'
+import * as constants from '../constants/Constants'
 
-import styles  from './ArticlePage.css'
+import styles from './ArticlePage.css'
 
-const iframeClass     = 'iframe.' + constants.IFRAME_CLASS_NAME
+const iframeClass = 'iframe.' + constants.IFRAME_CLASS_NAME
 const attachmentClass = '.' + constants.FILE_CLASS_NAME
 
 class ArticlePage extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.refreshPageInterval = null
     this.state = {
       pullTimer: null,
-      attachmentTimer:null,
-      count:0,
-    };
-    this.pullContent        = this.pullContent.bind(this);
-    this.attachmentLoaded   = this.attachmentLoaded.bind(this);
-    this.handleScroll       = this.handleScroll.bind(this);
-    this.needFetchMore      = this.needFetchMore.bind(this);
-    this.downloadAttachment = this.downloadAttachment.bind(this);
-    this.getLatestComment   = this.getLatestComment.bind(this);
+      attachmentTimer: null,
+      count: 0
+    }
+    this.pullContent = this.pullContent.bind(this)
+    this.attachmentLoaded = this.attachmentLoaded.bind(this)
+    this.handleScroll = this.handleScroll.bind(this)
+    this.needFetchMore = this.needFetchMore.bind(this)
+    this.downloadAttachment = this.downloadAttachment.bind(this)
+    this.getLatestComment = this.getLatestComment.bind(this)
   }
 
-  componentWillMount() {
-    const {actions: {doArticlePage}, match: {params}, myId} = this.props
+  componentWillMount () {
+    const { actions: { doArticlePage }, match: { params }, myId } = this.props
 
     doArticlePage.initParams(myId, params)
     doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
@@ -50,17 +50,17 @@ class ArticlePage extends PureComponent {
     doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
     doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
 
-    this.refreshPageInterval = setInterval(this.getLatestComment, constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(this.getLatestComment, constants.REFRESH_INTERVAL)
   }
 
-  getLatestComment() {
-    const { myId, /*articlePage,*/ actions: {doArticlePage}, match: {params} } = this.props
+  getLatestComment () {
+    const { myId, /* articlePage, */ actions: { doArticlePage }, match: { params } } = this.props
 
-    //let me = articlePage.get(myId, Immutable.Map())
+    // let me = articlePage.get(myId, Immutable.Map())
 
-    //let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
-    //let commentContentsList = commentContents.commentContentsList || []
-    //let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
+    // let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
+    // let commentContentsList = commentContents.commentContentsList || []
+    // let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
 
     doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
     doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
@@ -69,39 +69,39 @@ class ArticlePage extends PureComponent {
     doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
   }
 
-  downloadAttachment(e, iframeParams) {
-    const { actions: {doArticlePage}, match: {params}, myId} = this.props
+  downloadAttachment (e, iframeParams) {
+    const { actions: { doArticlePage }, match: { params }, myId } = this.props
 
     function onDownload (data) {
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(new Blob([data]));
-      link.setAttribute('download', iframeParams.fileName);
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(new Blob([data]))
+      link.setAttribute('download', iframeParams.fileName)
 
-      document.body.appendChild(link);
-      link.click();
+      document.body.appendChild(link)
+      link.click()
     }
 
     doArticlePage.downloadFile(myId, decodeURIComponent(params.boardId), iframeParams.fileId, onDownload)
   }
 
-  componentDidMount() {
-    const { actions: {doArticlePage}, match: {params}, myId } = this.props
-    const { pullTimer, attachmentTimer} = this.state
+  componentDidMount () {
+    const { actions: { doArticlePage }, match: { params }, myId } = this.props
+    const { pullTimer, attachmentTimer } = this.state
 
-    clearInterval(pullTimer);
-    clearInterval(attachmentTimer);
+    clearInterval(pullTimer)
+    clearInterval(attachmentTimer)
 
     this.setState({
-      pullTimer:       setInterval(this.pullContent, constants.CONTENT_REFETCH_INTERVAL),
+      pullTimer: setInterval(this.pullContent, constants.CONTENT_REFETCH_INTERVAL),
       attachmentTimer: setInterval(this.attachmentLoaded, constants.ATTACHMENT_LOAD_INTERVAL)
     })
 
-    doArticlePage.markArticle(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId));
+    doArticlePage.markArticle(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
     googleAnalytics.firePageView()
   }
 
-  componentWillUnmount() {
-    const { actions: {doArticlePage}, myId} = this.props
+  componentWillUnmount () {
+    const { actions: { doArticlePage }, myId } = this.props
     const { pullTimer, attachmentTimer } = this.state
 
     doArticlePage.clearData(myId)
@@ -110,8 +110,8 @@ class ArticlePage extends PureComponent {
     clearInterval(this.refreshPageInterval)
   }
 
-  pullContent() {
-    const { myId, articlePage, actions: {doArticlePage}, match: {params}} = this.props
+  pullContent () {
+    const { myId, articlePage, actions: { doArticlePage }, match: { params } } = this.props
     const { count, pullTimer } = this.state
 
     let me = articlePage.get(myId, Immutable.Map())
@@ -121,44 +121,43 @@ class ArticlePage extends PureComponent {
     doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
 
     if (articleContentsList.length > 0 || count === constants.ARTICLE_PULL_COUNT_DOWN) {
-      this.setState({ count:0 })
+      this.setState({ count: 0 })
       clearInterval(pullTimer)
     } else {
-      this.setState({ count:count + 1 })
+      this.setState({ count: count + 1 })
     }
   }
 
-  attachmentLoaded() {
-
+  attachmentLoaded () {
     const { attachmentTimer } = this.state
 
     let that = this
     let allLoaded = Array.from($(iframeClass)).reduce((acc, current, idx) => {
-       return acc && $($(current).contents()[0], window).find(attachmentClass).length
+      return acc && $($(current).contents()[0], window).find(attachmentClass).length
     }, true)
 
     if (allLoaded && Array.from($(iframeClass)).length) {
       Array.from($(iframeClass)).forEach((ele) => {
         let iframeParams = {
-          fileId:   $(ele).attr("data-id"),
-          fileName: $(ele).attr("data-name"),
-          fileSize: $(ele).attr("data-size"),
-          fileType: $(ele).attr("data-type")
+          fileId: $(ele).attr('data-id'),
+          fileName: $(ele).attr('data-name'),
+          fileSize: $(ele).attr('data-size'),
+          fileType: $(ele).attr('data-type')
         }
         $($(ele).contents()[0], window).find(attachmentClass).bind('click', (e) => that.downloadAttachment(e, iframeParams))
       })
-      clearInterval(attachmentTimer);
+      clearInterval(attachmentTimer)
     }
   }
 
-  needFetchMore() {
+  needFetchMore () {
     const { myId, articlePage } = this.props
     const { scrollTop, clientHeight, scrollHeight } = this.scroller
 
     let me = articlePage.get(myId, Immutable.Map())
 
-    let isCommentLoading         = me.get('isCommentLoading', false)
-    let allCommentsLoaded        = me.get('allCommentsLoaded', false)
+    let isCommentLoading = me.get('isCommentLoading', false)
+    let allCommentsLoaded = me.get('allCommentsLoaded', false)
 
     return (
       this.scroller &&
@@ -168,72 +167,70 @@ class ArticlePage extends PureComponent {
     )
   }
 
-  handleScroll() {
+  handleScroll () {
     if (this.needFetchMore()) {
-      const { myId, articlePage, actions: {doArticlePage} } = this.props
+      const { myId, articlePage, actions: { doArticlePage } } = this.props
 
-      let me                    = articlePage.get(myId, Immutable.Map())
-      let boardId               = me.get('boardId', '')
-      let articleId             = me.get('articleId', '')
-      let commentContents       = me.get('commentContents', Immutable.Map()).toJS()
-      let commentContentsList   = commentContents.commentContentsList || []
-      let startContentId        = commentContentsList.length > 0 ? commentContentsList[commentContentsList.length-1].subContentId : constants.EMPTY_ID
+      let me = articlePage.get(myId, Immutable.Map())
+      let boardId = me.get('boardId', '')
+      let articleId = me.get('articleId', '')
+      let commentContents = me.get('commentContents', Immutable.Map()).toJS()
+      let commentContentsList = commentContents.commentContentsList || []
+      let startContentId = commentContentsList.length > 0 ? commentContentsList[commentContentsList.length - 1].subContentId : constants.EMPTY_ID
 
       doArticlePage.getMoreComments(myId, boardId, articleId, startContentId, constants.NUM_CONTENT_PER_REQ)
     }
   }
 
-  componentDidUpdate(prevProps) {
-
+  componentDidUpdate (prevProps) {
     const { myId,
-            location,
-            match: {params},
-            actions: {doArticlePage}}                     = this.props
-    const { pullTimer, attachmentTimer }  = this.state
+      location,
+      match: { params },
+      actions: { doArticlePage } } = this.props
+    const { pullTimer, attachmentTimer } = this.state
 
     if (prevProps.location.pathname !== location.pathname) {
-
       doArticlePage.clearData(myId)
       doArticlePage.initParams(myId, params)
-      doArticlePage.getBoardInfo(myId,    decodeURIComponent(params.boardId))
-      doArticlePage.getArticleInfo(myId,  decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
+      doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
+      doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
       doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
       doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
-      doArticlePage.markArticle(myId,     decodeURIComponent(params.boardId), decodeURIComponent(params.articleId));
+      doArticlePage.markArticle(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
 
-      clearInterval(pullTimer);
-      clearInterval(attachmentTimer);
-      clearInterval(this.refreshPageInterval);
+      clearInterval(pullTimer)
+      clearInterval(attachmentTimer)
+      clearInterval(this.refreshPageInterval)
 
       this.setState({
-        pullTimer:       setInterval(this.pullContent, constants.CONTENT_REFETCH_INTERVAL),
-        attachmentTimer: setInterval(this.attachmentLoaded, constants.ATTACHMENT_LOAD_INTERVAL),
+        pullTimer: setInterval(this.pullContent, constants.CONTENT_REFETCH_INTERVAL),
+        attachmentTimer: setInterval(this.attachmentLoaded, constants.ATTACHMENT_LOAD_INTERVAL)
       })
 
-      this.refreshPageInterval = setInterval(this.getLatestComment, constants.REFRESH_INTERVAL);
+      this.refreshPageInterval = setInterval(this.getLatestComment, constants.REFRESH_INTERVAL)
     }
   }
 
-  render() {
-    const { myId, articlePage, actions: {doArticlePage, doModalContainer}} = this.props
+  render () {
+    const { myId, articlePage, actions: { doArticlePage, doModalContainer } } = this.props
     const { count } = this.state
 
-    if(!myId) return (<Empty />)
+    if (!myId) return (<Empty />)
 
-    let userId   = getRoot(this.props).getIn(['userInfo','userId'])
-    let userName = getRoot(this.props).getIn(['userInfo','userName'])
-    let userImg  = getRoot(this.props).getIn(['userInfo','userImg'])
+    let userId = getRoot(this.props).getIn(['userInfo', 'userId'])
+    let userName = getRoot(this.props).getIn(['userInfo', 'userName'])
+    let userImg = getRoot(this.props).getIn(['userInfo', 'userImg'])
 
     let me = articlePage.get(myId, Immutable.Map())
 
-    let boardId           = me.get('boardId', '')
-    let articleId         = me.get('articleId', '')
-    let isCommentLoading  = me.get('isCommentLoading', false)
+    let boardId = me.get('boardId', '')
+    let articleId = me.get('articleId', '')
+    let isCommentLoading = me.get('isCommentLoading', false)
 
-    let boardInfo           = me.get('boardInfo', Immutable.Map()).toJS()
-    let articleInfo         = me.get('articleInfo', Immutable.Map()).toJS()
+    let boardInfo = me.get('boardInfo', Immutable.Map()).toJS()
+    let articleInfo = me.get('articleInfo', Immutable.Map()).toJS()
     let articleContentsList = me.get('articleContentsList', Immutable.List()).toJS()
-    let commentContents     = me.get('commentContents', Immutable.Map()).toJS()
+    let commentContents = me.get('commentContents', Immutable.Map()).toJS()
     let commentContentsList = commentContents.commentContentsList || []
 
     let deleteArticle = () => {
@@ -245,8 +242,8 @@ class ArticlePage extends PureComponent {
 
     let openManageArticleModal = (modalData) => {
       doModalContainer.setInput({
-        isCreator:  articleInfo.CreatorID === userId,
-        articleId:  articleInfo.ID,
+        isCreator: articleInfo.CreatorID === userId,
+        articleId: articleInfo.ID,
         onEditArticle: openEditArticleModal,
         onDeleteArticle: deleteArticle
       })
@@ -256,17 +253,17 @@ class ArticlePage extends PureComponent {
 
     let openEditArticleSubmit = (title, reducedArticleArray, attachments) => {
       doArticlePage.createArticleWithAttachments(myId, userName, userImg, boardId, articleId, reducedArticleArray, attachments)
-      doArticlePage.markArticle(myId, boardId, articleId);
+      doArticlePage.markArticle(myId, boardId, articleId)
 
       doModalContainer.closeModal()
     }
 
     const openEditArticleModal = () => {
       doModalContainer.setInput({
-        boardId:              boardInfo.ID,
-        articleTitle:         articleInfo.Title,
-        articleContentsList:  articleContentsList,
-        onDeleteArticle:      deleteArticle,
+        boardId: boardInfo.ID,
+        articleTitle: articleInfo.Title,
+        articleContentsList: articleContentsList,
+        onDeleteArticle: deleteArticle
       })
       doModalContainer.setSubmit(openEditArticleSubmit)
       doModalContainer.openModal(constants.EDIT_ARTICLE_MODAL)
@@ -281,15 +278,15 @@ class ArticlePage extends PureComponent {
     }
 
     let onCommentAdded = (comment) => {
-      let mediaIds = ""
+      let mediaIds = ''
       doArticlePage.addComment(myId, boardId, articleId, comment, userName, userImg, userId, mediaIds)
-      doArticlePage.markArticle(myId, boardId, articleId);
+      doArticlePage.markArticle(myId, boardId, articleId)
 
-      googleAnalytics.fireEventOnProb('Comment','CreateCommentSuccess', 0.1)
+      googleAnalytics.fireEventOnProb('Comment', 'CreateCommentSuccess', 0.1)
     }
 
     const onDeleteComment = (commentId) => {
-      let mediaIds = ""
+      let mediaIds = ''
       doArticlePage.deleteComment(myId, boardId, articleId, commentId, mediaIds)
     }
 
@@ -302,7 +299,7 @@ class ArticlePage extends PureComponent {
     }
 
     return (
-      <div className={styles['root']} onScroll={ this.handleScroll } ref={(scroller) => { this.scroller = scroller; }}>
+      <div className={styles['root']} onScroll={this.handleScroll} ref={(scroller) => { this.scroller = scroller }}>
         <ArticleBar
           userId={userId}
           boardInfo={boardInfo}
@@ -310,11 +307,11 @@ class ArticlePage extends PureComponent {
           openManageArticleModal={openManageArticleModal} />
         {
           $.isEmptyObject(articleInfo) ? (
-            <div className={styles['time']}></div>
-          ):(
+            <div className={styles['time']} />
+          ) : (
             <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['time']}>
-            {epoch2ReadFormat(articleInfo.CreateTS.T)}
-          </div>
+              {epoch2ReadFormat(articleInfo.CreateTS.T)}
+            </div>
           )
         }
         <ArticleComponent
@@ -337,13 +334,13 @@ class ArticlePage extends PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
     doArticlePage: bindActionCreators(doArticlePage, dispatch),
-    doModalContainer: bindActionCreators(doModalContainer, dispatch),
+    doModalContainer: bindActionCreators(doModalContainer, dispatch)
   }
 })
 

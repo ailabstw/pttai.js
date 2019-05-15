@@ -21,9 +21,9 @@ const INCREASE_COUNT = myDuck.defineType('INCREASE_COUNT')
 // init
 export const init = (myId, query) => {
   let simpleId = getUUID()
-  
+
   return (dispatch, getState) => {
-    dispatch(utils.init({myId, myClass, myDuck, count: 0, ...query}))
+    dispatch(utils.init({ myId, myClass, myDuck, count: 0, ...query }))
     dispatch(utils.setRoot(myId, myClass, myDuck))
 
     dispatch(doSimple.init(simpleId, myId, myClass, myDuck))
@@ -34,11 +34,11 @@ export const init = (myId, query) => {
 export const increaseCount = (myId) => ({
   myId,
   myClass,
-  type: INCREASE_COUNT,
+  type: INCREASE_COUNT
 })
 
 const _increaseCount = (state, action) => {
-  const {myId} = action
+  const { myId } = action
   let count = state.getIn([myId, 'count'], 0)
   return state.setIn([myId, 'count'], count + 1)
 }
@@ -48,18 +48,18 @@ export const increaseCount2 = (myId) => {
   return (dispatch, getState) => {
     let stateClass = toCamelCase(myClass)
     let state = getState()[stateClass]
-    if(!state) return
+    if (!state) return
     let me = state.get(myId)
-    if(!me) return
+    if (!me) return
     let count = me.get('count', 0) + 1
-    dispatch(utils.setData(myId, myClass, myDuck, {count}))
+    dispatch(utils.setData(myId, myClass, myDuck, { count }))
   }
 }
 
 // add simple
 export const addSimple = (myId) => {
   let simpleId = getUUID()
-  
+
   return (dispatch, getState) => {
     dispatch(doSimple.init(simpleId, myId, myClass, myDuck))
   }
@@ -80,7 +80,7 @@ const reducer = myDuck.createReducer({
   [REMOVE_CHILDS]: utils.reduceRemoveChilds,
   [REMOVE]: utils.reduceRemove,
   [SET_DATA]: utils.reduceSetData,
-  [INCREASE_COUNT]: _increaseCount,
+  [INCREASE_COUNT]: _increaseCount
 }, Immutable.Map())
 
 export default reducer

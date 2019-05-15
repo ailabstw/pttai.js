@@ -14,7 +14,7 @@ const FAILURE = myDuck.defineType('FAILURE')
 
 export const API_TYPES = [REQUEST, SUCCESS, FAILURE]
 
-const callApi = (endpoint, { query, method = 'get', params, files, json }, isWithCredentials=true) => {
+const callApi = (endpoint, { query, method = 'get', params, files, json }, isWithCredentials = true) => {
   if (endpoint.indexOf(API_ROOT) === -1) {
     endpoint = API_ROOT + endpoint
   }
@@ -72,7 +72,7 @@ const callApi = (endpoint, { query, method = 'get', params, files, json }, isWit
 const _stringifyParams = (params) => {
   return Object.keys(params).reduce((r, x, i) => {
     let val = params[x]
-    if(typeof val === 'object') {
+    if (typeof val === 'object') {
       val = JSON.stringify(val)
     }
     r[x] = val

@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import { fromJS } from 'immutable'
 import { getUUID, toCamelCase } from '../utils/utils'
@@ -21,7 +21,7 @@ const SET_DATA = myDuck.defineType('SET_DATA')
 // init
 export const init = (myId, query) => {
   return (dispatch, getState) => {
-    dispatch(utils.init({myId, myClass, myDuck, ...query}))
+    dispatch(utils.init({ myId, myClass, myDuck, ...query }))
     dispatch(utils.setRoot(myId, myClass, appDuck))
   }
 }
@@ -33,7 +33,7 @@ const reducer = myDuck.createReducer({
   [SET_ROOT]: utils.reduceSetRoot,
   [REMOVE_CHILDS]: utils.reduceRemoveChilds,
   [REMOVE]: utils.reduceRemove,
-  [SET_DATA]: utils.reduceSetData,
+  [SET_DATA]: utils.reduceSetData
 }, Immutable.Map())
 
 export default reducer
