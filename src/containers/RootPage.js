@@ -1,76 +1,75 @@
-import React, { PureComponent }   from 'react'
-import { connect }                from 'react-redux'
-import { withRouter }             from 'react-router-dom'
-import { bindActionCreators }     from 'redux'
-import Immutable                  from 'immutable'
-import { ToastContainer, toast }  from 'react-toastify'
-import { injectIntl }       from 'react-intl'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { bindActionCreators } from 'redux'
+import Immutable from 'immutable'
+import { ToastContainer, toast } from 'react-toastify'
+import { injectIntl } from 'react-intl'
 
-import Empty          from '../components/Empty'
-import Navigator      from '../components/Navigator'
+import Empty from '../components/Empty'
+import Navigator from '../components/Navigator'
 
-import HubPage        from '../containers/HubPage'
-import BoardPage      from '../containers/BoardPage'
-import ArticlePage    from '../containers/ArticlePage'
-import ProfilePage    from '../containers/ProfilePage'
+import HubPage from '../containers/HubPage'
+import BoardPage from '../containers/BoardPage'
+import ArticlePage from '../containers/ArticlePage'
+import ProfilePage from '../containers/ProfilePage'
 import FriendListPage from '../containers/FriendListPage'
 import FriendChatPage from '../containers/FriendChatPage'
 import ModalContainer from '../containers/ModalContainer'
 
-import * as doRootPage        from '../reducers/RootPage'
-import * as doModalContainer  from '../reducers/ModalContainer'
+import * as doRootPage from '../reducers/RootPage'
+import * as doModalContainer from '../reducers/ModalContainer'
 
-import * as constants         from '../constants/Constants'
-import {  getUUID,
-          getRootId,
-          getRoot,
-          getChildId,
-          isUnRead,
-          decodeURIObj,
-          decodeBase64,
-          parseQueryString  } from '../utils/utils'
+import * as constants from '../constants/Constants'
+import { getUUID,
+  getRootId,
+  getRoot,
+  getChildId,
+  isUnRead,
+  decodeURIObj,
+  decodeBase64,
+  parseQueryString } from '../utils/utils'
 
 import { show as showNotification } from '../utils/notification'
 import googleAnalytics from '../utils/googleAnalytics'
 
 import { emptyTimeStamp } from '../reducers/utils'
 
-import styles from './RootPage.css'
+import styles from './RootPage.module.css'
 import 'react-toastify/dist/ReactToastify.css'
 
 class RootPage extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.toastId = null
-    this.browserTabInterval   = null
-    this.refreshPageInterval  = null
+    this.browserTabInterval = null
+    this.refreshPageInterval = null
 
     this.pageLastSeenTS = emptyTimeStamp()
     this.sentNotifications = []
 
-    this.resetTitle              = this.resetTitle.bind(this)
-    this.refreshPage             = this.refreshPage.bind(this)
-    this.refreshBrowserTabTitle  = this.refreshBrowserTabTitle.bind(this)
+    this.resetTitle = this.resetTitle.bind(this)
+    this.refreshPage = this.refreshPage.bind(this)
+    this.refreshBrowserTabTitle = this.refreshBrowserTabTitle.bind(this)
     this.checkMarkFriendListSeen = this.checkMarkFriendListSeen.bind(this)
-    this.checkMarkHubSeen        = this.checkMarkHubSeen.bind(this)
+    this.checkMarkHubSeen = this.checkMarkHubSeen.bind(this)
 
     this.handleBrowserTabNotification = this.handleBrowserTabNotification.bind(this)
-    this.handleBrowserToast           = this.handleBrowserToast.bind(this)
+    this.handleBrowserToast = this.handleBrowserToast.bind(this)
   }
 
-  componentWillMount() {
-    const { location: {search}, match:{params}, actions: {doRootPage, doModalContainer} } = this.props
+  componentWillMount () {
+    const { location: { search }, match: { params }, actions: { doRootPage, doModalContainer } } = this.props
     const query = parseQueryString(search)
 
     let myId = getUUID()
 
     let openFirstPopupModal = (userId, keyInfo) => {
-
-      let deviceJoinKeyInfo  = keyInfo.find(({key}) => key === 'deviceJoinKey').value
-      let userPrivateKeyInfo = keyInfo.find(({key}) => key === 'userPrivateKey').value
+      let deviceJoinKeyInfo = keyInfo.find(({ key }) => key === 'deviceJoinKey').value
+      let userPrivateKeyInfo = keyInfo.find(({ key }) => key === 'userPrivateKey').value
 
       doModalContainer.setInput({
-        deviceJoinKeyInfo:  deviceJoinKeyInfo,
+        deviceJoinKeyInfo: deviceJoinKeyInfo,
         userPrivateKeyInfo: userPrivateKeyInfo,
         userId: userId,
         // TODO: comment this because multidevice function is currenly disable.
@@ -95,16 +94,15 @@ class RootPage extends PureComponent {
         signUp: (name) => {
           doRootPage.editName(myId, name)
           doModalContainer.closeModal()
-        },
+        }
       })
 
       doModalContainer.openModal(constants.FIRST_POPUP_MODAL)
     }
 
     let openPrivacySettingModal = (userId) => {
-
       doModalContainer.setInput({
-        userId: userId,
+        userId: userId
       })
 
       doModalContainer.openModal(constants.PRIVACY_SETTING_MODAL)
@@ -113,8 +111,8 @@ class RootPage extends PureComponent {
     doRootPage.init(myId, query, decodeURIObj(params))
 
     // get user name and user image
-    doRootPage.getUserInfo(myId).then( res => {
-      if (res.type === 'no_user_name' ) openFirstPopupModal(res.userId, res.value)
+    doRootPage.getUserInfo(myId).then(res => {
+      if (res.type === 'no_user_name') openFirstPopupModal(res.userId, res.value)
       else if (!googleAnalytics.isConfigured()) openPrivacySettingModal(res.userId)
     })
 
@@ -136,59 +134,57 @@ class RootPage extends PureComponent {
     // get friend list last seen
     doRootPage.getFriendListSeen(myId)
 
-    this.refreshPageInterval = setInterval(() => this.refreshPage(myId), constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(() => this.refreshPage(myId), constants.REFRESH_INTERVAL)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.refreshPageInterval)
   }
 
-  refreshBrowserTabTitle(sender) {
+  refreshBrowserTabTitle (sender) {
     const { intl } = this.props
 
-    let notifyOneTitle = intl.formatMessage({id: 'site-title.notify1'}, {SENDER: sender})
-    let notifyTwoTitle = intl.formatMessage({id: 'site-title.notify2'})
+    let notifyOneTitle = intl.formatMessage({ id: 'site-title.notify1' }, { SENDER: sender })
+    let notifyTwoTitle = intl.formatMessage({ id: 'site-title.notify2' })
 
     if (document.title === notifyOneTitle) {
-      document.title = notifyTwoTitle;
+      document.title = notifyTwoTitle
     } else {
-      document.title = notifyOneTitle;
+      document.title = notifyOneTitle
     }
   }
 
-  refreshPage(myId) {
-    const { actions: {doRootPage} } = this.props
+  refreshPage (myId) {
+    const { actions: { doRootPage } } = this.props
 
     let onConnectionLost = (message) => {
       if (!toast.isActive(this.toastId)) {
-        this.toastId = toast.error(message, { autoClose: 3000 });
+        this.toastId = toast.error(message, { autoClose: 3000 })
       }
     }
 
     if (this.props.match.url === (`/hub`)) {
       doRootPage.markLogSeen(myId)
-    }
-    else {
+    } else {
       doRootPage.getLogLastSeen(myId)
     }
 
     if (this.props.match.url === `/friend`) { // only index send
       doRootPage.markFriendListSeen(myId)
-    }
-    else {
+    } else {
       doRootPage.getFriendListSeen(myId)
     }
 
     doRootPage.fetchLatestMessage(myId, 1)
     doRootPage.getLatestArticles(myId, constants.NUM_NEWS_PER_REQ)
     doRootPage.getDeviceInfo(myId)
-    doRootPage.getUserInfo(myId).catch( err => {
+    doRootPage.getUserInfo(myId).catch(err => {
       console.error(err.info)
       onConnectionLost(err.message)
     })
 
-    let me            = getRoot(this.props)
-    let userId        = me.getIn(['userInfo', 'userId'])
+    let me = getRoot(this.props)
+    let userId = me.getIn(['userInfo', 'userId'])
     let latestMessage = me.getIn(['latestFriendList', '0'], Immutable.Map()).toJS()
 
     if (!latestMessage || latestMessage.creatorID === userId) { return }
@@ -198,20 +194,20 @@ class RootPage extends PureComponent {
     this.handleBrowserToast(latestMessage)
   }
 
-  resetTitle() {
+  resetTitle () {
     const { intl } = this.props
     this.pageLastSeenTS = emptyTimeStamp()
 
     // stop showing tab notification
     if (this.browserTabInterval) {
       clearInterval(this.browserTabInterval)
-      this.browserTabInterval   = null
+      this.browserTabInterval = null
     }
 
-    document.title = intl.formatMessage({id: 'site-title.title'})
+    document.title = intl.formatMessage({ id: 'site-title.title' })
   }
 
-  handleBrowserTabNotification(latestMessage) {
+  handleBrowserTabNotification (latestMessage) {
     // user is browsing current tab
     if (!document.hidden) return this.resetTitle()
 
@@ -219,15 +215,15 @@ class RootPage extends PureComponent {
       this.browserTabInterval = this.browserTabInterval || setInterval(() => {
         let sender = decodeBase64(latestMessage.creatorName)
         this.refreshBrowserTabTitle(sender)
-      }, constants.TITLE_FLASH_INTERVAL);
+      }, constants.TITLE_FLASH_INTERVAL)
     }
   }
 
-  handleBrowserToast(latestMessage) {
+  handleBrowserToast (latestMessage) {
     const { intl, match, history } = this.props
 
     if (
-      !document.hidden ||                                         // user is browsing current tab
+      !document.hidden || // user is browsing current tab
       this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
       !isUnRead(latestMessage.createTS && latestMessage.createTS.T, this.pageLastSeenTS && this.pageLastSeenTS.T) // msg has been read before
     ) { return }
@@ -235,11 +231,11 @@ class RootPage extends PureComponent {
     // prepare data for notification
     let { messageID, friendID, chatID } = latestMessage
     let creatorName = decodeBase64(latestMessage.creatorName)
-    let title = intl.formatMessage({id: 'site-title.notify1'}, {SENDER: creatorName})
+    let title = intl.formatMessage({ id: 'site-title.notify1' }, { SENDER: creatorName })
     let summary = latestMessage.contents
-      .map( content => JSON.parse(decodeBase64(content)) )
-      .filter( content => content.type === 1 ) // text only
-      .map( content => content.value )
+      .map(content => JSON.parse(decodeBase64(content)))
+      .filter(content => content.type === 1) // text only
+      .map(content => content.value)
       .join(' ').substr(0, 20)
 
     // send notification
@@ -258,61 +254,64 @@ class RootPage extends PureComponent {
     }
   }
 
-  checkMarkHubSeen() {
-    let { myId, actions: {doRootPage}, match:{params} } = this.props
+  checkMarkHubSeen () {
+    let { myId, actions: { doRootPage }, match: { params } } = this.props
 
-    let me             = getRoot(this.props)
-    let logLastSeen    = me.get('logLastSeen',      Immutable.Map()).toJS()
-    let latestArticles = me.get('latestArticles',   Immutable.List()).toJS()
+    let me = getRoot(this.props)
+    let logLastSeen = me.get('logLastSeen', Immutable.Map()).toJS()
+    let latestArticles = me.get('latestArticles', Immutable.List()).toJS()
 
     let ids = latestArticles.map(la => la.BoardID)
-    let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].CreateTS.T, logLastSeen.T):false;
+    let hubHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].CreateTS.T, logLastSeen.T) : false
 
     if (ids.includes(params.boardId) && !hubHasUnread) {
       doRootPage.markLogSeen(myId)
     }
   }
 
-  checkMarkFriendListSeen() {
-    let { myId, actions: {doRootPage}, match:{params} } = this.props
+  checkMarkFriendListSeen () {
+    let { myId, actions: { doRootPage }, match: { params } } = this.props
 
-    let me                  = getRoot(this.props)
-    let friendLastSeen      = me.get('friendLastSeen',   Immutable.Map()).toJS()
-    let latestFriendList    = me.get('latestFriendList', Immutable.List()).toJS()
+    let me = getRoot(this.props)
+    let friendLastSeen = me.get('friendLastSeen', Immutable.Map()).toJS()
+    let latestFriendList = me.get('latestFriendList', Immutable.List()).toJS()
 
     let ids = latestFriendList.map(lf => lf.ID)
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
+    let friendListHasUnread = latestFriendList.length > 0 ? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T) : false
 
     if (ids.includes(params.chatId) && !friendListHasUnread) {
       doRootPage.markFriendListSeen(myId)
     }
   }
 
-  render() {
-    const { match, myComponent, actions: {doRootPage, doModalContainer}} = this.props
+  render () {
+    const { match, myComponent, actions: { doRootPage, doModalContainer } } = this.props
 
     let myId = getRootId(this.props)
-    if(!myId) return (<Empty />)
+    if (!myId) return (<Empty />)
 
-    let me               = getRoot(this.props)
-    let userId           = me.getIn(['userInfo', 'userId'])
-    let userName         = me.getIn(['userInfo', 'userName'])
-    let userImg          = me.getIn(['userInfo', 'userImg'])
-    let keyInfo          = me.get('keyInfo',          Immutable.Map()).toJS()
-    let deviceInfo       = me.get('deviceInfo',       Immutable.List()).toJS()
-    let latestArticles   = me.get('latestArticles',   Immutable.List()).toJS()
+    let me = getRoot(this.props)
+
+    if (!me.getIn) return (<Empty />)
+
+    let userId = me.getIn(['userInfo', 'userId'])
+    let userName = me.getIn(['userInfo', 'userName'])
+    let userImg = me.getIn(['userInfo', 'userImg'])
+    let keyInfo = me.get('keyInfo', Immutable.Map()).toJS()
+    let deviceInfo = me.get('deviceInfo', Immutable.List()).toJS()
+    let latestArticles = me.get('latestArticles', Immutable.List()).toJS()
     let latestFriendList = me.get('latestFriendList', Immutable.List()).toJS()
-    let friendLastSeen   = me.get('friendLastSeen',   Immutable.Map()).toJS()
-    let logLastSeen      = me.get('logLastSeen',      Immutable.Map()).toJS()
+    let friendLastSeen = me.get('friendLastSeen', Immutable.Map()).toJS()
+    let logLastSeen = me.get('logLastSeen', Immutable.Map()).toJS()
 
-    let latestHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T,latestArticles[0].LastSeen.T):false;
-    let hubHasUnread = latestArticles.length > 0? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T):false;
+    let latestHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].UpdateTS.T, latestArticles[0].LastSeen.T) : false
+    let hubHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T) : false
 
-    let friendListHasUnread = latestFriendList.length > 0? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T):false;
+    let friendListHasUnread = latestFriendList.length > 0 ? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T) : false
 
     let openNameCard = () => {
       doModalContainer.setInput({
-        userId:     userId,
+        userId: userId,
         isEditable: true
       })
       doModalContainer.openModal(constants.NAME_CARD_MODAL)
@@ -323,31 +322,31 @@ class RootPage extends PureComponent {
         /* For multi-device modal */
         device: {
           data: deviceInfo,
-          addDeviceAction: (nodeId, pKey, callBackFunc) => doRootPage.addDevice(myId, nodeId, pKey, callBackFunc),
+          addDeviceAction: (nodeId, pKey, callBackFunc) => doRootPage.addDevice(myId, nodeId, pKey, callBackFunc)
         },
         keyInfo: {
           data: keyInfo,
-          refreshKeyInfo: () => doRootPage.getKeyInfo(myId),
+          refreshKeyInfo: () => doRootPage.getKeyInfo(myId)
         },
         /* For op log modal */
         tabs: [
-          //constants.SHOW_PTT_MASTER_TAB,
+          // constants.SHOW_PTT_MASTER_TAB,
           constants.SHOW_PTT_ME_TAB,
           constants.SHOW_PTT_PEERS_TAB,
-          constants.SHOW_LAST_ANNOUNCE_P2P_TAB,
+          constants.SHOW_LAST_ANNOUNCE_P2P_TAB
         ],
-        userId: userId,
+        userId: userId
       })
       doModalContainer.openModal(constants.SETTING_MENU_MODAL)
     }
 
     let onLatestClicked = () => {
       doModalContainer.setInput({
-        match:        match, /* for props to detect url path changes */
-        isLoading:    false,
-        articleList:  latestArticles,
-        prevClicked:  () => doModalContainer.closeModal(),
-        itemClicked:  () => doModalContainer.closeModal(),
+        match: match, /* for props to detect url path changes */
+        isLoading: false,
+        articleList: latestArticles,
+        prevClicked: () => doModalContainer.closeModal(),
+        itemClicked: () => doModalContainer.closeModal()
       })
       doModalContainer.openModal(constants.LATEST_PAGE_MODAL)
     }
@@ -358,47 +357,47 @@ class RootPage extends PureComponent {
       doRootPage.markFriendListSeen(myId)
     }
 
-    const hubPageId         = getChildId(me, 'HUB_PAGE')
-    const boardPageId       = getChildId(me, 'BOARD_PAGE')
-    const articlePageId     = getChildId(me, 'ARTICLE_PAGE')
-    const profilePageId     = getChildId(me, 'PROFILE_PAGE')
-    const friendListPageId  = getChildId(me, 'FRIEND_LIST_PAGE')
-    const friendChatPageId  = getChildId(me, 'FRIEND_CHAT_PAGE')
+    const hubPageId = getChildId(me, 'HUB_PAGE')
+    const boardPageId = getChildId(me, 'BOARD_PAGE')
+    const articlePageId = getChildId(me, 'ARTICLE_PAGE')
+    const profilePageId = getChildId(me, 'PROFILE_PAGE')
+    const friendListPageId = getChildId(me, 'FRIEND_LIST_PAGE')
+    const friendChatPageId = getChildId(me, 'FRIEND_CHAT_PAGE')
 
-    const createBoardId       = getChildId(me, 'CREATE_BOARD_MODAL')
-    const manageBoardId       = getChildId(me, 'MANAGE_BOARD_MODAL')
+    const createBoardId = getChildId(me, 'CREATE_BOARD_MODAL')
+    const manageBoardId = getChildId(me, 'MANAGE_BOARD_MODAL')
     const manageBoardMemberId = getChildId(me, 'MANAGE_BOARD_MEMBER_MODAL')
-    const inviteToBoardId     = getChildId(me, 'INVITE_TO_BOARD_MODAL')
-    const showOpLogId         = getChildId(me, 'SHOW_OP_LOG_MODAL')
+    const inviteToBoardId = getChildId(me, 'INVITE_TO_BOARD_MODAL')
+    const showOpLogId = getChildId(me, 'SHOW_OP_LOG_MODAL')
 
     let modalIdMap = {
-      'CREATE_BOARD_MODAL':         createBoardId,
-      'MANAGE_BOARD_MODAL':         manageBoardId,
-      'SHOW_OP_LOG_MODAL' :         showOpLogId,
-      'MANAGE_BOARD_MEMBER_MODAL':  manageBoardMemberId,
-      'INVITE_TO_BOARD_MODAL':      inviteToBoardId,
+      'CREATE_BOARD_MODAL': createBoardId,
+      'MANAGE_BOARD_MODAL': manageBoardId,
+      'SHOW_OP_LOG_MODAL': showOpLogId,
+      'MANAGE_BOARD_MEMBER_MODAL': manageBoardMemberId,
+      'INVITE_TO_BOARD_MODAL': inviteToBoardId
     }
 
     let MAIN_PAGE = null
 
-    switch(myComponent) {
-        case 'HubPage':
-            MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId}/>)
-            break;
-        case 'BoardPage':
-            MAIN_PAGE = (<BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId}/>)
-            break;
-        case 'ArticlePage':
-            MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId}/>)
-            break;
-        case 'FriendListPage':
-            MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId}/>)
-            break;
-        case 'FriendChatPage':
-            MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId}/>)
-            break;
-        default:
-            MAIN_PAGE = null
+    switch (myComponent) {
+      case 'HubPage':
+        MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId} />)
+        break
+      case 'BoardPage':
+        MAIN_PAGE = (<BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId} />)
+        break
+      case 'ArticlePage':
+        MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId} />)
+        break
+      case 'FriendListPage':
+        MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId} />)
+        break
+      case 'FriendChatPage':
+        MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />)
+        break
+      default:
+        MAIN_PAGE = null
     }
 
     let isChatRoom = myComponent === 'FriendChatPage'
@@ -422,21 +421,21 @@ class RootPage extends PureComponent {
           isChatRoom={isChatRoom}
           onFriendClicked={markFriendRead} />
         { MAIN_PAGE }
-        <ModalContainer className={styles['overlay']} idMap={modalIdMap}/>
-        <ToastContainer hideProgressBar={true}/>
+        <ModalContainer className={styles['overlay']} idMap={modalIdMap} />
+        <ToastContainer hideProgressBar />
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
     doRootPage: bindActionCreators(doRootPage, dispatch),
-    doModalContainer: bindActionCreators(doModalContainer, dispatch),
+    doModalContainer: bindActionCreators(doModalContainer, dispatch)
   }
 })
 

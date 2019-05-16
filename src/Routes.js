@@ -1,5 +1,5 @@
 import React from 'react'
-import { PTTAI_URL_BASE } from 'config'
+import { PTTAI_URL_BASE } from './config'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 
 import RootPage from './containers/RootPage'

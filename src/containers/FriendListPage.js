@@ -1,71 +1,70 @@
-import React, { PureComponent }     from 'react'
-import { connect }                  from 'react-redux'
-import { bindActionCreators }       from 'redux'
-import Immutable                    from 'immutable'
-import { FormattedMessage }         from 'react-intl'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Immutable from 'immutable'
+import { FormattedMessage } from 'react-intl'
 
-import Empty            from '../components/Empty'
-import FriendComponent  from '../components/FriendComponent'
-import AlertComponent   from '../components/AlertComponent'
+import Empty from '../components/Empty'
+import FriendComponent from '../components/FriendComponent'
+import AlertComponent from '../components/AlertComponent'
 
-import * as constants         from '../constants/Constants'
-import * as doFriendListPage  from '../reducers/FriendListPage'
-import * as doModalContainer  from '../reducers/ModalContainer'
-import { getRoot }            from '../utils/utils'
-import googleAnalytics        from '../utils/googleAnalytics'
+import * as constants from '../constants/Constants'
+import * as doFriendListPage from '../reducers/FriendListPage'
+import * as doModalContainer from '../reducers/ModalContainer'
+import { getRoot } from '../utils/utils'
+import googleAnalytics from '../utils/googleAnalytics'
 
-import styles           from './FriendListPage.css'
+import styles from './FriendListPage.module.css'
 
 class FriendListPage extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.refreshPageInterval = null
     this.state = {
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.props.markSeen()
     googleAnalytics.firePageView()
   }
 
-  componentWillMount() {
-    const { actions: {doFriendListPage}, myId} = this.props
+  componentWillMount () {
+    const { actions: { doFriendListPage }, myId } = this.props
 
     doFriendListPage.getFriendList(myId, true, constants.NUM_FRIEND_PER_REQ)
     doFriendListPage.getKeyInfo(myId)
 
-    this.refreshPageInterval = setInterval(() => doFriendListPage.getFriendList(myId, false, constants.NUM_FRIEND_PER_REQ), constants.REFRESH_INTERVAL);
+    this.refreshPageInterval = setInterval(() => doFriendListPage.getFriendList(myId, false, constants.NUM_FRIEND_PER_REQ), constants.REFRESH_INTERVAL)
   }
 
-  componentWillUnmount() {
-    const { actions: {doFriendListPage}, myId} = this.props
+  componentWillUnmount () {
+    const { actions: { doFriendListPage }, myId } = this.props
 
     clearInterval(this.refreshPageInterval)
     doFriendListPage.clearData(myId)
   }
 
-  render() {
-    const { myId, friendListPage, actions: {doFriendListPage, doModalContainer}} = this.props
+  render () {
+    const { myId, friendListPage, actions: { doFriendListPage, doModalContainer } } = this.props
     const { showAlert, alertData } = this.state
 
-    if(!myId) return (<Empty />)
+    if (!myId) return (<Empty />)
 
-    let userName      = getRoot(this.props).getIn(['userInfo','userName'])
+    let userName = getRoot(this.props).getIn(['userInfo', 'userName'])
 
-    let me                = friendListPage.get(myId, Immutable.Map())
-    let keyInfo           = me.get('keyInfo', Immutable.Map()).toJS()
-    let friendList        = me.getIn(['myFriends','friendList'], Immutable.List()).toJS()
-    let isLoading         = me.get('isLoading',   false)
-    let noFriend          = me.get('noFriend', false)
-    let allFriendsLoaded  = me.get('allFriendsLoaded', false)
-
+    let me = friendListPage.get(myId, Immutable.Map())
+    let keyInfo = me.get('keyInfo', Immutable.Map()).toJS()
+    let friendList = me.getIn(['myFriends', 'friendList'], Immutable.List()).toJS()
+    let isLoading = me.get('isLoading', false)
+    let noFriend = me.get('noFriend', false)
+    let allFriendsLoaded = me.get('allFriendsLoaded', false)
 
     // < start of Add-Friend-Modal
 
@@ -81,16 +80,15 @@ class FriendListPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message20"
-                defaultMessage="[Failed] {data}:{friendReqUrl}"
+                id='alert.message20'
+                defaultMessage='[Failed] {data}:{friendReqUrl}'
                 values={{ data: response.data, friendReqUrl: response.friendReqUrl }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
 
         googleAnalytics.fireEvent('Friend', 'addFriendFailed')
-
       } else {
         let that = this
         this.setState({
@@ -98,10 +96,10 @@ class FriendListPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message21"
-                defaultMessage="[Success] Friend Added"
+                id='alert.message21'
+                defaultMessage='[Success] Friend Added'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
         doModalContainer.closeModal()
@@ -120,27 +118,25 @@ class FriendListPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message22"
-                defaultMessage="Friend id empty or invalid"
+                id='alert.message22'
+                defaultMessage='Friend id empty or invalid'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
-      }
-      else if (myURL === name) {
+      } else if (myURL === name) {
         this.setState({
           showAlert: true,
           alertData: {
             message: (
               <FormattedMessage
-                id="add-friend-modal.add-self-alert"
-                defaultMessage="Add yourself is not allowed"
+                id='add-friend-modal.add-self-alert'
+                defaultMessage='Add yourself is not allowed'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
-      }
-      else {
+      } else {
         doFriendListPage.addFriend(myId, name, addFriendCallBack)
       }
     }
@@ -154,11 +150,11 @@ class FriendListPage extends PureComponent {
         friend: {
           data: keyInfo,
           addFriendAction: modalAddFriend,
-          refreshKeyInfo: refreshKeyInfo,
+          refreshKeyInfo: refreshKeyInfo
         },
         keyInfo: {
           data: keyInfo,
-          refreshKeyInfo: refreshKeyInfo,
+          refreshKeyInfo: refreshKeyInfo
         }
       })
       doModalContainer.openModal(constants.ADD_FRIEND_MODAL)
@@ -170,8 +166,6 @@ class FriendListPage extends PureComponent {
 
     // end of Add-Friend-Modal >
 
-
-
     // < start of Friend-Setting-Modal
 
     const deleteFriendCallBack = (response) => {
@@ -182,11 +176,11 @@ class FriendListPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message31"
-                defaultMessage="[Failed] {data}:{chatId}"
+                id='alert.message31'
+                defaultMessage='[Failed] {data}:{chatId}'
                 values={{ data: response.data, chatId: response.chatId }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       } else {
@@ -196,10 +190,10 @@ class FriendListPage extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message30"
-                defaultMessage="[Success] Friend Deleted"
+                id='alert.message30'
+                defaultMessage='[Success] Friend Deleted'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
         doModalContainer.closeModal()
@@ -209,7 +203,6 @@ class FriendListPage extends PureComponent {
     const onDeleteFriend = (chatId) => {
       doFriendListPage.deleteFriend(myId, chatId, deleteFriendCallBack)
     }
-
 
     let openFriendSettingMenuModal = chatId => {
       doModalContainer.setInput({
@@ -231,20 +224,20 @@ class FriendListPage extends PureComponent {
           openFriendSettingMenuModal={openFriendSettingMenuModal}
           onGetMoreFriends={onGetMoreFriends}
           allFriendsLoaded={allFriendsLoaded} />
-        <AlertComponent show={showAlert} alertData={alertData}/>
+        <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
     doFriendListPage: bindActionCreators(doFriendListPage, dispatch),
-    doModalContainer: bindActionCreators(doModalContainer, dispatch),
+    doModalContainer: bindActionCreators(doModalContainer, dispatch)
   }
 })
 

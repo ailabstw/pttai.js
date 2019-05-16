@@ -1,31 +1,31 @@
 import React, { PureComponent } from 'react'
-import { connect }              from 'react-redux'
-import { bindActionCreators }   from 'redux'
-import { FormattedMessage }     from 'react-intl'
-import Modal                    from 'react-modal'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { FormattedMessage } from 'react-intl'
+import Modal from 'react-modal'
 
-import AlertComponent                 from '../components/AlertComponent'
+import AlertComponent from '../components/AlertComponent'
 
-import * as doArticleSettingMenuModal   from '../reducers/ArticleSettingMenuModal'
-import * as modalConstants            from '../constants/ModalConstants'
+import * as doArticleSettingMenuModal from '../reducers/ArticleSettingMenuModal'
+import * as modalConstants from '../constants/ModalConstants'
 
-import styles from './SettingMenuModal.css'
+import styles from './SettingMenuModal.module.css'
 
 class ArticleSettingMenuModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
   }
 
-  render() {
-    const { modalInput, onModalClose, modal: { currentModal }} = this.props
+  render () {
+    const { modalInput, onModalClose, modal: { currentModal } } = this.props
     const { showAlert, alertData } = this.state
 
     let onDeleteArticle = () => {
@@ -35,14 +35,14 @@ class ArticleSettingMenuModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message1"
-              defaultMessage="Are you sure you want to delete?"
+              id='alert.message1'
+              defaultMessage='Are you sure you want to delete?'
             />),
           onConfirm: () => {
             modalInput.onDeleteArticle()
-            that.setState({showAlert: false})
+            that.setState({ showAlert: false })
           },
-          onClose: () => that.setState({showAlert: false}),
+          onClose: () => that.setState({ showAlert: false })
         }
       })
     }
@@ -50,7 +50,7 @@ class ArticleSettingMenuModal extends PureComponent {
     let onEditArticle = () => {
       onModalClose()
       modalInput.onEditArticle()
-      this.setState({showAlert: false})
+      this.setState({ showAlert: false })
     }
 
     return (
@@ -60,36 +60,36 @@ class ArticleSettingMenuModal extends PureComponent {
           style={modalConstants.settingMenuModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
-          contentLabel="Setting Menu Modal">
+          contentLabel='Setting Menu Modal'>
           <div className={styles['root']}>
             {
               modalInput.isCreator ? (
                 <div className={styles['action-section']}>
                   <button className={styles['menu-button']} onClick={onEditArticle}>
                     <FormattedMessage
-                      id="article-setting-menu-modal.menu1"
-                      defaultMessage="Edit Article"
+                      id='article-setting-menu-modal.menu1'
+                      defaultMessage='Edit Article'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={onDeleteArticle}>
                     <FormattedMessage
-                      id="article-setting-menu-modal.menu2"
-                      defaultMessage="Delete Group"
+                      id='article-setting-menu-modal.menu2'
+                      defaultMessage='Delete Group'
                     />
                   </button>
                   <button className={styles['menu-button']} onClick={onModalClose}>
                     <FormattedMessage
-                      id="article-setting-menu-modal.menu3"
-                      defaultMessage="Cancel"
+                      id='article-setting-menu-modal.menu3'
+                      defaultMessage='Cancel'
                     />
                   </button>
                 </div>
-              ):(
+              ) : (
                 null
               )
             }
           </div>
-          <AlertComponent show={showAlert} alertData={alertData}/>
+          <AlertComponent show={showAlert} alertData={alertData} />
         </Modal>
       </div>
     )
@@ -97,12 +97,12 @@ class ArticleSettingMenuModal extends PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doArticleSettingMenuModal: bindActionCreators(doArticleSettingMenuModal, dispatch),
+    doArticleSettingMenuModal: bindActionCreators(doArticleSettingMenuModal, dispatch)
   }
 })
 

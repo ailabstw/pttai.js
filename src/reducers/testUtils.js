@@ -1,29 +1,27 @@
 import { createStore,
-         applyMiddleware }  from 'redux'
-import { FlushThunks }      from 'redux-testkit'
-import thunk                from 'redux-thunk'
+  applyMiddleware } from 'redux'
+import { FlushThunks } from 'redux-testkit'
+import thunk from 'redux-thunk'
 
-import { reducers }         from './index'
+import { reducers } from './index'
 import { CALL_API,
-         API_TYPES }        from '../middleware/api'
+  API_TYPES } from '../middleware/api'
 
-const callMockApi = (mockdata, endpoint, { query, method = 'get', params, files, json }, isWithCredentials=true) => {
+const callMockApi = (mockdata, endpoint, { query, method = 'get', params, files, json }, isWithCredentials = true) => {
+  let resultData = json['method'] && mockdata && mockdata[json['method']] ? mockdata[json['method']] : []
 
-    let resultData = json['method'] && mockdata && mockdata[json['method']] ? mockdata[json['method']] : []
-
-    return new Promise(function(resolve, reject) {
-      if (true) {
-        resolve({
-            result: resultData
-        });
-      } else {
-        reject({});
-      }
-    });
+  return new Promise(function (resolve, reject) {
+    if (true) {
+      resolve({
+        result: resultData
+      })
+    } else {
+      reject({})
+    }
+  })
 }
 
 const mockApi = (mockdata) => store => next => action => {
-
   const callAPI = action[CALL_API]
 
   if (typeof callAPI === 'undefined') {
@@ -85,10 +83,9 @@ const mockApi = (mockdata) => store => next => action => {
   )
 }
 
-
 export const setupStore = (mockdata) => {
-    const middlerwares = [FlushThunks.createMiddleware(), thunk, mockApi(mockdata)]
-    const store = createStore(reducers, applyMiddleware(...middlerwares));
+  const middlerwares = [FlushThunks.createMiddleware(), thunk, mockApi(mockdata)]
+  const store = createStore(reducers, applyMiddleware(...middlerwares))
 
-    return store
+  return store
 }

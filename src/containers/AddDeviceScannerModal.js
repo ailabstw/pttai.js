@@ -1,72 +1,72 @@
-import React, { PureComponent }       from 'react'
-import { connect }                    from 'react-redux'
-import { bindActionCreators }         from 'redux'
-import Slider                         from 'react-slick'
-import Modal                          from 'react-modal'
-import { CopyToClipboard }            from 'react-copy-to-clipboard'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Slider from 'react-slick'
+import Modal from 'react-modal'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { FormattedMessage,
-         injectIntl }                 from 'react-intl'
+  injectIntl } from 'react-intl'
 
-import QRScannerSubmodal              from '../components/QRScannerSubmodal'
-import AlertComponent                 from '../components/AlertComponent'
-import * as doAddDeviceScannerModal   from '../reducers/AddDeviceScannerModal'
-import * as modalConstants            from '../constants/ModalConstants'
-import * as constants                 from '../constants/Constants'
+import QRScannerSubmodal from '../components/QRScannerSubmodal'
+import AlertComponent from '../components/AlertComponent'
+import * as doAddDeviceScannerModal from '../reducers/AddDeviceScannerModal'
+import * as modalConstants from '../constants/ModalConstants'
+import * as constants from '../constants/Constants'
 
-import styles                         from './AddDeviceScannerModal.css'
+import styles from './AddDeviceScannerModal.module.css'
 
 class AddDeviceScannerModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
       inputNodeId: '',
-      inputPrivateKey:'',
+      inputPrivateKey: '',
       keyCopied: false,
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
 
-    this.onNodeIdChange     = this.onNodeIdChange.bind(this);
-    this.onPKeyChange       = this.onPKeyChange.bind(this);
-    this.onNext             = this.onNext.bind(this)
-    this.onComplete         = this.onComplete.bind(this)
-    this.onScanned          = this.onScanned.bind(this);
-    this.onScannerClose     = this.onScannerClose.bind(this);
+    this.onNodeIdChange = this.onNodeIdChange.bind(this)
+    this.onPKeyChange = this.onPKeyChange.bind(this)
+    this.onNext = this.onNext.bind(this)
+    this.onComplete = this.onComplete.bind(this)
+    this.onScanned = this.onScanned.bind(this)
+    this.onScannerClose = this.onScannerClose.bind(this)
   }
 
-  onScanned(data) {
+  onScanned (data) {
     if (data) {
       this.setState({
         inputNodeId: data
-      });
+      })
       this.onNext()
     }
   }
 
-  onScannerClose() {
+  onScannerClose () {
     const { modalInput, onModalSwitch } = this.props
 
     onModalSwitch(constants.SHOW_DEVICE_INFO, modalInput)
   }
 
-  onNext(e) {
-    this.slider.slickNext();
+  onNext (e) {
+    this.slider.slickNext()
   }
 
-  onNodeIdChange(e) {
-    this.setState({inputNodeId: e.target.value})
+  onNodeIdChange (e) {
+    this.setState({ inputNodeId: e.target.value })
   }
 
-  onPKeyChange(e) {
-    this.setState({inputPrivateKey: e.target.value})
+  onPKeyChange (e) {
+    this.setState({ inputPrivateKey: e.target.value })
   }
 
-  onComplete(e) {
-    const { modalInput:{ device } } = this.props
+  onComplete (e) {
+    const { modalInput: { device } } = this.props
     const { inputNodeId, inputPrivateKey } = this.state
 
     let that = this
@@ -77,11 +77,11 @@ class AddDeviceScannerModal extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message3"
-                defaultMessage="[Error] {data}:{nodeId}"
-                values={{ data: response.data, nodeId: response.nodeId}}
+                id='alert.message3'
+                defaultMessage='[Error] {data}:{nodeId}'
+                values={{ data: response.data, nodeId: response.nodeId }}
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
       } else {
@@ -90,10 +90,10 @@ class AddDeviceScannerModal extends PureComponent {
           alertData: {
             message: (
               <FormattedMessage
-                id="alert.message4"
-                defaultMessage="[Success] Deivce Added"
+                id='alert.message4'
+                defaultMessage='[Success] Deivce Added'
               />),
-            onConfirm: () => that.setState({showAlert: false})
+            onConfirm: () => that.setState({ showAlert: false })
           }
         })
         that.onScannerClose()
@@ -105,11 +105,11 @@ class AddDeviceScannerModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message5"
-                defaultMessage="Node id empty or invalid"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message5'
+              defaultMessage='Node id empty or invalid'
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else if (!inputPrivateKey) {
@@ -117,11 +117,11 @@ class AddDeviceScannerModal extends PureComponent {
         showAlert: true,
         alertData: {
           message: (
-              <FormattedMessage
-                id="alert.message6"
-                defaultMessage="Private key empty or invalid"
-              />),
-          onConfirm: () => that.setState({showAlert: false})
+            <FormattedMessage
+              id='alert.message6'
+              defaultMessage='Private key empty or invalid'
+            />),
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else {
@@ -129,12 +129,12 @@ class AddDeviceScannerModal extends PureComponent {
     }
   }
 
-  render() {
-    const { intl, modalInput:{ keyInfo }, modal: { currentModal }} = this.props
-    const { showAlert, alertData, inputNodeId, inputPrivateKey, keyCopied,  } = this.state
+  render () {
+    const { intl, modalInput: { keyInfo }, modal: { currentModal } } = this.props
+    const { showAlert, alertData, inputNodeId, inputPrivateKey, keyCopied } = this.state
 
-    const placeholder1 = intl.formatMessage({id: 'add-device-scanner-modal.placeholder1'});
-    const placeholder2 = intl.formatMessage({id: 'add-device-scanner-modal.placeholder2'});
+    const placeholder1 = intl.formatMessage({ id: 'add-device-scanner-modal.placeholder1' })
+    const placeholder2 = intl.formatMessage({ id: 'add-device-scanner-modal.placeholder2' })
 
     const settings = {
       dots: true,
@@ -142,46 +142,46 @@ class AddDeviceScannerModal extends PureComponent {
       speed: 500,
       slidesToShow: 1,
       slidesToScroll: 1
-    };
+    }
 
     return (
       <div>
         <Modal
-          overlayClassName="AddDeviceScannerModal__Overlay"
+          overlayClassName='AddDeviceScannerModal__Overlay'
           style={modalConstants.scannerModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={this.onScannerClose}
-          contentLabel="Add Device Scanner Modal">
+          contentLabel='Add Device Scanner Modal'>
           <div className={styles['root']}>
             <div className={styles['top-bar']}>
-              <div className={styles['prev-button']} onClick={this.onScannerClose}></div>
+              <div className={styles['prev-button']} onClick={this.onScannerClose} />
               <div className={styles['title']}>
                 <FormattedMessage
-                  id="add-device-scanner-modal.title"
-                  defaultMessage="Sync with Main Device"
+                  id='add-device-scanner-modal.title'
+                  defaultMessage='Sync with Main Device'
                 />
               </div>
-              <div className={styles['null-space']}></div>
+              <div className={styles['null-space']} />
             </div>
             <div className={styles['content']}>
-             <div className={styles['slide-list']}>
-                <Slider ref={slider => (this.slider = slider)} {...settings} initialSlide={1} rtl={true} arrows={false}>
+              <div className={styles['slide-list']}>
+                <Slider ref={slider => (this.slider = slider)} {...settings} initialSlide={1} rtl arrows={false}>
                   <div className={styles['slide-item']}>
                     <div className={styles['container']}>
                       <div className={styles['p-key']}>
                         <CopyToClipboard text={keyInfo.data.userPrivateKey}
-                                         onCopy={() => this.setState({keyCopied: true})}>
+                          onCopy={() => this.setState({ keyCopied: true })}>
                           <button className={styles['copy-button']}>
                             {
                               keyCopied ? (
                                 <FormattedMessage
-                                  id="add-device-scanner-modal.copy-device-id-2"
-                                  defaultMessage="Copied"
+                                  id='add-device-scanner-modal.copy-device-id-2'
+                                  defaultMessage='Copied'
                                 />
-                              ):(
+                              ) : (
                                 <FormattedMessage
-                                  id="add-device-scanner-modal.copy-device-id-1"
-                                  defaultMessage="Copy Private Key"
+                                  id='add-device-scanner-modal.copy-device-id-1'
+                                  defaultMessage='Copy Private Key'
                                 />
                               )
                             }
@@ -190,27 +190,27 @@ class AddDeviceScannerModal extends PureComponent {
                         <div className={styles['text-value']}>
                           <input
                             readOnly
-                            value={keyInfo.data.userPrivateKey}/>
+                            value={keyInfo.data.userPrivateKey} />
                         </div>
                         <div className={styles['helper-text']}>
                           <FormattedMessage
-                            id="add-device-scanner-modal.copy-device-id-3"
-                            defaultMessage="Copy the above Private key and paste below"
+                            id='add-device-scanner-modal.copy-device-id-3'
+                            defaultMessage='Copy the above Private key and paste below'
                           />
-                         </div>
+                        </div>
                         <div className={styles['paste-area-pkey']}>
                           <textarea
                             placeholder={placeholder1}
                             autoFocus
                             name='title-input'
                             value={inputPrivateKey}
-                            onChange={this.onPKeyChange}/>
+                            onChange={this.onPKeyChange} />
                         </div>
                         <div className={styles['action-section']}>
                           <button className={styles['submit-button']} onClick={this.onComplete}>
                             <FormattedMessage
-                              id="add-device-scanner-modal.copy-device-id-action1"
-                              defaultMessage="Start to sync"
+                              id='add-device-scanner-modal.copy-device-id-action1'
+                              defaultMessage='Start to sync'
                             />
                           </button>
                         </div>
@@ -221,18 +221,18 @@ class AddDeviceScannerModal extends PureComponent {
                     <div className={styles['container']}>
                       <QRScannerSubmodal onScanned={this.onScanned} />
                       <div className={styles['paste-area-node-id']}>
-                          <textarea
-                            placeholder={placeholder2}
-                            autoFocus
-                            name='title-input'
-                            value={inputNodeId}
-                            onChange={this.onNodeIdChange}/>
+                        <textarea
+                          placeholder={placeholder2}
+                          autoFocus
+                          name='title-input'
+                          value={inputNodeId}
+                          onChange={this.onNodeIdChange} />
                       </div>
                       <div className={styles['action-section']}>
                         <button className={styles['submit-button']} onClick={this.onNext}>
                           <FormattedMessage
-                            id="add-device-scanner-modal.copy-device-id-action2"
-                            defaultMessage="Next"
+                            id='add-device-scanner-modal.copy-device-id-action2'
+                            defaultMessage='Next'
                           />
                         </button>
                       </div>
@@ -243,19 +243,19 @@ class AddDeviceScannerModal extends PureComponent {
             </div>
           </div>
         </Modal>
-        <AlertComponent show={showAlert} alertData={alertData}/>
+        <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doAddDeviceScannerModal: bindActionCreators(doAddDeviceScannerModal, dispatch),
+    doAddDeviceScannerModal: bindActionCreators(doAddDeviceScannerModal, dispatch)
   }
 })
 

@@ -2,43 +2,42 @@ import Immutable from 'immutable'
 import { toCamelCase } from '../utils/utils'
 
 // init
-export const init = ({myId, myClass, myDuck, parentId, parentClass, parentDuck, ...params}) => {
+export const init = ({ myId, myClass, myDuck, parentId, parentClass, parentDuck, ...params }) => {
   return (dispatch, getState) => {
-    dispatch(initCore({myId, myClass, myDuck, parentId, parentClass, parentDuck, ...params}))
-    if(parentId)
-      dispatch(addChild(parentId, parentClass, parentDuck, myId, myClass))
+    dispatch(initCore({ myId, myClass, myDuck, parentId, parentClass, parentDuck, ...params }))
+    if (parentId) { dispatch(addChild(parentId, parentClass, parentDuck, myId, myClass)) }
   }
 }
 
-const initCore = ({myId, myClass, myDuck, parentId, parentClass, parentDuck, ...params}) => ({
+const initCore = ({ myId, myClass, myDuck, parentId, parentClass, parentDuck, ...params }) => ({
   myId,
   myClass,
   type: myDuck.defineType('INIT'),
   parentId,
   parentClass,
   parentDuck,
-  ...params,
+  ...params
 })
 
 export const reduceInit = (state, action) => {
-  const {myId, myClass, parentId, parentClass, parentDuck, type, ...params} = action
+  const { myId, myClass, parentId, parentClass, parentDuck, type, ...params } = action
 
   let currentList = state.get('ids', Immutable.List())
   let newList = currentList.push(myId)
 
-  return state.merge({ids: newList, [myId]: {myClass, parentId, parentClass, parentDuck, ...params}})
+  return state.merge({ ids: newList, [myId]: { myClass, parentId, parentClass, parentDuck, ...params } })
 }
 
 // set-root
 export const setRoot = (myId, myClass, appDuck) => ({
   myId,
   rootClass: myClass,
-  type: appDuck.defineType('SET_ROOT'),
+  type: appDuck.defineType('SET_ROOT')
 })
 
 export const reduceSetRoot = (state, action) => {
-  const {myId, rootClass} = action
-  return state.merge({rootId: myId, rootClass})
+  const { myId, rootClass } = action
+  return state.merge({ rootId: myId, rootClass })
 }
 
 // addChild
@@ -47,11 +46,11 @@ export const addChild = (myId, myClass, myDuck, childId, childClass) => ({
   myClass,
   type: myDuck.defineType('ADD_CHILD'),
   childId,
-  childClass,
+  childClass
 })
 
 export const reduceAddChild = (state, action) => {
-  const {myId, childId, childClass} = action
+  const { myId, childId, childClass } = action
   let currentList = state.getIn([myId, 'children', childClass], Immutable.List())
   let newList = currentList.push(childId)
   return state.setIn([myId, 'children', childClass], newList)
@@ -63,11 +62,11 @@ export const removeChilds = (myId, myClass, myDuck, childIds, childClass) => ({
   myClass,
   type: myDuck.defineType('REMOVE_CHILDS'),
   childIds,
-  childClass,
+  childClass
 })
 
 export const reduceRemoveChilds = (state, action) => {
-  const {myId, childIds, childClass} = action
+  const { myId, childIds, childClass } = action
   let childIdSet = new Set(childIds)
   let currentList = state.getIn([myId, 'children', childClass], Immutable.List())
   let newList = currentList.filter((eachId) => !childIdSet.has(eachId))
@@ -79,12 +78,12 @@ export const remove = (myIds, myClass, myDuck) => {
   return (dispatch, getState) => {
     let stateClass = toCamelCase(myClass)
     let state = getState()[stateClass]
-    if(!state) return
+    if (!state) return
 
     // remove children from parents
     let childIdInfosByParents = parseChildIdInfosByParents(state, myIds)
     Object.keys(childIdInfosByParents).forEach((eachParentId) => {
-      const {parentClass, parentDuck, childIds} = childIdInfosByParents[eachParentId]
+      const { parentClass, parentDuck, childIds } = childIdInfosByParents[eachParentId]
       dispatch(removeChilds(eachParentId, parentClass, parentDuck, childIds, myClass))
     })
 
@@ -96,14 +95,14 @@ export const remove = (myIds, myClass, myDuck) => {
 const parseChildIdInfosByParents = (state, myIds) => {
   let childIdInfosByParents = myIds.reduce((r, eachId, i) => {
     let me = state.get(eachId)
-    if(!me) return r
+    if (!me) return r
     let parentId = me.get('parentId')
-    if(!parentId) return r
+    if (!parentId) return r
 
-    if(!r.hasOwnProperty(parentId)) {
+    if (!r.hasOwnProperty(parentId)) {
       let parentClass = me.get('parentClass')
       let parentDuck = me.get('parentDuck').toJS()
-      r[parentId] = {parentClass, parentDuck, childIds: []}
+      r[parentId] = { parentClass, parentDuck, childIds: [] }
     }
 
     r[parentId].childIds.push(eachId)
@@ -116,11 +115,11 @@ const parseChildIdInfosByParents = (state, myIds) => {
 const removeCore = (myIds, myClass, myDuck) => ({
   myIds,
   myClass,
-  type: myDuck.defineType('REMOVE'),
+  type: myDuck.defineType('REMOVE')
 })
 
 export const reduceRemove = (state, action) => {
-  const {myIds} = action
+  const { myIds } = action
   let myIdSet = new Set(myIds)
   let ids = state.get('ids', Immutable.List())
 
@@ -129,7 +128,7 @@ export const reduceRemove = (state, action) => {
   let newState = state.set('ids', newIds)
 
   // delete items
-  myIds.forEach((eachId) => {newState = newState.delete(eachId)})
+  myIds.forEach((eachId) => { newState = newState.delete(eachId) })
 
   return newState
 }
@@ -139,11 +138,11 @@ export const setData = (myId, myClass, myDuck, data) => ({
   myId,
   myClass,
   type: myDuck.defineType('SET_DATA'),
-  data,
+  data
 })
 
 export const reduceSetData = (state, action) => {
-  const {myId, data} = action
+  const { myId, data } = action
   return state.mergeIn([myId], data)
 }
 
@@ -152,11 +151,11 @@ export const updateData = (myId, myClass, myDuck, data) => ({
   myId,
   myClass,
   type: myDuck.defineType('UPDATE_DATA'),
-  data,
+  data
 })
 
 export const reduceUpdateData = (state, action) => {
-  const {myId, data} = action
+  const { myId, data } = action
   return state.mergeDeepIn([myId], data)
 }
 
@@ -166,7 +165,7 @@ export const isNullTimeStamp = timestamp => {
 
 export const emptyTimeStamp = () => {
   return {
-    T: Date.now()/1000 | 0,
+    T: Date.now() / 1000 | 0,
     NT: 0
   }
 }

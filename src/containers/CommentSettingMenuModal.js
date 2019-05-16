@@ -1,31 +1,31 @@
 import React, { PureComponent } from 'react'
-import { connect }              from 'react-redux'
-import { bindActionCreators }   from 'redux'
-import { FormattedMessage }     from 'react-intl'
-import Modal                    from 'react-modal'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { FormattedMessage } from 'react-intl'
+import Modal from 'react-modal'
 
-import AlertComponent                 from '../components/AlertComponent'
+import AlertComponent from '../components/AlertComponent'
 
-import * as doCommentSettingMenuModal   from '../reducers/CommentSettingMenuModal'
-import * as modalConstants            from '../constants/ModalConstants'
+import * as doCommentSettingMenuModal from '../reducers/CommentSettingMenuModal'
+import * as modalConstants from '../constants/ModalConstants'
 
-import styles from './SettingMenuModal.css'
+import styles from './SettingMenuModal.module.css'
 
 class CommentSettingMenuModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
   }
 
-  render() {
-    const { modalInput, onModalClose, modal: { currentModal }} = this.props
+  render () {
+    const { modalInput, onModalClose, modal: { currentModal } } = this.props
     const { showAlert, alertData } = this.state
 
     let onDeleteComment = () => {
@@ -35,15 +35,15 @@ class CommentSettingMenuModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message1"
-              defaultMessage="Are you sure you want to delete?"
+              id='alert.message1'
+              defaultMessage='Are you sure you want to delete?'
             />),
           onConfirm: () => {
             modalInput.onDeleteComment()
             onModalClose()
-            that.setState({showAlert: false})
+            that.setState({ showAlert: false })
           },
-          onClose: () => that.setState({showAlert: false}),
+          onClose: () => that.setState({ showAlert: false })
         }
       })
     }
@@ -60,7 +60,7 @@ class CommentSettingMenuModal extends PureComponent {
           style={modalConstants.settingMenuModalStyels}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
-          contentLabel="Setting Menu Modal">
+          contentLabel='Setting Menu Modal'>
           <div className={styles['root']}>
             <div className={styles['action-section']}>
               {/*
@@ -73,19 +73,19 @@ class CommentSettingMenuModal extends PureComponent {
               */}
               <button className={styles['menu-button']} onClick={onDeleteComment}>
                 <FormattedMessage
-                  id="comment-setting-menu-modal.menu2"
-                  defaultMessage="Delete Comment"
+                  id='comment-setting-menu-modal.menu2'
+                  defaultMessage='Delete Comment'
                 />
               </button>
               <button className={styles['menu-button']} onClick={onModalClose}>
                 <FormattedMessage
-                  id="comment-setting-menu-modal.menu3"
-                  defaultMessage="Cancel"
+                  id='comment-setting-menu-modal.menu3'
+                  defaultMessage='Cancel'
                 />
               </button>
             </div>
           </div>
-          <AlertComponent show={showAlert} alertData={alertData}/>
+          <AlertComponent show={showAlert} alertData={alertData} />
         </Modal>
       </div>
     )
@@ -93,12 +93,12 @@ class CommentSettingMenuModal extends PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doCommentSettingMenuModal: bindActionCreators(doCommentSettingMenuModal, dispatch),
+    doCommentSettingMenuModal: bindActionCreators(doCommentSettingMenuModal, dispatch)
   }
 })
 

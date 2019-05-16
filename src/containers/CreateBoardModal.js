@@ -1,67 +1,67 @@
-import React, { PureComponent }     from 'react'
-import { connect }                  from 'react-redux'
-import { bindActionCreators }       from 'redux'
-import Modal                        from 'react-modal'
-import Immutable                    from 'immutable'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Modal from 'react-modal'
+import Immutable from 'immutable'
 import { injectIntl,
-         FormattedMessage }         from 'react-intl'
-import { FontAwesomeIcon }          from '@fortawesome/react-fontawesome'
+  FormattedMessage } from 'react-intl'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import AlertComponent           from '../components/AlertComponent'
+import AlertComponent from '../components/AlertComponent'
 
-import * as constants           from '../constants/Constants'
-import * as modalConstants      from '../constants/ModalConstants'
-import * as doCreateBoardModal  from '../reducers/CreateBoardModal'
+import * as constants from '../constants/Constants'
+import * as modalConstants from '../constants/ModalConstants'
+import * as doCreateBoardModal from '../reducers/CreateBoardModal'
 
-import { isMobile }             from '../utils/utils'
+import { isMobile } from '../utils/utils'
 
-import styles from './CreateBoardModal.css'
+import styles from './CreateBoardModal.module.css'
 
 class CreateBoardModal extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
       name: '',
-      friendInvited:{},
+      friendInvited: {},
       showAlert: false,
       alertData: {
         message: '',
         onClose: null,
-        onConfirm: null,
-      },
-    };
+        onConfirm: null
+      }
+    }
 
-    this.onKeydown        = this.onKeydown.bind(this);
-    this.onNameChange     = this.onNameChange.bind(this);
-    this.onFriendInvited  = this.onFriendInvited.bind(this);
-    this.onSubmitAndClose = this.onSubmitAndClose.bind(this);
+    this.onKeydown = this.onKeydown.bind(this)
+    this.onNameChange = this.onNameChange.bind(this)
+    this.onFriendInvited = this.onFriendInvited.bind(this)
+    this.onSubmitAndClose = this.onSubmitAndClose.bind(this)
   }
 
-  onKeydown(e) {
+  onKeydown (e) {
     if (e && !e.isComposing && e.keyCode === 13) { // press enter
-      this.onSubmitAndClose();
+      this.onSubmitAndClose()
     }
   }
 
-  onNameChange(e) {
-    this.setState({name:e.target.value})
+  onNameChange (e) {
+    this.setState({ name: e.target.value })
   }
 
-  onFriendInvited(e, friendId, chatId) {
+  onFriendInvited (e, friendId, chatId) {
     const { friendInvited } = this.state
 
-    let newFriendInvited = Object.assign({},friendInvited)
+    let newFriendInvited = Object.assign({}, friendInvited)
 
-    if (friendId in newFriendInvited && newFriendInvited[friendId]){
+    if (friendId in newFriendInvited && newFriendInvited[friendId]) {
       newFriendInvited[friendId] = null
     } else {
       newFriendInvited[friendId] = chatId
     }
-    this.setState({friendInvited: newFriendInvited})
+    this.setState({ friendInvited: newFriendInvited })
   }
 
-  onSubmitAndClose() {
-    const { modalInput: {modalAddBoardSubmit}, onModalClose } = this.props
+  onSubmitAndClose () {
+    const { modalInput: { modalAddBoardSubmit }, onModalClose } = this.props
     const { name, friendInvited } = this.state
 
     if (JSON.stringify(name).length - 2 > constants.MAX_BOARDNAME_SIZE) {
@@ -72,25 +72,24 @@ class CreateBoardModal extends PureComponent {
         alertData: {
           message: (
             <FormattedMessage
-            id="alert.message12"
-            defaultMessage="Board name cannot exceed {MAX_BOARDNAME_SIZE} characters"
-            values={{ MAX_BOARDNAME_SIZE: constants.MAX_BOARDNAME_SIZE }}
+              id='alert.message12'
+              defaultMessage='Board name cannot exceed {MAX_BOARDNAME_SIZE} characters'
+              values={{ MAX_BOARDNAME_SIZE: constants.MAX_BOARDNAME_SIZE }}
             />),
-          onConfirm: () => that.setState({showAlert: false})
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else if (!name || name.replace(/\s+/g, '') === '') {
-
       let that = this
       this.setState({
         showAlert: true,
         alertData: {
           message: (
             <FormattedMessage
-              id="alert.message13"
-              defaultMessage="Board name cannot be empty"
+              id='alert.message13'
+              defaultMessage='Board name cannot be empty'
             />),
-          onConfirm: () => that.setState({showAlert: false})
+          onConfirm: () => that.setState({ showAlert: false })
         }
       })
     } else {
@@ -99,20 +98,20 @@ class CreateBoardModal extends PureComponent {
     }
   }
 
-  componentWillMount() {
+  componentWillMount () {
     const { actions: { doCreateBoardModal }, myId } = this.props
     doCreateBoardModal.getFriendList(myId, constants.NUM_FRIEND_PER_REQ)
   }
 
-  render() {
-    const { intl, myId, createBoardModal, onModalClose, modal: { currentModal }} = this.props
+  render () {
+    const { intl, myId, createBoardModal, onModalClose, modal: { currentModal } } = this.props
     const { name, friendInvited, showAlert, alertData } = this.state
 
-    const placeholder = intl.formatMessage({id: 'create-board-modal.placeholder'});
+    const placeholder = intl.formatMessage({ id: 'create-board-modal.placeholder' })
 
     let me = createBoardModal.get(myId, Immutable.Map())
 
-    let friendList       = me.get('friendList', Immutable.List()).toJS()
+    let friendList = me.get('friendList', Immutable.List()).toJS()
 
     return (
       <div>
@@ -121,19 +120,19 @@ class CreateBoardModal extends PureComponent {
           style={modalConstants.createBoardModalStyles}
           isOpen={currentModal !== null}
           onRequestClose={onModalClose}
-          contentLabel="Create Board Modal">
+          contentLabel='Create Board Modal'>
           <div className={styles['root']}>
             <div className={styles['title-header']}>
               <div className={styles['prev-arrow']}>
-                <FontAwesomeIcon icon="arrow-left" onClick={onModalClose} />
+                <FontAwesomeIcon icon='arrow-left' onClick={onModalClose} />
               </div>
               <div className={styles['header-text']}>
                 <FormattedMessage
-                  id="create-board-modal.title"
-                  defaultMessage="Create New Board"
+                  id='create-board-modal.title'
+                  defaultMessage='Create New Board'
                 />
               </div>
-              <div className={styles['search']}></div>
+              <div className={styles['search']} />
             </div>
             <div className={styles['title-section']}>
               <input
@@ -143,66 +142,66 @@ class CreateBoardModal extends PureComponent {
                 className={styles['title-input']}
                 value={name}
                 onKeyDown={this.onKeydown}
-                onChange={this.onNameChange}/>
+                onChange={this.onNameChange} />
             </div>
 
             <div className={styles['invite-title']}>
               <FormattedMessage
-                id="manage-board-modal.message2"
-                defaultMessage="Invite friends"
+                id='manage-board-modal.message2'
+                defaultMessage='Invite friends'
               />
             </div>
             <div className={styles['friend-list']}>
-                {
-                  (friendList.length === 0)? (
-                    <div className={styles['no-friend-text']}>
-                      <FormattedMessage
-                        id="manage-board-modal.message1"
-                        defaultMessage="You have no friend to invite to {BOARD_NAME}"
-                        values={{ BOARD_NAME: name }}
-                      />
+              {
+                (friendList.length === 0) ? (
+                  <div className={styles['no-friend-text']}>
+                    <FormattedMessage
+                      id='manage-board-modal.message1'
+                      defaultMessage='You have no friend to invite to {BOARD_NAME}'
+                      values={{ BOARD_NAME: name }}
+                    />
+                  </div>
+                ) : null
+              }
+              {
+                friendList.map((item, index) => (
+                  <div className={styles['friend-item']} key={index}>
+                    <div className={styles['list-item-author']}>
+                      <div className={styles['list-item-author-pic']}>
+                        <img alt='' src={item.Img || constants.DEFAULT_USER_IMAGE} />
+                      </div>
+                      <div hidden className={styles['list-item-author-name']}> {item.Name} </div>
                     </div>
-                  ):null
-                }
-                {
-                  friendList.map((item, index) => (
-                    <div className={styles['friend-item']} key={index}>
-                      <div className={styles['list-item-author']}>
-                        <div className={styles['list-item-author-pic']}>
-                          <img alt="" src={item.Img || constants.DEFAULT_USER_IMAGE}/>
-                        </div>
-                        <div hidden className={styles['list-item-author-name']}> {item.Name} </div>
+                    <div className={styles['list-item-main']}>
+                      <div className={styles['list-item-header']}>
+                        <div className={styles['list-item-title']}> {item.Name} </div>
                       </div>
-                      <div className={styles['list-item-main']}>
-                        <div className={styles['list-item-header']}>
-                          <div className={styles['list-item-title']}> {item.Name} </div>
-                        </div>
-                        <div className={styles['list-item-content']}>
-                          <div dangerouslySetInnerHTML={{__html: null }} />
-                        </div>
+                      <div className={styles['list-item-content']}>
+                        <div dangerouslySetInnerHTML={{ __html: null }} />
                       </div>
-                      <div className={styles['list-item-meta']}>
+                    </div>
+                    <div className={styles['list-item-meta']}>
                       {
-                          ((item.friendID in friendInvited) && friendInvited[item.friendID])?(
-                            <div className={styles['list-item-invited']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
-                              <FormattedMessage
-                                id="create-board-modal.invite-friend-1"
-                                defaultMessage="Select"
-                              />
-                            </div>
-                          ):(
-                            <div className={styles['list-item-to-invite']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
-                              <FormattedMessage
-                                id="create-board-modal.invite-friend-2"
-                                defaultMessage="UnSelect"
-                              />
-                            </div>
-                          )
+                        ((item.friendID in friendInvited) && friendInvited[item.friendID]) ? (
+                          <div className={styles['list-item-invited']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
+                            <FormattedMessage
+                              id='create-board-modal.invite-friend-1'
+                              defaultMessage='Select'
+                            />
+                          </div>
+                        ) : (
+                          <div className={styles['list-item-to-invite']} onClick={(e) => this.onFriendInvited(e, item.friendID, item.chatID)}>
+                            <FormattedMessage
+                              id='create-board-modal.invite-friend-2'
+                              defaultMessage='UnSelect'
+                            />
+                          </div>
+                        )
                       }
-                      </div>
                     </div>
-                  ))
-                }
+                  </div>
+                ))
+              }
             </div>
 
             <div hidden className={styles['friend-list']}>
@@ -211,9 +210,9 @@ class CreateBoardModal extends PureComponent {
               </div>
               <div className={styles['friend-list-items']}>
                 {
-                  (!friendList || friendList.length === 0)? (
-                    <div className={styles['no-friend-text']}>{/*目前沒有朋友可以邀請入板*/}</div>
-                  ):null
+                  (!friendList || friendList.length === 0) ? (
+                    <div className={styles['no-friend-text']}>{/* 目前沒有朋友可以邀請入板 */}</div>
+                  ) : null
                 }
                 {
                   // friendList.map((item, index) => (
@@ -266,11 +265,11 @@ class CreateBoardModal extends PureComponent {
             <div className={styles['action-section']}>
               <div className={styles['add-icon-container']}>
                 <div className={styles['add-icon-subcontainer']}>
-                  <div className={styles['add-icon']} onClick={this.onSubmitAndClose}></div>
+                  <div className={styles['add-icon']} onClick={this.onSubmitAndClose} />
                 </div>
               </div>
             </div>
-            <AlertComponent show={showAlert} alertData={alertData}/>
+            <AlertComponent show={showAlert} alertData={alertData} />
           </div>
         </Modal>
       </div>
@@ -279,12 +278,12 @@ class CreateBoardModal extends PureComponent {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doCreateBoardModal: bindActionCreators(doCreateBoardModal, dispatch),
+    doCreateBoardModal: bindActionCreators(doCreateBoardModal, dispatch)
   }
 })
 

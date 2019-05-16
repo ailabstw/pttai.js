@@ -2,11 +2,10 @@ import React, { PureComponent } from 'react'
 
 import BoardListComponent from '../components/BoardListComponent'
 
-import styles from './HubComponent.css'
-
+import styles from './HubComponent.module.css'
 
 class HubComponent extends PureComponent {
-  render() {
+  render () {
     const { userId, userName, boardList, isLoading, noBoard, createBoardAction, manageBoardAction } = this.props
 
     return (
@@ -23,7 +22,7 @@ class HubComponent extends PureComponent {
           <div className={styles['add-icon-subcontainer']}>
             <div className={styles['add-icon-container']}>
               <div className={styles['add-icon-subcontainer']}>
-                <div className={styles['add-icon']} onClick={createBoardAction}></div>
+                <div className={styles['add-icon']} onClick={createBoardAction} />
               </div>
             </div>
           </div>
