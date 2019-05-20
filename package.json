@@ -33,7 +33,7 @@
     "react-hot-loader": "^4.8.4",
     "react-intl": "^2.8.0",
     "react-modal": "^3.8.1",
-    "react-qr-reader": "https://github.com/wildskyf/react-qr-reader#turn-camera-off-after-unmount",
+    "react-qr-reader": "^2.2.0",
     "react-redux": "^7.0.3",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
