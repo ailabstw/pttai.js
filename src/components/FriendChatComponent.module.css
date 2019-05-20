@@ -376,7 +376,7 @@
     cursor: pointer;
     color: #7EB349;
     background-size: 40px;
-    background-image: url('/images/btn_push@2x.png');
+    background-image: url(./../images/btn_push@2x.png);
 }
 
 .message-action:hover {
@@ -390,7 +390,7 @@
     cursor: pointer;
     color: #7EB349;
     background-size: 40px;
-    background-image: url('/images/btn_push_hover@2x.png');
+    background-image: url(./../images/btn_push_hover@2x.png);
 }
 
 .loader {

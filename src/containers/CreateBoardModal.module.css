@@ -249,7 +249,7 @@
     width: 80px;
     height: 80px;
     background-size: 80px;
-    background-image: url('/images/btn_confirm@2x.png');
+    background-image: url(./../images/btn_confirm@2x.png);
 }
 
 .add-icon:hover {
@@ -257,7 +257,7 @@
     width: 80px;
     height: 80px;
     background-size: 80px;
-    background-image: url('/images/btn_confirm_hover@2x.png');
+    background-image: url(./../images/btn_confirm_hover@2x.png);
 }
 
 .overlay {

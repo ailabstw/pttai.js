@@ -42,7 +42,7 @@
     margin: auto 5px auto auto;
     background-size: 19px 14px;
     background-repeat: no-repeat;
-    background-image: url('/images/icon_back@2x.png');
+    background-image: url(./../images/icon_back@2x.png);
 }
 
 .prev-button-text {
@@ -87,7 +87,7 @@
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_action@2x.png');
+    background-image: url(./../images/icon_action@2x.png);
 }
 
 .list-item-ellipsis:hover, .list-item-ellipsis:active {
@@ -98,5 +98,5 @@
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_action_hover@2x.png');
+    background-image: url(./../images/icon_action_hover@2x.png);
 }

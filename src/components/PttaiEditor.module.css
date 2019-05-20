@@ -26,7 +26,7 @@
     background-size: 20px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_back@2x.png')
+    background-image: url(./../images/icon_back@2x.png)
 }
 
 .space {
@@ -74,11 +74,11 @@
     background-size: 80px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/btn_upload@2x.png');
+    background-image: url(./../images/btn_upload@2x.png);
 }
 
 .upload-button:hover {
-    background-image: url('/images/btn_upload_hover@2x.png');
+    background-image: url(./../images/btn_upload_hover@2x.png);
 }
 
 .upload-button label {
@@ -93,11 +93,11 @@
     background-size: 60px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/btn_delete@2x.png');
+    background-image: url(./../images/btn_delete@2x.png);
 }
 
 .delete-button:hover {
-    background-image: url('/images/btn_delete_hover@2x.png');
+    background-image: url(./../images/btn_delete_hover@2x.png);
 }
 
 .submit-button {
@@ -107,11 +107,11 @@
     background-size: 80px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/btn_confirm@2x.png');
+    background-image: url(./../images/btn_confirm@2x.png);
 }
 
 .submit-button:hover {
-    background-image: url('/images/btn_confirm_hover@2x.png');
+    background-image: url(./../images/btn_confirm_hover@2x.png);
 }
 
 :global(.ql-editor) {

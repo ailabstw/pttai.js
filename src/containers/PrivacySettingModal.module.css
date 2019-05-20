@@ -149,7 +149,7 @@
     margin: 15px auto;
     background-size: 19px 14px;
     background-repeat: no-repeat;
-    background-image: url('/images/icon_back@2x.png');
+    background-image: url(./../images/icon_back@2x.png);
 }
 
 .null-space {

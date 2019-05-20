@@ -217,7 +217,7 @@ input:-webkit-autofill {
     content: '';
     display: inline-block;
     background-color: rgba(0,0,0,0.6);
-    background-image: url('/images/icon_edit@2x.png');
+    background-image: url(./../images/icon_edit@2x.png);
     background-repeat: no-repeat;
     background-position: 50% 50%;
     background-size: 15px 15px;

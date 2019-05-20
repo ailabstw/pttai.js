@@ -78,7 +78,7 @@
     min-width: 38px;
     background-size: 25px 25px;
     background-position: center;
-    background-image: url('/images/btn_latest@2x.png');
+    background-image: url(./../images/btn_latest@2x.png);
     background-repeat: no-repeat;
 }
 
@@ -87,7 +87,7 @@
     min-width: 38px;
     background-size: 25px 25px;
     background-position: center;
-    background-image: url('/images/btn_latest_new_hover@2x.png');
+    background-image: url(./../images/btn_latest_new_hover@2x.png);
     background-repeat: no-repeat;
 }
 
@@ -96,7 +96,7 @@
     min-width: 38px;
     background-size: 25px 25px;
     background-position: center;
-    background-image: url('/images/btn_latest_new@2x.png');
+    background-image: url(./../images/btn_latest_new@2x.png);
     background-repeat: no-repeat;
 }
 
@@ -105,7 +105,7 @@
     min-width: 38px;
     background-size: 25px 25px;
     background-position: center;
-    background-image: url('/images/btn_latest_hover@2x.png');
+    background-image: url(./../images/btn_latest_hover@2x.png);
     background-repeat: no-repeat;
 }
 
@@ -114,7 +114,7 @@
     min-width: 38px;
     background-size: 25px 25px;
     background-position: center;
-    background-image: url('/images/btn_setting@2x.png');
+    background-image: url(./../images/btn_setting@2x.png);
     background-repeat: no-repeat;
 
     margin-left: 38px;
@@ -125,7 +125,7 @@
     min-width: 38px;
     background-size: 25px 25px;
     background-position: center;
-    background-image: url('/images/btn_setting_hover@2x.png');
+    background-image: url(./../images/btn_setting_hover@2x.png);
     background-repeat: no-repeat;
 }
 
