@@ -1,33 +1,33 @@
-import Immutable        from 'immutable';
-import { createDuck }   from 'redux-duck'
+import Immutable from 'immutable'
+import { createDuck } from 'redux-duck'
 
 import { EMPTY_ID,
-         STATUS_ARRAY,
-         //NUM_BOARD_PER_REQ,
-         DEFAULT_USER_NAME,
-         MESSAGE_TYPE_INVITE,
-         BOARD_TYPE_PRIVATE } from '../constants/Constants'
+  STATUS_ARRAY,
+  // NUM_BOARD_PER_REQ,
+  DEFAULT_USER_NAME,
+  MESSAGE_TYPE_INVITE,
+  BOARD_TYPE_PRIVATE } from '../constants/Constants'
 
-import * as utils       from './utils'
+import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
 
 export const myClass = 'HUB_PAGE'
 
 export const myDuck = createDuck(myClass, 'hub_page')
 
-const INIT          = myDuck.defineType('INIT')
-const ADD_CHILD     = myDuck.defineType('ADD_CHILD')
-const SET_ROOT      = myDuck.defineType('SET_ROOT')
+const INIT = myDuck.defineType('INIT')
+const ADD_CHILD = myDuck.defineType('ADD_CHILD')
+const SET_ROOT = myDuck.defineType('SET_ROOT')
 const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
-const REMOVE        = myDuck.defineType('REMOVE')
-const SET_DATA      = myDuck.defineType('SET_DATA')
-const ADD_BOARD     = myDuck.defineType('ADD_BOARD')
-const ADD_BOARDS    = myDuck.defineType('ADD_BOARDS')
-const DELETE_BOARD  = myDuck.defineType('DELETE_BOARD')
+const REMOVE = myDuck.defineType('REMOVE')
+const SET_DATA = myDuck.defineType('SET_DATA')
+const ADD_BOARD = myDuck.defineType('ADD_BOARD')
+const ADD_BOARDS = myDuck.defineType('ADD_BOARDS')
+const DELETE_BOARD = myDuck.defineType('DELETE_BOARD')
 
 export const init = (myId, parentId, parentClass, parentDuck) => {
   return (dispatch, getState) => {
-    dispatch(utils.init({myId, myClass, myDuck, parentId, parentClass, parentDuck}))
+    dispatch(utils.init({ myId, myClass, myDuck, parentId, parentClass, parentDuck }))
   }
 }
 
@@ -44,7 +44,7 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
     return Promise.all([
       dispatch(serverUtils.getBoards(EMPTY_ID, limit)),
       dispatch(serverUtils.getBoardRequest(EMPTY_ID))
-    ]).then( ([{response:{result}}, {response:reqResult}]) => {
+    ]).then(([{ response: { result } }, { response: reqResult }]) => {
       let creatorIds = result.map((each) => each.C)
 
       dispatch(serverUtils.getUsersInfo(creatorIds))
@@ -59,7 +59,6 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
 }
 
 const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetch) => {
-
   result = result.map((each) => {
     return {
       CreatorID: each.C,
@@ -67,7 +66,7 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
     }
   })
 
-  result    = result.map(serverUtils.deserialize)
+  result = result.map(serverUtils.deserialize)
   reqResult = reqResult.map(serverUtils.deserialize)
 
   usersInfo = usersInfo.reduce((acc, each) => {
@@ -76,55 +75,53 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
   }, {})
 
   let boardList = result.map(each => {
-
-    let userId      = each.CreatorID
+    let userId = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
-    let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
     return {
-      BoardType:        each.BT,
-      ID:               each.ID,
-      Status:           each.S,
-      Title:            each.Title,
-      ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
-      LastSeen:         each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
-      CreatorID:        each.CreatorID,
-      creatorName:      userName,
-      joinStatus:       3,
+      BoardType: each.BT,
+      ID: each.ID,
+      Status: each.S,
+      Title: each.Title,
+      ArticleCreateTS: each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
+      UpdateTS: each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
+      LastSeen: each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
+      CreatorID: each.CreatorID,
+      creatorName: userName,
+      joinStatus: 3
     }
   })
 
   let joinReqs = reqResult.map((eachJoin) => {
     return {
       CreatorID: eachJoin.C,
-      NodeID:    eachJoin.n,
-      Name:      eachJoin.N,
-      Status:    eachJoin.S,
+      NodeID: eachJoin.n,
+      Name: eachJoin.N,
+      Status: eachJoin.S
     }
   })
 
   joinReqs.forEach((join, index) => {
     let joinBoardIndex = boardList.findIndex((e) => e.ID === join.CreatorID)
-    if ( joinBoardIndex >= 0) {
+    if (joinBoardIndex >= 0) {
       boardList[joinBoardIndex].joinStatus = join.Status
     } else {
-
-      let userId      = EMPTY_ID
+      let userId = EMPTY_ID
       let userNameMap = usersInfo['userName'] || {}
-      let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+      let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
       boardList.push({
-        BoardType:        BOARD_TYPE_PRIVATE,
-        ID:               EMPTY_ID,
-        Status:           0,
-        Title:            join.Name,
-        ArticleCreateTS:  utils.emptyTimeStamp(),
-        UpdateTS:         utils.emptyTimeStamp(),
-        LastSeen:         utils.emptyTimeStamp(),
-        CreatorID:        join.CreatorID,
-        creatorName:      userName,
-        joinStatus:       join.Status,
+        BoardType: BOARD_TYPE_PRIVATE,
+        ID: EMPTY_ID,
+        Status: 0,
+        Title: join.Name,
+        ArticleCreateTS: utils.emptyTimeStamp(),
+        UpdateTS: utils.emptyTimeStamp(),
+        LastSeen: utils.emptyTimeStamp(),
+        CreatorID: join.CreatorID,
+        creatorName: userName,
+        joinStatus: join.Status
       })
     }
   })
@@ -160,10 +157,10 @@ export const getMoreBoards = (myId, startBoardId, limit) => {
   return (dispatch, getState) => {
     dispatch(preprocessSetStartLoading(myId))
     dispatch(serverUtils.getBoards(startBoardId, limit))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         if (!result) {
-            dispatch(postprocessGetMoreBoards(myId, null, null))
-            dispatch(postprocessSetFinshLoading(myId))
+          dispatch(postprocessGetMoreBoards(myId, null, null))
+          dispatch(postprocessSetFinshLoading(myId))
         }
 
         let creatorIds = result.map((each) => each.C)
@@ -177,7 +174,6 @@ export const getMoreBoards = (myId, startBoardId, limit) => {
 }
 
 const postprocessGetMoreBoards = (myId, result, usersInfo) => {
-
   if (!result || result.length === 0) {
     return {
       myId,
@@ -198,21 +194,20 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
   result = result.slice(1)
 
   let boardList = result.map(each => {
-
-    let userId      = each.CreatorID
+    let userId = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
-    let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
     return {
-      ID:               each.ID,
-      creatorName:      userName,
-      Status:           each.S,
-      Title:            each.Title,
-      ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      LastSeen:         each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
-      UpdateTS:         each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
-      joinStatus:       3,
-      BoardType:        each.BT,
+      ID: each.ID,
+      creatorName: userName,
+      Status: each.S,
+      Title: each.Title,
+      ArticleCreateTS: each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
+      LastSeen: each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
+      UpdateTS: each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
+      joinStatus: 3,
+      BoardType: each.BT
     }
   })
 
@@ -224,7 +219,7 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
       myId,
       myClass,
       type: SET_DATA,
-      data: {allBoardsLoaded: true}
+      data: { allBoardsLoaded: true }
     }
   } else {
     return {
@@ -237,13 +232,11 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
 }
 
 export const _addMoreBoards = (state, action) => {
-
-  const {myId, data: { boards }} = action
+  const { myId, data: { boards } } = action
 
   let boardList = state.getIn([myId, 'boardList'], Immutable.List())
   return state.setIn([myId, 'boardList'], boardList.concat(boards))
 }
-
 
 /*                      */
 /*  Update Board List   */
@@ -252,95 +245,92 @@ export const _addMoreBoards = (state, action) => {
 export const setBoardName = (myId, boardId, name, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.setBoardName(boardId, name))
-      .then(({response: {result}, type, query, error}) => {
-
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(serverUtils.getBoardUrl(boardId))
-          .then(({response: boardUrlResult, type, query, error}) => {
-
+          .then(({ response: boardUrlResult, type, query, error }) => {
             const boardJoinKey = {
-              C:            boardUrlResult.result.C,
-              ID:           boardUrlResult.result.ID,
-              Pn:           boardUrlResult.result.Pn,
-              T:            boardUrlResult.result.T,
-              URL:          boardUrlResult.result.URL,
-              UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-              expirePeriod: boardUrlResult.result.e,
+              C: boardUrlResult.result.C,
+              ID: boardUrlResult.result.ID,
+              Pn: boardUrlResult.result.Pn,
+              T: boardUrlResult.result.T,
+              URL: boardUrlResult.result.URL,
+              UpdateTS: boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
+              expirePeriod: boardUrlResult.result.e
             }
 
             let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
               let chatId = friendInvited[friendId]
               let message = {
-                type:   MESSAGE_TYPE_INVITE,
-                value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+                type: MESSAGE_TYPE_INVITE,
+                value: `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
               }
               return {
                 chatId: chatId,
-                message: JSON.stringify(message),
+                message: JSON.stringify(message)
               }
             })
 
             dispatch(sentInviteMessages(inviteMessages))
-              .then(({response: inviteResult, type, error, query}) => {
-                //dispatch(postprocessCreateBoard(myId, name, result, userName))
+              .then(({ response: inviteResult, type, error, query }) => {
+                // dispatch(postprocessCreateBoard(myId, name, result, userName))
               })
           })
 
-          // dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
-          //   .then(({response: {result}, type, query, error}) => {
-          //     dispatch(serverUtils.getBoardRequest(EMPTY_ID))
-          //       .then(({response: reqResult, type, query, error}) => {
-          //         let creatorIds = result.map((each) => each.C)
-          //         dispatch(serverUtils.getUsersInfo(creatorIds))
-          //           .then((usersInfo) => {
-          //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
-          //           })
-          //       })
-          //   })
+        // dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
+        //   .then(({response: {result}, type, query, error}) => {
+        //     dispatch(serverUtils.getBoardRequest(EMPTY_ID))
+        //       .then(({response: reqResult, type, query, error}) => {
+        //         let creatorIds = result.map((each) => each.C)
+        //         dispatch(serverUtils.getUsersInfo(creatorIds))
+        //           .then((usersInfo) => {
+        //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
+        //           })
+        //       })
+        //   })
       })
   }
 }
 
-function sentInviteMessages(inviteMessages) {
+function sentInviteMessages (inviteMessages) {
   return dispatch => Promise.all(inviteMessages.map((invite) => {
-      return dispatch(serverUtils.postMessage(invite.chatId, [invite.message], []))
-        .then(({response: {result}, type, query, error}) => {
-          return { 'chatId': invite.chatId }
-        })
-  }));
+    return dispatch(serverUtils.postMessage(invite.chatId, [invite.message], []))
+      .then(({ response: { result }, type, query, error }) => {
+        return { 'chatId': invite.chatId }
+      })
+  }))
 }
 
 export const addBoard = (myId, name, userName, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.createBoard(name))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         const boardId = result.ID
         dispatch(serverUtils.getBoardUrl(boardId))
-          .then(({response: boardUrlResult, type, query, error}) => {
-
+          .then(({ response: boardUrlResult, type, query, error }) => {
             const boardJoinKey = {
-              C:            boardUrlResult.result.C,
-              ID:           boardUrlResult.result.ID,
-              Pn:           boardUrlResult.result.Pn,
-              T:            boardUrlResult.result.T,
-              URL:          boardUrlResult.result.URL,
-              UpdateTS:     boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-              expirePeriod: boardUrlResult.result.e,
+              C: boardUrlResult.result.C,
+              ID: boardUrlResult.result.ID,
+              Pn: boardUrlResult.result.Pn,
+              T: boardUrlResult.result.T,
+              URL: boardUrlResult.result.URL,
+              UpdateTS: boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
+              expirePeriod: boardUrlResult.result.e
             }
 
             let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
               let chatId = friendInvited[friendId]
               let message = {
-                type:   MESSAGE_TYPE_INVITE,
-                value:  `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+                type: MESSAGE_TYPE_INVITE,
+                value: `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
               }
               return {
                 chatId: chatId,
-                message: JSON.stringify(message),
+                message: JSON.stringify(message)
               }
             })
 
             dispatch(sentInviteMessages(inviteMessages))
-              .then(({response: inviteResult, type, error, query}) => {
+              .then(({ response: inviteResult, type, error, query }) => {
                 dispatch(postprocessCreateBoard(myId, name, result, userName))
               })
           })
@@ -349,19 +339,18 @@ export const addBoard = (myId, name, userName, friendInvited) => {
 }
 
 const postprocessCreateBoard = (myId, name, result, userName) => {
-
   result = serverUtils.deserialize(result)
 
   const newBoard = {
-      ID:               result.ID,
-      Status:           0,
-      Title:            name,
-      creatorName:      userName,
-      ArticleCreateTS:  utils.emptyTimeStamp(),
-      UpdateTS:         utils.emptyTimeStamp(),
-      LastSeen:         utils.emptyTimeStamp(),
-      joinStatus:       3,
-      BoardType:        BOARD_TYPE_PRIVATE,
+    ID: result.ID,
+    Status: 0,
+    Title: name,
+    creatorName: userName,
+    ArticleCreateTS: utils.emptyTimeStamp(),
+    UpdateTS: utils.emptyTimeStamp(),
+    LastSeen: utils.emptyTimeStamp(),
+    joinStatus: 3,
+    BoardType: BOARD_TYPE_PRIVATE
   }
 
   return {
@@ -373,8 +362,7 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
 }
 
 export const _addBoard = (state, action) => {
-
-  const {myId, data: { board, noBoard }} = action
+  const { myId, data: { board, noBoard } } = action
 
   state = state.setIn([myId, 'noBoard'], noBoard)
   state = state.updateIn([myId, 'boardList'], arr => arr.push(Immutable.Map(board)))
@@ -385,11 +373,11 @@ export const _addBoard = (state, action) => {
 export const joinBoard = (myId, boardUrl, callBack) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.joinBoard(boardUrl))
-      .then(({response: {result, error}, type, query }) => {
+      .then(({ response: { result, error }, type, query }) => {
         if (error) {
-          callBack({error: true, data: error.message, boardUrl: boardUrl})
+          callBack({ error: true, data: error.message, boardUrl: boardUrl })
         } else {
-          callBack({error: false, data: result})
+          callBack({ error: false, data: result })
         }
         let creatorIds = [result.C]
         dispatch(serverUtils.getUsersInfo(creatorIds))
@@ -401,27 +389,26 @@ export const joinBoard = (myId, boardUrl, callBack) => {
 }
 
 const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
-
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
-  let userId      = result.C
+  let userId = result.C
   let userNameMap = usersInfo['userName'] || {}
-  let userName    = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+  let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
   const joinedBoard = {
-      ID:               result.n,
-      Status:           result.S,
-      creatorName:      userName,
-      Title:            serverUtils.b64decode(result.N),
-      ArticleCreateTS:  utils.emptyTimeStamp(),
-      LastSeen:         utils.emptyTimeStamp(),
-      CreateTS:         utils.emptyTimeStamp(),
-      UpdateTS:         utils.emptyTimeStamp(),
-      joinStatus:       0,
-      BoardType:        BOARD_TYPE_PRIVATE,
+    ID: result.n,
+    Status: result.S,
+    creatorName: userName,
+    Title: serverUtils.b64decode(result.N),
+    ArticleCreateTS: utils.emptyTimeStamp(),
+    LastSeen: utils.emptyTimeStamp(),
+    CreateTS: utils.emptyTimeStamp(),
+    UpdateTS: utils.emptyTimeStamp(),
+    joinStatus: 0,
+    BoardType: BOARD_TYPE_PRIVATE
   }
 
   return {
@@ -435,14 +422,13 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
 export const deleteBoard = (myId, boardId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.deleteBoard(boardId))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessDeleteBoard(myId, boardId))
       })
   }
 }
 
 const postprocessDeleteBoard = (myId, boardId) => {
-
   return {
     myId,
     myClass,
@@ -452,7 +438,7 @@ const postprocessDeleteBoard = (myId, boardId) => {
 }
 
 export const _deleteBoard = (state, action) => {
-  const {myId, data:{ boardId }} = action
+  const { myId, data: { boardId } } = action
 
   let boardList = state.getIn([myId, 'boardList'], Immutable.List())
   boardList = boardList.filter(each => { return each.get('ID') !== boardId })
@@ -463,7 +449,6 @@ export const _deleteBoard = (state, action) => {
 /*             */
 /*  Loading    */
 /*             */
-
 
 export const preprocessSetStartLoading = (myId) => {
   return {
@@ -500,15 +485,15 @@ const postprocessClearData = (myId) => {
 
 // reducers
 const reducer = myDuck.createReducer({
-  [INIT]:           utils.reduceInit,
-  [ADD_CHILD]:      utils.reduceAddChild,
-  [SET_ROOT]:       utils.reduceSetRoot,
-  [REMOVE_CHILDS]:  utils.reduceRemoveChilds,
-  [REMOVE]:         utils.reduceRemove,
-  [SET_DATA]:       utils.reduceSetData,
-  [ADD_BOARD]:      _addBoard,
-  [ADD_BOARDS]:     _addMoreBoards,
-  [DELETE_BOARD]:   _deleteBoard,
+  [INIT]: utils.reduceInit,
+  [ADD_CHILD]: utils.reduceAddChild,
+  [SET_ROOT]: utils.reduceSetRoot,
+  [REMOVE_CHILDS]: utils.reduceRemoveChilds,
+  [REMOVE]: utils.reduceRemove,
+  [SET_DATA]: utils.reduceSetData,
+  [ADD_BOARD]: _addBoard,
+  [ADD_BOARDS]: _addMoreBoards,
+  [DELETE_BOARD]: _deleteBoard
 }, Immutable.Map())
 
 export default reducer

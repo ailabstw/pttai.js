@@ -1,16 +1,15 @@
-import React, { PureComponent }     from 'react'
-import { connect }                  from 'react-redux'
-import { bindActionCreators }       from 'redux'
-import Modal                        from 'react-modal'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Modal from 'react-modal'
 
-import * as modalConstants          from '../constants/ModalConstants'
-import * as doCreateArticleModal    from '../reducers/CreateArticleModal'
-import PttaiEditor                  from '../components/PttaiEditor'
-import styles                       from './CreateArticleModal.css'
+import * as modalConstants from '../constants/ModalConstants'
+import * as doCreateArticleModal from '../reducers/CreateArticleModal'
+import PttaiEditor from '../components/PttaiEditor'
+import styles from './CreateArticleModal.module.css'
 
 class CreateArticleModal extends PureComponent {
-
-  render() {
+  render () {
     const { onModalSubmit, modal: { currentModal }, modalInput: { boardId }, onModalClose } = this.props
 
     return (
@@ -20,26 +19,26 @@ class CreateArticleModal extends PureComponent {
         isOpen={currentModal !== null}
         onRequestClose={null}
         shouldCloseOnEsc={false}
-        contentLabel="Create Article Modal">
+        contentLabel='Create Article Modal'>
         <PttaiEditor boardId={boardId}
-                     articleTitle={''}
-                     initHtmlArray={[]}
-                     isEdit={false}
-                     onDeleteArticle={null}
-                     onSubmitArticle={onModalSubmit}
-                     onCloseArticle={onModalClose}/>
+          articleTitle={''}
+          initHtmlArray={[]}
+          isEdit={false}
+          onDeleteArticle={null}
+          onSubmitArticle={onModalSubmit}
+          onCloseArticle={onModalClose} />
       </Modal>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doCreateArticleModal: bindActionCreators(doCreateArticleModal, dispatch),
+    doCreateArticleModal: bindActionCreators(doCreateArticleModal, dispatch)
   }
 })
 

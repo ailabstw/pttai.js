@@ -1,27 +1,26 @@
-import React, { PureComponent }   from 'react'
-import { connect }                from 'react-redux'
-import { bindActionCreators }     from 'redux'
-import Modal                      from 'react-modal'
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Modal from 'react-modal'
 
-import * as modalConstants        from '../constants/ModalConstants'
-import * as doEditArticleModal    from '../reducers/EditArticleModal'
-import PttaiEditor                from '../components/PttaiEditor'
-import styles                     from './EditArticleModal.css'
+import * as modalConstants from '../constants/ModalConstants'
+import * as doEditArticleModal from '../reducers/EditArticleModal'
+import PttaiEditor from '../components/PttaiEditor'
+import styles from './EditArticleModal.module.css'
 
 class EditArticleModal extends PureComponent {
-
-  render() {
+  render () {
     const { modalInput: {
-              boardId,
-              onDeleteArticle,
-              articleTitle,
-              articleContentsList
-            },
-            modal: {
-              currentModal
-            },
-            onModalSubmit,
-            onModalClose } = this.props
+      boardId,
+      onDeleteArticle,
+      articleTitle,
+      articleContentsList
+    },
+    modal: {
+      currentModal
+    },
+    onModalSubmit,
+    onModalClose } = this.props
 
     let htmlArray = articleContentsList.reduce((resultArray, block) => { return resultArray.concat(block.contentBlockArray) }, [])
 
@@ -32,26 +31,26 @@ class EditArticleModal extends PureComponent {
         isOpen={currentModal !== null}
         onRequestClose={null}
         shouldCloseOnEsc={false}
-        contentLabel="Edit Article Modal">
+        contentLabel='Edit Article Modal'>
         <PttaiEditor boardId={boardId}
-                     articleTitle={articleTitle}
-                     initHtmlArray={htmlArray}
-                     isEdit={true}
-                     onDeleteArticle={onDeleteArticle}
-                     onSubmitArticle={onModalSubmit}
-                     onCloseArticle={onModalClose}/>
+          articleTitle={articleTitle}
+          initHtmlArray={htmlArray}
+          isEdit
+          onDeleteArticle={onDeleteArticle}
+          onSubmitArticle={onModalSubmit}
+          onCloseArticle={onModalClose} />
       </Modal>
     )
   }
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  ...state,
+  ...state
 })
 
 const mapDispatchToProps = (dispatch) => ({
   actions: {
-    doEditArticleModal: bindActionCreators(doEditArticleModal, dispatch),
+    doEditArticleModal: bindActionCreators(doEditArticleModal, dispatch)
   }
 })
 

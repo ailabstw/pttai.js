@@ -1,29 +1,29 @@
-import Immutable        from 'immutable'
-import { createDuck }   from 'redux-duck'
+import Immutable from 'immutable'
+import { createDuck } from 'redux-duck'
 
-import * as utils             from './utils'
-import * as serverUtils       from './ServerUtils'
+import * as utils from './utils'
+import * as serverUtils from './ServerUtils'
 
-import { myDuck as appDuck }    from './App'
+import { myDuck as appDuck } from './App'
 import { DEFAULT_USER_NAMECARD,
-         DEFAULT_USER_IMAGE }   from '../constants/Constants'
+  DEFAULT_USER_IMAGE } from '../constants/Constants'
 
 export const myClass = 'NAME_CARD_MODAL'
 
 export const myDuck = createDuck(myClass, 'Edit_Name_Modal')
 
-const INIT            = myDuck.defineType('INIT')
-const ADD_CHILD       = myDuck.defineType('ADD_CHILD')
-const SET_ROOT        = myDuck.defineType('SET_ROOT')
-const REMOVE_CHILDS   = myDuck.defineType('REMOVE_CHILDS')
-const REMOVE          = myDuck.defineType('REMOVE')
-const SET_DATA        = myDuck.defineType('SET_DATA')
-const UPDATE_DATA     = myDuck.defineType('UPDATE_DATA')
+const INIT = myDuck.defineType('INIT')
+const ADD_CHILD = myDuck.defineType('ADD_CHILD')
+const SET_ROOT = myDuck.defineType('SET_ROOT')
+const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
+const REMOVE = myDuck.defineType('REMOVE')
+const SET_DATA = myDuck.defineType('SET_DATA')
+const UPDATE_DATA = myDuck.defineType('UPDATE_DATA')
 
 // init
 export const init = (myId, query) => {
   return (dispatch, getState) => {
-    dispatch(utils.init({myId, myClass, myDuck, ...query}))
+    dispatch(utils.init({ myId, myClass, myDuck, ...query }))
     dispatch(utils.setRoot(myId, myClass, appDuck))
   }
 }
@@ -34,18 +34,17 @@ export const getProfile = (myId, userId) => {
       dispatch(serverUtils.getUserName(userId)),
       dispatch(serverUtils.getNameCard(userId)),
       dispatch(serverUtils.getUserImg(userId))
-    ]).then( data => {
+    ]).then(data => {
       const [nameData, nameCardData, userImgData] = data
 
-      let name     = nameData.response.result.N ? serverUtils.b64decode(nameData.response.result.N) : ''
-      let userImg  = userImgData.response.result.I ? userImgData.response.result.I : DEFAULT_USER_IMAGE
+      let name = nameData.response.result.N ? serverUtils.b64decode(nameData.response.result.N) : ''
+      let userImg = userImgData.response.result.I ? userImgData.response.result.I : DEFAULT_USER_IMAGE
       let nameCard = null
 
       if (nameCardData.response.result.C) {
-        nameCard = {...DEFAULT_USER_NAMECARD}
+        nameCard = { ...DEFAULT_USER_NAMECARD }
         Object.assign(nameCard, JSON.parse(serverUtils.b64decode(nameCardData.response.result.C)))
-      }
-      else {
+      } else {
         nameCard = DEFAULT_USER_NAMECARD
       }
 
@@ -68,14 +67,13 @@ const postprocessGetProfile = (myId, profile) => {
 export const editProfile = (myId, profile) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.setMyNameCard(JSON.stringify(profile)))
-      .then(({response: { result }, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessEditProfile(myId, profile))
       })
   }
 }
 
 const postprocessEditProfile = (myId, content) => {
-
   return {
     myId,
     myClass,
@@ -87,23 +85,22 @@ const postprocessEditProfile = (myId, content) => {
 export const editName = (myId, name) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.editName(name))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessEditName(myId, name, result))
       })
   }
 }
 
 const postprocessEditName = (myId, name, result) => {
-
   result = serverUtils.deserialize(result)
 
   const combinedUserInfo = {
-    createTime:   result.CT,
-    userID:       result.ID,
-    userName:     result.N,
-    status:       result.S,
-    updateTime:   result.UT,
-    version:      result.V,
+    createTime: result.CT,
+    userID: result.ID,
+    userName: result.N,
+    status: result.S,
+    updateTime: result.UT,
+    version: result.V
   }
 
   return {
@@ -114,11 +111,10 @@ const postprocessEditName = (myId, name, result) => {
   }
 }
 
-
 export const editProfileImg = (myId, imgBase64) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.editProfileImg(imgBase64))
-      .then(({response: {result}, type, query, error}) => {
+      .then(({ response: { result }, type, query, error }) => {
         dispatch(postprocessEditProfileImg(myId, imgBase64))
       })
   }
@@ -139,13 +135,13 @@ const postprocessEditProfileImg = (myId, imgBase64) => {
 
 // reducers
 const reducer = myDuck.createReducer({
-  [INIT]:           utils.reduceInit,
-  [ADD_CHILD]:      utils.reduceAddChild,
-  [SET_ROOT]:       utils.reduceSetRoot,
-  [REMOVE_CHILDS]:  utils.reduceRemoveChilds,
-  [REMOVE]:         utils.reduceRemove,
-  [SET_DATA]:       utils.reduceSetData,
-  [UPDATE_DATA]:    utils.reduceUpdateData,
+  [INIT]: utils.reduceInit,
+  [ADD_CHILD]: utils.reduceAddChild,
+  [SET_ROOT]: utils.reduceSetRoot,
+  [REMOVE_CHILDS]: utils.reduceRemoveChilds,
+  [REMOVE]: utils.reduceRemove,
+  [SET_DATA]: utils.reduceSetData,
+  [UPDATE_DATA]: utils.reduceUpdateData
 }, Immutable.Map())
 
 export default reducer

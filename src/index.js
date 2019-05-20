@@ -3,7 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { AppContainer } from 'react-hot-loader'
-import { IntlProvider } from 'react-intl';
+import { IntlProvider } from 'react-intl'
 
 import Routes from './Routes'
 import createStore from './reducers'
@@ -11,7 +11,7 @@ import registerServiceWorker from './registerServiceWorker'
 import { setup as setupNotification } from './utils/notification'
 import { language, messages } from './utils/utils'
 import DevTools from './DevTools'
-//import ReactGA from 'react-ga'
+// import ReactGA from 'react-ga'
 
 import 'normalize.css/normalize.css'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -22,14 +22,14 @@ import 'slick-carousel/slick/slick-theme.css'
 import Empty from './components/Empty'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import {  faMinus,
-          faSearch,
-          faArrowLeft,
-          faArrowCircleLeft,
-          faCheck,
-          faCaretRight,
-          faEllipsisH,
-          faPen } from '@fortawesome/free-solid-svg-icons'
+import { faMinus,
+  faSearch,
+  faArrowLeft,
+  faArrowCircleLeft,
+  faCheck,
+  faCaretRight,
+  faEllipsisH,
+  faPen } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faMinus)
 library.add(faSearch)

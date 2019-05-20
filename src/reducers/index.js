@@ -1,26 +1,26 @@
-import {  createStore,
-          applyMiddleware,
-          combineReducers,
-          compose          } from 'redux'
+import { createStore,
+  applyMiddleware,
+  combineReducers,
+  compose } from 'redux'
 
-import middleware   from '../middleware/'
-import DevTools     from '../DevTools'
+import middleware from '../middleware/'
+import DevTools from '../DevTools'
 
-import app                    from './App'
-import rootPage               from './RootPage'
-import hubPage                from './HubPage'
-import boardPage              from './BoardPage'
-import articlePage            from './ArticlePage'
-import profilePage            from './ProfilePage'
-import friendListPage         from './FriendListPage'
-import friendChatPage         from './FriendChatPage'
-import modal                  from './ModalContainer'
-import createBoardModal       from './CreateBoardModal'
-import manageBoardModal       from './ManageBoardModal'
+import app from './App'
+import rootPage from './RootPage'
+import hubPage from './HubPage'
+import boardPage from './BoardPage'
+import articlePage from './ArticlePage'
+import profilePage from './ProfilePage'
+import friendListPage from './FriendListPage'
+import friendChatPage from './FriendChatPage'
+import modal from './ModalContainer'
+import createBoardModal from './CreateBoardModal'
+import manageBoardModal from './ManageBoardModal'
 import manageBoardMemberModal from './ManageBoardMemberModal'
-import inviteToBoardModal     from './InviteToBoardModal'
-import nameCardModal          from './NameCardModal'
-import showOpLogModal         from './ShowOpLogModal'
+import inviteToBoardModal from './InviteToBoardModal'
+import nameCardModal from './NameCardModal'
+import showOpLogModal from './ShowOpLogModal'
 
 export const reducers = combineReducers({
   app,
@@ -37,12 +37,12 @@ export const reducers = combineReducers({
   articlePage,
   profilePage,
   friendListPage,
-  friendChatPage,
+  friendChatPage
 })
 
 const enhancer = compose(
   applyMiddleware(...middleware),
-  DevTools.instrument(),
+  DevTools.instrument()
 )
 
 const configure = (initialState) => {

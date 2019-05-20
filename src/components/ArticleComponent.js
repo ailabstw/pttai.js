@@ -1,45 +1,45 @@
-import React, { PureComponent }   from 'react'
-import { FormattedMessage }       from 'react-intl'
-import { PulseLoader }            from 'react-spinners'
-//import $                          from 'jquery'
+import React, { PureComponent } from 'react'
+import { FormattedMessage } from 'react-intl'
+import { PulseLoader } from 'react-spinners'
+// import $                          from 'jquery'
 
-import styles           from './ArticleComponent.css'
-import * as constants   from '../constants/Constants'
-import { array2Html }   from '../utils/utils'
+import styles from './ArticleComponent.module.css'
+import * as constants from '../constants/Constants'
+import { array2Html } from '../utils/utils'
 
 import '../../node_modules/quill/dist/quill.bubble.css'
 
 class ArticleComponent extends PureComponent {
-  constructor(props) {
-    super();
+  constructor (props) {
+    super()
     this.state = {
-      noResult: false,
-    };
-    //this.handleLongPress          = this.handleLongPress.bind(this)
-    //this.handleLongPressRelease   = this.handleLongPressRelease.bind(this)
+      noResult: false
+    }
+    // this.handleLongPress          = this.handleLongPress.bind(this)
+    // this.handleLongPressRelease   = this.handleLongPressRelease.bind(this)
   }
 
-  componentWillReceiveProps(nextProp) {
+  componentWillReceiveProps (nextProp) {
     const { pullCount } = this.props
 
-    if ( pullCount === constants.ARTICLE_PULL_COUNT_DOWN && nextProp.pullCount === 0) {
-      this.setState({noResult: true})
+    if (pullCount === constants.ARTICLE_PULL_COUNT_DOWN && nextProp.pullCount === 0) {
+      this.setState({ noResult: true })
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     // For mobile
-    //$("#article-main-content").on("touchstart", this.handleLongPress);
-    //$("#article-main-content").on("touchend", this.handleLongPressRelease);
+    // $("#article-main-content").on("touchstart", this.handleLongPress);
+    // $("#article-main-content").on("touchend", this.handleLongPressRelease);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount () {
     // For mobile
-    //$("#article-main-content").off("touchstart", this.handleLongPress);
-    //$("#article-main-content").off("touchend", this.handleLongPressRelease);
+    // $("#article-main-content").off("touchstart", this.handleLongPress);
+    // $("#article-main-content").off("touchend", this.handleLongPressRelease);
   }
 
-  render() {
+  render () {
     const { articleContentsList, pullCount, articleInfo, boardInfo, openNameCard } = this.props
     const { noResult } = this.state
 
@@ -47,47 +47,47 @@ class ArticleComponent extends PureComponent {
       return final.concat(piece.contentBlockArray)
     }, []), boardInfo.ID)
 
-    const loading = (htmlContent === '') && !noResult;
-    const cntDown = constants.ARTICLE_PULL_COUNT_DOWN - pullCount;
+    const loading = (htmlContent === '') && !noResult
+    const cntDown = constants.ARTICLE_PULL_COUNT_DOWN - pullCount
 
     return (
-      <div id="article-main-content" className={styles['root']}>
-      {
-        loading? (
-          <div className={styles['loading']}>
-            <FormattedMessage
-              id="article-component.message1"
-              defaultMessage="Allow me to fetch the content ... ({cntDown})"
-              values={{cntDown: cntDown}}
-            />
-            <PulseLoader color={'#aaa'} size={6}/>
-          </div>
-        ): (
-          <div className={styles['main-content']}
-               //onMouseDown={this.handleLongPress}
-               //onMouseUp={this.handleLongPressRelease}
-               >
-            <div className={styles['author']}>
-              <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'} onClick={openNameCard}/>
-              <div title={articleInfo.CreatorName} onClick={openNameCard}>
-                {articleInfo.CreatorName}
+      <div id='article-main-content' className={styles['root']}>
+        {
+          loading ? (
+            <div className={styles['loading']}>
+              <FormattedMessage
+                id='article-component.message1'
+                defaultMessage='Allow me to fetch the content ... ({cntDown})'
+                values={{ cntDown: cntDown }}
+              />
+              <PulseLoader color={'#aaa'} size={6} />
+            </div>
+          ) : (
+            <div className={styles['main-content']}
+              // onMouseDown={this.handleLongPress}
+              // onMouseUp={this.handleLongPressRelease}
+            >
+              <div className={styles['author']}>
+                <img src={articleInfo.CreatorImg || constants.DEFAULT_USER_IMAGE} alt={'Author Profile'} onClick={openNameCard} />
+                <div title={articleInfo.CreatorName} onClick={openNameCard}>
+                  {articleInfo.CreatorName}
+                </div>
+              </div>
+              <div id='quill-id' className={styles['content']}>
+                {
+                  (noResult) ? (
+                    <FormattedMessage
+                      id='article-component.message2'
+                      defaultMessage='(No content)'
+                    />
+                  ) : (
+                    <div className={constants.PTT_EDITOR_CLASS_NAME} dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                  )
+                }
               </div>
             </div>
-            <div id='quill-id' className={styles['content']}>
-              {
-                (noResult) ? (
-                  <FormattedMessage
-                    id="article-component.message2"
-                    defaultMessage="(No content)"
-                  />
-                ):(
-                  <div className={constants.PTT_EDITOR_CLASS_NAME} dangerouslySetInnerHTML={{__html: htmlContent}} />
-                )
-              }
-            </div>
-          </div>
-        )
-      }
+          )
+        }
       </div>
     )
   }
