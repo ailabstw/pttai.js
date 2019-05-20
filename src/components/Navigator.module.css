@@ -143,16 +143,16 @@
     /*background: #B9B6B6;*/
 }
 .tabs .inactive a .tab1-icon {
-    background-image: url('/images/icon_group_pressed@2x.png');
+    background-image: url(./../images/icon_group_pressed@2x.png);
 }
 .tabs .active a .tab1-icon {
-    background-image: url('/images/icon_group@2x.png');
+    background-image: url(./../images/icon_group@2x.png);
 }
 .tabs .inactive a .tab2-icon {
-    background-image: url('/images/icon_friend_pressed@2x.png');
+    background-image: url(./../images/icon_friend_pressed@2x.png);
 }
 .tabs .active a .tab2-icon {
-    background-image: url('/images/icon_friend@2x.png');
+    background-image: url(./../images/icon_friend@2x.png);
 }
 
 .tabs .unread .tab1-icon,

@@ -34,7 +34,7 @@
     background-size: 19px 14px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_back@2x.png');
+    background-image: url(./../images/icon_back@2x.png);
 }
 
 .prev-button a, .prev-button a:hover {
@@ -61,7 +61,7 @@
     background-size: 19px 5px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_action@2x.png');
+    background-image: url(./../images/icon_action@2x.png);
 
     cursor: pointer;
 }

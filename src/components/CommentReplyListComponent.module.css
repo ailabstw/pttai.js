@@ -255,7 +255,7 @@
     cursor: pointer;
     color: #7EB349;
     background-size: 40px;
-    background-image: url('/images/btn_push@2x.png');
+    background-image: url(./../images/btn_push@2x.png);
 }
 
 .comment-action-icon:hover {
@@ -268,7 +268,7 @@
     cursor: pointer;
     color: #7EB349;
     background-size: 40px;
-    background-image: url('/images/btn_push_hover@2x.png');
+    background-image: url(./../images/btn_push_hover@2x.png);
 }
 
 
@@ -282,6 +282,6 @@
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_action@2x.png');
+    background-image: url(./../images/icon_action@2x.png);
 }
 

@@ -28,7 +28,7 @@
     width: 80px;
     height: 80px;
     background-size: 80px;
-    background-image: url('/images/btn_add@2x.png');
+    background-image: url(./../images/btn_add@2x.png);
 }
 
 .add-icon:hover {
@@ -36,5 +36,5 @@
     width: 80px;
     height: 80px;
     background-size: 80px;
-    background-image: url('/images/btn_add_hover@2x.png');
+    background-image: url(./../images/btn_add_hover@2x.png);
 }

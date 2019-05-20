@@ -36,7 +36,7 @@
     background-size: 19px 14px;
     background-position: 10px 50%;
     background-repeat: no-repeat;
-    background-image: url('/images/icon_back_white@2x.png');
+    background-image: url(./../images/icon_back_white@2x.png);
 }
 
 .title {
@@ -157,7 +157,7 @@
     width: 80px;
     height: 80px;
     background-size: 80px;
-    background-image: url('/images/btn_add@2x.png');
+    background-image: url(./../images/btn_add@2x.png);
 }
 
 .add-icon:hover {
@@ -165,7 +165,7 @@
     width: 80px;
     height: 80px;
     background-size: 80px;
-    background-image: url('/images/btn_add_hover@2x.png');
+    background-image: url(./../images/btn_add_hover@2x.png);
 }
 
 .submodal-action-section {

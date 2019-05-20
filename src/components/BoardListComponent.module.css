@@ -230,7 +230,7 @@
     background-size: 25px 25px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_add@2x.png');
+    background-image: url(./../images/icon_add@2x.png);
 }*/
 
 .list-item-edit-button {
@@ -250,7 +250,7 @@
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_action@2x.png');
+    background-image: url(./../images/icon_action@2x.png);
 }
 
 .list-item-ellipsis:active, .list-item-ellipsis:hover {
@@ -263,7 +263,7 @@
     background-size: 15px 4px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url('/images/icon_action_hover@2x.png');
+    background-image: url(./../images/icon_action_hover@2x.png);
 }
 
 .loader {

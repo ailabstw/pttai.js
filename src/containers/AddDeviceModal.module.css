@@ -29,7 +29,7 @@
     background-size: 19px 14px;
     background-position: 10px 50%;
     background-repeat: no-repeat;
-    background-image: url('/images/icon_back_white@2x.png');
+    background-image: url(./../images/icon_back_white@2x.png);
 }
 
 .title {
