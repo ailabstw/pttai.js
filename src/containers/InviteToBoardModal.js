@@ -13,7 +13,7 @@ import * as doInviteToBoardModal from '../reducers/InviteToBoardModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './InviteToBoardModal.module.css'
+import styles from './InviteToBoardModal.module.scss'
 
 class InviteToBoardModal extends PureComponent {
   constructor (props) {

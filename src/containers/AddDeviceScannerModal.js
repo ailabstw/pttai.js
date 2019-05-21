@@ -13,7 +13,7 @@ import * as doAddDeviceScannerModal from '../reducers/AddDeviceScannerModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './AddDeviceScannerModal.module.css'
+import styles from './AddDeviceScannerModal.module.scss'
 
 class AddDeviceScannerModal extends PureComponent {
   constructor (props) {

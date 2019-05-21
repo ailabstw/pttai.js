@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import styles from './DropdownComponent.module.css'
+import styles from './DropdownComponent.module.scss'
 
 class DropdownComponent extends PureComponent {
   constructor (props) {

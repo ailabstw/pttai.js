@@ -11,7 +11,7 @@ import * as doManageBoardModal from '../reducers/ManageBoardModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './ManageBoardModal.module.css'
+import styles from './ManageBoardModal.module.scss'
 
 class ManageBoardModal extends PureComponent {
   constructor (props) {

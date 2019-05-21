@@ -12,7 +12,7 @@ import { epoch2ReadFormat } from '../utils/utilDatetime'
 
 import * as constants from '../constants/Constants'
 
-import styles from './FriendListComponent.module.css'
+import styles from './FriendListComponent.module.scss'
 
 class FriendListComponent extends PureComponent {
   constructor (props) {

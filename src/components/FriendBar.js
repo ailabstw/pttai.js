@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import styles from './FriendBar.module.css'
+import styles from './FriendBar.module.scss'
 
 class FriendBar extends PureComponent {
   render () {

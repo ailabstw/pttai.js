@@ -3,7 +3,7 @@ import $ from 'jquery'
 import { FormattedMessage } from 'react-intl'
 import { ClipLoader } from 'react-spinners'
 
-import styles from './CommentReplyListComponent.module.css'
+import styles from './CommentReplyListComponent.module.scss'
 
 import AlertComponent from '../components/AlertComponent'
 

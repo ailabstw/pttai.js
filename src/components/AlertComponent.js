@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { FormattedMessage } from 'react-intl'
 import Modal from 'react-modal'
 
-import styles from './AlertComponent.module.css'
+import styles from './AlertComponent.module.scss'
 import * as modalConstants from '../constants/ModalConstants'
 
 class AlertComponent extends PureComponent {

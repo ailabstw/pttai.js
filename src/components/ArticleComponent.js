@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl'
 import { PulseLoader } from 'react-spinners'
 // import $                          from 'jquery'
 
-import styles from './ArticleComponent.module.css'
+import styles from './ArticleComponent.module.scss'
 import * as constants from '../constants/Constants'
 import { array2Html } from '../utils/utils'
 

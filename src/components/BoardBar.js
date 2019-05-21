@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { Link } from 'react-router-dom'
 
-import styles from './BoardBar.module.css'
+import styles from './BoardBar.module.scss'
 
 class BoardBar extends PureComponent {
   render () {

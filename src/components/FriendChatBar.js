@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import styles from './FriendChatBar.module.css'
+import styles from './FriendChatBar.module.scss'
 
 import * as constants from '../constants/Constants'
 

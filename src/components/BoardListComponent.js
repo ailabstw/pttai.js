@@ -7,7 +7,7 @@ import { isUnRead, getStatusClass } from '../utils/utils'
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import * as constants from '../constants/Constants'
 
-import styles from './BoardListComponent.module.css'
+import styles from './BoardListComponent.module.scss'
 
 class BoardListComponent extends PureComponent {
   constructor (props) {

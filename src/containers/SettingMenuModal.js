@@ -8,7 +8,7 @@ import * as doSettingMenuModal from '../reducers/SettingMenuModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './SettingMenuModal.module.css'
+import styles from './SettingMenuModal.module.scss'
 
 class SettingMenuModal extends PureComponent {
   render () {

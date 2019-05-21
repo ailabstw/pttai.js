@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { Link } from 'react-router-dom'
 
-import styles from './Navigator.module.css'
+import styles from './Navigator.module.scss'
 
 class Navigator extends PureComponent {
   render () {

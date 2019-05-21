@@ -2,7 +2,7 @@ import React,
 { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import styles from './ArticleBar.module.css'
+import styles from './ArticleBar.module.scss'
 
 class ArticleBar extends PureComponent {
   render () {

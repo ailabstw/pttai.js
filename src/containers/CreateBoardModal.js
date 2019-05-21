@@ -15,7 +15,7 @@ import * as doCreateBoardModal from '../reducers/CreateBoardModal'
 
 import { isMobile } from '../utils/utils'
 
-import styles from './CreateBoardModal.module.css'
+import styles from './CreateBoardModal.module.scss'
 
 class CreateBoardModal extends PureComponent {
   constructor (props) {

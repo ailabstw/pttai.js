@@ -10,7 +10,7 @@ import * as modalConstants from '../constants/ModalConstants'
 import * as doAddKnownBoardModal from '../reducers/AddKnownBoardModal'
 import { isMobile } from '../utils/utils'
 
-import styles from './AddKnownBoardModal.module.css'
+import styles from './AddKnownBoardModal.module.scss'
 
 class AddKnownBoardModal extends PureComponent {
   constructor (props) {

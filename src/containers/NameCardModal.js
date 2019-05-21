@@ -17,7 +17,7 @@ import { getOrientation,
   newCanvasSize } from '../utils/utils'
 import googleAnalytics from '../utils/googleAnalytics'
 
-import styles from './NameCardModal.module.css'
+import styles from './NameCardModal.module.scss'
 import qr_code_icon from './../images/btn_qrcode@2x.jpg'
 
 function isEmpty (name) {

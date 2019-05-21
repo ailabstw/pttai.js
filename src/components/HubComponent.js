@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 
 import BoardListComponent from '../components/BoardListComponent'
 
-import styles from './HubComponent.module.css'
+import styles from './HubComponent.module.scss'
 
 class HubComponent extends PureComponent {
   render () {

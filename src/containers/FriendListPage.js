@@ -14,7 +14,7 @@ import * as doModalContainer from '../reducers/ModalContainer'
 import { getRoot } from '../utils/utils'
 import googleAnalytics from '../utils/googleAnalytics'
 
-import styles from './FriendListPage.module.css'
+import styles from './FriendListPage.module.scss'
 
 class FriendListPage extends PureComponent {
   constructor (props) {
