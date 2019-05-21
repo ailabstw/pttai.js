@@ -105,7 +105,7 @@
 /* End of Custom Radio Button */
 
 .ga-bar {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     font-style: normal;
     font-stretch: normal;
@@ -113,7 +113,7 @@
 
     min-height: 64px;
     border-bottom: solid 0.5px #a3a3a3;
-    line-height: 64px;
+    line-height: 1.25em;
 
     display: flex;
     flex-direction: row;
@@ -158,6 +158,7 @@
 
 .ga-title {
     margin: auto;
+    max-width: 320px;
 }
 
 .ga-agreement-paragraph {
@@ -190,6 +191,7 @@
     margin: 5px auto;
     font-size: 16px;
     height: 30px;
+    width: 100%;
     font-weight: lighter;
     font-style: normal;
     font-stretch: normal;

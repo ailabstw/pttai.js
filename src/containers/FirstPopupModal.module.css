@@ -283,6 +283,7 @@
     margin: 5px auto;
     font-size: 16px;
     height: 30px;
+    width: 100%;
     font-weight: lighter;
     font-style: normal;
     font-stretch: normal;
@@ -292,12 +293,13 @@
 }
 
 .submodal-ga-agreement-see-more {
-    width: 83px;
+    min-width: 83px;
     height: 35px;
     line-height: 35px;
     margin: 30px auto;
     border-radius: 8px;
     border: 1px solid #c9c9c9;
+    padding: 0 10px;
 
     font-size: 16px;
     font-weight: normal;
