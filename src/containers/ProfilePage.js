@@ -7,7 +7,7 @@ import AlertComponent from '../components/AlertComponent'
 import * as doProfilePage from '../reducers/ProfilePage'
 import * as doModalContainer from '../reducers/ModalContainer'
 
-import styles from './ProfilePage.module.css'
+import styles from './ProfilePage.module.scss'
 
 class ProfilePage extends PureComponent {
   constructor (props) {

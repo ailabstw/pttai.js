@@ -12,7 +12,7 @@ import * as doManageBoardMemberModal from '../reducers/ManageBoardMemberModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './ManageBoardMemberModal.module.css'
+import styles from './ManageBoardMemberModal.module.scss'
 
 class ManageBoardMemberModal extends PureComponent {
   constructor (props) {

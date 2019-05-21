@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { BeatLoader } from 'react-spinners'
 import { FormattedMessage } from 'react-intl'
 
-import styles from './NewsListComponent.module.css'
+import styles from './NewsListComponent.module.scss'
 import { epoch2FullDate,
   epoch2ReadFormat } from '../utils/utilDatetime'
 import { isUnRead,

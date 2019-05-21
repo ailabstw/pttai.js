@@ -16,7 +16,7 @@ import * as constants from '../constants/Constants'
 import { getRoot } from '../utils/utils'
 import googleAnalytics from '../utils/googleAnalytics'
 
-import styles from './HubPage.module.css'
+import styles from './HubPage.module.scss'
 
 class HubPage extends PureComponent {
   constructor (props) {

@@ -7,7 +7,7 @@ import NewsComponent from '../components/NewsComponent'
 import * as modalConstants from '../constants/ModalConstants'
 import * as doLatestPageModal from '../reducers/LatestPageModal'
 
-import styles from './LatestPageModal.module.css'
+import styles from './LatestPageModal.module.scss'
 
 class LatestPageModal extends PureComponent {
   render () {

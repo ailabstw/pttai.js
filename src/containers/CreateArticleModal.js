@@ -6,7 +6,7 @@ import Modal from 'react-modal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as doCreateArticleModal from '../reducers/CreateArticleModal'
 import PttaiEditor from '../components/PttaiEditor'
-import styles from './CreateArticleModal.module.css'
+import styles from './CreateArticleModal.module.scss'
 
 class CreateArticleModal extends PureComponent {
   render () {

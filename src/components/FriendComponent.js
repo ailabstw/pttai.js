@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 // import FriendBar            from '../components/FriendBar'
 import FriendListComponent from '../components/FriendListComponent'
 
-import styles from './FriendComponent.module.css'
+import styles from './FriendComponent.module.scss'
 
 class FriendComponent extends PureComponent {
   render () {

@@ -14,7 +14,7 @@ import * as doFirstPopupModal from '../reducers/FirstPopupModal'
 
 import googleAnalytics from '../utils/googleAnalytics'
 
-import styles from './FirstPopupModal.module.css'
+import styles from './FirstPopupModal.module.scss'
 
 function isEmpty (name) {
   return name.replace(/\s\s+/g, '') === ''

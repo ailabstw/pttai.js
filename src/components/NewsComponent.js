@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 
-import styles from './NewsComponent.module.css'
+import styles from './NewsComponent.module.scss'
 import NewsBar from '../components/NewsBar'
 import NewsListComponent from '../components/NewsListComponent'
 

@@ -8,7 +8,7 @@ import * as doBoardActionModal from '../reducers/BoardActionModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './BoardActionModal.module.css'
+import styles from './BoardActionModal.module.scss'
 
 class BoardActionModal extends PureComponent {
   render () {

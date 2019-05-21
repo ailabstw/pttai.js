@@ -12,7 +12,7 @@ import { isUnRead,
 import * as serverUtils from '../reducers/ServerUtils'
 import * as constants from '../constants/Constants'
 
-import styles from './ArticleListComponent.module.css'
+import styles from './ArticleListComponent.module.scss'
 
 class ArticleListComponent extends PureComponent {
   constructor (props) {

@@ -20,7 +20,7 @@ import { getStatusClass,
 import AlertComponent from '../components/AlertComponent'
 import * as constants from '../constants/Constants'
 
-import styles from './FriendChatComponent.module.css'
+import styles from './FriendChatComponent.module.scss'
 
 function isEmpty (message) {
   return message.replace(/\s+/g, '') === ''

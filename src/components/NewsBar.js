@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { FormattedMessage } from 'react-intl'
 
-import styles from './NewsBar.module.css'
+import styles from './NewsBar.module.scss'
 
 class NewsBar extends PureComponent {
   render () {

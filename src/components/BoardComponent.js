@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import styles from './BoardComponent.module.css'
+import styles from './BoardComponent.module.scss'
 
 import BoardBar from '../components/BoardBar'
 import ArticleListComponent from '../components/ArticleListComponent'

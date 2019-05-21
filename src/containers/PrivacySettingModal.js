@@ -13,7 +13,7 @@ import * as doPrivacySettingModal from '../reducers/PrivacySettingModal'
 
 import googleAnalytics from '../utils/googleAnalytics'
 
-import styles from './PrivacySettingModal.module.css'
+import styles from './PrivacySettingModal.module.scss'
 
 class PrivacySettingModal extends PureComponent {
   constructor (props) {

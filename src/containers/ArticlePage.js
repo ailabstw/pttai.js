@@ -19,7 +19,7 @@ import * as doArticlePage from '../reducers/ArticlePage'
 import * as doModalContainer from '../reducers/ModalContainer'
 import * as constants from '../constants/Constants'
 
-import styles from './ArticlePage.module.css'
+import styles from './ArticlePage.module.scss'
 
 const iframeClass = 'iframe.' + constants.IFRAME_CLASS_NAME
 const attachmentClass = '.' + constants.FILE_CLASS_NAME

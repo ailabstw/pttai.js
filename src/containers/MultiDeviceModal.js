@@ -11,7 +11,7 @@ import * as doMultiDeviceModal from '../reducers/MultiDeviceModal'
 import * as constants from '../constants/Constants'
 import * as modalConstants from '../constants/ModalConstants'
 
-import styles from './MultiDeviceModal.module.css'
+import styles from './MultiDeviceModal.module.scss'
 
 class MultiDeviceModal extends PureComponent {
   constructor (props) {

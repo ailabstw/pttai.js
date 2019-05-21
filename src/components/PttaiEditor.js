@@ -19,7 +19,7 @@ import { dataURLtoFile,
 
 import * as constants from '../constants/Constants'
 
-import styles from './PttaiEditor.module.css'
+import styles from './PttaiEditor.module.scss'
 
 const EDITOR_INPUT_ID = 'pttai-editor-input'
 

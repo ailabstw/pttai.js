@@ -10,7 +10,7 @@ import * as doBoardSettingMenuModal from '../reducers/BoardSettingMenuModal'
 import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 
-import styles from './SettingMenuModal.module.css'
+import styles from './SettingMenuModal.module.scss'
 
 class BoardSettingMenuModal extends PureComponent {
   constructor (props) {

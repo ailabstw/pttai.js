@@ -12,7 +12,7 @@ import DropdownComponent from '../components/DropdownComponent'
 import { epoch2FullTimeFormat,
   epoch2FullTimeMsFormat } from '../utils/utilDatetime'
 
-import styles from './ShowOpLogModal.module.css'
+import styles from './ShowOpLogModal.module.scss'
 
 class ShowOpLogModal extends PureComponent {
   constructor (props) {

@@ -11,7 +11,7 @@ import * as modalConstants from '../constants/ModalConstants'
 import * as constants from '../constants/Constants'
 import { expiredFormat } from '../utils/utilDatetime'
 
-import styles from './AddDeviceModal.module.css'
+import styles from './AddDeviceModal.module.scss'
 
 class AddDeviceModal extends PureComponent {
   constructor (props) {

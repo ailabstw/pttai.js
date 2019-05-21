@@ -14,7 +14,7 @@ import * as doModalContainer from '../reducers/ModalContainer'
 import * as doFriendChatPage from '../reducers/FriendChatPage'
 import * as constants from '../constants/Constants'
 
-import styles from './FriendChatPage.module.css'
+import styles from './FriendChatPage.module.scss'
 
 class FriendChatPage extends PureComponent {
   constructor (props) {

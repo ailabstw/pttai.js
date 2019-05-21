@@ -3,7 +3,7 @@ import QrReader from 'react-qr-reader'
 import { FormattedMessage } from 'react-intl'
 import { isIOS, isAndroid } from '../utils/utils'
 
-import styles from './QRScannerSubmodal.module.css'
+import styles from './QRScannerSubmodal.module.scss'
 
 /*
  * [required] onScanned(code: <String>): used when Scanner got QRCode

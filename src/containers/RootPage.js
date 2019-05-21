@@ -35,7 +35,7 @@ import googleAnalytics from '../utils/googleAnalytics'
 
 import { emptyTimeStamp } from '../reducers/utils'
 
-import styles from './RootPage.module.css'
+import styles from './RootPage.module.scss'
 import 'react-toastify/dist/ReactToastify.css'
 
 class RootPage extends PureComponent {

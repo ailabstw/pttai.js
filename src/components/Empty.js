@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import classnames from 'classnames/bind'
-import styles from './Empty.module.css'
+import styles from './Empty.module.scss'
 
 const cx = classnames.bind(styles)
 

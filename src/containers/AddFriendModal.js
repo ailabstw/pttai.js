@@ -15,7 +15,7 @@ import * as constants from '../constants/Constants'
 import * as modalConstants from '../constants/ModalConstants'
 import { isMobile } from '../utils/utils'
 
-import styles from './AddFriendModal.module.css'
+import styles from './AddFriendModal.module.scss'
 
 class AddFriendModal extends PureComponent {
   constructor (props) {

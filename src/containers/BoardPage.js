@@ -15,7 +15,7 @@ import * as doBoardPage from '../reducers/BoardPage'
 import * as doModalContainer from '../reducers/ModalContainer'
 import * as constants from '../constants/Constants'
 
-import styles from './BoardPage.module.css'
+import styles from './BoardPage.module.scss'
 
 class BoardPage extends PureComponent {
   constructor (props) {
