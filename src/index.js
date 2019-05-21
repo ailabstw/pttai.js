@@ -13,6 +13,8 @@ import { language, messages } from './utils/utils'
 import DevTools from './DevTools'
 // import ReactGA from 'react-ga'
 
+import './overwrite_console.js'
+
 import 'normalize.css/normalize.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import './index.css'

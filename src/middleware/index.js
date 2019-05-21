@@ -1,12 +1,17 @@
 import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 import api from './api'
+import { IS_DEBUG } from './../config'
 
-const logger = createLogger({
-  level: 'info',
-  collapsed: false
-})
+const middlerwares = [thunk, api]
 
-const middlerwares = [thunk, api, logger]
+if (IS_DEBUG) {
+  const logger = createLogger({
+    level: 'info',
+    collapsed: false
+  })
+
+  middlerwares.push(logger)
+}
 
 export default middlerwares
