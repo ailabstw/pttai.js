@@ -380,7 +380,10 @@ class FirstPopupModal extends PureComponent {
                       </label>
                     </div>
                     <div className={styles['submodal-ga-agreement-see-more']} onClick={() => this.openPrivacySetting()}>
-                      了解更多
+                      <FormattedMessage
+                        id='first-popup-modal.know-more'
+                        defaultMessage="Know More"
+                      />
                     </div>
                   </div>
                 </div>
