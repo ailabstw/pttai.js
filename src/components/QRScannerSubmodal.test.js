@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import AddKnownBoardModal from './AddKnownBoardModal'
+import QRScannerSubmodal from './QRScannerSubmodal'
 
 it.skip('should pass', () => {
 })
+
