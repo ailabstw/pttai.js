@@ -1,6 +1,6 @@
 {
   "name": "pttai.js",
-  "version": "0.1.1",
+  "version": "0.4.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
@@ -58,7 +58,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom --transformIgnorePatterns 'node_modules/(?!(webrtc-adapter|quill)/)'",
+    "test": "react-scripts test --env=jsdom --transformIgnorePatterns 'node_modules/(?!(webrtc-adapter|quill|react-toastify)/)'",
     "eject": "react-scripts eject",
     "lint": "./node_modules/.bin/standard",
     "lint-fix": "./node_modules/.bin/standard --fix"
