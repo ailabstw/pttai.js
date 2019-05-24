@@ -127,7 +127,7 @@ class PrivacySettingModal extends PureComponent {
                   <input type='radio'
                     name='terms-agreemenet'
                     disabled={!fromSignInPage}
-                    checked={termsAgree}
+                    defaultChecked={termsAgree}
                     onClick={() => { this.setState({ termsAgree: !termsAgree }) }}
                   />
                   <span className={styles['checkmark']} />
@@ -141,7 +141,7 @@ class PrivacySettingModal extends PureComponent {
                     defaultMessage="Agree to user tracking for improving Ptt.ai's service"
                   />
                   <input type='radio'
-                    checked={gaAgree}
+                    defaultChecked={gaAgree}
                     onClick={() => this.setState({ gaAgree: !gaAgree })} />
                   <span className={styles['checkmark']} />
                 </label>

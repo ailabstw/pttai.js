@@ -359,7 +359,7 @@ class FirstPopupModal extends PureComponent {
                         />
                         <input type='radio'
                           name='terms-agreemenet'
-                          checked={termsAgree}
+                          defaultChecked={termsAgree}
                           onClick={() => { this.setState({ termsAgree: !termsAgree }) }}
                         />
                         <span className={styles['checkmark']} />
@@ -373,7 +373,7 @@ class FirstPopupModal extends PureComponent {
                         />
                         <input type='radio'
                           name='ga-agreemenet'
-                          checked={gaAgree}
+                          defaultChecked={gaAgree}
                           onClick={() => { this.setState({ gaAgree: !gaAgree }) }}
                         />
                         <span className={styles['checkmark']} />
