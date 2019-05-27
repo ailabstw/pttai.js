@@ -10,3 +10,20 @@ window.matchMedia = window.matchMedia || function () {
     removeListener: function () {}
   }
 }
+
+var localStorageMock = (() => {
+  let store = {};
+
+  return {
+    hasOwnProperty: (key) => !!store[key],
+    getItem: (key) => store[key] || null,
+    getAllItems: () => store,
+    setItem: (key, value) => { store[key] = value.toString() },
+    removeItem: (key) => { delete store[key] },
+    clear: () => { store = {}; }
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+     value: localStorageMock
+});
