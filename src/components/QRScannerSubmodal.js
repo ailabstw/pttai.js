@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import QrReader from 'react-qr-reader'
 import { FormattedMessage } from 'react-intl'
 import { isIOS, isAndroid } from '../utils/utils'
@@ -9,7 +10,7 @@ import styles from './QRScannerSubmodal.module.scss'
  * [required] onScanned(code: <String>): used when Scanner got QRCode
 */
 
-class AndroidScanner extends PureComponent {
+export class AndroidScanner extends PureComponent {
   constructor (props) {
     super()
     this.openCamera = this.openCamera.bind(this)
@@ -68,7 +69,7 @@ class AndroidScanner extends PureComponent {
   }
 }
 
-class IosScanner extends PureComponent {
+export class IosScanner extends PureComponent {
   constructor (props) {
     super()
     this.openCamera = this.openCamera.bind(this)
@@ -100,30 +101,26 @@ class IosScanner extends PureComponent {
   }
 }
 
-const WebScanner = props => {
-  const { onScanned } = props
-
-  return (
-    <div>
-      <div className={styles['scanner-container']}>
-        <QrReader
-          delay={300}
-          onError={(err) => console.error(err)}
-          onScan={onScanned}
-          className={styles['scanner']}
+export const WebScanner = props => (
+  <div>
+    <div className={styles['scanner-container']}>
+      <QrReader
+        delay={300}
+        onError={(err) => console.error(err)}
+        onScan={props.onScanned}
+        className={styles['scanner']}
+      />
+      <div className={styles['scanner-text']}>
+        <FormattedMessage
+          id='add-friend-modal.scan-code-title'
+          defaultMessage='Scan QR Code to add friend'
         />
-        <div className={styles['scanner-text']}>
-          <FormattedMessage
-            id='add-friend-modal.scan-code-title'
-            defaultMessage='Scan QR Code to add friend'
-          />
-        </div>
       </div>
     </div>
-  )
-}
+  </div>
+)
 
-export default props => (
+const QRScannerSubmodal = props => (
   <div className={styles['submodal-wrapper']}>
     {
       (() => {
@@ -138,3 +135,9 @@ export default props => (
     }
   </div>
 )
+
+QRScannerSubmodal.propTypes = {
+  onScanned: PropTypes.func.isRequired,
+}
+
+export default QRScannerSubmodal

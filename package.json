@@ -58,7 +58,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom --transformIgnorePatterns 'node_modules/(?!(webrtc-adapter|quill|react-toastify)/)'",
+    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(webrtc-adapter|quill|react-toastify)/)'",
+    "comment": "FIXME: Due to jest bug, test:coverage need to set --watchAll flag to false",
+    "test:coverage": "yarn test --coverage --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "./node_modules/.bin/standard",
     "lint-fix": "./node_modules/.bin/standard --fix"
@@ -78,9 +80,11 @@
     ]
   },
   "jest": {
+    "coverageReporters": ["text"],
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/**/*.test.js"
+      "!src/**/*.test.js",
+      "!<rootDir>/node_modules/"
     ]
   },
   "devDependencies": {

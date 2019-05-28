@@ -1,13 +1,19 @@
 import config from '../config'
 import ReactGA from 'react-ga'
 
-const GA_KEY = 'ga_is_on_for_pttai'
+export const GA_KEY = 'ga_is_on_for_pttai'
 
 let googleAnalytics = (() => {
   let _initialized = false
 
   let _shouldTrack = () => {
-    return localStorage.hasOwnProperty(GA_KEY) && JSON.parse(localStorage.getItem(GA_KEY)).track === 'true'
+    try {
+      return localStorage.hasOwnProperty(GA_KEY) &&
+        JSON.parse(localStorage.getItem(GA_KEY)).track === 'true'
+    }
+    catch(e) {
+      return false
+    }
   }
 
   let _initialize = (userId) => {
@@ -17,7 +23,7 @@ let googleAnalytics = (() => {
     if (_initialized) return true
 
     let gaUserId = userId || (
-      localStorage.hasOwnProperty(GA_KEY) ? JSON.parse(localStorage.getItem(GA_KEY)).userId : 'no-user-id'
+      (localStorage.hasOwnProperty(GA_KEY) && JSON.parse(localStorage.getItem(GA_KEY)).userId) || 'no-user-id'
     )
 
     ReactGA.initialize(config.GA_TRACKING_ID, {
@@ -63,38 +69,35 @@ let googleAnalytics = (() => {
       return _initialize(userId)
     },
     firePageView: (path) => {
-      if (!_shouldTrack()) return
-
-      if (!_initialized) _initialize()
+      if (!_shouldTrack()) return false
 
       let urlPath = path || window.location.pathname + window.location.search
 
       ReactGA.pageview(urlPath)
       console.log('[GA] pageview: ', urlPath)
+      return true
     },
     fireEventOnProb: (category, action, probability) => {
-      if (Math.random() > probability) return
+      if (Math.random() > probability) return false
 
-      if (!_shouldTrack()) return
-
-      if (!_initialized) _initialize()
+      if (!_shouldTrack()) return false
 
       ReactGA.event({
         category: category,
         action: action || 'no-action-name'
       })
       console.log('[GA] event: ', category, action)
+      return true
     },
     fireEvent: (category, action) => {
-      if (!_shouldTrack()) return
-
-      if (!_initialized) _initialize()
+      if (!_shouldTrack()) return false
 
       ReactGA.event({
         category: category,
         action: action || 'no-action-name'
       })
       console.log('[GA] event: ', category, action)
+      return true
     }
   }
 })()
