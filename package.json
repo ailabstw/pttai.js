@@ -84,6 +84,9 @@
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/**/*.test.js",
+      "!src/index.js",
+      "!src/overwrite_console.js",
+      "!src/registerServiceWorker.js",
       "!<rootDir>/node_modules/"
     ]
   },
