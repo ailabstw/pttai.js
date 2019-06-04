@@ -62,39 +62,6 @@
     z-index: 2;
 }
 
-.list-item-menu {
-    position: absolute;
-    right: -200px;
-    top: 0px;
-    width: 100px;
-    height: 100px;
-    background: #FFF;
-    transition: 0.8s;
-    border-left: 1px solid #A9A9A9;
-}
-
-.list-item-menu-slider {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 100px;
-    height: 100px;
-    background: #FFF;
-    transition: 0.8s;
-    border-left: 1px solid #A9A9A9;
-
-    display: flex;
-    flex-direction: row;
-}
-
-.list-item-menu-item {
-    width: 100px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 100px;
-    cursor: pointer;
-}
-
 .no-content-message {
     text-align: center;
     color: #B8B8B8;
