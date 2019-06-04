@@ -111,7 +111,7 @@ class ArticleListComponent extends PureComponent {
   }
 }
 
-class ArticleComponent extends PureComponent {
+export class ArticleComponent extends PureComponent {
   render () {
     let { data, onClick, boardId, summaryData } = this.props
     let isUnreadArticle = isUnRead(data.CommentCreateTS.T, data.LastSeen.T)
