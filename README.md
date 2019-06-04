@@ -9,7 +9,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Install
 
 ```bash
-git clone git@gitlab.corp.ailabs.tw:ptt.ai/pttai.js.git
+git clone git@github.com:ailabstw/pttai.js.git
 cd pttai.js
 yarn
 ```
