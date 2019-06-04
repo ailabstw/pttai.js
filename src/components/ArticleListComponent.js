@@ -18,10 +18,6 @@ class ArticleListComponent extends PureComponent {
   constructor (props) {
     super()
     this.topItem = null
-    this.state = {
-      sliderInIndex: -1
-    }
-    this.onListItemClick = this.onListItemClick.bind(this)
     this.scrollToBottom = this.scrollToBottom.bind(this)
     this.needFetchMore = this.needFetchMore.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
@@ -49,37 +45,32 @@ class ArticleListComponent extends PureComponent {
     }
   }
 
-  onListItemClick (e) {
-    const { onListItemClick } = this.state
-    if (onListItemClick !== -1) {
-      this.setState({ sliderInIndex: -1 })
-    } else {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-  }
-
   scrollToBottom (mode) {
     this.pageEnd.scrollIntoView({ behavior: mode })
   }
 
   componentDidUpdate (prevProps) {
-    if ((prevProps.listData.length === 0 && this.props.listData.length > 0) ||
-        (prevProps.match.path !== this.props.match.path)) {
-      /* First load */
-      this.scrollToBottom('instant')
-    } else if (this.topItem && prevProps.isLoading && !this.props.isLoading) {
-      /* More loaded */
-      ReactDOM.findDOMNode(this.topItem).scrollIntoView()
-    } else if ((prevProps.listData.length > 0 && this.props.listData.length === prevProps.listData.length + 1)) {
-      /* New user message */
+    const isFirstLoaded = (prevProps.listData.length === 0 && this.props.listData.length > 0) ||
+      (prevProps.match.path !== this.props.match.path)
+
+    if (isFirstLoaded) {
+      return this.scrollToBottom('instant')
+    }
+
+    const isLoadingMore = this.topItem && prevProps.isLoading && !this.props.isLoading
+    if (isLoadingMore) {
+      return ReactDOM.findDOMNode(this.topItem).scrollIntoView()
+    }
+
+    const isGettingNewMessage = prevProps.listData.length > 0 &&
+      this.props.listData.length === prevProps.listData.length + 1
+    if (isGettingNewMessage) {
       this.scrollToBottom('smooth')
     }
   }
 
   render () {
     const { boardId, listData, summaryData, isLoading, noArticle } = this.props
-    const { sliderInIndex } = this.state
 
     let aliveArticles = listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted'))
 
@@ -110,8 +101,7 @@ class ArticleListComponent extends PureComponent {
           }
           {
             aliveArticles.map(item => (
-              <ArticleComponent data={item} summaryData={summaryData} key={item.ID}
-                onClick={this.onListItemClick} sliderInIndex={sliderInIndex} boardId={boardId} />
+              <ArticleComponent data={item} summaryData={summaryData} key={item.ID} boardId={boardId} />
             ))
           }
         </div>
@@ -123,11 +113,10 @@ class ArticleListComponent extends PureComponent {
 
 class ArticleComponent extends PureComponent {
   render () {
-    let { data, onClick, sliderInIndex, boardId, summaryData } = this.props
+    let { data, onClick, boardId, summaryData } = this.props
     let isUnreadArticle = isUnRead(data.CommentCreateTS.T, data.LastSeen.T)
     let listItemClass = styles['list-item'] + ' ' + (isUnreadArticle ? styles['unread'] : styles['read'])
-    let itemLink = (sliderInIndex === -1) ? `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(data.ID)}` : false
-    // let menuClass = (index === sliderInIndex)?'list-item-menu-slider':'list-item-menu'
+    let itemLink = `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(data.ID)}`
 
     let summary = ''
     if (data.PreviewText) {
@@ -171,20 +160,6 @@ class ArticleComponent extends PureComponent {
             </div>
           </div>
         </Link>
-        {/*
-        <div className={styles[menuClass]}>
-          <div className={styles['list-item-menu-item']}
-               onClick={()=> {
-                deleteArticle(item.ID)
-                that.setState({sliderInIndex: -1})
-              }}>
-            <FormattedMessage
-              id="article-list-component.action"
-              defaultMessage="Delete"
-            />
-          </div>
-        </div>
-        */}
       </div>
     )
   }
