@@ -57,25 +57,45 @@ describe('RootPage', () => {
   it('should render HubPage', () => {
     wrapper = mount(domTreeFunc('HubPage'))
     expect(wrapper.find(HubPage).length).toBe(1)
+    expect(wrapper.find(BoardPage).length).toBe(0)
+    expect(wrapper.find(ArticlePage).length).toBe(0)
+    expect(wrapper.find(FriendListPage).length).toBe(0)
+    expect(wrapper.find(FriendChatPage).length).toBe(0)
   })
 
   it('should render BoardPage', () => {
     wrapper = mount(domTreeFunc('BoardPage'))
     expect(wrapper.find(BoardPage).length).toBe(1)
+    expect(wrapper.find(HubPage).length).toBe(0)
+    expect(wrapper.find(ArticlePage).length).toBe(0)
+    expect(wrapper.find(FriendListPage).length).toBe(0)
+    expect(wrapper.find(FriendChatPage).length).toBe(0)
   })
 
   it('should render ArticlePage', () => {
     wrapper = mount(domTreeFunc('ArticlePage'))
     expect(wrapper.find(ArticlePage).length).toBe(1)
+    expect(wrapper.find(HubPage).length).toBe(0)
+    expect(wrapper.find(BoardPage).length).toBe(0)
+    expect(wrapper.find(FriendListPage).length).toBe(0)
+    expect(wrapper.find(FriendChatPage).length).toBe(0)
   })
 
   it('should render FriendListPage', () => {
     wrapper = mount(domTreeFunc('FriendListPage'))
     expect(wrapper.find(FriendListPage).length).toBe(1)
+    expect(wrapper.find(HubPage).length).toBe(0)
+    expect(wrapper.find(BoardPage).length).toBe(0)
+    expect(wrapper.find(ArticlePage).length).toBe(0)
+    expect(wrapper.find(FriendChatPage).length).toBe(0)
   })
 
   it('should render FriendChatPage', () => {
     wrapper = mount(domTreeFunc('FriendChatPage'))
     expect(wrapper.find(FriendChatPage).length).toBe(1)
+    expect(wrapper.find(HubPage).length).toBe(0)
+    expect(wrapper.find(BoardPage).length).toBe(0)
+    expect(wrapper.find(ArticlePage).length).toBe(0)
+    expect(wrapper.find(FriendListPage).length).toBe(0)
   })
 })
