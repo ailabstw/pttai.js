@@ -13,18 +13,7 @@ class BoardListComponent extends PureComponent {
   constructor (props) {
     super()
 
-    this.onEditBoard = this.onEditBoard.bind(this)
     // this.needFetchMore    = this.needFetchMore.bind(this)
-    this.handleScroll = this.handleScroll.bind(this)
-  }
-
-  onEditBoard (e, item) {
-    const { manageBoard } = this.props
-
-    e.preventDefault()
-    e.stopPropagation()
-
-    manageBoard(item)
   }
 
   // needFetchMore() {
@@ -38,25 +27,12 @@ class BoardListComponent extends PureComponent {
   //   )
   // }
 
-  handleScroll () {
-    // TODO
-
-    // if (this.needFetchMore()) {
-    //   const { onGetMoreBoards, friendList } = this.props
-
-    //   let startFriendId = friendList[0].friendID
-
-    //   this.topItem = this.scroller.childNodes[0].childNodes.length === 0? null : this.scroller.childNodes[0].childNodes[0];
-    //   onGetMoreBoards(startFriendId)
-    // }
-  }
-
   render () {
     const { userId, /* userName, */ listData, isLoading, /* createBoard, */ noBoard } = this.props
 
     if (noBoard) {
       return (
-        <div className={styles['root']} onScroll={this.handleScroll} ref={(scroller) => { this.scroller = scroller }}>
+        <div className={styles['root']} ref={(scroller) => { this.scroller = scroller }}>
           <div className={styles['no-content-message']}>
             <FormattedMessage
               id='board-list-component.message'
@@ -77,7 +53,7 @@ class BoardListComponent extends PureComponent {
     let activeList = listData.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted'))
 
     return (
-      <div className={styles['root']} onScroll={this.handleScroll} ref={(scroller) => { this.scroller = scroller }}>
+      <div className={styles['root']} ref={(scroller) => { this.scroller = scroller }}>
         {
           <div className={styles['list']}>
             {
@@ -121,13 +97,6 @@ class BoardListComponent extends PureComponent {
                         <div className={styles['list-item-space']} />
                         <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>
                           {epoch2ReadFormat(item.UpdateTS.T)}
-                        </div>
-                        <div className={styles['list-item-edit-button']}>
-                          {
-                            true || item.CreatorID !== userId ? (null) : (
-                              <div className={styles['list-item-ellipsis']} onClick={(e) => this.onEditBoard(e, item)} />
-                            )
-                          }
                         </div>
                       </div>
                     </Link>
