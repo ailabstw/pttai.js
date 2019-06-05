@@ -1,14 +1,18 @@
+@import '../variables';
+
 .root {
     min-height: 64px;
-    width: 100%;
+    width: calc(100% - #{$drawerWidth});
     background-color: #FFF;
     border-bottom: 1px solid #A9A9A9;
+    position: fixed;
+    top: 0;
+    z-index: 10;
 }
 
 .content {
     min-height: 64px;
     width: 100%;
-    max-width: 413px;
     display: flex;
     flex-direction: row;
     /*position: fixed;*/

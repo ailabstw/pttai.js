@@ -12,13 +12,6 @@ const FriendChatBar = props => {
   return (
     <div className={styles['root']}>
       <div className={styles['content']}>
-
-        <div className={styles['prev-button']}>
-          <Link to={`/friend`}>
-            <div className={styles['prev-button-icon']} />
-          </Link>
-        </div>
-
         <div className={styles['main-content']} onClick={openNameCard}>
           <div className={styles['profile-pic']}>
             <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'} />

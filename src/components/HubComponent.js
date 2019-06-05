@@ -16,17 +16,8 @@ class HubComponent extends PureComponent {
           noBoard={noBoard}
           listData={boardList}
           isLoading={isLoading}
-          // createBoard={createBoardAction}
+          createBoardAction={createBoardAction}
           manageBoard={manageBoardAction} />
-        <div className={styles['add-icon-container']}>
-          <div className={styles['add-icon-subcontainer']}>
-            <div className={styles['add-icon-container']}>
-              <div className={styles['add-icon-subcontainer']}>
-                <div className={styles['add-icon']} onClick={createBoardAction} />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     )
   }

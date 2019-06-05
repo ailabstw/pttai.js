@@ -8,12 +8,11 @@ import { injectIntl } from 'react-intl'
 
 import Empty from '../components/Empty'
 import Navigator from '../components/Navigator'
+import Sidebar from '../components/Sidebar'
 
-import HubPage from '../containers/HubPage'
 import BoardPage from '../containers/BoardPage'
 import ArticlePage from '../containers/ArticlePage'
 import ProfilePage from '../containers/ProfilePage'
-import FriendListPage from '../containers/FriendListPage'
 import FriendChatPage from '../containers/FriendChatPage'
 import ModalContainer from '../containers/ModalContainer'
 
@@ -37,6 +36,9 @@ import { emptyTimeStamp } from '../reducers/utils'
 
 import styles from './RootPage.module.scss'
 import 'react-toastify/dist/ReactToastify.css'
+
+
+import { makeStyles } from '@material-ui/core/styles'
 
 class RootPage extends PureComponent {
   constructor (props) {
@@ -378,49 +380,59 @@ class RootPage extends PureComponent {
       'INVITE_TO_BOARD_MODAL': inviteToBoardId
     }
 
-    let MAIN_PAGE = null
+    // let MAIN_PAGE = null
 
-    switch (myComponent) {
-      case 'HubPage':
-        MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId} />)
-        break
-      case 'BoardPage':
-        MAIN_PAGE = (<BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId} />)
-        break
-      case 'ArticlePage':
-        MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId} />)
-        break
-      case 'FriendListPage':
-        MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId} />)
-        break
-      case 'FriendChatPage':
-        MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />)
-        break
-      default:
-        MAIN_PAGE = null
-    }
+    // switch (myComponent) {
+    //   case 'HubPage':
+    //     MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId} />)
+    //     break
+    //   case 'BoardPage':
+    //     MAIN_PAGE = (<BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId} />)
+    //     break
+    //   case 'ArticlePage':
+    //     MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId} />)
+    //     break
+    //   case 'FriendListPage':
+    //     MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId} />)
+    //     break
+    //   case 'FriendChatPage':
+    //     MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />)
+    //     break
+    //   default:
+    //     MAIN_PAGE = null
+    // }
 
     let isChatRoom = myComponent === 'FriendChatPage'
 
     return (
       <div className={styles['root']}>
-        <ProfilePage
-          myId={profilePageId}
-          userId={userId}
-          userName={userName}
-          userImg={userImg}
-          openNameCard={openNameCard}
-          onSettingClicked={onSettingClicked}
-          onLatestClicked={onLatestClicked}
-          isChatRoom={isChatRoom}
-          hasUnread={latestHasUnread} />
-        <Navigator {...this.props}
-          hubHasUnread={hubHasUnread}
-          friendListHasUnread={friendListHasUnread}
-          onHubClicked={markHubSeen}
-          isChatRoom={isChatRoom}
-          onFriendClicked={markFriendRead} />
-        { MAIN_PAGE }
+        <Sidebar {...this.props}
+          markHubSeen={markHubSeen} hubPageId={hubPageId}
+          markFriendRead={markFriendRead} friendListPageId={friendListPageId}
+        />
+        <main className={styles['content']}>
+          <ProfilePage
+            myId={profilePageId}
+            userId={userId}
+            userName={userName}
+            userImg={userImg}
+            openNameCard={openNameCard}
+            onSettingClicked={onSettingClicked}
+            onLatestClicked={onLatestClicked}
+            isChatRoom={isChatRoom}
+            hasUnread={latestHasUnread} />
+            {
+              /*
+                <Navigator {...this.props}
+                  hubHasUnread={hubHasUnread}
+                  friendListHasUnread={friendListHasUnread}
+                  onHubClicked={markHubSeen}
+                  isChatRoom={isChatRoom}
+                  onFriendClicked={markFriendRead} />
+              */
+            }
+          <FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />
+        </main>
         <ModalContainer className={styles['overlay']} idMap={modalIdMap} />
         <ToastContainer hideProgressBar />
       </div>

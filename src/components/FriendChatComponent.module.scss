@@ -1,8 +1,9 @@
 .root {
-    height: calc(100% - 64px);
+    height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .action-section {

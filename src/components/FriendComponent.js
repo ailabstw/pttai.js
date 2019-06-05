@@ -21,16 +21,9 @@ class FriendComponent extends PureComponent {
           friendList={friendList}
           onGetMoreFriends={onGetMoreFriends}
           allFriendsLoaded={allFriendsLoaded}
-          openFriendSettingMenuModal={openFriendSettingMenuModal} />
-        <div className={styles['add-icon-container']}>
-          <div className={styles['add-icon-subcontainer']}>
-            <div className={styles['add-icon-container']}>
-              <div className={styles['add-icon-subcontainer']}>
-                <div id='add-friend-button' className={styles['add-icon']} onClick={addFriendAction} />
-              </div>
-            </div>
-          </div>
-        </div>
+          openFriendSettingMenuModal={openFriendSettingMenuModal}
+          addFriendAction={addFriendAction}
+        />
       </div>
     )
   }

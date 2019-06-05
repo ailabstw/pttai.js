@@ -14,6 +14,12 @@ import * as constants from '../constants/Constants'
 
 import styles from './FriendListComponent.module.scss'
 
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+
+
 class FriendListComponent extends PureComponent {
   constructor (props) {
     super()
@@ -53,7 +59,7 @@ class FriendListComponent extends PureComponent {
   }
 
   render () {
-    const { friendList, userName, noFriend, isLoading, intl } = this.props
+    const { friendList, userName, noFriend, isLoading, intl, addFriendAction } = this.props
 
     if (noFriend) {
       return (
@@ -76,73 +82,30 @@ class FriendListComponent extends PureComponent {
 
     return (
       <div className={styles['root']} onScroll={this.handleScroll} ref={scroller => { this.scroller = scroller }}>
-        <div>
+        <List>
+          <ListSubheader>
+              Friends <span onClick={addFriendAction}>+</span>
+          </ListSubheader>
           {
-            isLoading ? (
-              <div className={styles['loader']}>
-                <ClipLoader color={'#aaa'} size={35} loading={isLoading} />
-              </div>
-            ) : (null)
-          }
-          {
-            friendSortedList.map((item, index) => {
-              const friendLink = (item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}` : '#'
-              const summaryObj = toJson(item.Summary)
-              const isFriendUnread = isUnRead(item.ArticleCreateTS && item.ArticleCreateTS.T, item.LastSeen && item.LastSeen.T)
+            // FIXME: just for layout dev
+            [1,1,1,1,1].map( () =>
 
-              return (
-                <div className={styles['list-item'] + ' ' + (isFriendUnread ? styles['unread'] : '')} key={index}>
+              friendSortedList.map((item, index) => {
+                const friendLink = (item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}` : '#'
+                const summaryObj = toJson(item.Summary)
+                const isFriendUnread = isUnRead(item.ArticleCreateTS && item.ArticleCreateTS.T, item.LastSeen && item.LastSeen.T)
+
+                return (
                   <Link to={friendLink}>
-                    <div className={styles['list-item-author']}>
-                      <div className={styles['list-item-author-pic']}>
-                        <img src={item.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'} />
-                      </div>
-                      <div title={constants.STATUS_ARRAY[item.FriendStatus]} className={styles['list-item-author-status']}>
-                        <div className={styles['list-item-author-status-circle'] + ' ' + styles[getStatusClass(item.FriendStatus)]} />
-                      </div>
-                    </div>
-                    <div className={styles['list-item-main']}>
-                      <div className={styles['list-item-header']}>
-                        <div className={styles['list-item-title']}>
-                          {item.Name}
-                          {
-                            constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'
-                              ? '' : `(${intl.formatMessage({ id: 'friend-list-component.syncing' })})`
-                          }
-                        </div>
-                        <div className={styles['list-item-time']}>
-                          {
-                            item.ArticleCreateTS.T ? epoch2ReadFormat(item.ArticleCreateTS.T) : ''
-                          }
-                        </div>
-                      </div>
-                      <div className={styles['list-item-description']}>
-                        { item.nameCard && item.nameCard.company ? item.nameCard.company : constants.DEFAULT_USER_COMPANY }
-                      </div>
-                      <div className={styles['list-item-content']}>
-                        {
-                          summaryObj.type === constants.MESSAGE_TYPE_INVITE ? (
-                            <FormattedMessage
-                              id='friend-list-component.message2'
-                              defaultMessage='\u2605 {INVITING_USER_NAME} invited {INVITED_USER_NAME} to join a board'
-                              values={{ INVITING_USER_NAME: item.SummaryUserName, INVITED_USER_NAME: (item.friendID === item.SummaryUserID) ? userName : item.Name }}
-                            />
-                          ) : (
-                            <span>{summaryObj.value}</span>
-                          )
-                        }
-                      </div>
-                    </div>
-                    <div className={styles['list-item-meta']}>
-                      <div className={styles['list-item-circle']} />
-                      <div className={styles['list-item-ellipsis']} onClick={(e) => this.onMenuTrigger(e, item)} />
-                    </div>
+                    <ListItem button>
+                      <ListItemText primary={item.Name} />
+                    </ListItem>
                   </Link>
-                </div>
-              )
-            })
+                )
+              })
+            )
           }
-        </div>
+        </List>
 
         <div className={styles['spinner-item']}>
           <BeatLoader color={'#aaa'} size={10} loading={false} />
