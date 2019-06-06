@@ -1,9 +1,12 @@
+@import '../variables.scss';
+
 .root {
-    height: 100vh;
+    height: calc(100vh - 65px);
     width: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
+    margin-top: $chatbarHeight;
 }
 
 .action-section {

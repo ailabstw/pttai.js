@@ -7,12 +7,10 @@ import RootPage from './containers/RootPage'
 // for testing
 export const SwitchRoutes = () => (
   <Switch>
-    <Route exact path={`/hub`} render={(props) => <RootPage {...props} myComponent={'HubPage'} />} />
     <Route exact path={`/board/:boardId`} render={(props) => <RootPage {...props} myComponent={'BoardPage'} />} />
     <Route exact path={`/board/:boardId/article/:articleId`} render={(props) => <RootPage {...props} myComponent={'ArticlePage'} />} />
-    <Route exact path={`/friend`} render={(props) => <RootPage {...props} myComponent={'FriendListPage'} />} />
     <Route exact path={`/friend/:friendId/chat/:chatId`} render={(props) => <RootPage {...props} myComponent={'FriendChatPage'} />} />
-    <Redirect exact from={`/`} to={`/friend`} />
+    <Route exact path={`/`} render={(props) => <RootPage {...props} />} />
   </Switch>
 )
 

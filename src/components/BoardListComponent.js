@@ -69,7 +69,7 @@ class BoardListComponent extends PureComponent {
                 let itemStatus = isBoardUnread ? styles['unread'] : styles['read']
 
                 return (
-                  <Link to={`/board/${encodeURIComponent(item.ID)}`}>
+                  <Link to={`/board/${encodeURIComponent(item.ID)}`} key={index}>
                     <ListItem button>
                       <ListItemText primary={item.Title} />
                     </ListItem>

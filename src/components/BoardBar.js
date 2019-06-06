@@ -10,17 +10,7 @@ class BoardBar extends PureComponent {
     return (
       <div className={styles['root']}>
         <div className={styles['content']}>
-          <div className={styles['prev-button']}>
-            <Link to={`/hub`}>
-              <div className={styles['prev-button-icon']} />
-              <div className={styles['prev-button-text']}>
-                <FormattedMessage
-                  id='boardbar.prev-button'
-                  defaultMessage='Boards'
-                />
-              </div>
-            </Link>
-          </div>
+          <div className={styles['prev-button']}></div>
           <div title={boardInfo.Title} className={styles['board-name']} onClick={onOpenOPLogModal}>
             {boardInfo.Title}
           </div>

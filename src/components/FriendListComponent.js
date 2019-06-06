@@ -83,12 +83,12 @@ class FriendListComponent extends PureComponent {
     return (
       <div className={styles['root']} onScroll={this.handleScroll} ref={scroller => { this.scroller = scroller }}>
         <List>
-          <ListSubheader>
+          <ListSubheader classes={{root: styles['list-title']}}>
               Friends <span onClick={addFriendAction}>+</span>
           </ListSubheader>
           {
             // FIXME: just for layout dev
-            [1,1,1,1,1].map( () =>
+            // [1,1,1,1,1].map( () =>
 
               friendSortedList.map((item, index) => {
                 const friendLink = (item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}` : '#'
@@ -96,14 +96,14 @@ class FriendListComponent extends PureComponent {
                 const isFriendUnread = isUnRead(item.ArticleCreateTS && item.ArticleCreateTS.T, item.LastSeen && item.LastSeen.T)
 
                 return (
-                  <Link to={friendLink}>
+                  <Link to={friendLink} key={index}>
                     <ListItem button>
                       <ListItemText primary={item.Name} />
                     </ListItem>
                   </Link>
                 )
               })
-            )
+            // )
           }
         </List>
 

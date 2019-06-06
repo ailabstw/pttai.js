@@ -380,29 +380,21 @@ class RootPage extends PureComponent {
       'INVITE_TO_BOARD_MODAL': inviteToBoardId
     }
 
-    // let MAIN_PAGE = null
-
-    // switch (myComponent) {
-    //   case 'HubPage':
-    //     MAIN_PAGE = (<HubPage {...this.props} markSeen={markHubSeen} myId={hubPageId} />)
-    //     break
-    //   case 'BoardPage':
-    //     MAIN_PAGE = (<BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId} />)
-    //     break
-    //   case 'ArticlePage':
-    //     MAIN_PAGE = (<ArticlePage {...this.props} myId={articlePageId} />)
-    //     break
-    //   case 'FriendListPage':
-    //     MAIN_PAGE = (<FriendListPage {...this.props} markSeen={markFriendRead} myId={friendListPageId} />)
-    //     break
-    //   case 'FriendChatPage':
-    //     MAIN_PAGE = (<FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />)
-    //     break
-    //   default:
-    //     MAIN_PAGE = null
-    // }
-
     let isChatRoom = myComponent === 'FriendChatPage'
+
+    let MAIN_PAGE = null
+
+    switch(myComponent) {
+      case 'BoardPage':
+        MAIN_PAGE = <BoardPage {...this.props} markSeen={this.checkMarkHubSeen} myId={boardPageId} />
+        break;
+      case 'ArticlePage':
+        MAIN_PAGE = <ArticlePage {...this.props} myId={articlePageId} />
+        break;
+      case 'FriendChatPage':
+        MAIN_PAGE = <FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />
+        break;
+    }
 
     return (
       <div className={styles['root']}>
@@ -411,18 +403,18 @@ class RootPage extends PureComponent {
           markFriendRead={markFriendRead} friendListPageId={friendListPageId}
         />
         <main className={styles['content']}>
-          <ProfilePage
-            myId={profilePageId}
-            userId={userId}
-            userName={userName}
-            userImg={userImg}
-            openNameCard={openNameCard}
-            onSettingClicked={onSettingClicked}
-            onLatestClicked={onLatestClicked}
-            isChatRoom={isChatRoom}
-            hasUnread={latestHasUnread} />
             {
               /*
+                <ProfilePage
+                  myId={profilePageId}
+                  userId={userId}
+                  userName={userName}
+                  userImg={userImg}
+                  openNameCard={openNameCard}
+                  onSettingClicked={onSettingClicked}
+                  onLatestClicked={onLatestClicked}
+                  isChatRoom={isChatRoom}
+                  hasUnread={latestHasUnread} />
                 <Navigator {...this.props}
                   hubHasUnread={hubHasUnread}
                   friendListHasUnread={friendListHasUnread}
@@ -431,7 +423,9 @@ class RootPage extends PureComponent {
                   onFriendClicked={markFriendRead} />
               */
             }
-          <FriendChatPage {...this.props} markSeen={this.checkMarkFriendListSeen} myId={friendChatPageId} />
+            {
+              MAIN_PAGE
+            }
         </main>
         <ModalContainer className={styles['overlay']} idMap={modalIdMap} />
         <ToastContainer hideProgressBar />

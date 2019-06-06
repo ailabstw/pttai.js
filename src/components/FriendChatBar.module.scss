@@ -1,7 +1,7 @@
 @import '../variables';
 
 .root {
-    min-height: 64px;
+    min-height: $chatbarHeight;
     width: calc(100% - #{$drawerWidth});
     background-color: #FFF;
     border-bottom: 1px solid #A9A9A9;
