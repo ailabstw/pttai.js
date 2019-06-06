@@ -146,7 +146,7 @@ class CommentReplyListComponent extends PureComponent {
   }
 }
 
-class CommentReplyListItem extends PureComponent {
+export class CommentReplyListItem extends PureComponent {
   constructor (props) {
     super()
 
