@@ -5,9 +5,7 @@ import { Link } from 'react-router-dom'
 import { injectIntl,
   FormattedMessage } from 'react-intl'
 
-import { isUnRead,
-  getStatusClass,
-  toJson } from '../utils/utils'
+import { getStatusClass } from '../utils/utils'
 import { epoch2ReadFormat } from '../utils/utilDatetime'
 
 import * as constants from '../constants/Constants'
@@ -71,7 +69,7 @@ class FriendListComponent extends PureComponent {
       )
     }
 
-    let friendSortedList = friendList.sort((a, b) => b.SummaryUpdateTS.T - a.SummaryUpdateTS.T)
+    let friendSortedList = friendList.sort((a, b) => b.Summary.updateTS.T - a.Summary.updateTS.T)
       .filter((friend) => friend.FriendStatus < constants.STATUS_ARRAY.indexOf('StatusDeleted'))
 
     return (
@@ -86,49 +84,49 @@ class FriendListComponent extends PureComponent {
           }
           {
             friendSortedList.map((item, index) => {
-              const friendLink = (item.friendID && item.chatId) ? `/friend/${item.friendID}/chat/${item.chatId}` : '#'
-              const summaryObj = toJson(item.Summary)
-              const isFriendUnread = isUnRead(item.ArticleCreateTS && item.ArticleCreateTS.T, item.LastSeen && item.LastSeen.T)
+              const { friendID, chatId, Summary, Name, Img, company, FriendStatus, joinStatus, isUnread } = item
+
+              const friendLink = (friendID && chatId) ? `/friend/${friendID}/chat/${chatId}` : '#'
 
               return (
-                <div className={styles['list-item'] + ' ' + (isFriendUnread ? styles['unread'] : '')} key={index}>
+                <div className={styles['list-item'] + ' ' + (isUnread ? styles['unread'] : '')} key={index}>
                   <Link to={friendLink}>
                     <div className={styles['list-item-author']}>
                       <div className={styles['list-item-author-pic']}>
-                        <img src={item.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'} />
+                        <img src={Img} alt={'Friend Profile'} />
                       </div>
-                      <div title={constants.STATUS_ARRAY[item.FriendStatus]} className={styles['list-item-author-status']}>
-                        <div className={styles['list-item-author-status-circle'] + ' ' + styles[getStatusClass(item.FriendStatus)]} />
+                      <div title={constants.STATUS_ARRAY[FriendStatus]} className={styles['list-item-author-status']}>
+                        <div className={styles['list-item-author-status-circle'] + ' ' + styles[getStatusClass(FriendStatus)]} />
                       </div>
                     </div>
                     <div className={styles['list-item-main']}>
                       <div className={styles['list-item-header']}>
                         <div className={styles['list-item-title']}>
-                          {item.Name}
+                          {Name}
                           {
-                            constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted'
+                            constants.JOIN_STATUS_ARRAY[joinStatus] === 'JoinStatusAccepted'
                               ? '' : `(${intl.formatMessage({ id: 'friend-list-component.syncing' })})`
                           }
                         </div>
                         <div className={styles['list-item-time']}>
                           {
-                            item.ArticleCreateTS.T ? epoch2ReadFormat(item.ArticleCreateTS.T) : ''
+                            Summary.updateTS.T ? epoch2ReadFormat(Summary.updateTS.T) : ''
                           }
                         </div>
                       </div>
                       <div className={styles['list-item-description']}>
-                        { item.nameCard && item.nameCard.company ? item.nameCard.company : constants.DEFAULT_USER_COMPANY }
+                        { company }
                       </div>
                       <div className={styles['list-item-content']}>
                         {
-                          summaryObj.type === constants.MESSAGE_TYPE_INVITE ? (
+                          Summary.type === constants.MESSAGE_TYPE_INVITE ? (
                             <FormattedMessage
                               id='friend-list-component.message2'
                               defaultMessage='\u2605 {INVITING_USER_NAME} invited {INVITED_USER_NAME} to join a board'
-                              values={{ INVITING_USER_NAME: item.SummaryUserName, INVITED_USER_NAME: (item.friendID === item.SummaryUserID) ? userName : item.Name }}
+                              values={{ INVITING_USER_NAME: Summary.userName, INVITED_USER_NAME: (friendID === Summary.userID) ? userName : Name }}
                             />
                           ) : (
-                            <span>{summaryObj.value}</span>
+                            <span>{Summary.content}</span>
                           )
                         }
                       </div>

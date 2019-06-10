@@ -9,8 +9,12 @@ import { EMPTY_ID,
   DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE,
   DEFAULT_USER_NAMECARD,
+  DEFAULT_USER_COMPANY,
   NUM_FRIEND_PER_REQ,
   MESSAGE_TYPE_TEXT } from '../constants/Constants'
+
+import { isUnRead,
+  toJson } from '../utils/utils'
 
 export const myClass = 'FRIEND_LIST_PAGE'
 
@@ -66,46 +70,32 @@ function getChatSummaries (chatIds) {
 
 export const getFriendList = (myId, isFirstFetch, limit) => {
   return (dispatch, getState) => {
+
     if (isFirstFetch) {
       dispatch(preprocessSetStartLoading(myId))
     }
-    dispatch(serverUtils.getFriends(EMPTY_ID, limit))
-      .then(({ response: friendResult, type, query, error }) => {
-        dispatch(serverUtils.getFriendRequest(EMPTY_ID))
-          .then(({ response: friendReqResult, type, query, error }) => {
-            let chatIds = friendResult.result.map(each => each.ID)
-            dispatch(getChatSummaries(chatIds))
-              .then((summaryResult) => {
-                let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
-                let summaries = summaryResult.map(each => {
-                  if (each.error) {
-                    return {}
-                  } else {
-                    return each.value
-                  }
-                })
-                let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
-                dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
-                  .then((usersInfo) => {
-                    dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo, isFirstFetch))
-                    if (isFirstFetch) {
-                      dispatch(postprocessSetFinshLoading(myId))
-                    }
-                  })
-              })
-          })
-      })
+
+    Promise.all([
+      dispatch(serverUtils.getFriends(EMPTY_ID, limit)),
+      dispatch(serverUtils.getFriendRequest(EMPTY_ID))
+    ]).then( async ([ { response: friendResult }, { response: friendReqResult } ]) => {
+      let chatIds = friendResult.result.map(each => each.ID)
+
+      let summaryResult = await dispatch(getChatSummaries(chatIds))
+      let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
+      let summaries = summaryResult.map(each => each.error ? {} : each.value)
+      let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
+
+      dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
+        .then((usersInfo) => {
+          dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+          dispatch(postprocessSetFinshLoading(myId))
+        })
+    })
   }
 }
 
-const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo, isFirstFetch) => {
-  result = result.map((each) => {
-    return {
-      friendID: each.FID,
-      ...each
-    }
-  })
-
+const friendAndJoinResultToFriendList = (result, reqResult, summaries, usersInfo) => {
   result = result.map(serverUtils.deserialize)
   // reqResult = reqResult.map(serverUtils.deserialize)
 
@@ -114,37 +104,41 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
     return acc
   }, {})
 
-  let friendList = result.map((each, index) => {
-    let userId = each.friendID
-    let summaryUserId = summaries[index].SummaryUserID
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
-    let userNameCardMap = usersInfo['userNameCard'] || {}
+  const userNameMap = usersInfo['userName'] || {}
+  const userImgMap = usersInfo['userImg'] || {}
+  const userNameCardMap = usersInfo['userNameCard'] || {}
 
+  let friendList = result.map((each, index) => {
+    let userId = each.FID
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
     let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
-    let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
-    let SummaryUserImg = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
+    let userCompany = userNameCard.company || DEFAULT_USER_COMPANY
+
     let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
 
+    let Summary = (summaries[index].B && summaries[index].B.length > 0) ? toJson(serverUtils.b64decode(summaries[index].B[0])) : { type: MESSAGE_TYPE_TEXT, value: '' }
+    let summaryUserId = Summary.userId = summaries[index].SummaryUserID
+    Summary.userName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
+    Summary.userImg = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
+
     return {
-      Name: userName,
-      Img: userImg,
-      nameCard: userNameCard,
-      friendID: each.friendID,
-      chatId: each.ID,
-      BoardID: each.BID,
+      Name:         userName,
+      Img:          userImg,
+      company:      userCompany,
+      friendID:     userId,
+      chatId:       each.ID,
       FriendStatus: each.S,
-      SummaryStatus: summaries[index].S,
-      LastSeen: each.LT ? each.LT : utils.emptyTimeStamp(),
-      ArticleCreateTS: ArticleCreateTS,
-      SummaryUpdateTS: summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS,
-      SummaryUserID: summaryUserId,
-      SummaryUserName: SummaryUserName,
-      SummaryUserImg: SummaryUserImg,
-      Summary: (summaries[index].B && summaries[index].B.length > 0) ? serverUtils.b64decode(summaries[index].B[0]) : JSON.stringify({ type: MESSAGE_TYPE_TEXT, value: '' }),
-      joinStatus: 3
+      isUnread:     isUnRead(ArticleCreateTS && ArticleCreateTS.T, each.LT && each.LT.T),
+
+      Summary: {
+        type:     Summary.type,
+        userName: Summary.userName,
+        userID:   Summary.userID,
+        content:  Summary.value,
+        updateTS: summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS
+      },
+      joinStatus: 3 // JoinStatusAccepted
     }
   })
 
@@ -163,65 +157,55 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
       friendList[joinFriendIndex].joinStatus = join.Status
     } else {
       let userId = join.CreatorID
-      let userNameMap = usersInfo['userName'] || {}
-      let userImgMap = usersInfo['userImg'] || {}
-      let userNameCardMap = usersInfo['userNameCard'] || {}
-
       let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
       let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
       let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
+      let userCompany = userNameCard.company || DEFAULT_USER_COMPANY
 
       friendList.push({
-        Name: join.Name || userName,
-        Img: userImg,
-        friendID: userId,
-        nameCard: userNameCard,
-        chatId: null,
-        BoardID: EMPTY_ID,
+        Name:         join.Name || userName,
+        Img:          userImg,
+        company:      userCompany,
+        friendID:     userId,
+        chatId:       null,
         FriendStatus: null,
-        SummaryStatus: null,
-        LastSeen: utils.emptyTimeStamp(),
-        ArticleCreateTS: utils.emptyTimeStamp(),
-        SummaryUpdateTS: utils.emptyTimeStamp(),
-        SummaryUserID: EMPTY_ID,
-        SummaryUserName: '',
-        SummaryUserImg: '',
-        Summary: JSON.stringify({ type: MESSAGE_TYPE_TEXT, value: '' }),
+        isUnRead:     false,
+
+        Summary: {
+          type:     MESSAGE_TYPE_TEXT,
+          userName: '',
+          userID:   EMPTY_ID,
+          content:  '',
+          updateTS: utils.emptyTimeStamp()
+        },
+
         joinStatus: join.Status
       })
     }
   })
 
+  return friendList
+}
+
+const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo) => {
+
+  const friendList = friendAndJoinResultToFriendList(result, reqResult, summaries, usersInfo)
+
   console.log('doFriendListPage.postprocessGetFriendList: friendList:', friendList, reqResult)
 
-  if (friendList.length === 0 && isFirstFetch) {
+  if (friendList.length === 0) {
     return {
       myId,
       myClass,
       type: SET_DATA,
       data: { myFriends: { lru: null, offset: 0, friendList: [] }, noFriend: true }
     }
-  } else if (friendList.length === 0 && !isFirstFetch) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: {}
-    }
   } else {
     return {
       myId,
       myClass,
       type: APPEND_FRIENDS,
-      data: { friends: friendList.sort((a, b) => {
-        if (a.SummaryUpdateTS.T < b.SummaryUpdateTS.T) {
-          return -1
-        } else if (a.SummaryUpdateTS.T > b.SummaryUpdateTS.T) {
-          return 1
-        } else {
-          return 0
-        }
-      }),
+      data: { friends: friendList.sort((a, b) => a.Summary.updateTS.T - b.Summary.updateTS.T),
       noFriend: false }
     }
   }
@@ -229,127 +213,39 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo,
 
 export const getMoreFriendlist = (myId, startFriendId, limit) => {
   return (dispatch, getState) => {
+
+
     dispatch(preprocessSetStartLoading(myId))
-    dispatch(serverUtils.getFriends(startFriendId, limit))
-      .then(({ response: friendResult, type, query, error }) => {
-        dispatch(serverUtils.getFriendRequest(EMPTY_ID))
-          .then(({ response: friendReqResult, type, query, error }) => {
-            let chatIds = friendResult.result.map(each => each.ID)
-            dispatch(getChatSummaries(chatIds))
-              .then((summaryResult) => {
-                let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
-                let summaries = summaryResult.map(each => {
-                  if (each.error) {
-                    return {}
-                  } else {
-                    return each.value
-                  }
-                })
-                let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
-                dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
-                  .then((usersInfo) => {
-                    dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
-                    dispatch(postprocessSetFinshLoading(myId))
-                  })
-              })
+
+
+    Promise([
+      dispatch(serverUtils.getFriends(startFriendId, limit)),
+      dispatch(serverUtils.getFriendRequest(EMPTY_ID))
+    ]).then(([{ response: friendResult},{ response: friendReqResult}]) => {
+      let chatIds = friendResult.result.map(each => each.ID)
+      dispatch(getChatSummaries(chatIds))
+        .then((summaryResult) => {
+          let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
+          let summaries = summaryResult.map(each => {
+            if (each.error) {
+              return {}
+            } else {
+              return each.value
+            }
           })
+          let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
+          dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
+            .then((usersInfo) => {
+              dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+              dispatch(postprocessSetFinshLoading(myId))
+            })
+        })
       })
   }
 }
 
 const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersInfo) => {
-  result = result.map((each) => {
-    return {
-      friendID: each.FID,
-      ...each
-    }
-  })
-
-  result = result.map(serverUtils.deserialize)
-  reqResult = reqResult.map(serverUtils.deserialize)
-
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  let friendList = result.map((each, index) => {
-    let userId = each.friendID
-    let summaryUserId = summaries[index].SummaryUserID
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
-    let userNameCardMap = usersInfo['userNameCard'] || {}
-
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-    let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
-    let SummaryUserName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
-    let SummaryUserImg = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
-    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
-
-    return {
-      Name: userName,
-      Img: userImg,
-      nameCard: userNameCard,
-      friendID: each.friendID,
-      chatId: each.ID,
-      BoardID: each.BID,
-      FriendStatus: each.S,
-      SummaryStatus: summaries[index].S,
-      LastSeen: each.LT ? each.LT : utils.emptyTimeStamp(),
-      ArticleCreateTS: ArticleCreateTS,
-      SummaryUpdateTS: summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS,
-      SummaryUserID: summaryUserId,
-      SummaryUserName: SummaryUserName,
-      SummaryUserImg: SummaryUserImg,
-      Summary: (summaries[index].B && summaries[index].B.length > 0) ? serverUtils.b64decode(summaries[index].B[0]) : JSON.stringify({ type: MESSAGE_TYPE_TEXT, value: '' }),
-      joinStatus: 3
-    }
-  })
-
-  let joinReqs = reqResult.map((eachJoin) => {
-    return {
-      CreatorID: eachJoin.C,
-      NodeID: eachJoin.n,
-      Name: serverUtils.b64decode(eachJoin.N),
-      Status: eachJoin.S
-    }
-  })
-
-  joinReqs.forEach((join, index) => {
-    let joinFriendIndex = friendList.findIndex((e) => e.friendID === join.CreatorID)
-    if (joinFriendIndex >= 0) {
-      friendList[joinFriendIndex].joinStatus = join.Status
-    } else {
-      let userId = join.CreatorID
-      let userNameMap = usersInfo['userName'] || {}
-      let userImgMap = usersInfo['userImg'] || {}
-      let userNameCardMap = usersInfo['userNameCard'] || {}
-
-      let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-      let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-      let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
-
-      friendList.push({
-        Name: join.Name || userName,
-        Img: userImg,
-        friendID: userId,
-        nameCard: userNameCard,
-        chatId: null,
-        BoardID: EMPTY_ID,
-        FriendStatus: null,
-        SummaryStatus: null,
-        LastSeen: utils.emptyTimeStamp(),
-        ArticleCreateTS: utils.emptyTimeStamp(),
-        SummaryUpdateTS: utils.emptyTimeStamp(),
-        SummaryUserID: EMPTY_ID,
-        SummaryUserName: '',
-        SummaryUserImg: '',
-        Summary: JSON.stringify({ type: MESSAGE_TYPE_TEXT, value: '' }),
-        joinStatus: join.Status
-      })
-    }
-  })
+  const friendList = friendAndJoinResultToFriendList(result, reqResult, summaries, usersInfo)
 
   console.log('doFriendListPage.postprocessGetMoreFriendList: friendList:', friendList, reqResult)
 
@@ -365,15 +261,8 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
       myId,
       myClass,
       type: PREPEND_FRIENDS,
-      data: { friendList: friendList.sort((a, b) => {
-        if (a.SummaryUpdateTS.T < b.SummaryUpdateTS.T) {
-          return -1
-        } else if (a.SummaryUpdateTS.T > b.SummaryUpdateTS.T) {
-          return 1
-        } else {
-          return 0
-        }
-      })
+      data: {
+        friendList: friendList.sort((a, b) => a.Summary.updateTS.T - b.Summary.updateTS.T)
       }
     }
   }
@@ -420,9 +309,9 @@ export const _appendFriends = (state, action) => {
 
     friends.forEach((friend, index) => {
       localLRU.set(friend.friendID, friend)
-      if (lruCache.get(friend.friendID) && lruCache.get(friend.friendID).friend.SummaryUpdateTS.T < earlistTS) {
+      if (lruCache.get(friend.friendID) && lruCache.get(friend.friendID).friend.Summary.updateTS.T < earlistTS) {
         startFriend = lruCache.get(friend.friendID)
-        earlistTS = startFriend.friend.SummaryUpdateTS.T
+        earlistTS = startFriend.friend.Summary.updateTS.T
       }
     })
     /* 2. start merge  */
@@ -438,7 +327,7 @@ export const _appendFriends = (state, action) => {
         let oriFriend = friendList[offset + oriIndex]
         let newFriend = friends[newIndex]
         /* both left */
-        if (oriFriend.SummaryUpdateTS.T <= newFriend.SummaryUpdateTS.T) {
+        if (oriFriend.Summary.updateTS.T <= newFriend.Summary.updateTS.T) {
           if (!localLRU.get(oriFriend.friendID)) {
             mergedList.push(oriFriend)
             lruCache.set(oriFriend.friendID, { index: mergeIndex, friend: oriFriend })
@@ -523,7 +412,6 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
     friendID: userId,
     nameCard: userNameCard,
     chatId: null,
-    BoardID: null,
     FriendStatus: 0,
     SummaryStatus: 0,
     LastSeen: utils.emptyTimeStamp(),
