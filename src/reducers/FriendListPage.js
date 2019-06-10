@@ -68,15 +68,17 @@ function getChatSummaries (chatIds) {
   )
 }
 
-export const getFriendList = (myId, isFirstFetch, limit) => {
-  return (dispatch, getState) => {
 
-    if (isFirstFetch) {
+const fetchFriendList = (myId, startFriendId, shouldShowLoading, limit) => {
+  return (dispatch, getState) => {
+    const isFetchMore = startFriendId !== EMPTY_ID
+
+    if (isFetchMore || shouldShowLoading) {
       dispatch(preprocessSetStartLoading(myId))
     }
 
     Promise.all([
-      dispatch(serverUtils.getFriends(EMPTY_ID, limit)),
+      dispatch(serverUtils.getFriends(startFriendId, limit)),
       dispatch(serverUtils.getFriendRequest(EMPTY_ID))
     ]).then( async ([ { response: friendResult }, { response: friendReqResult } ]) => {
       let chatIds = friendResult.result.map(each => each.ID)
@@ -86,12 +88,26 @@ export const getFriendList = (myId, isFirstFetch, limit) => {
       let summaries = summaryResult.map(each => each.error ? {} : each.value)
       let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
 
+
       dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
         .then((usersInfo) => {
-          dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+          if (isFetchMore) {
+            dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+          }
+          else {
+            dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
+          }
           dispatch(postprocessSetFinshLoading(myId))
         })
     })
+
+  }
+}
+
+
+export const getFriendList = (myId, isFirstFetch, limit) => {
+  return (dispatch, getState) => {
+    dispatch(fetchFriendList(myId, EMPTY_ID, isFirstFetch, limit))
   }
 }
 
@@ -213,34 +229,7 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo)
 
 export const getMoreFriendlist = (myId, startFriendId, limit) => {
   return (dispatch, getState) => {
-
-
-    dispatch(preprocessSetStartLoading(myId))
-
-
-    Promise([
-      dispatch(serverUtils.getFriends(startFriendId, limit)),
-      dispatch(serverUtils.getFriendRequest(EMPTY_ID))
-    ]).then(([{ response: friendResult},{ response: friendReqResult}]) => {
-      let chatIds = friendResult.result.map(each => each.ID)
-      dispatch(getChatSummaries(chatIds))
-        .then((summaryResult) => {
-          let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
-          let summaries = summaryResult.map(each => {
-            if (each.error) {
-              return {}
-            } else {
-              return each.value
-            }
-          })
-          let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
-          dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
-            .then((usersInfo) => {
-              dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
-              dispatch(postprocessSetFinshLoading(myId))
-            })
-        })
-      })
+    dispatch(fetchFriendList(myId, startFriendId, true, limit))
   }
 }
 
