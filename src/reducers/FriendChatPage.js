@@ -13,6 +13,8 @@ import { EMPTY_ID,
   NUM_MESSAGE_PER_REQ,
   NUM_CACHE_MESSAGE } from '../constants/Constants'
 
+import { toJson } from '../utils/utils'
+
 export const myClass = 'FRIEND_CHAT_PAGE'
 
 export const myDuck = createDuck(myClass, 'Friend_Chat_Page')
@@ -86,10 +88,7 @@ const postprocessGetFriend = (myId, result, usersInfo) => {
     ID: result.ID,
     Name: userName,
     Img: userImg,
-    company: userNameCard.company || DEFAULT_USER_COMPANY,
-    NameCard: userNameCard,
-    BoardID: result.BID,
-    LastSeen: result.LT ? result.LT : utils.emptyTimeStamp()
+    company: userNameCard.company || DEFAULT_USER_COMPANY
   }
 
   console.log('doFriendChatPage.postprocessGetFriend: friendData:', friendData)
@@ -160,18 +159,16 @@ const fetchMessageList = (myId, chatId, startMessageId, shouldShowLoading, limit
         let subContentIds = validResult.map(each => each.BlockID)
         let creatorIds = validResult.map(each => each.CreatorID)
 
-        Promise.all([
-          dispatch(getMessagesContent(chatId, messageIds, subContentIds)),
-          dispatch(serverUtils.getUsersInfo(creatorIds))
-        ]).then(([messageBlockList, usersInfo]) => {
-          if (startMessageId === EMPTY_ID) {
-            dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, usersInfo))
-          }
-          else {
-            dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, usersInfo))
-          }
-          dispatch(postprocessSetFinshLoading(myId))
-        })
+        dispatch(getMessagesContent(chatId, messageIds, subContentIds))
+          .then((messageBlockList) => {
+            if (startMessageId === EMPTY_ID) {
+              dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, messageBlockList, validResult))
+            }
+            else {
+              dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult))
+            }
+            dispatch(postprocessSetFinshLoading(myId))
+          })
       })
   }
 }
@@ -182,44 +179,30 @@ export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
   }
 }
 
-const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, usersInfo, loadingMore) => {
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  let userNameMap = usersInfo['userName'] || {}
-  let userImgMap = usersInfo['userImg'] || {}
-
+const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, loadingMore) => {
   let messageList = []
   messageBlockList.forEach((each, index) => {
     if (each.error || (loadingMore && index === 0)) {
       return
     }
 
-    let userId = creatorIds[index]
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let messageObj = toJson(serverUtils.b64decode(each.value.B))
 
     messageList.push({
-      ID: each.value.ID,
-      MessageID: messageIds[index],
-      ArticleID: each.value.AID,
-      CreateTS: result[index].CreateTS ? result[index].CreateTS : utils.emptyTimeStamp(),
-      UpdateTS: result[index].UpdateTS ? result[index].UpdateTS : utils.emptyTimeStamp(),
-      CreatorID: creatorIds[index],
-      CreatorName: userName,
-      CreatorImg: userImg,
-      Status: each.value.S,
-      Buf: serverUtils.b64decode(each.value.B)
+      ID:          messageIds[index],
+      CreateTS:    result[index].CreateTS ? result[index].CreateTS : utils.emptyTimeStamp(),
+      CreatorID:   creatorIds[index],
+      Status:      each.value.S,
+      type:        messageObj.type,
+      content:     messageObj.value
     })
   })
 
   return messageList
 }
 
-const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
-  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, usersInfo)
+const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result) => {
+  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result)
 
   console.log('doFriendChatPage.postprocessGetMessageList: messageList:', messageList)
 
@@ -248,8 +231,8 @@ export const getMoreMessageList = (myId, chatId, startMessageId, limit) => {
   }
 }
 
-const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
-  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, usersInfo, true)
+const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBlockList, result) => {
+  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, true)
 
   console.log('doFriendChatPage.postprocessGetMoreMessageList: messageList:', messageList)
 
@@ -374,26 +357,25 @@ export const _appendMessages = (state, action) => {
 /*  Update Chat Content   */
 /*                        */
 
-export const postMessage = (myId, userId, userName, userImg, chatId, message) => {
+export const postMessage = (myId, userId, chatId, message) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.postMessage(chatId, [message], []))
       .then(({ response: { result }, type, error, query }) => {
-        dispatch(postprocessPostMessage(myId, userId, userName, userImg, result, message))
+        console.info('result', result)
+        dispatch(postprocessPostMessage(myId, userId, result, message))
       })
   }
 }
 
-const postprocessPostMessage = (myId, userId, userName, userImg, result, message) => {
+const postprocessPostMessage = (myId, userId, result, message) => {
+  const messageObj = JSON.parse(message)
   const newMessage = {
-    ID: result.cID,
-    ArticleID: result.AID,
-    CreateTS: utils.emptyTimeStamp(),
-    UpdateTS: utils.emptyTimeStamp(),
+    ID:        result.AID,
+    CreateTS:  utils.emptyTimeStamp(),
     CreatorID: userId,
-    CreatorName: userName,
-    CreatorImg: userImg,
-    Status: 0,
-    Buf: message
+    Status:    0,
+    type:      messageObj.type,
+    content:   messageObj.value
   }
 
   console.log('doFriendChatPage.postprocessPostMessage: newMessage:', newMessage)
@@ -409,7 +391,7 @@ const postprocessPostMessage = (myId, userId, userName, userImg, result, message
 export const _addMessage = (state, action) => {
   const { myId, data: { message, noMessage } } = action
 
-  if (!message || !message.ID || !message.ArticleID) {
+  if (!message || !message.ID) {
     return state
   }
 
