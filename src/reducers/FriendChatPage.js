@@ -182,20 +182,22 @@ export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
   }
 }
 
-const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
+const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, usersInfo, loadingMore) => {
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
+  let userNameMap = usersInfo['userName'] || {}
+  let userImgMap = usersInfo['userImg'] || {}
+
   let messageList = []
   messageBlockList.forEach((each, index) => {
-    if (each.error) return
+    if (each.error || (loadingMore && index === 0)) {
+      return
+    }
 
     let userId = creatorIds[index]
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
-
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
@@ -212,6 +214,12 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockLis
       Buf: serverUtils.b64decode(each.value.B)
     })
   })
+
+  return messageList
+}
+
+const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
+  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, usersInfo)
 
   console.log('doFriendChatPage.postprocessGetMessageList: messageList:', messageList)
 
@@ -241,37 +249,7 @@ export const getMoreMessageList = (myId, chatId, startMessageId, limit) => {
 }
 
 const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  let messageList = []
-  messageBlockList.forEach((each, index) => {
-    if (index === 0 || each.error) {
-      return
-    }
-
-    let userId = creatorIds[index]
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
-
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-
-    messageList.push({
-      ID: each.value.ID, /* messageID */
-      MessageID: messageIds[index],
-      ArticleID: each.value.AID,
-      CreateTS: result[index].CreateTS ? result[index].CreateTS : utils.emptyTimeStamp(),
-      UpdateTS: result[index].UpdateTS ? result[index].UpdateTS : utils.emptyTimeStamp(),
-      CreatorID: creatorIds[index],
-      CreatorName: userName,
-      CreatorImg: userImg,
-      Status: each.value.S,
-      Buf: serverUtils.b64decode(each.value.B)
-    })
-  })
+  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, usersInfo, true)
 
   console.log('doFriendChatPage.postprocessGetMoreMessageList: messageList:', messageList)
 
