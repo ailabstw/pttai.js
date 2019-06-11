@@ -250,7 +250,6 @@ class FriendChatComponent extends PureComponent {
               }
               <MessageListComponent
                 messageList={messageList}
-                boardList={this.props.boardList}
                 userId={this.props.userId}
                 history={this.props.history}
                 handleAcceptInvite={this.handleAcceptInvite} />
@@ -371,7 +370,6 @@ const Message = props => {
       <InvitationBlock
         inviteInfo={inviteInfo}
         handleAcceptInvite={props.handleAcceptInvite}
-        boardList={props.boardList}
         history={props.history} />
       <div className={styles['message-meta']}>
         <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
@@ -384,13 +382,10 @@ const Message = props => {
 }
 
 const InvitationBlock = props => {
-  const { inviteInfo, boardList, handleAcceptInvite, history } = props
-
-  var inviteBoard = boardList.find(each => each.ID === inviteInfo.boardId)
-  var isJoined = inviteBoard && inviteBoard.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')
+  const { inviteInfo, handleAcceptInvite, history } = props
 
   /* TODO: Need remove-board time stamp to disable rejoin */
-  if (isJoined) {
+  if (inviteInfo.isJoined) {
     return (
       <div className={styles['message-content-invitation']} onClick={() => history.push(`/board/${inviteInfo.boardId}`)}>
         <span>
