@@ -2,10 +2,13 @@ import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import LRU from 'lru-cache'
 
+import $ from 'jquery'
+
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
 
 import { EMPTY_ID,
+  MESSAGE_TYPE_INVITE,
   DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE,
   DEFAULT_USER_NAMECARD,
@@ -187,6 +190,19 @@ const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, 
     }
 
     let messageObj = toJson(serverUtils.b64decode(each.value.B))
+
+    // XXX: parse the invite block...
+    if (messageObj.type === MESSAGE_TYPE_INVITE) {
+      let invite = $(messageObj.value)
+      messageObj.value = {
+        inviteType:    invite.data('action-type'),
+        boardId:       invite.data('board-id'),
+        boardName:     invite.data('board-name'),
+        boardJoinKey:  invite.data('join-key'),
+        keyUpdateTS_T: invite.data('update-ts'),
+        keyExpiration: invite.data('expiration')
+      }
+    }
 
     messageList.push({
       ID:          messageIds[index],

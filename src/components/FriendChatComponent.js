@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import { injectIntl,
   FormattedMessage } from 'react-intl'
-import $ from 'jquery'
 import { ClipLoader } from 'react-spinners'
 // import { PTTAI_URL_BASE }          from '../config'
 
@@ -53,7 +52,7 @@ class FriendChatComponent extends PureComponent {
     /* isComposing is for 注音輸入法 */
     if (e.isComposing || (e.key && e.key !== 'Enter')) return
 
-    if (e.key === 'Enter' && $(':focus').is('input')) {
+    if (e.key === 'Enter' && document.activeElement.tagName === 'INPUT') {
       /* From key pressed */
       e.preventDefault()
 
@@ -338,14 +337,7 @@ const Message = props => {
 
   // Invite message
 
-  let invite = $(message.content)
-  let inviteInfo = {}
-  inviteInfo.inviteType = invite.data('action-type')
-  inviteInfo.boardId = invite.data('board-id')
-  inviteInfo.boardName = invite.data('board-name')
-  inviteInfo.boardJoinKey = invite.data('join-key')
-  inviteInfo.keyUpdateTS_T = invite.data('update-ts')
-  inviteInfo.keyExpiration = invite.data('expiration')
+  let inviteInfo = message.content
 
   if (isOwn) {
     return (
