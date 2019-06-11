@@ -13,7 +13,6 @@ import { doesCrossDay,
   expiredFormat } from '../utils/utilDatetime'
 
 import { getStatusClass,
-  toJson,
   linkParser,
   isMobile } from '../utils/utils'
 
@@ -166,7 +165,7 @@ class FriendChatComponent extends PureComponent {
     if (this.needFetchMore()) {
       const { onGetMoreMessages, messageList } = this.props
 
-      let startMessageId = messageList[0].MessageID
+      let startMessageId = messageList[0].ID
 
       this.topItem = this.scroller.childNodes[0].childNodes.length === 0 ? null : this.scroller.childNodes[0].childNodes[0]
 
@@ -306,11 +305,10 @@ const MessageListComponent = props => {
 const Message = props => {
   const { message, userId } = props
 
-  let messageObj = toJson(message.Buf)
   let isOwn = (message.CreatorID === userId)
 
   // is not invite message
-  if (messageObj.type !== constants.MESSAGE_TYPE_INVITE) {
+  if (message.type !== constants.MESSAGE_TYPE_INVITE) {
     if (isOwn) {
       return (
         <div className={styles['user-message-item']}>
@@ -320,13 +318,13 @@ const Message = props => {
             </div>
             <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
           </div>
-          <div className={styles['user-message-content']}>{linkParser(messageObj.value)}</div>
+          <div className={styles['user-message-content']}>{linkParser(message.content)}</div>
         </div>
       )
     } else {
       return (
         <div className={styles['message-item']}>
-          <div className={styles['message-content']}>{linkParser(messageObj.value)}</div>
+          <div className={styles['message-content']}>{linkParser(message.content)}</div>
           <div className={styles['message-meta']}>
             <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
               <div className={styles['message-status-circle-' + getStatusClass(message.Status)]} />
@@ -340,7 +338,7 @@ const Message = props => {
 
   // Invite message
 
-  let invite = $(messageObj.value)
+  let invite = $(message.content)
   let inviteInfo = {}
   inviteInfo.inviteType = invite.data('action-type')
   inviteInfo.boardId = invite.data('board-id')

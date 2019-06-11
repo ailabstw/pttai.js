@@ -69,8 +69,6 @@ class FriendChatPage extends PureComponent {
     const { myId, history, friendChatPage, markSeen, actions: { doFriendChatPage, doModalContainer }, match: { params }, match } = this.props
 
     let userId = getRoot(this.props).getIn(['userInfo', 'userId'])
-    let userName = getRoot(this.props).getIn(['userInfo', 'userName'])
-    let userImg = getRoot(this.props).getIn(['userInfo', 'userImg'])
 
     if (!myId) return (<Empty />)
 
@@ -88,7 +86,7 @@ class FriendChatPage extends PureComponent {
         type: constants.MESSAGE_TYPE_TEXT,
         value: message
       }
-      doFriendChatPage.postMessage(myId, userId, userName, userImg, decodeURIComponent(params.chatId), JSON.stringify(postMessage))
+      doFriendChatPage.postMessage(myId, userId, decodeURIComponent(params.chatId), JSON.stringify(postMessage))
       doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId))
 
       markSeen()
