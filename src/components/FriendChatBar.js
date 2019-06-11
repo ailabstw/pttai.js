@@ -8,6 +8,7 @@ import * as constants from '../constants/Constants'
 
 const FriendChatBar = props => {
   const { friendData, /* onOpenOPLogModal, */ openNameCard, openFriendSettingMenuModal } = props
+  const { ID, Name, Img, company } = friendData
 
   return (
     <div className={styles['root']}>
@@ -21,17 +22,14 @@ const FriendChatBar = props => {
 
         <div className={styles['main-content']} onClick={openNameCard}>
           <div className={styles['profile-pic']}>
-            <img src={friendData.Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'} />
+            <img src={Img || constants.DEFAULT_USER_IMAGE} alt={'Friend Profile'} />
           </div>
           <div className={styles['friend-content']}>
             <div className={styles['name']} onClick={openNameCard}>
-              {friendData.Name || constants.DEFAULT_USER_NAME }
+              {Name}
             </div>
-            <div title={friendData.ID} className={styles['job']} onClick={null/* onOpenOPLogModal */}>
-              {(friendData.NameCard && friendData.NameCard.company) || constants.DEFAULT_USER_COMPANY}
-            </div>
-            <div hidden className={styles['description']}>
-              {friendData.description}
+            <div title={ID} className={styles['job']} onClick={null/* onOpenOPLogModal */}>
+              {company}
             </div>
           </div>
         </div>

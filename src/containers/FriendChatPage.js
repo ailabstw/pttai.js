@@ -183,7 +183,6 @@ class FriendChatPage extends PureComponent {
           history={history}
           userId={userId}
           match={match}
-          friendData={friendData}
           isLoading={isLoading}
           noMessage={noMessage}
           allMessagesLoaded={allMessagesLoaded}

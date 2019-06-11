@@ -9,6 +9,7 @@ import { EMPTY_ID,
   DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE,
   DEFAULT_USER_NAMECARD,
+  DEFAULT_USER_COMPANY,
   NUM_MESSAGE_PER_REQ,
   NUM_CACHE_MESSAGE } from '../constants/Constants'
 
@@ -85,6 +86,7 @@ const postprocessGetFriend = (myId, result, usersInfo) => {
     ID: result.ID,
     Name: userName,
     Img: userImg,
+    company: userNameCard.company || DEFAULT_USER_COMPANY,
     NameCard: userNameCard,
     BoardID: result.BID,
     LastSeen: result.LT ? result.LT : utils.emptyTimeStamp()
@@ -144,13 +146,13 @@ function getMessagesContent (chatId, messageIds, subContentIds) {
   )
 }
 
-export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
+const fetchMessageList = (myId, chatId, startMessageId, shouldShowLoading, limit) => {
   return (dispatch, getState) => {
-    if (isFirstFetch) {
+    if (shouldShowLoading) {
       dispatch(preprocessSetStartLoading(myId))
     }
 
-    dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, limit))
+    dispatch(serverUtils.getMessageList(chatId, startMessageId, limit))
       .then(({ response: { result }, type, error, query }) => {
         let validResult = (result && result.length > 0) ? result.filter(each => (each && each.ID && each.BlockID && each.CreatorID)) : []
 
@@ -162,17 +164,25 @@ export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
           dispatch(getMessagesContent(chatId, messageIds, subContentIds)),
           dispatch(serverUtils.getUsersInfo(creatorIds))
         ]).then(([messageBlockList, usersInfo]) => {
-          dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, isFirstFetch, messageBlockList, validResult, usersInfo))
-
-          if (isFirstFetch) {
-            dispatch(postprocessSetFinshLoading(myId))
+          if (startMessageId === EMPTY_ID) {
+            dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, usersInfo))
           }
+          else {
+            dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, usersInfo))
+          }
+          dispatch(postprocessSetFinshLoading(myId))
         })
       })
   }
 }
 
-const postprocessGetMessageList = (myId, creatorIds, messageIds, isFirstFetch, messageBlockList, result, usersInfo) => {
+export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
+  return (dispatch, getState) => {
+    dispatch(fetchMessageList(myId, chatId, EMPTY_ID, isFirstFetch, limit))
+  }
+}
+
+const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result, usersInfo) => {
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
@@ -207,19 +217,12 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, isFirstFetch, m
 
   // let matchIndex = messageList.findIndex((each) => each.MessageID === latestMessageId)
 
-  if (messageList.length === 0 && isFirstFetch) {
+  if (messageList.length === 0) {
     return {
       myId,
       myClass,
       type: SET_DATA,
       data: { friendMessages: { lru: null, offset: 0, messageList: [] }, noMessage: true }
-    }
-  } else if (messageList.length === 0 && !isFirstFetch) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: {}
     }
   } else {
     return {
@@ -233,23 +236,7 @@ const postprocessGetMessageList = (myId, creatorIds, messageIds, isFirstFetch, m
 
 export const getMoreMessageList = (myId, chatId, startMessageId, limit) => {
   return (dispatch, getState) => {
-    dispatch(preprocessSetStartLoading(myId))
-    dispatch(serverUtils.getMessageList(chatId, startMessageId, limit))
-      .then(({ response: { result }, type, error, query }) => {
-        let validResult = (result && result.length > 0) ? result.filter(each => (each && each.ID && each.BlockID && each.CreatorID)) : []
-
-        let messageIds = validResult.map(each => each.ID)
-        let subContentIds = validResult.map(each => each.BlockID)
-        let creatorIds = validResult.map(each => each.CreatorID)
-
-        Promise.all([
-          dispatch(getMessagesContent(chatId, messageIds, subContentIds)),
-          dispatch(serverUtils.getUsersInfo(creatorIds))
-        ]).then(([messageBlockList, usersInfo]) => {
-          dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, usersInfo))
-          dispatch(postprocessSetFinshLoading(myId))
-        })
-      })
+    dispatch(fetchMessageList(myId, chatId, startMessageId, true, limit))
   }
 }
 
