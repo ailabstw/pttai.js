@@ -71,9 +71,8 @@ function getChatSummaries (chatIds) {
 
 const fetchFriendList = (myId, startFriendId, shouldShowLoading, limit) => {
   return (dispatch, getState) => {
-    const isFetchMore = startFriendId !== EMPTY_ID
 
-    if (isFetchMore || shouldShowLoading) {
+    if (shouldShowLoading) {
       dispatch(preprocessSetStartLoading(myId))
     }
 
@@ -91,7 +90,7 @@ const fetchFriendList = (myId, startFriendId, shouldShowLoading, limit) => {
 
       dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
         .then((usersInfo) => {
-          if (isFetchMore) {
+          if (startFriendId !== EMPTY_ID) {
             dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
           }
           else {
