@@ -206,26 +206,43 @@ class FriendChatComponent extends PureComponent {
 
     const placeholder = intl.formatMessage({ id: 'friend-chat-component.placeholder' })
 
+
+    if (noMessage) {
+      return (
+        <div className={styles['root']}>
+          <div className={styles['chat']}
+            onScroll={this.handleScroll}
+            ref={(scroller) => { this.scroller = scroller }}>
+              <div className={styles['no-message']}>
+                <FormattedMessage
+                  id='friend-chat-component.title'
+                  defaultMessage='Start chatting!'
+                />
+              </div>
+            <div className={styles['bottomElement']} ref={(el) => { this.pageEnd = el }} />
+          </div>
+          <div className={styles['message-input']}>
+            <input
+              autoFocus={!isMobile()}
+              placeholder={placeholder}
+              value={inputMessage}
+              onChange={(e) => this.setState({ inputMessage: e.target.value })}
+            />
+            <div className={styles['message-action']} onClick={this.onInputEnter} />
+          </div>
+          <AlertComponent show={showAlert} alertData={alertData} />
+        </div>
+      )
+    }
+
     return (
       <div className={styles['root']}>
         <div className={styles['chat']}
           onScroll={this.handleScroll}
           ref={(scroller) => { this.scroller = scroller }}>
-          {
-            (() => {
-              if (noMessage) {
-                return (
-                  <div className={styles['no-message']}>
-                    <FormattedMessage
-                      id='friend-chat-component.title'
-                      defaultMessage='Start chatting!'
-                    />
-                  </div>
-                )
-              }
-
-              if (isLoading) {
-                return (
+            <div>
+              {
+                isLoading && (
                   <div>
                     <div className={styles['loader']}>
                       <ClipLoader color={'#aaa'} size={35} loading={isLoading} />
@@ -233,15 +250,13 @@ class FriendChatComponent extends PureComponent {
                   </div>
                 )
               }
-
-              return <MessageListComponent
+              <MessageListComponent
                 messageList={messageList}
                 boardList={this.props.boardList}
                 userId={this.props.userId}
                 history={this.props.history}
                 handleAcceptInvite={this.handleAcceptInvite} />
-            })()
-          }
+            </div>
           <div className={styles['bottomElement']} ref={(el) => { this.pageEnd = el }} />
         </div>
         <div className={styles['message-input']}>
