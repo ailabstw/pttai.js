@@ -27,7 +27,6 @@ class FriendChatPage extends PureComponent {
     const { myId, markSeen, actions: { doFriendChatPage }, match: { params } } = this.props
 
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), false, constants.NUM_MESSAGE_PER_REQ)
-    doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
     doFriendChatPage.markChat(myId, decodeURIComponent(params.chatId))
 
     markSeen()
@@ -44,7 +43,6 @@ class FriendChatPage extends PureComponent {
     doFriendChatPage.initParams(myId, params)
     doFriendChatPage.getFriend(myId, decodeURIComponent(params.friendId))
     doFriendChatPage.getMessageList(myId, decodeURIComponent(params.chatId), true, constants.NUM_MESSAGE_PER_REQ)
-    doFriendChatPage.getBoardList(myId, constants.NUM_BOARD_PER_REQ)
 
     this.refreshPageInterval = setInterval(this.getLatestMessage, constants.REFRESH_INTERVAL)
   }
@@ -76,7 +74,6 @@ class FriendChatPage extends PureComponent {
     let friendData = me.get('friendData', Immutable.Map()).toJS()
     let messageList = me.getIn(['friendMessages', 'messageList'], Immutable.List()).toJS()
 
-    let boardList = me.get('boardList', Immutable.List()).toJS()
     let isLoading = me.get('isLoading', false)
     let noMessage = me.get('noMessage', false)
     let allMessagesLoaded = me.get('allMessagesLoaded', false)
@@ -184,7 +181,6 @@ class FriendChatPage extends PureComponent {
           isLoading={isLoading}
           noMessage={noMessage}
           allMessagesLoaded={allMessagesLoaded}
-          boardList={boardList}
           messageList={messageList}
           onJoinBoard={onJoinBoard}
           onMessageAdded={onMessageAdded}

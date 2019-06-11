@@ -8,6 +8,7 @@ import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
 
 import { EMPTY_ID,
+  STATUS_ARRAY,
   MESSAGE_TYPE_INVITE,
   DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE,
@@ -162,16 +163,19 @@ const fetchMessageList = (myId, chatId, startMessageId, shouldShowLoading, limit
         let subContentIds = validResult.map(each => each.BlockID)
         let creatorIds = validResult.map(each => each.CreatorID)
 
-        dispatch(getMessagesContent(chatId, messageIds, subContentIds))
-          .then((messageBlockList) => {
-            if (startMessageId === EMPTY_ID) {
-              dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, messageBlockList, validResult))
-            }
-            else {
-              dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult))
-            }
-            dispatch(postprocessSetFinshLoading(myId))
-          })
+        Promise.all([
+          dispatch(getMessagesContent(chatId, messageIds, subContentIds)),
+          dispatch(serverUtils.getBoards(EMPTY_ID, limit))
+        ]).then( ([messageBlockList, {response: {result: boardResult}}]) => {
+
+          if (startMessageId === EMPTY_ID) {
+            dispatch(postprocessGetMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, boardResult))
+          }
+          else {
+            dispatch(postprocessGetMoreMessageList(myId, creatorIds, messageIds, messageBlockList, validResult, boardResult))
+          }
+          dispatch(postprocessSetFinshLoading(myId))
+        })
       })
   }
 }
@@ -182,7 +186,7 @@ export const getMessageList = (myId, chatId, isFirstFetch, limit) => {
   }
 }
 
-const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, loadingMore) => {
+const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, boardList, loadingMore) => {
   let messageList = []
   messageBlockList.forEach((each, index) => {
     if (each.error || (loadingMore && index === 0)) {
@@ -194,9 +198,13 @@ const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, 
     // XXX: parse the invite block...
     if (messageObj.type === MESSAGE_TYPE_INVITE) {
       let invite = $(messageObj.value)
+      const boardId = invite.data('board-id');
+      const inviteBoard = boardList.find(each => each.ID === boardId)
+      const isJoined = inviteBoard && inviteBoard.S < STATUS_ARRAY.indexOf('StatusDeleted')
+
       messageObj.value = {
-        inviteType:    invite.data('action-type'),
-        boardId:       invite.data('board-id'),
+        boardId:       boardId,
+        isJoined:      isJoined,
         boardName:     invite.data('board-name'),
         boardJoinKey:  invite.data('join-key'),
         keyUpdateTS_T: invite.data('update-ts'),
@@ -217,8 +225,8 @@ const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, 
   return messageList
 }
 
-const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result) => {
-  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result)
+const postprocessGetMessageList = (myId, creatorIds, messageIds, messageBlockList, result, boardList) => {
+  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, boardList)
 
   console.log('doFriendChatPage.postprocessGetMessageList: messageList:', messageList)
 
@@ -247,8 +255,8 @@ export const getMoreMessageList = (myId, chatId, startMessageId, limit) => {
   }
 }
 
-const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBlockList, result) => {
-  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, true)
+const postprocessGetMoreMessageList = (myId, creatorIds, messageIds, messageBlockList, result, boardList) => {
+  const messageList = messageToMessageList(creatorIds, messageIds, messageBlockList, result, boardList, true)
 
   console.log('doFriendChatPage.postprocessGetMoreMessageList: messageList:', messageList)
 
@@ -469,66 +477,6 @@ const postprocessSetFinshLoading = (myId) => {
     myClass,
     type: SET_DATA,
     data: { isLoading: false }
-  }
-}
-
-/*                    */
-/*  Get Board List    */
-/*                    */
-
-export const getBoardList = (myId, limit) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getBoards(EMPTY_ID, limit))
-      .then(({ response: { result }, type, query, error }) => {
-        let creatorIds = result.map((each) => each.C)
-        dispatch(serverUtils.getUsersInfo(creatorIds))
-          .then((usersInfo) => {
-            dispatch(postprocessGetBoardList(myId, result, usersInfo))
-          })
-      })
-  }
-}
-
-const postprocessGetBoardList = (myId, result, usersInfo) => {
-  result = result.map((each) => {
-    return {
-      CreatorID: each.C,
-      ...each
-    }
-  })
-
-  result = result.map(serverUtils.deserialize)
-
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  const boardList = result.map(each => {
-    let userId = each.CreatorID
-    let userNameMap = usersInfo['userName'] || {}
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-
-    return {
-      BoardType: each.BT,
-      ID: each.ID,
-      Status: each.S,
-      Title: each.Title,
-      ArticleCreateTS: each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      UpdateTS: each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
-      LastSeen: each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
-      CreatorID: each.CreatorID,
-      creatorName: userName
-    }
-  })
-
-  console.log('doFriendChatPage.postprocessGetBoardList: boardList:', boardList)
-
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { boardList: boardList }
   }
 }
 
