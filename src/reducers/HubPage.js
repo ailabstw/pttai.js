@@ -24,7 +24,6 @@ const REMOVE = myDuck.defineType('REMOVE')
 const SET_DATA = myDuck.defineType('SET_DATA')
 const ADD_BOARD = myDuck.defineType('ADD_BOARD')
 const ADD_BOARDS = myDuck.defineType('ADD_BOARDS')
-const DELETE_BOARD = myDuck.defineType('DELETE_BOARD')
 
 export const init = (myId, parentId, parentClass, parentDuck) => {
   return (dispatch, getState) => {
@@ -231,55 +230,6 @@ export const _addMoreBoards = (state, action) => {
 /*  Update Board List   */
 /*                      */
 
-export const setBoardName = (myId, boardId, name, friendInvited) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.setBoardName(boardId, name))
-      .then(({ response: { result }, type, query, error }) => {
-        dispatch(serverUtils.getBoardUrl(boardId))
-          .then(({ response: boardUrlResult, type, query, error }) => {
-            const boardJoinKey = {
-              C: boardUrlResult.result.C,
-              ID: boardUrlResult.result.ID,
-              Pn: boardUrlResult.result.Pn,
-              T: boardUrlResult.result.T,
-              URL: boardUrlResult.result.URL,
-              UpdateTS: boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-              expirePeriod: boardUrlResult.result.e
-            }
-
-            let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
-              let chatId = friendInvited[friendId]
-              let message = {
-                type: MESSAGE_TYPE_INVITE,
-                value: `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
-              }
-              return {
-                chatId: chatId,
-                message: JSON.stringify(message)
-              }
-            })
-
-            dispatch(sentInviteMessages(inviteMessages))
-              .then(({ response: inviteResult, type, error, query }) => {
-                // dispatch(postprocessCreateBoard(myId, name, result, userName))
-              })
-          })
-
-        // dispatch(serverUtils.getBoards(EMPTY_ID, NUM_BOARD_PER_REQ))
-        //   .then(({response: {result}, type, query, error}) => {
-        //     dispatch(serverUtils.getBoardRequest(EMPTY_ID))
-        //       .then(({response: reqResult, type, query, error}) => {
-        //         let creatorIds = result.map((each) => each.C)
-        //         dispatch(serverUtils.getUsersInfo(creatorIds))
-        //           .then((usersInfo) => {
-        //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
-        //           })
-        //       })
-        //   })
-      })
-  }
-}
-
 function sentInviteMessages (inviteMessages) {
   return dispatch => Promise.all(inviteMessages.map((invite) => {
     return dispatch(serverUtils.postMessage(invite.chatId, [invite.message], []))
@@ -408,33 +358,6 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
   }
 }
 
-export const deleteBoard = (myId, boardId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.deleteBoard(boardId))
-      .then(({ response: { result }, type, query, error }) => {
-        dispatch(postprocessDeleteBoard(myId, boardId))
-      })
-  }
-}
-
-const postprocessDeleteBoard = (myId, boardId) => {
-  return {
-    myId,
-    myClass,
-    type: DELETE_BOARD,
-    data: { boardId: boardId }
-  }
-}
-
-export const _deleteBoard = (state, action) => {
-  const { myId, data: { boardId } } = action
-
-  let boardList = state.getIn([myId, 'boardList'], Immutable.List())
-  boardList = boardList.filter(each => { return each.get('ID') !== boardId })
-
-  return state.setIn([myId, 'boardList'], boardList)
-}
-
 /*             */
 /*  Loading    */
 /*             */
@@ -481,8 +404,7 @@ const reducer = myDuck.createReducer({
   [REMOVE]: utils.reduceRemove,
   [SET_DATA]: utils.reduceSetData,
   [ADD_BOARD]: _addBoard,
-  [ADD_BOARDS]: _addMoreBoards,
-  [DELETE_BOARD]: _deleteBoard
+  [ADD_BOARDS]: _addMoreBoards
 }, Immutable.Map())
 
 export default reducer
