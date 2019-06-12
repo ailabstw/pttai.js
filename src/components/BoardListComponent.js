@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ClipLoader } from 'react-spinners'
 import { FormattedMessage } from 'react-intl'
 
-import { isUnRead, getStatusClass } from '../utils/utils'
+import { getStatusClass } from '../utils/utils'
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import * as constants from '../constants/Constants'
 
@@ -28,7 +28,7 @@ class BoardListComponent extends PureComponent {
   // }
 
   render () {
-    const { userId, /* userName, */ listData, isLoading, /* createBoard, */ noBoard } = this.props
+    const { userId, listData, isLoading, noBoard, intl } = this.props
 
     if (noBoard) {
       return (
@@ -64,45 +64,40 @@ class BoardListComponent extends PureComponent {
               ) : (null)
             }
             {
-              activeList.map((item, index) => {
-                let isBoardUnread = isUnRead(item.ArticleCreateTS.T, item.LastSeen.T)
-                let itemStatus = isBoardUnread ? styles['unread'] : styles['read']
-
-                return (
-                  <div className={`${styles['list-item']} ${itemStatus}`} key={index}>
-                    <div className={styles['list-item-label' + boardType(item)]} />
-                    <Link to={`/board/${encodeURIComponent(item.ID)}`}>
-                      <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-board-status']}>
-                        <div className={styles['list-item-board-status-' + getStatusClass(item.Status)]} />
+              activeList.map((item, index) => (
+                <div className={`${styles['list-item']} ${item.isUnread ? styles['unread'] : styles['read']}`} key={index}>
+                  <div className={styles['list-item-label' + boardType(item)]} />
+                  <Link to={`/board/${encodeURIComponent(item.ID)}`}>
+                    <div title={constants.STATUS_ARRAY[item.Status]} className={styles['list-item-board-status']}>
+                      <div className={styles['list-item-board-status-' + getStatusClass(item.Status)]} />
+                    </div>
+                    <div className={styles['list-item-title-wrapper']}>
+                      <div className={styles['list-item-title']}>
+                        {item.Title}
+                        {constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted' ? '' : `(${intl.formatMessage({ id: 'board-list-component.syncing' })})`}
                       </div>
-                      <div className={styles['list-item-title-wrapper']}>
-                        <div className={styles['list-item-title']}>
-                          {item.Title} {constants.JOIN_STATUS_ARRAY[item.joinStatus] === 'JoinStatusAccepted' ? '' : '(' + constants.JOIN_STATUS_ARRAY[item.joinStatus].slice(10) + ')'}
-                        </div>
+                    </div>
+                    <div className={styles['list-item-author']}>
+                      {
+                        (item.BoardType === constants.BOARD_TYPE_PERSONAL) ? (
+                          <FormattedMessage
+                            id='board-list-component.board-type'
+                            defaultMessage='[Personal] {name}'
+                            values={{ name: item.creatorName }}
+                          />
+                        ) : (
+                          item.creatorName
+                        )
+                      }
+                    </div>
+                    <div className={styles['list-item-meta']}>
+                      <div title={epoch2FullDate(item.updateAt.T)} className={styles['list-item-time']}>
+                        {epoch2ReadFormat(item.updateAt.T)}
                       </div>
-                      <div className={styles['list-item-author']}>
-                        {
-                          (item.BoardType === constants.BOARD_TYPE_PERSONAL) ? (
-                            <FormattedMessage
-                              id='board-list-component.board-type'
-                              defaultMessage='[Personal] {name}'
-                              values={{ name: item.creatorName }}
-                            />
-                          ) : (
-                            item.creatorName
-                          )
-                        }
-                      </div>
-                      <div className={styles['list-item-meta']}>
-                        <div className={styles['list-item-space']} />
-                        <div title={epoch2FullDate(item.UpdateTS.T)} className={styles['list-item-time']}>
-                          {epoch2ReadFormat(item.UpdateTS.T)}
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                )
-              })
+                    </div>
+                  </Link>
+                </div>
+              ))
             }
           </div>
         }
