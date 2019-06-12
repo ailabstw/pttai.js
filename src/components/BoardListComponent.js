@@ -50,7 +50,7 @@ class BoardListComponent extends PureComponent {
       return ''
     }
 
-    let activeList = listData.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted'))
+    let activeList = listData.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')).sort((a,b) => b.updateAt.T - a.updateAt.T)
 
     return (
       <div className={styles['root']} ref={(scroller) => { this.scroller = scroller }}>
