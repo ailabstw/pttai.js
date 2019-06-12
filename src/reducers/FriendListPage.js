@@ -393,23 +393,24 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
 
   let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
   let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
+  let userCompany = userNameCard.company || DEFAULT_USER_COMPANY
 
   const combinedFriend = {
     Name: serverUtils.b64decode(result.N),
     Img: userImg,
+    company:      userCompany,
     friendID: userId,
-    nameCard: userNameCard,
     chatId: null,
     FriendStatus: 0,
-    SummaryStatus: 0,
-    LastSeen: utils.emptyTimeStamp(),
-    ArticleCreateTS: utils.emptyTimeStamp(),
-    SummaryUpdateTS: utils.emptyTimeStamp(),
-    SummaryUserID: null,
-    Summary: JSON.stringify({
+    isUnread: false,
+
+    Summary: {
       type: MESSAGE_TYPE_TEXT,
-      value: ''
-    }),
+      content: '',
+      userName: '',
+      userID:   null,
+      updateTS: utils.emptyTimeStamp()
+    },
     joinStatus: 0
   }
 
@@ -470,7 +471,7 @@ const postprocessDeleteFriend = (myId, chatId) => {
 export const _deleteFriend = (state, action) => {
   const { myId, data: { chatId } } = action
 
-  return state.updateIn([myId, 'myFriends', 'friendList'], arr => arr.filter(each => { return each.chatId !== chatId }))
+  return state.updateIn([myId, 'myFriends', 'friendList'], arr => arr.filter(each => each.chatId !== chatId ))
 }
 
 /*                    */
