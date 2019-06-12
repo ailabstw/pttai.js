@@ -32,6 +32,7 @@
     "comment-setting-menu-modal.menu2": "刪除留言",
     "comment-setting-menu-modal.menu3": "取消",
     "manage-board-modal.message1": "更改群組名稱",
+    "manage-board-modal.message2": "邀請好友",
     "manage-board-member-modal.message1": "沒有成員在群組 {BOARD_NAME}",
     "manage-board-member-modal.message2": "成員管理",
     "manage-board-member-modal.remove-member-1": "取消選擇",

@@ -32,6 +32,7 @@
     "comment-setting-menu-modal.menu2": "Delete Comment",
     "comment-setting-menu-modal.menu3": "Cancel",
     "manage-board-modal.message1": "Change Group Name",
+    "manage-board-modal.message2": "Invite friends",
     "manage-board-member-modal.message1": "No member in group {BOARD_NAME}",
     "manage-board-member-modal.message2": "Manage Members",
     "manage-board-member-modal.remove-member-1": "UnSelect",
