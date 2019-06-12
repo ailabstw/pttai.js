@@ -132,6 +132,7 @@ class HubPage extends PureComponent {
     let openBoardActionModule = () => {
       doModalContainer.setInput({
         modalAddBoardSubmit: (name, friendInvited) => {
+          // XXX: userName is not used
           doHubPage.addBoard(myId, name, userName, friendInvited)
           googleAnalytics.fireEvent('Group', 'CreateGroupSuccess')
         },

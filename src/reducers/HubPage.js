@@ -7,6 +7,7 @@ import { EMPTY_ID,
   DEFAULT_USER_NAME,
   MESSAGE_TYPE_INVITE,
   BOARD_TYPE_PRIVATE } from '../constants/Constants'
+import { isUnRead } from '../utils/utils'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -44,21 +45,17 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
     return Promise.all([
       dispatch(serverUtils.getBoards(EMPTY_ID, limit)),
       dispatch(serverUtils.getBoardRequest(EMPTY_ID))
-    ]).then(([{ response: { result } }, { response: reqResult }]) => {
+    ]).then( async ([{ response: { result } }, { response: reqResult }]) => {
       let creatorIds = result.map((each) => each.C)
 
-      dispatch(serverUtils.getUsersInfo(creatorIds))
-        .then((usersInfo) => {
-          dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, isFirstFetch))
-          if (isFirstFetch) {
-            dispatch(postprocessSetFinshLoading(myId))
-          }
-        })
+      const usersInfo = await dispatch(serverUtils.getUsersInfo(creatorIds))
+      dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
+      dispatch(postprocessSetFinshLoading(myId))
     })
   }
 }
 
-const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetch) => {
+const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
   result = result.map((each) => {
     return {
       CreatorID: each.C,
@@ -79,17 +76,18 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
     let userNameMap = usersInfo['userName'] || {}
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
+    let ArticleCreateTS = each.ArticleCreateTS || utils.emptyTimeStamp()
+    let LastSeen = each.LastSeen || utils.emptyTimeStamp()
     return {
-      BoardType: each.BT,
-      ID: each.ID,
-      Status: each.S,
-      Title: each.Title,
-      ArticleCreateTS: each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      UpdateTS: each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
-      LastSeen: each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
-      CreatorID: each.CreatorID,
+      BoardType:   each.BT,
+      ID:          each.ID,
+      Status:      each.S,
+      Title:       each.Title,
+      isUnread:    isUnRead(ArticleCreateTS.T, LastSeen.T),
+      CreatorID:   each.CreatorID,
       creatorName: userName,
-      joinStatus: 3
+      updateAt:    utils.isNullTimeStamp(each.ArticleCreateTS) ? each.UpdateTS : each.ArticleCreateTS,
+      joinStatus:  3
     }
   })
 
@@ -107,41 +105,29 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo, isFirstFetc
     if (joinBoardIndex >= 0) {
       boardList[joinBoardIndex].joinStatus = join.Status
     } else {
-      let userId = EMPTY_ID
-      let userNameMap = usersInfo['userName'] || {}
-      let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-
       boardList.push({
-        BoardType: BOARD_TYPE_PRIVATE,
-        ID: EMPTY_ID,
-        Status: 0,
-        Title: join.Name,
-        ArticleCreateTS: utils.emptyTimeStamp(),
-        UpdateTS: utils.emptyTimeStamp(),
-        LastSeen: utils.emptyTimeStamp(),
-        CreatorID: join.CreatorID,
-        creatorName: userName,
-        joinStatus: join.Status
+        BoardType:   BOARD_TYPE_PRIVATE,
+        ID:          EMPTY_ID,
+        Status:      0,
+        Title:       join.Name,
+        isUnread:    false,
+        CreatorID:   join.CreatorID,
+        creatorName: DEFAULT_USER_NAME,
+        updateAt:    utils.emptyTimeStamp(),
+        joinStatus:  join.Status
       })
     }
   })
 
-  boardList = boardList.filter((each) => { return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') })
-  boardList = boardList.filter((each) => { return each.BoardType === BOARD_TYPE_PRIVATE })
+  boardList = boardList.filter((each) => each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') )
+  boardList = boardList.filter((each) => each.BoardType === BOARD_TYPE_PRIVATE )
 
-  if (boardList.length === 0 && isFirstFetch) {
+  if (boardList.length === 0) {
     return {
       myId,
       myClass,
       type: SET_DATA,
       data: { boardList: [], noBoard: true }
-    }
-  } else if (boardList.length === 0 && !isFirstFetch) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: {}
     }
   } else {
     return {
@@ -198,21 +184,24 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
     let userNameMap = usersInfo['userName'] || {}
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
+    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp();
+    let LastSeen = each.LastSeen ? each.LastSeen : utils.emptyTimeStamp();
+
     return {
-      ID: each.ID,
+      BoardType:   each.BT,
+      ID:          each.ID,
+      Status:      each.S,
+      Title:       each.Title,
+      isUnread:    isUnRead(ArticleCreateTS.T, LastSeen.T),
+      CreatorID:   each.CreatorID,
       creatorName: userName,
-      Status: each.S,
-      Title: each.Title,
-      ArticleCreateTS: each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(),
-      LastSeen: each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
-      UpdateTS: each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
-      joinStatus: 3,
-      BoardType: each.BT
+      updateAt:    utils.isNullTimeStamp(each.ArticleCreateTS) ? each.UpdateTS : each.ArticleCreateTS,
+      joinStatus:  3,
     }
   })
 
-  boardList = boardList.filter((each) => { return each.Status !== STATUS_ARRAY.indexOf('StatusMigrated') })
-  boardList = boardList.filter((each) => { return each.BoardType === BOARD_TYPE_PRIVATE })
+  boardList = boardList.filter((each) => each.Status !== STATUS_ARRAY.indexOf('StatusMigrated'))
+  boardList = boardList.filter((each) => each.BoardType === BOARD_TYPE_PRIVATE)
 
   if (boardList.length === 0) {
     return {
@@ -283,7 +272,7 @@ export const setBoardName = (myId, boardId, name, friendInvited) => {
         //         let creatorIds = result.map((each) => each.C)
         //         dispatch(serverUtils.getUsersInfo(creatorIds))
         //           .then((usersInfo) => {
-        //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo, false))
+        //             dispatch(postprocessGetBoardList(myId, result, reqResult.result, usersInfo))
         //           })
         //       })
         //   })
@@ -317,6 +306,7 @@ export const addBoard = (myId, name, userName, friendInvited) => {
               expirePeriod: boardUrlResult.result.e
             }
 
+            // FIXME
             let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
               let chatId = friendInvited[friendId]
               let message = {
@@ -342,15 +332,15 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
   result = serverUtils.deserialize(result)
 
   const newBoard = {
-    ID: result.ID,
-    Status: 0,
-    Title: name,
+    BoardType:   BOARD_TYPE_PRIVATE,
+    ID:          result.ID,
+    Status:      0,
+    Title:       name,
+    isUnread:    false,
+    CreatorID:   EMPTY_ID, // FIXME: userId,
     creatorName: userName,
-    ArticleCreateTS: utils.emptyTimeStamp(),
-    UpdateTS: utils.emptyTimeStamp(),
-    LastSeen: utils.emptyTimeStamp(),
-    joinStatus: 3,
-    BoardType: BOARD_TYPE_PRIVATE
+    updateAt:    utils.emptyTimeStamp(),
+    joinStatus:  3,
   }
 
   return {
@@ -399,16 +389,15 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
   let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
   const joinedBoard = {
-    ID: result.n,
-    Status: result.S,
+    BoardType:   BOARD_TYPE_PRIVATE,
+    ID:          result.n,
+    Status:      result.S,
+    Title:       serverUtils.b64decode(result.N),
+    isUnread:    true,
+    CreatorID:   userId,
     creatorName: userName,
-    Title: serverUtils.b64decode(result.N),
-    ArticleCreateTS: utils.emptyTimeStamp(),
-    LastSeen: utils.emptyTimeStamp(),
-    CreateTS: utils.emptyTimeStamp(),
-    UpdateTS: utils.emptyTimeStamp(),
-    joinStatus: 0,
-    BoardType: BOARD_TYPE_PRIVATE
+    updateAt:    utils.emptyTimeStamp(),
+    joinStatus:  0
   }
 
   return {
