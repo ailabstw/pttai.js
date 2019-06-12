@@ -81,7 +81,6 @@ class BoardPage extends PureComponent {
     let boardId = me.get('boardId', '')
     let boardInfo = me.get('boardInfo', Immutable.Map()).toJS()
     let articleList = me.getIn(['boardArticles', 'articleList'], Immutable.List()).toJS()
-    let articleSummaries = me.get('articleSummaries', Immutable.Map()).toJS()
     let isLoading = me.get('isLoading', false)
     let noArticle = me.get('noArticle', false)
     let allArticlesLoaded = me.get('allArticlesLoaded', false)
@@ -224,13 +223,11 @@ class BoardPage extends PureComponent {
           isLoading={isLoading}
           noArticle={noArticle}
           articleList={articleList}
-          articleSummaries={articleSummaries}
           allArticlesLoaded={allArticlesLoaded}
           onGetMoreArticles={onGetMoreArticles}
           createArticleAction={openCreateArticleModal}
           manageBoardAction={openManageBoardModal}
-          onOpenOPLogModal={onOpenOPLogModal}
-          deleteArticleAction={(articleId) => doBoardPage.deleteArticle(myId, boardInfo.ID, articleId)} />
+          onOpenOPLogModal={onOpenOPLogModal} />
         <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )

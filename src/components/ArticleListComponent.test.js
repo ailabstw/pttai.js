@@ -4,7 +4,7 @@ import { IntlProvider } from 'react-intl'
 import { Provider } from 'react-redux'
 import { MemoryRouter as Router } from 'react-router-dom'
 import { mount } from 'enzyme'
-import ArticleListComponent, {ArticleComponent} from './ArticleListComponent'
+import ArticleListComponent, {ArticleItemComponent} from './ArticleListComponent'
 
 import { language, messages } from '../utils/utils'
 import setupStore from '../containers/testUtils'
@@ -40,7 +40,7 @@ describe('<ArticleListComponent />', () => {
     })
 
     expect(wrapper.exists()).toBe(true)
-    expect(wrapper.find(ArticleComponent).length).toBe(0)
+    expect(wrapper.find(ArticleItemComponent).length).toBe(0)
   })
 
   it('should render ClipLoader if is loading', () => {
@@ -65,11 +65,11 @@ describe('<ArticleListComponent />', () => {
 
     expect(wrapper.exists()).toBe(true)
     expect(wrapper.find(ClipLoader).length).toBe(0)
-    expect(wrapper.find(ArticleComponent).length).toBe(0)
+    expect(wrapper.find(ArticleItemComponent).length).toBe(0)
   })
 
 
-  it('should render one ArticleComponent in list if listData exist', () => {
+  it('should render one ArticleItemComponent in list if listData exist', () => {
     let wrapper = mountDom({
       listData: [{
         ID: 1,
@@ -86,7 +86,7 @@ describe('<ArticleListComponent />', () => {
     })
 
     expect(wrapper.exists()).toBe(true)
-    expect(wrapper.find(ArticleComponent).length).toBe(1)
+    expect(wrapper.find(ArticleItemComponent).length).toBe(1)
   })
 })
 
@@ -96,7 +96,7 @@ describe('<ArticleListComponent />', () => {
       <IntlProvider locale={language} messages={messages}>
         <Provider store={store}>
           <Router>
-            <ArticleComponent {...mockData} />
+            <ArticleItemComponent {...mockData} />
           </Router>
         </Provider>
       </IntlProvider>

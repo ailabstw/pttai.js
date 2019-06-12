@@ -9,8 +9,7 @@ import * as constants from '../constants/Constants'
 import { DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE,
   MESSAGE_TYPE_INVITE } from '../constants/Constants'
-import { toJson,
-  getSummaryTemplate } from '../utils/utils'
+import { isUnRead, toJson, getSummaryTemplate } from '../utils/utils'
 
 export const myClass = 'BOARD_PAGE'
 
@@ -25,10 +24,8 @@ const SET_DATA = myDuck.defineType('SET_DATA')
 const UPDATE_DATA = myDuck.defineType('UPDATE_DATA')
 
 const ADD_ARTICLE = myDuck.defineType('ADD_ARTICLE')
-const DELETE_ARTICLE = myDuck.defineType('DELETE_ARTICLE')
 const PREPEND_ARTICLES = myDuck.defineType('PREPEND_ARTICLES')
 const APPEND_ARTICLES = myDuck.defineType('APPEND_ARTICLES')
-const INSERT_SUMMARIES = myDuck.defineType('INSERT_SUMMARIES')
 
 export const init = (myId, parentId, parentClass, parentDuck) => {
   return (dispatch, getState) => {
@@ -62,17 +59,11 @@ export const getBoardInfo = (myId, boardId) => {
 
 const postprocessGetBoardInfo = (myId, result) => {
   let boardInfo = {
-    ID: result.ID,
-    Title: result.Title,
-    CreatorID: result.C,
+    ID:        result.ID,
     BoardType: result.BT,
-    Status: result.Status,
-    LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
-    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp(),
-    ArticleCreateTS: result.ArticleCreateTS ? result.ArticleCreateTS : utils.emptyTimeStamp()
+    CreatorID: result.C,
+    Title:     serverUtils.b64decode(result.Title)
   }
-
-  boardInfo = serverUtils.deserialize(boardInfo)
 
   console.log('doBoardPage.postprocessGetBoardInfo: result:', boardInfo)
 
@@ -269,20 +260,19 @@ const postprocessRemoveMember = (myId, boardId) => {
 /*  Get Article List   */
 /*                     */
 
-export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
+
+const fetchArticleList = (myId, boardId, startArticleId, shouldShowLoading, limit) => {
   return (dispatch, getState) => {
-    if (isFirstFetch) {
+    if (shouldShowLoading) {
       dispatch(preprocessSetStartLoading(myId))
     }
-    dispatch(serverUtils.getArticles(boardId, constants.EMPTY_ID, limit, constants.LIST_ORDER_PREV))
+
+    dispatch(serverUtils.getArticles(boardId, startArticleId, limit, constants.LIST_ORDER_PREV))
       .then(({ response: { result }, type, query, error }) => {
         let creatorIds = result.map(each => each.CreatorID)
         let articleIds = result.map(each => each.ID)
         let cBlockIds = result.map(each => each.ContentBlockID)
-        dispatch(serverUtils.getUsersInfo(creatorIds))
-          .then((usersInfo) => {
-            dispatch(postprocessGetArticleList(myId, result, isFirstFetch, usersInfo))
-          })
+
         let articleInfos = []
         for (let i = 0; i < articleIds.length; i++) {
           articleInfos.push({
@@ -290,19 +280,36 @@ export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
             'B': cBlockIds[i]
           })
         }
-        dispatch(serverUtils.getArticleSummaryByIds(boardId, articleInfos))
-          .then(({ response: summariesResult, type, query, error }) => {
-            let summaries = summariesResult.result
-            dispatch(postprocessGetSummaries(myId, summaries))
-            if (isFirstFetch) {
-              dispatch(postprocessSetFinshLoading(myId))
-            }
-          })
+
+        Promise.all([
+          dispatch(serverUtils.getUsersInfo(creatorIds)),
+          dispatch(serverUtils.getArticleSummaryByIds(boardId, articleInfos))
+        ]).then( ([usersInfo, { response: { result: summariesResult } }]) => {
+          if (startArticleId === constants.EMPTY_ID) {
+            dispatch(postprocessGetArticleList(myId, result, usersInfo, summariesResult))
+          }
+          else {
+            dispatch(postprocessGetMoreArticles(myId, result, usersInfo, summariesResult))
+          }
+
+          dispatch(postprocessSetFinshLoading(myId))
+        })
       })
   }
 }
 
-const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
+export const getArticleList = (myId, boardId, isFirstFetch, limit) => {
+  return (dispatch, getState) => {
+    dispatch(fetchArticleList(myId, boardId, constants.EMPTY_ID, isFirstFetch, limit))
+  }
+}
+export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
+  return (dispatch, getState) => {
+    dispatch(fetchArticleList(myId, boardId, startArticleId, true, limit))
+  }
+}
+
+const articleToArticleList = (myId, result, usersInfo, summaryResult) => {
   result = result.map(serverUtils.deserialize)
 
   usersInfo = usersInfo.reduce((acc, each) => {
@@ -310,7 +317,7 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
     return acc
   }, {})
 
-  const articleList = result.map(each => {
+  return result.map(each => {
     let userId = each.CreatorID
     let userNameMap = usersInfo['userName'] || {}
     let userImgMap = usersInfo['userImg'] || {}
@@ -318,45 +325,43 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
-    let createTS = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
-    let updateTS = each.UpdateTS ? each.UpdateTS : createTS
+    let createTS = utils.isNullTimeStamp(each.CreateTS) ? utils.emptyTimeStamp() : each.UpdateTS
+    let updateTS = utils.isNullTimeStamp(each.UpdateTS) ? createTS : each.UpdateTS
+
+    let CommentCreateTS = each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
+
+    let summaryData = toJson(serverUtils.b64decode(summaryResult[each.ID].B[0]))
+    let summary = getSummaryTemplate(summaryData, { CreatorName: userName, boardId: each.BoardID })
 
     return {
-      BoardID: each.BoardID,
-      ContentBlockID: each.ContentBlockID,
-      CreatorID: each.CID,
-      CreatorName: userName,
-      CreatorImg: userImg,
-      Status: each.S,
-      ID: each.ID,
-      NBlock: each.NBlock,
-      NBoo: each.NB,
-      NPush: each.NP,
-      Title: each.Title,
-      CreateTS: createTS,
-      UpdateTS: updateTS,
-      LastSeen: each.L ? each.L : utils.emptyTimeStamp(),
-      CommentCreateTS: each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
+      ID:              each.ID,
+      Status:          each.S,
+      CreatorName:     userName,
+      CreatorImg:      userImg,
+      responseNumber:  each.NP || 0,
+      Title:           each.Title,
+      CommentCreateTS: CommentCreateTS,
+      CreateTS:        createTS,
+      UpdateTS:        updateTS,
+      isUnread:        isUnRead(CommentCreateTS.T, each.L.T),
+      summary:         summary
     }
   })
+}
+
+const postprocessGetArticleList = (myId, result, usersInfo, summariesResult) => {
+  const articleList = articleToArticleList(myId, result, usersInfo, summariesResult)
 
   console.log('doBoardPage.postprocessGetArticleList: articleList:', articleList)
 
   // let matchIndex = articleList.findIndex((each) => each.ID === latestArticleId)
 
-  if (articleList.length === 0 && isFirstFetch) {
+  if (articleList.length === 0) {
     return {
       myId,
       myClass,
       type: SET_DATA,
       data: { boardArticles: { lru: null, offset: 0, articleList: [] }, noArticle: true }
-    }
-  } else if (articleList.length === 0 && !isFirstFetch) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: {}
     }
   } else {
     return {
@@ -368,92 +373,8 @@ const postprocessGetArticleList = (myId, result, isFirstFetch, usersInfo) => {
   }
 }
 
-const postprocessGetSummaries = (myId, summaries) => {
-  console.log('doBoardPage.postprocessGetSummaries: summaries:', summaries)
-
-  return {
-    myId,
-    myClass,
-    type: INSERT_SUMMARIES,
-    data: { summaries: summaries }
-  }
-}
-
-export const _insertSummaries = (state, action) => {
-  const { myId, data: { summaries } } = action
-
-  let articleSummaries = state.getIn([myId, 'articleSummaries'], Immutable.Map())
-
-  return state.setIn([myId, 'articleSummaries'], articleSummaries.merge(summaries))
-}
-
-export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
-  return (dispatch, getState) => {
-    dispatch(preprocessSetStartLoading(myId))
-    dispatch(serverUtils.getArticles(boardId, startArticleId, limit, constants.LIST_ORDER_PREV))
-      .then(({ response: { result }, type, query, error }) => {
-        let creatorIds = result.map(each => each.CreatorID)
-        let articleIds = result.map(each => each.ID)
-        let cBlockIds = result.map(each => each.ContentBlockID)
-        dispatch(serverUtils.getUsersInfo(creatorIds))
-          .then((usersInfo) => {
-            dispatch(postprocessGetMoreArticles(myId, result, usersInfo))
-          })
-        let articleInfos = []
-        for (let i = 0; i < articleIds.length; i++) {
-          articleInfos.push({
-            'A': articleIds[i],
-            'B': cBlockIds[i]
-          })
-        }
-        dispatch(serverUtils.getArticleSummaryByIds(boardId, articleInfos))
-          .then(({ response: summariesResult, type, query, error }) => {
-            let summaries = summariesResult.result
-            dispatch(postprocessGetSummaries(myId, summaries))
-            dispatch(postprocessSetFinshLoading(myId))
-          })
-      })
-  }
-}
-
-const postprocessGetMoreArticles = (myId, result, usersInfo) => {
-  result = result.map(serverUtils.deserialize)
-  result = result.slice(1)
-
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  const articleList = result.map(each => {
-    let userId = each.CreatorID
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
-
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-
-    let createTS = each.CreateTS ? each.CreateTS : utils.emptyTimeStamp()
-    let updateTS = each.UpdateTS ? each.UpdateTS : createTS
-
-    return {
-      BoardID: each.BoardID,
-      ContentBlockID: each.ContentBlockID,
-      CreatorID: each.CreatorID,
-      CreatorName: userName,
-      CreatorImg: userImg,
-      Status: each.S,
-      ID: each.ID,
-      NBlock: each.NBlock,
-      NBoo: each.NBoo,
-      NPush: each.NPush,
-      Title: each.Title,
-      CreateTS: createTS,
-      UpdateTS: updateTS,
-      LastSeen: each.L ? each.L : utils.emptyTimeStamp(),
-      CommentCreateTS: each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
-    }
-  })
+const postprocessGetMoreArticles = (myId, result, usersInfo, summariesResult) => {
+  const articleList = articleToArticleList(myId, result.slice(1), usersInfo, summariesResult)
 
   console.log('doBoardPage.postprocessGetMoreArticles: articleList:', articleList)
 
@@ -579,47 +500,6 @@ export const _appendArticles = (state, action) => {
 /*  Update Article List    */
 /*                         */
 
-export const addArticle = (myId, userName, userImg, boardId, title, article, mediaStr) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.createArticle(boardId, title, article, mediaStr))
-      .then(({ response: { result }, type, query, error }) => {
-        dispatch(postprocessCreateArticle(myId, boardId, userName, userImg, title, article, result))
-      })
-  }
-}
-
-const postprocessCreateArticle = (myId, boardId, userName, userImg, title, articleArray, result) => {
-  let sData = articleArray && articleArray.length > 0 ? toJson(articleArray[0]) : {}
-  let previewText = getSummaryTemplate(sData, { CreatorName: userName, boardId: boardId })
-
-  let newArticle = {
-    BoardID: result.BID,
-    ContentBlockID: result.cID,
-    CreateTS: utils.emptyTimeStamp(),
-    CreatorID: null,
-    CreatorName: userName,
-    CreatorImg: userImg,
-    PreviewText: previewText,
-    Status: 0,
-    ID: result.AID,
-    LastSeen: utils.emptyTimeStamp(),
-    NBlock: null,
-    NBoo: 0,
-    NPush: 0,
-    Title: title,
-    CommentCreateTS: utils.emptyTimeStamp(),
-    UpdateTS: utils.emptyTimeStamp()
-  }
-
-  console.log('doBoardPage.postprocessCreateArticle: result:', newArticle)
-  return {
-    myId,
-    myClass,
-    type: ADD_ARTICLE,
-    data: { article: newArticle, noArticle: false }
-  }
-}
-
 export const _addArticle = (state, action) => {
   const { myId, data: { article, noArticle } } = action
 
@@ -640,34 +520,6 @@ export const _addArticle = (state, action) => {
   state = state.updateIn([myId, 'boardArticles', 'articleList'], arr => arr.push(Immutable.Map(article)))
 
   return state
-}
-
-export const deleteArticle = (myId, boardId, articleId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.deleteArticle(boardId, articleId))
-      .then(({ response: { result }, type, query, error }) => {
-        dispatch(postprocessDeleteArticle(myId, boardId, articleId))
-      })
-  }
-}
-
-const postprocessDeleteArticle = (myId, boardId, articleId) => {
-  console.log('doBoardPage.postprocessDeleteArticle: result:', articleId)
-
-  return {
-    myId,
-    myClass,
-    type: DELETE_ARTICLE,
-    data: { articleId: articleId }
-  }
-}
-
-export const _deteleArticle = (state, action) => {
-  const { myId, data: { articleId } } = action
-
-  let articleList = state.getIn([myId, 'boardArticles', 'articleList'], Immutable.List())
-  articleList = articleList.filter(each => { return each.get('ID') !== articleId })
-  return state.setIn([myId, 'boardArticles', 'articleList'], articleList)
 }
 
 export const clearData = (myId) => {
@@ -772,6 +624,34 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, t
   }
 }
 
+const postprocessCreateArticle = (myId, boardId, userName, userImg, title, articleArray, result) => {
+  let summaryData = articleArray && articleArray.length > 0 ? toJson(articleArray[0]) : {}
+  let summary = getSummaryTemplate(summaryData, { CreatorName: userName, boardId: boardId })
+
+  let newArticle = {
+    summary:         summary,
+    ID:              result.AID,
+    Status:          0,
+    CreatorName:     userName,
+    CreatorImg:      userImg,
+    responseNumber:  0,
+    Title:           title,
+    CommentCreateTS: utils.emptyTimeStamp(),
+    CreateTS:        utils.emptyTimeStamp(),
+    UpdateTS:        utils.emptyTimeStamp(),
+    isUnread:        false
+  }
+
+  console.log('doBoardPage.postprocessCreateArticle: result:', newArticle)
+  return {
+    myId,
+    myClass,
+    type: ADD_ARTICLE,
+    data: { article: newArticle, noArticle: false }
+  }
+}
+
+
 // reducers
 const reducer = myDuck.createReducer({
   [INIT]: utils.reduceInit,
@@ -782,10 +662,8 @@ const reducer = myDuck.createReducer({
   [SET_DATA]: utils.reduceSetData,
   [UPDATE_DATA]: utils.reduceUpdateData,
   [ADD_ARTICLE]: _addArticle,
-  [DELETE_ARTICLE]: _deteleArticle,
   [PREPEND_ARTICLES]: _prependArticles,
-  [APPEND_ARTICLES]: _appendArticles,
-  [INSERT_SUMMARIES]: _insertSummaries
+  [APPEND_ARTICLES]: _appendArticles
 }, Immutable.Map())
 
 export default reducer

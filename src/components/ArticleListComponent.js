@@ -5,11 +5,7 @@ import { FormattedMessage } from 'react-intl'
 import ReactDOM from 'react-dom'
 
 import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
-import { isUnRead,
-  getStatusClass,
-  toJson,
-  getSummaryTemplate } from '../utils/utils'
-import * as serverUtils from '../reducers/ServerUtils'
+import { getStatusClass } from '../utils/utils'
 import * as constants from '../constants/Constants'
 
 import styles from './ArticleListComponent.module.scss'
@@ -70,9 +66,11 @@ class ArticleListComponent extends PureComponent {
   }
 
   render () {
-    const { boardId, listData, summaryData, isLoading, noArticle } = this.props
+    const { boardId, listData, isLoading, noArticle } = this.props
 
-    let aliveArticles = listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted'))
+    let aliveArticles = listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).sort((a,b) => {
+      return a.UpdateTS.T - b.UpdateTS.T;
+    })
 
     if (noArticle) {
       return (
@@ -101,7 +99,7 @@ class ArticleListComponent extends PureComponent {
           }
           {
             aliveArticles.map(item => (
-              <ArticleComponent data={item} summaryData={summaryData} key={item.ID} boardId={boardId} />
+              <ArticleItemComponent data={item} key={item.ID} boardId={boardId} />
             ))
           }
         </div>
@@ -111,20 +109,12 @@ class ArticleListComponent extends PureComponent {
   }
 }
 
-export class ArticleComponent extends PureComponent {
+export class ArticleItemComponent extends PureComponent {
   render () {
-    let { data, onClick, boardId, summaryData } = this.props
-    let isUnreadArticle = isUnRead(data.CommentCreateTS.T, data.LastSeen.T)
-    let listItemClass = styles['list-item'] + ' ' + (isUnreadArticle ? styles['unread'] : styles['read'])
-    let itemLink = `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(data.ID)}`
+    let { data, onClick, boardId } = this.props
 
-    let summary = ''
-    if (data.PreviewText) {
-      summary = data.PreviewText
-    } else if (summaryData[data.ID] && summaryData[data.ID].B) {
-      let sData = toJson(serverUtils.b64decode(summaryData[data.ID].B[0]))
-      summary = getSummaryTemplate(sData, { CreatorName: data.CreatorName, boardId: boardId })
-    }
+    let listItemClass = styles['list-item'] + ' ' + (data.isUnread ? styles['unread'] : styles['read'])
+    let itemLink = `/board/${encodeURIComponent(boardId)}/article/${encodeURIComponent(data.ID)}`
 
     return (
       <div className={listItemClass} onClick={onClick}>
@@ -145,8 +135,8 @@ export class ArticleComponent extends PureComponent {
             </div>
             <div className={styles['list-item-content']}>
               {
-                summary ? (
-                  <div dangerouslySetInnerHTML={{ __html: summary }} />
+                data.summary ? (
+                  <div dangerouslySetInnerHTML={{ __html: data.summary }} />
                 ) : (
                   <FormattedMessage id='article-list-component.empty' defaultMessage='(No content)' />
                 )
@@ -154,7 +144,7 @@ export class ArticleComponent extends PureComponent {
             </div>
           </div>
           <div className={styles['list-item-meta']}>
-            <div className={styles['list-item-circle']}>{data.NPush || 0}</div>
+            <div className={styles['list-item-circle']}>{data.responseNumber}</div>
             <div title={constants.STATUS_ARRAY[data.Status]} className={styles['list-item-status']}>
               <div className={styles['list-item-status-' + getStatusClass(data.Status)]} />
             </div>
