@@ -48,17 +48,15 @@ describe('<BoardListComponent />', () => {
     let wrapper = mountDom({
       userId: 'TESTER_ID',
       listData: [{
-        Status: 7, // StatusAlive
-        ID: 1,
-        Title: 'whatever',
-        ArticleCreateTS: {},
-        LastSeen: {},
-        joinStatus: 3,
-        BoardType: 1, // BOARD_TYPE_PERSONAL
-        CreatorID: 'TESTER_ID',
+        BoardType:   1, // BOARD_TYPE_PERSONAL
+        ID:          1,
+        Status:      7, // StatusAlive
+        Title:       'whatever',
+        isUnread:    true,
+        CreatorID:   'TESTER_ID',
         creatorName: 'TESTER',
-        UpdateTS: {},
-        CommentCreateTS: {}
+        updateAt:    {},
+        joinStatus:  3
       }],
 
       noArticle: false,
@@ -74,17 +72,15 @@ describe('<BoardListComponent />', () => {
     let wrapper = mountDom({
       userId: 'TESTER_ID',
       listData: [{
-        Status: 7, // StatusAlive
-        ID: 1,
-        Title: 'whatever',
-        ArticleCreateTS: {},
-        LastSeen: {},
-        joinStatus: 3,
-        BoardType: 2, // BOARD_TYPE_PRIVATE
-        CreatorID: 'TESTER_ID',
+        BoardType:   2, // BOARD_TYPE_PRIVATE
+        ID:          1,
+        Status:      7, // StatusAlive
+        Title:       'whatever',
+        isUnread:    false,
+        CreatorID:   'TESTER_ID',
         creatorName: 'TESTER',
-        UpdateTS: {},
-        CommentCreateTS: {}
+        updateAt:    {},
+        joinStatus:  3
       }],
 
       noArticle: false,
