@@ -6,7 +6,7 @@ import styles from './HubComponent.module.scss'
 
 class HubComponent extends PureComponent {
   render () {
-    const { userId, boardList, isLoading, noBoard, createBoardAction, manageBoardAction } = this.props
+    const { userId, boardList, isLoading, noBoard, createBoardAction } = this.props
 
     return (
       <div className={styles['root']}>
@@ -14,8 +14,7 @@ class HubComponent extends PureComponent {
           userId={userId}
           noBoard={noBoard}
           listData={boardList}
-          isLoading={isLoading}
-          manageBoard={manageBoardAction} />
+          isLoading={isLoading} />
         <div className={styles['add-icon-container']}>
           <div className={styles['add-icon-subcontainer']}>
             <div className={styles['add-icon-container']}>

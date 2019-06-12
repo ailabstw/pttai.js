@@ -141,16 +141,6 @@ class HubPage extends PureComponent {
       doModalContainer.openModal(constants.BOARD_ACTION_MODAL)
     }
 
-    let openManageBoardModal = (modalData) => {
-      doModalContainer.setInput({
-        boardId: modalData.ID,
-        boardName: modalData.Title,
-        setBoardName: (boardId, name, friendInvited) => doHubPage.setBoardName(myId, boardId, name, friendInvited),
-        deleteBoard: (boardId) => doHubPage.deleteBoard(myId, boardId)
-      })
-      doModalContainer.openModal(constants.MANAGE_BOARD_MODAL)
-    }
-
     return (
       <div className={styles['root']}>
         <HubComponent
@@ -159,8 +149,7 @@ class HubPage extends PureComponent {
           noBoard={noBoard}
           boardList={boardList}
           isLoading={isLoading}
-          createBoardAction={openBoardActionModule}
-          manageBoardAction={openManageBoardModal} />
+          createBoardAction={openBoardActionModule} />
         <AlertComponent show={showAlert} alertData={alertData} />
       </div>
     )
