@@ -8,21 +8,19 @@ import * as doEditArticleModal from '../reducers/EditArticleModal'
 import PttaiEditor from '../components/PttaiEditor'
 import styles from './EditArticleModal.module.scss'
 
+
 class EditArticleModal extends PureComponent {
   render () {
     const { modalInput: {
-      boardId,
       onDeleteArticle,
       articleTitle,
-      articleContentsList
+      contentHTML
     },
     modal: {
       currentModal
     },
     onModalSubmit,
     onModalClose } = this.props
-
-    let htmlArray = articleContentsList.reduce((resultArray, block) => { return resultArray.concat(block.contentBlockArray) }, [])
 
     return (
       <Modal
@@ -32,9 +30,9 @@ class EditArticleModal extends PureComponent {
         onRequestClose={null}
         shouldCloseOnEsc={false}
         contentLabel='Edit Article Modal'>
-        <PttaiEditor boardId={boardId}
+        <PttaiEditor
           articleTitle={articleTitle}
-          initHtmlArray={htmlArray}
+          initHtml={contentHTML}
           isEdit
           onDeleteArticle={onDeleteArticle}
           onSubmitArticle={onModalSubmit}

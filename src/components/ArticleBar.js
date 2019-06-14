@@ -6,21 +6,20 @@ import styles from './ArticleBar.module.scss'
 
 class ArticleBar extends PureComponent {
   render () {
-    const { boardInfo, articleInfo, userId, openManageArticleModal } = this.props
-    const isCreator = userId === articleInfo.CreatorID
+    const { boardID, title, isCreator, openManageArticleModal } = this.props
 
     return (
       <div className={styles['root']}>
         <div className={styles['content']}>
 
           <div className={styles['prev-button']}>
-            <Link to={`/board/${boardInfo.ID}`}>
+            <Link to={`/board/${boardID}`}>
               <div className={styles['prev-button-icon']} />
             </Link>
           </div>
 
-          <div title={articleInfo.Title} className={styles['board-name']}>
-            {articleInfo.Title}
+          <div title={title} className={styles['board-name']}>
+            {title}
           </div>
 
           <div className={styles['menu-button']}>

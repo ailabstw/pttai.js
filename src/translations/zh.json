@@ -114,6 +114,7 @@
     "board-list-component.message": "請點選下方按鈕「新增群組」",
     "board-list-component.board-type": "[個板] {name}",
     "board-list-component.syncing": "同步中",
+    "comment-reply-list-component.have-been-deleted": "[本留言已被刪除]",
     "comment-reply-list-component.action": "刪除",
     "comment-reply-list-component.comment-length-alert": "留言不能超過 {MAX_COMMENT_SIZE} 個字",
     "article-list-component.action": "刪除",
