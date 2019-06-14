@@ -330,8 +330,8 @@ const articleToArticleList = (myId, result, usersInfo, summaryResult) => {
 
     let CommentCreateTS = each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
 
-    let summaryData = toJson(serverUtils.b64decode(summaryResult[each.ID].B[0]))
-    let summary = getSummaryTemplate(summaryData, { CreatorName: userName, boardId: each.BoardID })
+    let summaryData = summaryResult[each.ID] ? toJson(serverUtils.b64decode(summaryResult[each.ID].B[0])) : ''
+    let summary = summaryResult[each.ID] ? getSummaryTemplate(summaryData, { CreatorName: userName, boardId: each.BoardID }) : ''
 
     return {
       ID:              each.ID,
