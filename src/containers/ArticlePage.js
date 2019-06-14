@@ -45,9 +45,7 @@ class ArticlePage extends PureComponent {
     const { actions: { doArticlePage }, match: { params }, myId } = this.props
 
     doArticlePage.initParams(myId, params)
-    doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
-    doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
-    doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
+    doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.NUM_CONTENT_PER_REQ)
     doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
 
     this.refreshPageInterval = setInterval(this.getLatestComment, constants.REFRESH_INTERVAL)
@@ -62,10 +60,7 @@ class ArticlePage extends PureComponent {
     // let commentContentsList = commentContents.commentContentsList || []
     // let latestSubContentId  = (commentContentsList.length > 0) ? commentContentsList[commentContentsList.length - 1].subContentId: constants.EMPTY_ID
 
-    doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
-    doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
-    doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
-
+    doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.NUM_CONTENT_PER_REQ)
     doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
   }
 
@@ -115,12 +110,11 @@ class ArticlePage extends PureComponent {
     const { count, pullTimer } = this.state
 
     let me = articlePage.get(myId, Immutable.Map())
-    let articleContentsList = me.get('articleContentsList', Immutable.List()).toJS()
-    articleContentsList = articleContentsList.filter((each) => each.contentType === constants.CONTENT_TYPE_ARTICLE)
+    let contentHTML = me.getIn(['articleInfo', 'contentHTML'], '')
 
-    doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
+    doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.NUM_CONTENT_PER_REQ)
 
-    if (articleContentsList.length > 0 || count === constants.ARTICLE_PULL_COUNT_DOWN) {
+    if (contentHTML.length > 0 || count === constants.ARTICLE_PULL_COUNT_DOWN) {
       this.setState({ count: 0 })
       clearInterval(pullTimer)
     } else {
@@ -132,19 +126,21 @@ class ArticlePage extends PureComponent {
     const { attachmentTimer } = this.state
 
     let that = this
-    let allLoaded = Array.from($(iframeClass)).reduce((acc, current, idx) => {
+    let iframeArray = Array.from($(iframeClass))
+    let allLoaded = iframeArray.reduce((acc, current) => {
       return acc && $($(current).contents()[0], window).find(attachmentClass).length
     }, true)
 
-    if (allLoaded && Array.from($(iframeClass)).length) {
-      Array.from($(iframeClass)).forEach((ele) => {
+    if (allLoaded && iframeArray.length) {
+      iframeArray.forEach((ele) => {
+        let elem = $(ele)
         let iframeParams = {
-          fileId: $(ele).attr('data-id'),
-          fileName: $(ele).attr('data-name'),
-          fileSize: $(ele).attr('data-size'),
-          fileType: $(ele).attr('data-type')
+          fileId: elem.attr('data-id'),
+          fileName: elem.attr('data-name'),
+          fileSize: elem.attr('data-size'),
+          fileType: elem.attr('data-type')
         }
-        $($(ele).contents()[0], window).find(attachmentClass).bind('click', (e) => that.downloadAttachment(e, iframeParams))
+        $(elem.contents()[0], window).find(attachmentClass).bind('click', (e) => that.downloadAttachment(e, iframeParams))
       })
       clearInterval(attachmentTimer)
     }
@@ -192,9 +188,7 @@ class ArticlePage extends PureComponent {
     if (prevProps.location.pathname !== location.pathname) {
       doArticlePage.clearData(myId)
       doArticlePage.initParams(myId, params)
-      doArticlePage.getBoardInfo(myId, decodeURIComponent(params.boardId))
-      doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
-      doArticlePage.getArticleContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), 0, constants.NUM_CONTENT_PER_REQ)
+      doArticlePage.getArticleInfo(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.NUM_CONTENT_PER_REQ)
       doArticlePage.getCommentContent(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId), constants.EMPTY_ID, 0, constants.NUM_CONTENT_PER_REQ)
       doArticlePage.markArticle(myId, decodeURIComponent(params.boardId), decodeURIComponent(params.articleId))
 
@@ -227,9 +221,7 @@ class ArticlePage extends PureComponent {
     let articleId = me.get('articleId', '')
     let isCommentLoading = me.get('isCommentLoading', false)
 
-    let boardInfo = me.get('boardInfo', Immutable.Map()).toJS()
     let articleInfo = me.get('articleInfo', Immutable.Map()).toJS()
-    let articleContentsList = me.get('articleContentsList', Immutable.List()).toJS()
     let commentContents = me.get('commentContents', Immutable.Map()).toJS()
     let commentContentsList = commentContents.commentContentsList || []
 
@@ -242,7 +234,7 @@ class ArticlePage extends PureComponent {
 
     let openManageArticleModal = (modalData) => {
       doModalContainer.setInput({
-        isCreator: articleInfo.CreatorID === userId,
+        isCreator: articleInfo.creator.id === userId,
         articleId: articleInfo.ID,
         onEditArticle: openEditArticleModal,
         onDeleteArticle: deleteArticle
@@ -252,17 +244,23 @@ class ArticlePage extends PureComponent {
     }
 
     let openEditArticleSubmit = (title, reducedArticleArray, attachments) => {
+      doArticlePage.clearData(myId)
       doArticlePage.createArticleWithAttachments(myId, userName, userImg, boardId, articleId, reducedArticleArray, attachments)
       doArticlePage.markArticle(myId, boardId, articleId)
+
+      this.setState({
+        pullTimer: setInterval(this.pullContent, constants.CONTENT_REFETCH_INTERVAL),
+        attachmentTimer: setInterval(this.attachmentLoaded, constants.ATTACHMENT_LOAD_INTERVAL)
+      })
 
       doModalContainer.closeModal()
     }
 
     const openEditArticleModal = () => {
       doModalContainer.setInput({
-        boardId: boardInfo.ID,
+        boardId: boardId,
         articleTitle: articleInfo.Title,
-        articleContentsList: articleContentsList,
+        contentHTML:         articleInfo.contentHTML,
         onDeleteArticle: deleteArticle
       })
       doModalContainer.setSubmit(openEditArticleSubmit)
@@ -271,7 +269,7 @@ class ArticlePage extends PureComponent {
 
     let openNameCard = () => {
       doModalContainer.setInput({
-        userId: articleInfo.CreatorID,
+        userId: articleInfo.creator.id,
         isEditable: false
       })
       doModalContainer.openModal(constants.NAME_CARD_MODAL)
@@ -290,10 +288,9 @@ class ArticlePage extends PureComponent {
       doArticlePage.deleteComment(myId, boardId, articleId, commentId, mediaIds)
     }
 
-    const openCommentSettingMenuModal = (commentId, setToEditMode) => {
+    const openCommentSettingMenuModal = (commentId) => {
       doModalContainer.setInput({
-        onDeleteComment: () => onDeleteComment(commentId),
-        onEditComment: setToEditMode
+        onDeleteComment: () => onDeleteComment(commentId)
       })
       doModalContainer.openModal(constants.COMMENT_SETTING_MENU_MODAL)
     }
@@ -301,9 +298,9 @@ class ArticlePage extends PureComponent {
     return (
       <div className={styles['root']} onScroll={this.handleScroll} ref={(scroller) => { this.scroller = scroller }}>
         <ArticleBar
-          userId={userId}
-          boardInfo={boardInfo}
-          articleInfo={articleInfo}
+          boardID={boardId}
+          title={articleInfo.Title}
+          isCreator={userId === (articleInfo.creator && articleInfo.creator.id)}
           openManageArticleModal={openManageArticleModal} />
         {
           $.isEmptyObject(articleInfo) ? (
@@ -315,11 +312,10 @@ class ArticlePage extends PureComponent {
           )
         }
         <ArticleComponent
-          boardInfo={boardInfo}
           userId={userId}
           pullCount={count}
-          articleInfo={articleInfo}
-          articleContentsList={articleContentsList}
+          creator={articleInfo.creator}
+          contentHTML={articleInfo.contentHTML || ''}
           openNameCard={openNameCard} />
         <CommentReplyListComponent
           isLoading={isCommentLoading}

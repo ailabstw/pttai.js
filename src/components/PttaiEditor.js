@@ -11,7 +11,6 @@ import { dataURLtoFile,
   isWhitespace,
   newCanvasSize,
   getOrientation,
-  array2Html,
   getFileTemplate,
   getUUID,
   sanitizeDirtyHtml,
@@ -185,8 +184,8 @@ class PttaiEditor extends PureComponent {
       id: `editor-${uuidv4()}`,
       editor: {},
       title: props.articleTitle,
-      htmlArray: props.initHtmlArray || [],
-      htmlContent: props.initHtmlArray ? array2Html(props.initHtmlArray, props.boardId) : '',
+      htmlArray: html2Array(props.initHtml) || [],
+      htmlContent: props.initHtml || '',
       attachedObjs: [],
       selection: { index: 0, length: 0 },
       showAlert: false,
@@ -248,6 +247,7 @@ class PttaiEditor extends PureComponent {
           onConfirm: () => that.setState({ showAlert: false })
         }
       })
+      // FIXME: no need to limit title length
     } else if (isTitleTooLong(title)) {
       let that = this
       return this.setState({
@@ -270,35 +270,16 @@ class PttaiEditor extends PureComponent {
       /*                                              */
 
       let reducedHtmlArray = htmlArray.map((each) => {
-        if (each.type === 'attachment') {
-          return each
-        } else if (each.type === 'text') {
+        if (each.type === 'text') {
           let replaced = each.content
           attachedObjs.forEach((attachment) => { replaced = replaced.replace(attachment.data, attachment.id) })
           each.content = replaced
-          return each
-        } else {
-          return each
         }
+
+        return each
       })
 
-      if ((JSON.stringify(reducedHtmlArray).length - 2) * 3.032 > constants.MAX_ARTICLE_SIZE) {
-        let that = this
-        this.setState({
-          showAlert: true,
-          alertData: {
-            message: (
-              <FormattedMessage
-                id='alert.message16'
-                defaultMessage='Max content is {MAX_ARTICLE_SIZE} characters'
-                values={{ MAX_ARTICLE_SIZE: constants.MAX_ARTICLE_SIZE }}
-              />),
-            onConfirm: () => that.setState({ showAlert: false })
-          }
-        })
-      } else {
-        onSubmitArticle(title, reducedHtmlArray, attachedObjs)
-      }
+      onSubmitArticle(title, reducedHtmlArray, attachedObjs)
     }
   }
 
@@ -474,7 +455,7 @@ class PttaiEditor extends PureComponent {
           }
         }
 
-        that.handleChange(html, html2Array(html))
+        that.handleChange(html)
       } else if (eventName === 'selection-change') {
         let range = args[0]
         let oldRange = args[1]
@@ -496,8 +477,8 @@ class PttaiEditor extends PureComponent {
     return editor
   }
 
-  handleChange (html, htmlArray) {
-    this.setState({ htmlContent: html, htmlArray: htmlArray, contentChanged: true })
+  handleChange (html) {
+    this.setState({ htmlContent: html, htmlArray: html2Array(html), contentChanged: true })
   }
 
   attachmentUpload (e) {

@@ -48,11 +48,6 @@ class CommentSettingMenuModal extends PureComponent {
       })
     }
 
-    // let onEditComment = () => {
-    //   modalInput.onEditComment()
-    //   onModalClose()
-    // }
-
     return (
       <div>
         <Modal
@@ -63,14 +58,6 @@ class CommentSettingMenuModal extends PureComponent {
           contentLabel='Setting Menu Modal'>
           <div className={styles['root']}>
             <div className={styles['action-section']}>
-              {/*
-                <button className={styles['menu-button']} onClick={onEditComment}>
-                  <FormattedMessage
-                    id="comment-setting-menu-modal.menu1"
-                    defaultMessage="Edit Comment"
-                  />
-                </button>
-              */}
               <button className={styles['menu-button']} onClick={onDeleteComment}>
                 <FormattedMessage
                   id='comment-setting-menu-modal.menu2'

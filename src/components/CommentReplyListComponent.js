@@ -35,7 +35,6 @@ class CommentReplyListComponent extends PureComponent {
 
     this.commentValidate = this.commentValidate.bind(this)
     this.submitComment = this.submitComment.bind(this)
-    this.onClick = this.onClick.bind(this)
   }
 
   commentValidate (comment) {
@@ -83,18 +82,10 @@ class CommentReplyListComponent extends PureComponent {
 
   componentDidMount () {
     document.addEventListener('keydown', this.submitComment, false)
-    document.addEventListener('click', this.onClick, false)
   }
 
   componentWillUnmount () {
     document.removeEventListener('keydown', this.submitComment, false)
-    document.removeEventListener('click', this.onClick, false)
-  }
-
-  onClick (event) {
-    if (event.target.tagName.toUpperCase() !== 'INPUT' && event.target.className.toString().indexOf('dd-list-item') === -1) {
-      this.setState({ isEditIndex: -1 })
-    }
   }
 
   render () {
@@ -150,38 +141,19 @@ export class CommentReplyListItem extends PureComponent {
   constructor (props) {
     super()
 
-    this.state = {
-      editComment: '',
-      isEditIndex: -1
-    }
-
-    this.onEditComment = this.onEditComment.bind(this)
-    this.setToEditMode = this.setToEditMode.bind(this)
     this.onMenuClicked = this.onMenuClicked.bind(this)
-  }
-
-  onEditComment (e) {
-    this.setState({ editComment: e.target.value })
-
-    // TODO: wait for Enter clicked, and then submit to update comment
-  }
-
-  setToEditMode (index, editComment) {
-    this.setState({
-      isEditIndex: index,
-      editComment: editComment
-    })
   }
 
   onMenuClicked (e, item, index) {
     e.preventDefault()
     e.stopPropagation()
-    this.props.openMenu(item.subContentId, () => this.setToEditMode(index, item.contentBlockArray[0]))
+    this.props.openMenu(item.subContentId)
   }
 
   render () {
-    let { isEditIndex, editComment } = this.state
     let { userId, item, index } = this.props
+
+    const isDeleted = constants.STATUS_ARRAY[item.status] === 'StatusDeleted'
 
     return (
       <div className={styles['list-item']}>
@@ -196,31 +168,20 @@ export class CommentReplyListItem extends PureComponent {
                 {item.creatorName}
               </div>
             </div>
-            {
-              (index === isEditIndex) ? (
-                <div className={styles['comment-content-wrapper']}>
-                  <div className={styles['comment-content-input']}>
-                    <span>
-                      <input
-                        autoFocus
-                        name='comment-input'
-                        className={styles['comment-action-content-input']}
-                        value={editComment}
-                        onChange={this.onEditComment} />
-                    </span>
-                  </div>
-                  <div className={styles['comment-action-input-enter']} />
-                </div>
-              ) : (
-                <div className={styles['comment-content']}>
-                  {linkParser(item.contentBlockArray[0])}
-                </div>
-              )
-            }
+            <div className={styles['comment-content']}>
+              {
+                isDeleted ? (
+                  <FormattedMessage
+                    id='comment-reply-list-component.have-been-deleted'
+                    defaultMessage='[Comment is deleted]'
+                  />
+                ):
+                linkParser(item.content)
+              }
+            </div>
           </div>
           <div title={epoch2FullTimeFormat(item.createTS.T)} className={styles['comment-creator-id-prefix']}>
             {epoch2ReadFormat(item.createTS.T)}
-            {/* item.creatorId && item.creatorId.length >= 8? item.creatorId.substring(0, 8):'null' */}
           </div>
         </div>
 
@@ -229,8 +190,7 @@ export class CommentReplyListItem extends PureComponent {
         </div>
         <div className={styles['comment-manage']}>
           {
-          // FIXME: i18n from backend
-            (item.contentBlockArray[0] === '(本文已被刪除)' || item.creatorId !== userId) ? (
+            (isDeleted || item.creatorId !== userId) ? (
               null
             ) : (
               <div className={styles['list-item-ellipsis']} onClick={(e) => this.onMenuClicked(e, item, index)} />

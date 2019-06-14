@@ -8,7 +8,7 @@ import * as serverUtils from './ServerUtils'
 import * as constants from '../constants/Constants'
 import { DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE } from '../constants/Constants'
-import { toJson } from '../utils/utils'
+import { array2Html, toJson } from '../utils/utils'
 
 export const myClass = 'ARTICLE_PAGE'
 
@@ -20,7 +20,6 @@ const SET_ROOT = myDuck.defineType('SET_ROOT')
 const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
 const REMOVE = myDuck.defineType('REMOVE')
 const SET_DATA = myDuck.defineType('SET_DATA')
-const APPEND_ARTICLE = myDuck.defineType('APPEND_ARTICLE')
 const APPEND_COMMENT = myDuck.defineType('APPEND_COMMENT')
 const ADD_COMMENT = myDuck.defineType('ADD_COMMENT')
 const DELETE_COMMENT = myDuck.defineType('DELETE_COMMENT')
@@ -45,61 +44,30 @@ export const initParams = (myId, params) => {
   }
 }
 
-/*                          */
-/*  Get Board level Info    */
-/*                          */
-
-export const getBoardInfo = (myId, boardId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getBoard(boardId))
-      .then(({ response: { result }, type, error, query }) => {
-        dispatch(postprocessGetBoardInfo(myId, result))
-      })
-  }
-}
-
-const postprocessGetBoardInfo = (myId, result) => {
-  result = serverUtils.deserialize(result)
-
-  const boardInfo = {
-    ID: result.ID,
-    Status: result.S,
-    Title: result.Title,
-    LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
-    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp(),
-    ArticleCreateTS: result.ArticleCreateTS ? result.ArticleCreateTS : utils.emptyTimeStamp()
-  }
-
-  console.log('doArticlePage.postprocessGetBoardInfo: boardInfo:', boardInfo)
-
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { boardInfo: boardInfo }
-  }
-}
-
 /*                            */
 /*  Get Article level Info    */
 /*                            */
 
-export const getArticleInfo = (myId, boardId, articleId) => {
+export const getArticleInfo = (myId, boardId, articleId, limit) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getArticle(boardId, articleId))
-      .then(({ response: { result }, type, error, query }) => {
-        let creatorIds = [result.CreatorID]
-        dispatch(serverUtils.getUsersInfo(creatorIds))
-          .then((usersInfo) => {
-            dispatch(postprocessGetArticleInfo(myId, result, usersInfo))
-          })
+      .then(({ response: { result: articleResult }, type, error, query }) => {
+        const creatorIds = [articleResult.CreatorID]
+        const subContentId = articleResult.ContentBlockID
+        const totalBlockNum = articleResult.NBlock
+        const artilceLimit = (totalBlockNum < limit) ? totalBlockNum : limit
+
+        Promise.all([
+          dispatch(serverUtils.getUsersInfo(creatorIds)),
+          dispatch(serverUtils.getContent(boardId, articleId, subContentId, constants.CONTENT_TYPE_ARTICLE, /* blockId: */ 0, artilceLimit, constants.LIST_ORDER_NEXT))
+        ]).then( ([usersInfo, { response: { result: contentResult } }]) => {
+          dispatch(postprocessGetArticleInfo(myId, articleResult, contentResult, usersInfo))
+        })
       })
   }
 }
 
-const postprocessGetArticleInfo = (myId, result, usersInfo) => {
-  result = serverUtils.deserialize(result)
-
+const postprocessGetArticleInfo = (myId, result, contentResult, usersInfo) => {
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
@@ -110,22 +78,30 @@ const postprocessGetArticleInfo = (myId, result, usersInfo) => {
   let userImgMap = usersInfo['userImg'] || {}
 
   let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-  let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+
+  let contentArray = contentResult
+    .map( (each) => ({
+      contentType:        each.ct,
+      contentBlockArray:  each.B.map(a => toJson(serverUtils.b64decode(a))).map((e) => ({
+        type:    e.type,
+        content: e.content,
+        param:   e.param
+      }))
+    }))
+    .reduce((final, piece) => final.concat(piece.contentBlockArray), [])
+  const contentHTML = array2Html(contentArray, result.BoardID)
 
   const articleInfo = {
-    ID: result.ID,
-    CreateTS: result.CreateTS ? result.CreateTS : utils.emptyTimeStamp(),
-    UpdateTSkey: result.UpdateTSkey,
-    CreatorID: result.CreatorID,
-    CreatorName: userName,
-    CreatorImg: userImg,
-    BoardID: result.BoardID,
-    ContentBlockID: result.ContentBlockID,
-    NBlock: result.NBlock,
-    NPush: result.NPush,
-    NBoo: result.NBoo,
-    Title: result.Title,
-    LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp()
+    ID:              result.ID,
+    Title:           serverUtils.b64decode(result.Title),
+    CreateTS:        result.CreateTS ? result.CreateTS : utils.emptyTimeStamp(),
+    contentHTML:     contentHTML,
+    creator: {
+      id:            result.CreatorID,
+      name:          userName,
+      img:           userImg,
+    }
   }
 
   console.log('doArticlePage.postprocessGetArticleInfo: articleInfo:', articleInfo)
@@ -159,99 +135,6 @@ const postprocessMarkArticle = (myId, result) => {
     type: SET_DATA,
     data: {}
   }
-}
-
-/*                                */
-/*  Get Article/Comment Content   */
-/*                                */
-
-export const getArticleContent = (myId, boardId, articleId, blockId, limit) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getArticle(boardId, articleId))
-      .then(({ response: articleResult, type, error, query }) => {
-        const subContentId = articleResult.result.ContentBlockID
-        const totalBlockNum = articleResult.result.NBlock
-        const artilceLimit = (totalBlockNum < limit) ? totalBlockNum : limit
-        dispatch(serverUtils.getContent(boardId, articleId, subContentId, constants.CONTENT_TYPE_ARTICLE, blockId, artilceLimit, constants.LIST_ORDER_NEXT))
-          .then(({ response: { result }, type, error, query }) => {
-            let creatorIds = result.map(each => each.CID).filter(each => each)
-            dispatch(serverUtils.getUsersInfo(creatorIds))
-              .then((usersInfo) => {
-                dispatch(postprocessGetArticleContent(myId, result, blockId, usersInfo))
-              })
-          })
-      })
-  }
-}
-
-const postprocessGetArticleContent = (myId, result, blockId, usersInfo) => {
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  let articleContents = result.map((each) => {
-    let userId = each.CID
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
-
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-
-    return {
-      contentBlockArray: each.B.map((e) => { return toJson(serverUtils.b64decode(e)) }),
-      blockId: each.BID,
-      subContentId: each.ID,
-      articleId: each.RID,
-      contentType: each.ct,
-      commentType: each.mt,
-      creatorId: each.CID,
-      status: each.S,
-      creatorName: userName,
-      creatorImg: userImg
-    }
-  })
-
-  console.log('doArticlePage.postprocessGetArticleContent: result:', articleContents)
-
-  if (articleContents.length === 0) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: { allArticleLoaded: true }
-    }
-  } else if (blockId === 0) {
-    return {
-      myId,
-      myClass,
-      type: SET_DATA,
-      data: { articleContentsList: articleContents }
-    }
-  } else {
-    return {
-      myId,
-      myClass,
-      type: APPEND_ARTICLE,
-      data: { articleContents: articleContents }
-    }
-  }
-}
-
-export const _appendArticle = (state, action) => {
-  const { myId, data: { articleContents } } = action
-
-  let articleContentsList = state.getIn([myId, 'articleContentsList'], Immutable.List())
-
-  let matchIndex = articleContentsList.length
-  if (articleContents.length > 0) {
-    matchIndex = articleContentsList.toJS().findIndex((each) => each.blockId === articleContents[0].blockId)
-  }
-  if (matchIndex === -1) {
-    matchIndex = articleContentsList.length
-  }
-
-  return state.setIn([myId, 'articleContentsList'], articleContentsList.slice(0, matchIndex).concat(articleContents))
 }
 
 export const getCommentContent = (myId, boardId, articleId, latestSubContentId, blockId, limit) => {
@@ -290,18 +173,13 @@ const postprocessGetCommentContent = (myId, result, latestSubContentId, usersInf
     let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     return {
-      contentBlockArray: each.B.map((e) => { return serverUtils.b64decode(e) }),
-      blockId: each.BID,
+      creatorId:    each.CID,
+      creatorImg:   userImg,
+      creatorName:  userName,
+      content:      each.B.map((e) => serverUtils.b64decode(e))[0],
+      createTS:     each.CT ? each.CT : utils.emptyTimeStamp(),
+      status:       each.S,
       subContentId: each.ID,
-      articleId: each.RID,
-      contentType: each.ct,
-      commentType: each.mt,
-      creatorId: each.CID,
-      status: each.S,
-      creatorName: userName,
-      creatorImg: userImg,
-      createTS: each.CT ? each.CT : utils.emptyTimeStamp(),
-      updateTS: each.UT ? each.UT : utils.emptyTimeStamp()
     }
   })
 
@@ -451,18 +329,13 @@ const postprocessGetMoreComments = (myId, result, startSubContentId, usersInfo) 
     let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
     return {
-      contentBlockArray: each.B.map((e) => { return serverUtils.b64decode(e) }),
-      blockId: each.BID,
+      creatorId:    each.CID,
+      creatorName:  userName,
+      creatorImg:   userImg,
+      content:      each.B.map((e) => serverUtils.b64decode(e))[0],
+      createTS:     each.CT ? each.CT : utils.emptyTimeStamp(),
+      status:       each.S,
       subContentId: each.ID,
-      articleId: each.RID,
-      contentType: each.ct,
-      commentType: each.mt,
-      status: each.S,
-      creatorId: each.CID,
-      creatorName: userName,
-      creatorImg: userImg,
-      createTS: each.CT ? each.CT : utils.emptyTimeStamp(),
-      updateTS: each.UT ? each.UT : utils.emptyTimeStamp()
     }
   })
 
@@ -489,23 +362,6 @@ const postprocessGetMoreComments = (myId, result, startSubContentId, usersInfo) 
 /*  Update Article Content    */
 /*                            */
 
-export const editArticle = (myId, boardId, articleId, article, mediaIds) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.updateArticle(boardId, articleId, article, mediaIds))
-      .then(({ response: { result }, type, query, error }) => {
-        dispatch(serverUtils.getContent(result.BID, result.AID, result.cID, 0, 0, constants.NUM_CONTENT_PER_REQ, constants.LIST_ORDER_NEXT))
-          .then(({ response: contentResult, type, error, query }) => {
-            let creatorIds = contentResult.result.map(each => each.CID).filter(each => each)
-            let articleResult = contentResult.result
-            dispatch(serverUtils.getUsersInfo(creatorIds))
-              .then((usersInfo) => {
-                dispatch(postprocessGetArticleContent(myId, articleResult, 0, usersInfo))
-              })
-          })
-      })
-  }
-}
-
 export const deleteArticle = (myId, boardId, articleId) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.deleteArticle(boardId, articleId))
@@ -517,6 +373,13 @@ export const deleteArticle = (myId, boardId, articleId) => {
 
 const postprocessDeleteArticle = (myId, boardId, articleId) => {
   console.log('doArticlePage.postprocessDeleteArticle: result:', articleId)
+  /* Do nothing */
+  return {
+    myId,
+    myClass,
+    type: SET_DATA,
+    data: {}
+  }
 }
 
 /*                            */
@@ -534,18 +397,13 @@ export const addComment = (myId, boardId, articleId, comment, userName, userImg,
 
 const postprocessAddComment = (myId, boardId, articleId, commentId, comment, userName, userImg, userId) => {
   const newComment = {
-    contentBlockArray: [comment],
-    blockId: 0,
+    creatorId:    userId,
+    creatorName:  userName,
+    creatorImg:   userImg,
+    content:      comment,
+    createTS:     utils.emptyTimeStamp(),
+    status:       0,
     subContentId: commentId,
-    articleId: articleId,
-    contentType: 1, /* Comment is 1 */
-    commentType: null,
-    status: 0,
-    creatorId: userId,
-    creatorName: userName,
-    creatorImg: userImg,
-    createTS: utils.emptyTimeStamp(),
-    updateTS: utils.emptyTimeStamp()
   }
 
   console.log('doArticlePage.postprocessAddComment: newComment:', newComment)
@@ -596,7 +454,7 @@ const postprocessDeleteComment = (myId, commentId) => {
 export const _deleteComment = (state, action) => {
   const { myId, data: { commentId } } = action
 
-  return state.updateIn([myId, 'commentContents', 'commentContentsList'], arr => arr.filter(each => { return each.subContentId !== commentId }))
+  return state.updateIn([myId, 'commentContents', 'commentContentsList'], arr => arr.filter(each => each.subContentId !== commentId ))
 }
 
 export const clearData = (myId) => {
@@ -611,9 +469,8 @@ const postprocessClearData = (myId) => {
     myClass,
     type: SET_DATA,
     data: {
-      articleContentsList: [],
+      articleInfo: {},
       commentContents: { lru: null, commentContentsList: [] },
-      allArticleLoaded: false,
       allCommentsLoaded: false
     }
   }
@@ -710,19 +567,8 @@ export const createArticleWithAttachments = (myId, userName, userImg, boardId, a
           .then(({ response: { result }, type, query, error }) => {
             let boardId = result.BID
             let articleId = result.AID
-            let subContentId = result.cID
-            // let totalBlockNum = result.NB
-            let artilceLimit = 0 // (totalBlockNum < constants.NUM_CONTENT_PER_REQ) ? totalBlockNum : constants.NUM_CONTENT_PER_REQ
-            let blockId = 0
 
-            dispatch(serverUtils.getContent(boardId, articleId, subContentId, constants.CONTENT_TYPE_ARTICLE, blockId, artilceLimit, constants.LIST_ORDER_NEXT))
-              .then(({ response: contentResult, type, error, query }) => {
-                let creatorIds = contentResult.result.map(each => each.CID).filter(each => each)
-                dispatch(serverUtils.getUsersInfo(creatorIds))
-                  .then((usersInfo) => {
-                    dispatch(postprocessGetArticleContent(myId, contentResult.result, 0, usersInfo))
-                  })
-              })
+            getArticleInfo(myId, boardId, articleId, constants.NUM_CONTENT_PER_REQ)
           })
       })
   }
@@ -736,7 +582,6 @@ const reducer = myDuck.createReducer({
   [REMOVE_CHILDS]: utils.reduceRemoveChilds,
   [REMOVE]: utils.reduceRemove,
   [SET_DATA]: utils.reduceSetData,
-  [APPEND_ARTICLE]: _appendArticle,
   [ADD_COMMENT]: _addComment,
   [DELETE_COMMENT]: _deleteComment,
   [APPEND_COMMENT]: _appendComment
