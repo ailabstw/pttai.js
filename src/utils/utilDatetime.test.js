@@ -3,9 +3,9 @@ import { doesCrossDay,
   expiredFormat } from './utilDatetime'
 
 test('test doesCrossDay()', () => {
-  let Dec5th = moment('12/5/2018 0:00', 'M/D/YYYY H:mm').valueOf()
-  let OneSecBeforeDec5th = moment('12/5/2018 0:00', 'M/D/YYYY H:mm').valueOf() - 1
-  let OneSecAfterDec5th = moment('12/5/2018 0:00', 'M/D/YYYY H:mm').valueOf() + 1
+  let Dec5th = moment('12/5/2018 0:00', 'M/D/YYYY H:mm')
+  let OneSecBeforeDec5th = moment('12/4/2018 23:59', 'M/D/YYYY H:mm')
+  let OneSecAfterDec5th = moment('12/5/2018 0:01', 'M/D/YYYY H:mm')
 
   expect(doesCrossDay(Dec5th, OneSecBeforeDec5th)).toBe(true)
   expect(doesCrossDay(OneSecBeforeDec5th, Dec5th)).toBe(true)

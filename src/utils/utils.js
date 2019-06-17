@@ -4,7 +4,6 @@ import Immutable from 'immutable'
 import camelCase from 'camelcase'
 import decamelize from 'decamelize'
 import QueryString from 'query-string'
-import moment from 'moment'
 import sanitizeHtml from 'sanitize-html'
 import { PTTAI_APP_ROOT } from '../config'
 import platform from 'platform'
@@ -240,8 +239,8 @@ export const decodeURIObj = (data) => {
   }, {})
 }
 
-export const isUnRead = (updateTS, lastSeen) => {
-  if (moment.unix(updateTS).isAfter(moment.unix(lastSeen))) {
+export const isUnRead = (updateAt, lastSeenAt) => {
+  if (updateAt.isAfter(lastSeenAt)) {
     return true
   }
   return false

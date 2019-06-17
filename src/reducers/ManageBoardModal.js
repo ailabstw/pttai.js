@@ -43,8 +43,7 @@ const postprocessGetBoardInfo = (myId, result) => {
     ID: result.ID,
     LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
     Status: result.Status,
-    Title: result.Title,
-    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp()
+    Title: result.Title
   }
 
   console.log('doBoardPage.postprocessGetBoardInfo: boardInfo:', boardInfo)
@@ -73,7 +72,6 @@ const postprocessGetBoardJoinKey = (myId, result) => {
     Pn: result.Pn,
     T: result.T,
     URL: result.URL,
-    UpdateTS: result.UT ? result.UT : utils.emptyTimeStamp(),
     expirePeriod: result.e
   }
 

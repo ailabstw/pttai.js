@@ -16,6 +16,8 @@ import { EMPTY_ID,
 import { isUnRead,
   toJson } from '../utils/utils'
 
+import { unixToMoment } from '../utils/utilDatetime'
+
 export const myClass = 'FRIEND_LIST_PAGE'
 
 export const myDuck = createDuck(myClass, 'Friend_List_Page')
@@ -50,7 +52,7 @@ function getChatSummaries (chatIds) {
           let messageId = _.get(messageResult, 'result[0].ID', null)
           let subContentId = _.get(messageResult, 'result[0].ContentBlockID', null)
           let creatorId = _.get(messageResult, 'result[0].CreatorID', null)
-          let updateTS = _.get(messageResult, 'result[0].UpdateTS', utils.emptyTimeStamp())
+          let updateAt = unixToMoment(_.get(messageResult, 'result[0].UpdateTS'), 0)
 
           return dispatch(serverUtils.getMessageBlockList(chatId, messageId, subContentId, 0, 0, 1))
             .then(({ response: { result }, type, query, error }) => {
@@ -59,7 +61,7 @@ function getChatSummaries (chatIds) {
               }
 
               let combinedResult = (result && result.length) ? {
-                UpdateTS: updateTS,
+                updateAt: updateAt,
                 SummaryUserID: creatorId,
                 ...result[0]
               } : {}
@@ -119,7 +121,7 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo)
       myId,
       myClass,
       type: APPEND_FRIENDS,
-      data: { friends: friendList.sort((a, b) => a.Summary.updateTS.T - b.Summary.updateTS.T),
+      data: { friends: friendList.sort((a, b) => a.Summary.updateAt - b.Summary.updateAt),
       noFriend: false }
     }
   }
@@ -143,7 +145,7 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
       myClass,
       type: PREPEND_FRIENDS,
       data: {
-        friendList: friendList.sort((a, b) => a.Summary.updateTS.T - b.Summary.updateTS.T)
+        friendList: friendList.sort((a, b) => a.Summary.updateAt - b.Summary.updateAt)
       }
     }
   }
@@ -161,10 +163,13 @@ const friendAndResultToFriendList = (result, reqResult, summaries, usersInfo) =>
 
   let friendList = result.map((each, index) => {
     let userId = each.FID
-    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
 
     let Summary = toJson(serverUtils.b64decode(_.get(summaries, [index, 'B', 0], '')))
     let summaryUserId = Summary.userId = _.get(summaries, [index, 'SummaryUserID'], '')
+
+    let articleCreateAt = unixToMoment(each.ArticleCreateTS)
+    let LastSeen = unixToMoment(each.LT)
+    let updateAt = summaries[index].updateAt || articleCreateAt
 
     return {
       Name:         getNameById(userId),
@@ -173,14 +178,14 @@ const friendAndResultToFriendList = (result, reqResult, summaries, usersInfo) =>
       friendID:     userId,
       chatId:       each.ID,
       FriendStatus: each.S,
-      isUnread:     isUnRead(ArticleCreateTS && ArticleCreateTS.T, each.LT && each.LT.T),
+      isUnread:     isUnRead(articleCreateAt, LastSeen),
 
       Summary: {
         type:     Summary.type || MESSAGE_TYPE_TEXT,
         userName: getNameById(summaryUserId),
         userID:   Summary.userID,
         content:  Summary.value || '',
-        updateTS: summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS
+        updateAt: updateAt
       },
       joinStatus: 3 // JoinStatusAccepted
     }
@@ -209,7 +214,7 @@ const friendAndResultToFriendList = (result, reqResult, summaries, usersInfo) =>
         userName: '',
         userID:   EMPTY_ID,
         content:  '',
-        updateTS: utils.emptyTimeStamp()
+        updateAt: 0
       },
 
       joinStatus: join.S
@@ -256,13 +261,13 @@ export const _appendFriends = (state, action) => {
     let localLRU = new LRU(NUM_FRIEND_PER_REQ)
 
     let startFriend = null
-    let earlistTS = 2147483648 /* year 2038 */
+    let earlistAt = unixToMoment(null, 2147483648000) // XXX: year 2038, but don't know why */
 
     friends.forEach((friend, index) => {
       localLRU.set(friend.friendID, friend)
-      if (lruCache.get(friend.friendID) && lruCache.get(friend.friendID).friend.Summary.updateTS.T < earlistTS) {
+      if (lruCache.get(friend.friendID) && lruCache.get(friend.friendID).friend.Summary.updateAt < earlistAt) {
         startFriend = lruCache.get(friend.friendID)
-        earlistTS = startFriend.friend.Summary.updateTS.T
+        earlistAt = startFriend.friend.Summary.updateAt
       }
     })
     /* 2. start merge  */
@@ -278,7 +283,7 @@ export const _appendFriends = (state, action) => {
         let oriFriend = friendList[offset + oriIndex]
         let newFriend = friends[newIndex]
         /* both left */
-        if (oriFriend.Summary.updateTS.T <= newFriend.Summary.updateTS.T) {
+        if (oriFriend.Summary.updateAt <= newFriend.Summary.updateAt) {
           if (!localLRU.get(oriFriend.friendID)) {
             mergedList.push(oriFriend)
             lruCache.set(oriFriend.friendID, { index: mergeIndex, friend: oriFriend })
@@ -368,7 +373,7 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
       content:     '',
       userName:    '',
       userID:      null,
-      updateTS:    utils.emptyTimeStamp()
+      updateAt:    0
     },
     joinStatus:    0
   }
@@ -482,6 +487,7 @@ const postprocessGetKeyInfo = (myId, keyInfo) => {
   let userPrivateKeyInfo = keyInfo.find(({key}) => key === 'userPrivateKey').value
   let friendJoinKeyInfo  = keyInfo.find(({key}) => key === 'friendJoinKey').value
 
+  // TODO: to moment
   const combinedKeyInfo = {
     userPrivateKey: userPrivateKeyInfo,
     deviceJoinKey: {

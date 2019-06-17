@@ -132,7 +132,7 @@ class MultiDeviceModal extends PureComponent {
                             defaultMessage='Start Date'
                           />
                         </div>
-                        <div title={epoch2FullTimeFormat(item.CreateTime.T)} className={styles['op-value']}>{epoch2FullTimeFormat(item.CreateTime.T)}</div>
+                        <div title={item.createAt.toString()} className={styles['op-value']}>{item.createAt.toString()}</div>
                       </div>
                     </div>
                   )

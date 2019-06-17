@@ -1,5 +1,6 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
+import moment from 'moment'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -9,6 +10,8 @@ import { EMPTY_ID,
   DEFAULT_USER_IMAGE,
   DEFAULT_USER_NAME,
   NUM_MEMBER_PER_REQ } from '../constants/Constants'
+
+import { unixToMoment } from '../utils/utilDatetime'
 
 export const myClass = 'MANAGE_BOARD_MEMBER_MODAL'
 
@@ -49,8 +52,7 @@ const postprocessGetBoardInfo = (myId, result) => {
     ID: result.ID,
     LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
     Status: result.Status,
-    Title: result.Title,
-    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp()
+    Title: result.Title
   }
 
   console.log('doBoardPage.postprocessGetBoardInfo: boardInfo:', boardInfo)
@@ -123,7 +125,7 @@ const postprocessGetMembers = (myId, friendListResult, memeberListResult, usersI
       LastSeen: each.LT ? each.LT : utils.emptyTimeStamp(),
       isBoardMember: true,
       memberStatus: (userId in memberMap) ? memberMap[userId].S : null,
-      memberUpdateTS: (userId in memberMap) ? memberMap[userId].UT : utils.emptyTimeStamp()
+      memberUpdateAt: (userId in memberMap) ? unixToMoment(memberMap[userId].UT) : moment()
       /* ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(), */
     }
   })

@@ -1,6 +1,8 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import LRU from 'lru-cache'
+import _ from 'lodash'
+import moment from 'moment'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -9,6 +11,7 @@ import * as constants from '../constants/Constants'
 import { DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE } from '../constants/Constants'
 import { array2Html, toJson } from '../utils/utils'
+import { unixToMoment } from '../utils/utilDatetime'
 
 export const myClass = 'ARTICLE_PAGE'
 
@@ -73,12 +76,11 @@ const postprocessGetArticleInfo = (myId, result, contentResult, usersInfo) => {
     return acc
   }, {})
 
-  let userId = result.CreatorID
-  let userNameMap = usersInfo['userName'] || {}
-  let userImgMap = usersInfo['userImg'] || {}
+  const getNameById = id => serverUtils.b64decode(_.get(usersInfo, ['userName', id, 'N'], '')) || DEFAULT_USER_NAME
+  const getImgById = id => _.get(usersInfo, ['userImg', id, 'I'], '') || DEFAULT_USER_IMAGE
 
-  let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-  let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+  let userId = result.CreatorID
+  let title = serverUtils.b64decode(result.Title)
 
   let contentArray = contentResult
     .map( (each) => ({
@@ -93,14 +95,15 @@ const postprocessGetArticleInfo = (myId, result, contentResult, usersInfo) => {
   const contentHTML = array2Html(contentArray, result.BoardID)
 
   const articleInfo = {
-    ID:              result.ID,
-    Title:           serverUtils.b64decode(result.Title),
-    CreateTS:        result.CreateTS ? result.CreateTS : utils.emptyTimeStamp(),
-    contentHTML:     contentHTML,
+    ID:          result.ID,
+    Title:       title,
+    createAt:    unixToMoment(result.CreateTS),
+    updateAt:    unixToMoment(result.UpdateTS),  // TODO: display edited at below article
+    contentHTML: contentHTML,
     creator: {
-      id:            result.CreatorID,
-      name:          userName,
-      img:           userImg,
+      id:   result.CreatorID,
+      name: getNameById(userId),
+      img:  getImgById(userId),
     }
   }
 
@@ -172,12 +175,14 @@ const postprocessGetCommentContent = (myId, result, latestSubContentId, usersInf
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
     let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
 
+
     return {
       creatorId:    each.CID,
       creatorImg:   userImg,
       creatorName:  userName,
       content:      each.B.map((e) => serverUtils.b64decode(e))[0],
-      createTS:     each.CT ? each.CT : utils.emptyTimeStamp(),
+      createAt:     unixToMoment(each.CT),
+      updateAt:     unixToMoment(each.UI),
       status:       each.S,
       subContentId: each.ID,
     }
@@ -226,12 +231,13 @@ export const _appendComment = (state, action) => {
     /* 1. find earlist start comment and save to local lru */
     let localLRU = new LRU(constants.NUM_CONTENT_PER_REQ)
     let startComment = null
-    let earlistTS = 2147483648 /* year 2038 */
+    let earlistAt = unixToMoment(null, 2147483648000) // XXX: year 2038, but don't know why */
+
     comments.forEach((comment, index) => {
       localLRU.set(comment.subContentId, comment)
-      if (lruCache.get(comment.subContentId) && lruCache.get(comment.subContentId).comment.createTS.T < earlistTS) {
+      if (lruCache.get(comment.subContentId) && lruCache.get(comment.subContentId).comment.createAt < earlistAt) {
         startComment = lruCache.get(comment.subContentId)
-        earlistTS = startComment.comment.createTS.T
+        earlistAt = startComment.comment.createAt
       }
     })
     /* 2. start merge  */
@@ -246,7 +252,7 @@ export const _appendComment = (state, action) => {
         let oriComment = commentContentsList[oriIndex]
         let newComment = comments[newIndex]
         /* both left */
-        if (oriComment.createTS.T <= newComment.createTS.T) {
+        if (oriComment.createAt <= newComment.createAt) {
           if (!localLRU.get(oriComment.subContentId)) {
             mergedList.push(oriComment)
             lruCache.set(oriComment.subContentId, { index: mergeIndex, comment: oriComment })
@@ -333,7 +339,8 @@ const postprocessGetMoreComments = (myId, result, startSubContentId, usersInfo) 
       creatorName:  userName,
       creatorImg:   userImg,
       content:      each.B.map((e) => serverUtils.b64decode(e))[0],
-      createTS:     each.CT ? each.CT : utils.emptyTimeStamp(),
+      createAt:     unixToMoment(each.CT),
+      updateAt:     unixToMoment(each.UT),
       status:       each.S,
       subContentId: each.ID,
     }
@@ -401,7 +408,8 @@ const postprocessAddComment = (myId, boardId, articleId, commentId, comment, use
     creatorName:  userName,
     creatorImg:   userImg,
     content:      comment,
-    createTS:     utils.emptyTimeStamp(),
+    createAt:     moment(),
+    updateAt:     moment(),
     status:       0,
     subContentId: commentId,
   }

@@ -1,8 +1,10 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
+import moment from 'moment'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
+import { unixToMoment } from '../utils/utilDatetime'
 
 import { EMPTY_ID,
   STATUS_ARRAY,
@@ -49,8 +51,7 @@ const postprocessGetBoardInfo = (myId, result) => {
     ID: result.ID,
     LastSeen: result.LastSeen ? result.LastSeen : utils.emptyTimeStamp(),
     Status: result.Status,
-    Title: result.Title,
-    UpdateTS: result.UpdateTS ? result.UpdateTS : utils.emptyTimeStamp()
+    Title: result.Title
   }
 
   console.log('doBoardPage.postprocessGetBoardInfo: boardInfo:', boardInfo)
@@ -79,7 +80,6 @@ const postprocessGetBoardJoinKey = (myId, result) => {
     Pn: result.Pn,
     T: result.T,
     URL: result.URL,
-    UpdateTS: result.UT ? result.UT : utils.emptyTimeStamp(),
     expirePeriod: result.e
   }
 
@@ -155,7 +155,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
       LastSeen: each.LT ? each.LT : utils.emptyTimeStamp(),
       isBoardMember: isBoardMember,
       memberStatus: (userId in memberMap) ? memberMap[userId].S : null,
-      memberUpdateTS: (userId in memberMap) ? memberMap[userId].UT : utils.emptyTimeStamp()
+      memberUpdateAt: (userId in memberMap) ? unixToMoment(memberMap[userId].UT) : moment()
       /* ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(), */
     }
   })

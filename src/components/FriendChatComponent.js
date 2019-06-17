@@ -6,10 +6,8 @@ import { ClipLoader } from 'react-spinners'
 // import { PTTAI_URL_BASE }          from '../config'
 
 import { doesCrossDay,
-  epoch2MessageTimeFormat,
-  epoch2MessageDateFormat,
   isValid,
-  expiredFormat } from '../utils/utilDatetime'
+  expiredMomentFormat } from '../utils/utilDatetime'
 
 import { getStatusClass,
   linkParser,
@@ -280,10 +278,10 @@ const MessageListComponent = props => {
         messageList.map((message, index) => {
           // Date divider
           let divider = null
-          if (index > 0 && doesCrossDay(messageList[index].CreateTS.T, messageList[index - 1].CreateTS.T)) {
+          if (index > 0 && doesCrossDay(messageList[index].createAt, messageList[index - 1].createAt)) {
             divider = (
               <div className={styles['message-divider']}>
-                <span>{epoch2MessageDateFormat(messageList[index].CreateTS.T)}</span>
+                <span title={messageList[index].createAt.toString()}>{messageList[index].createAt.fromNow()}</span>
               </div>
             )
           }
@@ -314,7 +312,7 @@ const Message = props => {
             <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
               <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]} />
             </div>
-            <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+            <div className={styles['user-message-time']}> {message.createAt.format('h:mm a')}</div>
           </div>
           <div className={styles['user-message-content']}>{linkParser(message.content)}</div>
         </div>
@@ -327,7 +325,7 @@ const Message = props => {
             <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
               <div className={styles['message-status-circle-' + getStatusClass(message.Status)]} />
             </div>
-            <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+            <div className={styles['message-time']}>{message.createAt.format('h:mm a')}</div>
           </div>
         </div>
       )
@@ -345,7 +343,7 @@ const Message = props => {
           <div title={constants.STATUS_ARRAY[message.Status]} className={styles['user-message-status']}>
             <div className={styles['user-message-status-circle-' + getStatusClass(message.Status)]} />
           </div>
-          <div className={styles['user-message-time']}> {epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+          <div className={styles['user-message-time']}> {message.createAt.format('h:mm a')}</div>
         </div>
         <div className={styles['user-message-content-invitation']}>
           <span>
@@ -357,7 +355,7 @@ const Message = props => {
             <FormattedMessage
               id='friend-chat-component.action4'
               defaultMessage=' ({expTimeVal})'
-              values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }}
+              values={{ expTimeVal: expiredMomentFormat(inviteInfo.keyUpdateAt, inviteInfo.keyExpiration) }}
             />
           </span>
         </div>
@@ -375,7 +373,7 @@ const Message = props => {
         <div title={constants.STATUS_ARRAY[message.Status]} className={styles['message-status']}>
           <div className={styles['message-status-circle-' + getStatusClass(message.Status)]} />
         </div>
-        <div className={styles['message-time']}>{epoch2MessageTimeFormat(message.CreateTS.T)}</div>
+        <div className={styles['message-time']}>{message.createAt.format('h:mm a')}</div>
       </div>
     </div>
   )
@@ -404,7 +402,7 @@ const InvitationBlock = props => {
   }
 
   // not joined, invitation still valid
-  if (isValid(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration)) {
+  if (isValid(inviteInfo.keyUpdateAt, inviteInfo.keyExpiration)) {
     return (
       <div className={styles['message-content-invitation']} onClick={() => handleAcceptInvite(inviteInfo.boardJoinKey)}>
         <span>
@@ -415,7 +413,7 @@ const InvitationBlock = props => {
           <FormattedMessage
             id='friend-chat-component.action2-2'
             defaultMessage='Click to join ({expTimeVal})'
-            values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }} />
+            values={{ expTimeVal: expiredMomentFormat(inviteInfo.keyUpdateAt, inviteInfo.keyExpiration) }} />
         </span>
       </div>
     )
@@ -431,7 +429,7 @@ const InvitationBlock = props => {
         <FormattedMessage
           id='friend-chat-component.action2-2'
           defaultMessage='Click to join ({expTimeVal})'
-          values={{ expTimeVal: expiredFormat(inviteInfo.keyUpdateTS_T, inviteInfo.keyExpiration) }} />
+          values={{ expTimeVal: expiredMomentFormat(inviteInfo.keyUpdateAt, inviteInfo.keyExpiration) }} />
       </span>
     </div>
   )

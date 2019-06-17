@@ -95,11 +95,9 @@ const postprocessEditName = (myId, name, result) => {
   result = serverUtils.deserialize(result)
 
   const combinedUserInfo = {
-    createTime: result.CT,
     userID: result.ID,
     userName: result.N,
     status: result.S,
-    updateTime: result.UT,
     version: result.V
   }
 

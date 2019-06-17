@@ -55,7 +55,7 @@ describe('<BoardListComponent />', () => {
         isUnread:    true,
         CreatorID:   'TESTER_ID',
         creatorName: 'TESTER',
-        updateAt:    {},
+        updateAt: { fromNow: jest.fn() },
         joinStatus:  3
       }],
 
@@ -79,7 +79,7 @@ describe('<BoardListComponent />', () => {
         isUnread:    false,
         CreatorID:   'TESTER_ID',
         creatorName: 'TESTER',
-        updateAt:    {},
+        updateAt: { fromNow: jest.fn() },
         joinStatus:  3
       }],
 

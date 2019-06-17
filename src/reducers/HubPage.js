@@ -1,5 +1,6 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
+import _ from 'lodash'
 
 import { EMPTY_ID,
   STATUS_ARRAY,
@@ -8,6 +9,7 @@ import { EMPTY_ID,
   MESSAGE_TYPE_INVITE,
   BOARD_TYPE_PRIVATE } from '../constants/Constants'
 import { isUnRead } from '../utils/utils'
+import { unixToMoment } from '../utils/utilDatetime'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -55,37 +57,47 @@ export const getBoardList = (myId, isFirstFetch, limit) => {
 }
 
 const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
-  result = result.map((each) => {
-    return {
-      CreatorID: each.C,
-      ...each
-    }
-  })
-
-  result = result.map(serverUtils.deserialize)
-  reqResult = reqResult.map(serverUtils.deserialize)
-
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
-  let boardList = result.map(each => {
-    let userId = each.CreatorID
-    let userNameMap = usersInfo['userName'] || {}
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
+  const getNameById = id => serverUtils.b64decode(_.get(usersInfo, ['userName', id, 'N'], '')) || DEFAULT_USER_NAME
 
-    let ArticleCreateTS = each.ArticleCreateTS || utils.emptyTimeStamp()
-    let LastSeen = each.LastSeen || utils.emptyTimeStamp()
+  let boardList = result.map(each => {
+    let userId = each.C
+    let userName = getNameById(userId)
+    let title = serverUtils.b64decode(each.Title)
+
+    let noArticleInBoard = utils.isNullTimeStamp(each.ArticleCreateTS)
+    let neverSeen = utils.isNullTimeStamp(each.LastSeen)
+
+    let articleCreateAt = unixToMoment(each.ArticleCreateTS)
+    let lastSeenAt = unixToMoment(each.LastSeen)
+    let updateAt = noArticleInBoard ? unixToMoment(each.UpdateTS) : articleCreateAt
+
+    let isUnread = false;
+    if (noArticleInBoard) {
+      isUnread = false
+    }
+    else {
+      if (neverSeen) {
+        isUnread = true
+      }
+      else {
+        isUnread = isUnRead(articleCreateAt, lastSeenAt)
+      }
+    }
+
     return {
       BoardType:   each.BT,
       ID:          each.ID,
       Status:      each.S,
-      Title:       each.Title,
-      isUnread:    isUnRead(ArticleCreateTS.T, LastSeen.T),
+      Title:       title,
+      isUnread:    isUnread,
       CreatorID:   each.CreatorID,
       creatorName: userName,
-      updateAt:    utils.isNullTimeStamp(each.ArticleCreateTS) ? each.UpdateTS : each.ArticleCreateTS,
+      updateAt:    updateAt,
       joinStatus:  3
     }
   })
@@ -104,15 +116,17 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
     if (joinBoardIndex >= 0) {
       boardList[joinBoardIndex].joinStatus = join.Status
     } else {
+      let title = serverUtils.b64decode(join.Title)
+
       boardList.push({
         BoardType:   BOARD_TYPE_PRIVATE,
         ID:          EMPTY_ID,
         Status:      0,
-        Title:       join.Name,
+        Title:       title,
         isUnread:    false,
         CreatorID:   join.CreatorID,
         creatorName: DEFAULT_USER_NAME,
-        updateAt:    utils.emptyTimeStamp(),
+        updateAt:    0,
         joinStatus:  join.Status
       })
     }
@@ -183,18 +197,35 @@ const postprocessGetMoreBoards = (myId, result, usersInfo) => {
     let userNameMap = usersInfo['userName'] || {}
     let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
 
-    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp();
-    let LastSeen = each.LastSeen ? each.LastSeen : utils.emptyTimeStamp();
+    let noArticleInBoard = utils.isNullTimeStamp(each.ArticleCreateTS)
+    let neverSeen = utils.isNullTimeStamp(each.LastSeen)
+
+    let articleCreateAt = unixToMoment(each.ArticleCreateTS)
+    let LastSeen = unixToMoment(each.LastSeen)
+    let updateAt = each.ArticleCreateTS ? articleCreateAt : unixToMoment(each.UpdateTS)
+
+    let isUnread = false;
+    if (noArticleInBoard) {
+      isUnread = false
+    }
+    else {
+      if (neverSeen) {
+        isUnread = true
+      }
+      else {
+        isUnread = isUnRead(articleCreateAt, LastSeen)
+      }
+    }
 
     return {
       BoardType:   each.BT,
       ID:          each.ID,
       Status:      each.S,
       Title:       each.Title,
-      isUnread:    isUnRead(ArticleCreateTS.T, LastSeen.T),
+      isUnread:    isUnread,
       CreatorID:   each.CreatorID,
       creatorName: userName,
-      updateAt:    utils.isNullTimeStamp(each.ArticleCreateTS) ? each.UpdateTS : each.ArticleCreateTS,
+      updateAt:    updateAt,
       joinStatus:  3,
     }
   })
@@ -240,42 +271,35 @@ function sentInviteMessages (inviteMessages) {
 }
 
 export const addBoard = (myId, name, userName, friendInvited) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.createBoard(name))
-      .then(({ response: { result }, type, query, error }) => {
-        const boardId = result.ID
-        dispatch(serverUtils.getBoardUrl(boardId))
-          .then(({ response: boardUrlResult, type, query, error }) => {
-            const boardJoinKey = {
-              C: boardUrlResult.result.C,
-              ID: boardUrlResult.result.ID,
-              Pn: boardUrlResult.result.Pn,
-              T: boardUrlResult.result.T,
-              URL: boardUrlResult.result.URL,
-              UpdateTS: boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-              expirePeriod: boardUrlResult.result.e
-            }
+  return (dispatch, getState) => new Promise(async () => {
+    const { response: { result }} = await dispatch(serverUtils.createBoard(name))
+    const boardId = result.ID
 
-            // FIXME
-            let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
-              let chatId = friendInvited[friendId]
-              let message = {
-                type: MESSAGE_TYPE_INVITE,
-                value: `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${name}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
-              }
-              return {
-                chatId: chatId,
-                message: JSON.stringify(message)
-              }
-            })
+    const { response: { result: boardUrlResult }} = await dispatch(serverUtils.getBoardUrl(boardId))
+    const { URL, UpdateTS: {T}, expirePeriod } = boardUrlResult
 
-            dispatch(sentInviteMessages(inviteMessages))
-              .then(({ response: inviteResult, type, error, query }) => {
-                dispatch(postprocessCreateBoard(myId, name, result, userName))
-              })
-          })
-      })
-  }
+    // FIXME: why html dom tree ?
+    let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
+      let chatId = friendInvited[friendId]
+      let message = {
+        type: MESSAGE_TYPE_INVITE,
+        value: `<div data-action-type="join-board"
+          data-board-id="${boardId}"
+          data-board-name="${name}"
+          data-join-key="${URL}"
+          data-update-ts="${T}"
+          data-expiration="${expirePeriod}">
+        </div>`
+      }
+      return {
+        chatId: chatId,
+        message: JSON.stringify(message)
+      }
+    })
+
+    await dispatch(sentInviteMessages(inviteMessages))
+    dispatch(postprocessCreateBoard(myId, name, result, userName))
+  })
 }
 
 const postprocessCreateBoard = (myId, name, result, userName) => {
@@ -289,7 +313,7 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
     isUnread:    false,
     CreatorID:   EMPTY_ID, // FIXME: userId,
     creatorName: userName,
-    updateAt:    utils.emptyTimeStamp(),
+    updateAt:    0,
     joinStatus:  3,
   }
 
@@ -346,7 +370,7 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
     isUnread:    true,
     CreatorID:   userId,
     creatorName: userName,
-    updateAt:    utils.emptyTimeStamp(),
+    updateAt:    0,
     joinStatus:  0
   }
 

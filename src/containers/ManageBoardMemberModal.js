@@ -5,8 +5,6 @@ import Modal from 'react-modal'
 import Immutable from 'immutable'
 import { FormattedMessage } from 'react-intl'
 
-import { epoch2ReadFormat } from '../utils/utilDatetime'
-
 import AlertComponent from '../components/AlertComponent'
 import * as doManageBoardMemberModal from '../reducers/ManageBoardMemberModal'
 import * as modalConstants from '../constants/ModalConstants'
@@ -112,7 +110,7 @@ class ManageBoardMemberModal extends PureComponent {
                         <FormattedMessage
                           id='manage-board-member-modal.member-status'
                           defaultMessage='joined {JOIN_TIME}'
-                          values={{ JOIN_TIME: epoch2ReadFormat(item.memberUpdateTS.T) }}
+                          values={{ JOIN_TIME: item.memberUpdateAt.fromNow() }}
                         />
                       </div>
                     </div>

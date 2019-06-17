@@ -92,7 +92,7 @@ class RootPage extends PureComponent {
         //   }, constants.REFRESH_INTERVAL)
         // },
         signUp: (name) => {
-          doRootPage.editName(myId, name)
+          doRootPage.signup(myId, name)
           doModalContainer.closeModal()
         }
       })
@@ -211,7 +211,7 @@ class RootPage extends PureComponent {
     // user is browsing current tab
     if (!document.hidden) return this.resetTitle()
 
-    if (isUnRead(latestMessage.createTS && latestMessage.createTS.T, this.pageLastSeenTS && this.pageLastSeenTS.T)) {
+    if (isUnRead(latestMessage.createAt, this.pageLastSeenTS && this.pageLastSeenTS.T * 1000)) {
       this.browserTabInterval = this.browserTabInterval || setInterval(() => {
         let sender = decodeBase64(latestMessage.creatorName)
         this.refreshBrowserTabTitle(sender)
@@ -225,7 +225,7 @@ class RootPage extends PureComponent {
     if (
       !document.hidden || // user is browsing current tab
       this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
-      !isUnRead(latestMessage.createTS && latestMessage.createTS.T, this.pageLastSeenTS && this.pageLastSeenTS.T) // msg has been read before
+      !isUnRead(latestMessage.createAt, this.pageLastSeenTS && this.pageLastSeenTS.T * 1000) // msg has been read before
     ) { return }
 
     // prepare data for notification
@@ -258,11 +258,11 @@ class RootPage extends PureComponent {
     let { myId, actions: { doRootPage }, match: { params } } = this.props
 
     let me = getRoot(this.props)
-    let logLastSeen = me.get('logLastSeen', Immutable.Map()).toJS()
+    let logLastSeenAt = me.get('logLastSeenAt')
     let latestArticles = me.get('latestArticles', Immutable.List()).toJS()
 
     let ids = latestArticles.map(la => la.BoardID)
-    let hubHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].CreateTS.T, logLastSeen.T) : false
+    let hubHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].createAt, logLastSeenAt) : false
 
     if (ids.includes(params.boardId) && !hubHasUnread) {
       doRootPage.markLogSeen(myId)
@@ -273,11 +273,11 @@ class RootPage extends PureComponent {
     let { myId, actions: { doRootPage }, match: { params } } = this.props
 
     let me = getRoot(this.props)
-    let friendLastSeen = me.get('friendLastSeen', Immutable.Map()).toJS()
+    let friendLastSeen = me.get('friendLastSeen')
     let latestFriendList = me.get('latestFriendList', Immutable.List()).toJS()
 
     let ids = latestFriendList.map(lf => lf.ID)
-    let friendListHasUnread = latestFriendList.length > 0 ? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T) : false
+    let friendListHasUnread = latestFriendList.length > 0 ? isUnRead(latestFriendList[0].createAt, friendLastSeen) : false
 
     if (ids.includes(params.chatId) && !friendListHasUnread) {
       doRootPage.markFriendListSeen(myId)
@@ -301,13 +301,13 @@ class RootPage extends PureComponent {
     let deviceInfo = me.get('deviceInfo', Immutable.List()).toJS()
     let latestArticles = me.get('latestArticles', Immutable.List()).toJS()
     let latestFriendList = me.get('latestFriendList', Immutable.List()).toJS()
-    let friendLastSeen = me.get('friendLastSeen', Immutable.Map()).toJS()
-    let logLastSeen = me.get('logLastSeen', Immutable.Map()).toJS()
+    let friendLastSeen = me.get('friendLastSeen')
+    let logLastSeenAt = me.get('logLastSeenAt')
 
-    let latestHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].UpdateTS.T, latestArticles[0].LastSeen.T) : false
-    let hubHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].UpdateTS.T, logLastSeen.T) : false
+    let latestHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].updateAt, latestArticles[0].lastSeenAt) : false
+    let hubHasUnread = latestArticles.length > 0 ? isUnRead(latestArticles[0].updateAt, logLastSeenAt) : false
 
-    let friendListHasUnread = latestFriendList.length > 0 ? isUnRead(latestFriendList[0].createTS.T, friendLastSeen.T) : false
+    let friendListHasUnread = latestFriendList.length > 0 ? isUnRead(latestFriendList[0].createAt, friendLastSeen) : false
 
     let openNameCard = () => {
       doModalContainer.setInput({

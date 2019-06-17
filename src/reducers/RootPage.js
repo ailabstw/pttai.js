@@ -1,5 +1,7 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
+import _ from 'lodash'
+// TODO: import moment from 'moment'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -19,8 +21,8 @@ import * as doShowOpLogModal from './ShowOpLogModal'
 import { getUUID } from '../utils/utils'
 import { EMPTY_ID,
   DEFAULT_USER_NAME,
-  DEFAULT_USER_IMAGE,
-  DEFAULT_USER_NAMECARD } from '../constants/Constants'
+  DEFAULT_USER_IMAGE } from '../constants/Constants'
+import { unixToMoment } from '../utils/utilDatetime'
 
 export const myClass = 'ROOT_PAGE'
 
@@ -33,6 +35,8 @@ const REMOVE_CHILDS = myDuck.defineType('REMOVE_CHILDS')
 const REMOVE = myDuck.defineType('REMOVE')
 const SET_DATA = myDuck.defineType('SET_DATA')
 const UPDATE_DATA = myDuck.defineType('UPDATE_DATA')
+
+
 
 /**
  * @func init
@@ -126,19 +130,16 @@ export const getUserInfo = myId => {
 
     let metaInfo = userMetaInfo.filter((meta) => !meta.error)
     let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
+    let keyInfo = await dispatch(getAllKeyInfo())
 
     // user exist
     if ((userNameResult && userNameResult.N && serverUtils.b64decode(userNameResult.N) !== DEFAULT_USER_NAME)) {
-      let keyInfo = await dispatch(getAllKeyInfo())
-
       resolve({
         type: 'done',
         userId: userId,
         value: keyInfo
       })
     } else {
-      let keyInfo = await dispatch(getAllKeyInfo())
-
       resolve({
         type: 'no_user_name',
         userId: userId,
@@ -151,33 +152,25 @@ export const getUserInfo = myId => {
 }
 
 const postprocessGetUserInfo = (myId, info, metaInfo) => {
-  /* deserialization */
-  info = serverUtils.deserialize(info)
-
   console.log('doRootPage.postprocessGetUserInfo: userInfo: ', info)
   console.log('doRootPage.postprocessGetUserInfo: userMetaInfo: ', metaInfo)
 
-  let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
-  let userImgResult = metaInfo.find((meta) => meta.key === 'userImg').value
-  let userNameCardResult = metaInfo.find((meta) => meta.key === 'userNameCard').value
-  let userName = (userNameResult && userNameResult.N) ? serverUtils.b64decode(userNameResult.N) : DEFAULT_USER_NAME
-  let userImg = (userImgResult && userImgResult.I) ? userImgResult.I : DEFAULT_USER_IMAGE
-  let userNameCard = (userNameCardResult && userNameCardResult.C) ? JSON.parse(serverUtils.b64decode(userNameCardResult.C)) : DEFAULT_USER_NAMECARD
+  metaInfo = metaInfo.reduce((acc, each) => {
+    acc[each.key] = each.value
+    return acc
+  }, {})
 
-  console.log('doRootPage.postprocessGetUserInfo: userName: ', userName)
-  console.log('doRootPage.postprocessGetUserInfo: userImg: ', userImg)
-  console.log('doRootPage.postprocessGetUserInfo: userNameCard: ', userNameCard)
+  const getName = () => serverUtils.b64decode(_.get(metaInfo, 'userName.N', '')) || DEFAULT_USER_NAME
+  const getImg = () => _.get(metaInfo, 'userImg.I', '') || DEFAULT_USER_IMAGE
 
   const combinedUserInfo = {
-    userId: info.ID,
-    userName: userName,
-    userImg: userImg,
-    userNameCard: userNameCard,
-    createTime: info.CT ? info.CT : utils.emptyTimeStamp(),
-    updateTime: info.UT ? info.UT : utils.emptyTimeStamp(),
-    status: info.S,
-    nodeId: info.NodeID
+    userId:     info.ID,
+    userName:   getName(),
+    userImg:    getImg()
   }
+
+  console.log('doRootPage.postprocessGetUserInfo: userName: ', combinedUserInfo.userName)
+  console.log('doRootPage.postprocessGetUserInfo: userImg: ', combinedUserInfo.userImg)
 
   return {
     myId,
@@ -229,17 +222,18 @@ const postprocessGetKeyInfo = (myId, keyInfo) => {
   let userPrivateKeyInfo = keyInfo.find(({ key }) => key === 'userPrivateKey').value
   let friendJoinKeyInfo = keyInfo.find(({ key }) => key === 'friendJoinKey').value
 
+  // TODO: to moment
   const combinedKeyInfo = {
-    userPrivateKey: userPrivateKeyInfo,
+    userPrivateKey:   userPrivateKeyInfo,
     deviceJoinKey: {
-      URL: deviceJoinKeyInfo.URL,
-      UpdateTS: deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
-      expirePeriod: deviceJoinKeyInfo.e
+      URL:            deviceJoinKeyInfo.URL,
+      UpdateTS:       deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
+      expirePeriod:   deviceJoinKeyInfo.e
     },
     friendJoinKey: {
-      URL: friendJoinKeyInfo.URL,
-      UpdateTS: friendJoinKeyInfo.UT ? friendJoinKeyInfo.UT : utils.emptyTimeStamp(),
-      expirePeriod: friendJoinKeyInfo.e
+      URL:            friendJoinKeyInfo.URL,
+      UpdateTS:       friendJoinKeyInfo.UT ? friendJoinKeyInfo.UT : utils.emptyTimeStamp(),
+      expirePeriod:   friendJoinKeyInfo.e
     }
   }
 
@@ -269,18 +263,18 @@ const postprocessGetDeviceInfo = (myId, result) => {
 
   const combinedDeviceInfo = result.map(device => {
     return {
-      userID: device.ID,
-      IP: device.IP,
-      NodeName: device.N,
-      NodeID: device.NID,
-      NodeType: device.NT,
-      Status: device.S,
-      TCP: device.TCP,
-      UDP: device.UDP,
-      CreateTime: device.CT ? device.CT : utils.emptyTimeStamp(),
-      UpdateTime: device.UT ? device.UT : utils.emptyTimeStamp(),
-      LastSeen: device.L ? device.L : utils.emptyTimeStamp(),
-      Version: device.V
+      userID:     device.ID,
+      IP:         device.IP,
+      NodeName:   device.N,
+      NodeID:     device.NID,
+      NodeType:   device.NT,
+      Status:     device.S,
+      TCP:        device.TCP,
+      UDP:        device.UDP,
+      // TODO: change to moment
+      createAt: unixToMoment(device.CT, 0),
+      LastSeen:   device.L ? device.L : utils.emptyTimeStamp(),
+      Version:    device.V
     }
   })
 
@@ -298,27 +292,22 @@ const postprocessGetDeviceInfo = (myId, result) => {
 /*  Update User Info  */
 /*                    */
 
-export const editName = (myId, name) => {
+export const signup = (myId, name) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.editName(name))
       .then(({ response: { result }, type, query, error }) => {
-        dispatch(postprocessEditName(myId, name, result))
+        dispatch(postprocessSignup(myId, name, result))
       })
   }
 }
 
-const postprocessEditName = (myId, name, result) => {
-  result = serverUtils.deserialize(result)
-
-  console.log('doRootPage.postprocessEditName: result: ', result)
+const postprocessSignup = (myId, name, result) => {
+  console.log('doRootPage.postprocessSignup: result: ', result)
 
   const combinedUserInfo = {
-    createTime: result.CT,
-    userID: result.ID,
-    userName: result.N,
-    status: result.S,
-    updateTime: result.UT,
-    version: result.V
+    userId:     result.ID,
+    userName:   serverUtils.b64decode(result.N),
+    userImg:    DEFAULT_USER_IMAGE
   }
 
   return {
@@ -357,12 +346,7 @@ const getBoardMetaMap = boardIds => dispatch => Promise.all(
 
     return {
       ID: result.ID,
-      LastSeen: result.LastSeen,
-      Status: result.Status,
       Title: result.Title,
-      UpdateTS: result.UpdateTS,
-      CreatorID: result.C,
-      BoardType: result.BT
     }
   })
 )
@@ -407,16 +391,16 @@ const getAllArticles = (dispatch, myId, articleIds) => dispatch => Promise.all(
 
       let summary = (result && result.length > 0) ? result[0].B : ''
       return {
-        'BoardID': item.boardId,
-        'ID': item.articleId,
-        'Title': item.title,
-        'CreatorID': article.CreatorID,
+        'BoardID':        item.boardId,
+        'ID':             item.articleId,
+        'Title':          item.title,
+        'CreatorID':      article.CreatorID,
         'ContentBlockID': article.ContentBlockID,
-        'Summary': (summary && summary.length > 0) ? summary[0] : '',
-        'UpdateTS': article.UpdateTS,
-        'CreateTS': article.CreateTS,
-        'LastSeen': article.L,
-        'Status': article.S
+        'Summary':        (summary && summary.length > 0) ? summary[0] : '',
+        'updateAt':       unixToMoment(article.UpdateTS),
+        'createAt':       unixToMoment(article.CreateTS),
+        'LastSeen':       article.L,
+        'Status':         article.S
       }
     } else {
       return Promise.reject(1)
@@ -449,41 +433,33 @@ export const getLatestArticles = (myId, limit) => (dispatch, getState) => new Pr
 })
 
 const postprocessGetLatestArticles = (myId, result, maps) => {
-  result = result.map(serverUtils.deserialize)
-
   maps = maps.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
   const latestArticles = result.map(each => {
-    let userId = each.CreatorID
-    let boardId = each.BoardID
-    let userNameMap = maps['userName'] || {}
-    let userImgMap = maps['userImg'] || {}
-    let boardIdMap = maps['boardId'] || {}
-
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-    let boardName = boardIdMap[boardId] ? boardIdMap[boardId].Title : ''
+    const getNameById = id => serverUtils.b64decode(_.get(maps, ['userName', id, 'N'], '')) || DEFAULT_USER_NAME
+    const getImgById = id => _.get(maps, ['userImg', id, 'I'], '') || DEFAULT_USER_IMAGE
+    const getBoardNameById = id => _.get(maps, ['boardId', id, 'Title'], '')
 
     return {
-      BoardID: each.BoardID,
-      BoardName: boardName,
-      Summary: each.Summary,
+      BoardID:        each.BoardID,
+      BoardName:      getBoardNameById(each.BoardID),
+      Summary:        each.Summary,
       ContentBlockID: each.ContentBlockID,
-      CreatorID: each.CID,
-      CreatorName: userName,
-      CreatorImg: userImg,
-      ID: each.ID,
-      NBlock: each.NBlock,
-      NBoo: each.NB,
-      NPush: each.NP,
-      Title: each.Title,
-      LastSeen: each.LastSeen ? each.LastSeen : utils.emptyTimeStamp(),
-      CreateTS: each.CreateTS ? each.CreateTS : utils.emptyTimeStamp(),
-      UpdateTS: each.UpdateTS ? each.UpdateTS : utils.emptyTimeStamp(),
-      Status: each.Status
+      CreatorID:      each.CID,
+      CreatorName:    getNameById(each.CreatorID),
+      CreatorImg:     getImgById(each.CreatorID),
+      ID:             each.ID,
+      NBlock:         each.NBlock,
+      NBoo:           each.NB,
+      NPush:          each.NP,
+      Title:          each.Title,
+      lastSeenAt:     unixToMoment(each.LastSeen),
+      createAt:       each.createAt,
+      updateAt:       each.updateAt,
+      Status:         each.Status
     }
   })
 
@@ -518,14 +494,12 @@ const updateLogLastSeenData = (myId, result) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { logLastSeen: result }
+    data: { logLastSeenAt: unixToMoment(result) }
   }
 }
 
 export const fetchLatestMessage = (myId, limit) => (dispatch, getState) => new Promise(async () => {
-  let emptyTS = utils.emptyTimeStamp()
-
-  const friendListRes = await dispatch(serverUtils.getFriendListByMsgCreateTS(emptyTS.T, emptyTS.NT, limit))
+  const friendListRes = await dispatch(serverUtils.getFriendListByMsgCreateTS(0, 0, limit))
   if (friendListRes.error) throw friendListRes.error
   const friendList = friendListRes.response.result
 
@@ -552,12 +526,12 @@ const postprocessGetFriendListByMsgCreateTS = (myId, chatId, creatorName, messag
     data: {
       latestFriendList: messages.map(message => ({
         creatorName: creatorName,
-        creatorID: message.CID,
-        chatID: chatId,
-        friendID: message.CID,
-        messageID: message.AID,
-        contents: message.B,
-        createTS: message.CT
+        creatorID:   message.CID,
+        chatID:      chatId,
+        friendID:    message.CID,
+        messageID:   message.AID,
+        contents:    message.B,
+        createAt:    unixToMoment(message.CT)
       })
       ) }
   }
@@ -584,7 +558,7 @@ const updateFriendLastSeenData = (myId, result) => {
     myId,
     myClass,
     type: SET_DATA,
-    data: { friendLastSeen: result }
+    data: { friendLastSeen: unixToMoment(result) }
   }
 }
 

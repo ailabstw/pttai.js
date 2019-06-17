@@ -1,6 +1,9 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import LRU from 'lru-cache'
+import _ from 'lodash'
+import moment from 'moment'
+import { unixToMoment } from '../utils/utilDatetime'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -100,22 +103,21 @@ function removeBoardMembers (boardId, memberToRemove) {
 export const inviteFriend = (myId, boardId, boardName, friendInvited) => {
   return (dispatch, getState) => {
     dispatch(serverUtils.getBoardUrl(boardId))
-      .then(({ response: boardUrlResult, type, query, error }) => {
-        const boardJoinKey = {
-          C: boardUrlResult.result.C,
-          ID: boardUrlResult.result.ID,
-          Pn: boardUrlResult.result.Pn,
-          T: boardUrlResult.result.T,
-          URL: boardUrlResult.result.URL,
-          UpdateTS: boardUrlResult.result.UT ? boardUrlResult.result.UT : utils.emptyTimeStamp(),
-          expirePeriod: boardUrlResult.result.e
-        }
+      .then(({ response: {result: boardUrlResult}, type, query, error }) => {
+        const {URL, UT: {T}, e} = boardUrlResult
 
         let inviteMessages = Object.keys(friendInvited).filter(fID => friendInvited[fID]).map(friendId => {
           let chatId = friendInvited[friendId]
           let message = {
             type: MESSAGE_TYPE_INVITE,
-            value: `<div data-action-type="join-board" data-board-id="${boardId}" data-board-name="${boardName}" data-join-key="${boardJoinKey.URL}" data-update-ts="${boardJoinKey.UpdateTS.T}" data-expiration="${boardJoinKey.expirePeriod}"></div>`
+            value: `<div
+              data-action-type="join-board"
+              data-board-id="${boardId}"
+              data-board-name="${boardName}"
+              data-join-key="${URL}"
+              data-update-ts="${T}"
+              data-expiration="${e}">
+            </div>`
           }
           return {
             chatId: chatId,
@@ -310,27 +312,28 @@ export const getMoreArticles = (myId, boardId, startArticleId, limit) => {
 }
 
 const articleToArticleList = (myId, result, usersInfo, summaryResult) => {
-  result = result.map(serverUtils.deserialize)
-
   usersInfo = usersInfo.reduce((acc, each) => {
     acc[each.key] = each.value
     return acc
   }, {})
 
+  const getNameById = id => serverUtils.b64decode(_.get(usersInfo, ['userName', id, 'N'], '')) || DEFAULT_USER_NAME
+  const getImgById = id => _.get(usersInfo, ['userImg', id, 'I'], '') || DEFAULT_USER_IMAGE
+
   return result.map(each => {
     let userId = each.CreatorID
-    let userNameMap = usersInfo['userName'] || {}
-    let userImgMap = usersInfo['userImg'] || {}
+    let userName = getNameById(userId)
+    let userImg = getImgById(userId)
+    let title = serverUtils.b64decode(each.Title)
 
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
+    let noComment = utils.isNullTimeStamp(each.c)
+    let neverSeen = utils.isNullTimeStamp(each.L)
 
-    let createTS = utils.isNullTimeStamp(each.CreateTS) ? utils.emptyTimeStamp() : each.UpdateTS
-    let updateTS = utils.isNullTimeStamp(each.UpdateTS) ? createTS : each.UpdateTS
+    let updateAt = noComment ? unixToMoment(each.UpdateTS) : unixToMoment(each.c)
+    let lastSeenAt = unixToMoment(each.L)
+    let isUnread = neverSeen || isUnRead(updateAt, lastSeenAt)
 
-    let CommentCreateTS = each.c && !utils.isNullTimeStamp(each.c) ? each.c : updateTS
-
-    let summaryData = summaryResult[each.ID] ? toJson(serverUtils.b64decode(summaryResult[each.ID].B[0])) : ''
+    let summaryData = toJson(serverUtils.b64decode(_.get(summaryResult, [each.ID, 'B', 0], '')))
     let summary = summaryResult[each.ID] ? getSummaryTemplate(summaryData, { CreatorName: userName, boardId: each.BoardID }) : ''
 
     return {
@@ -339,11 +342,9 @@ const articleToArticleList = (myId, result, usersInfo, summaryResult) => {
       CreatorName:     userName,
       CreatorImg:      userImg,
       responseNumber:  each.NP || 0,
-      Title:           each.Title,
-      CommentCreateTS: CommentCreateTS,
-      CreateTS:        createTS,
-      UpdateTS:        updateTS,
-      isUnread:        isUnRead(CommentCreateTS.T, each.L.T),
+      Title:           title,
+      updateAt:        updateAt,
+      isUnread:        isUnread,
       summary:         summary
     }
   })
@@ -432,12 +433,13 @@ export const _appendArticles = (state, action) => {
     let localLRU = new LRU(constants.NUM_ARTICLE_PER_REQ)
 
     let startArticle = null
-    let earlistTS = 2147483648 /* year 2038 */
+    let earlistAt = unixToMoment(null, 2147483648000) // XXX: year 2038, but don't know why */
+
     articles.forEach((article, index) => {
       localLRU.set(article.ID, article)
-      if (lruCache.get(article.ID) && lruCache.get(article.ID).article.CreateTS.T < earlistTS) {
+      if (lruCache.get(article.ID) && lruCache.get(article.ID).article.updateAt < earlistAt) {
         startArticle = lruCache.get(article.ID)
-        earlistTS = startArticle.article.CreateTS.T
+        earlistAt = startArticle.article.updateAt
       }
     })
     /* 2. start merge  */
@@ -453,7 +455,7 @@ export const _appendArticles = (state, action) => {
         let oriArticle = articleList[offset + oriIndex]
         let newArticle = articles[newIndex]
         /* both left */
-        if (oriArticle.CreateTS.T <= newArticle.CreateTS.T) {
+        if (oriArticle.updateAt <= newArticle.updateAt) {
           if (!localLRU.get(oriArticle.ID)) {
             mergedList.push(oriArticle)
             lruCache.set(oriArticle.ID, { index: mergeIndex, article: oriArticle })
@@ -636,9 +638,7 @@ const postprocessCreateArticle = (myId, boardId, userName, userImg, title, artic
     CreatorImg:      userImg,
     responseNumber:  0,
     Title:           title,
-    CommentCreateTS: utils.emptyTimeStamp(),
-    CreateTS:        utils.emptyTimeStamp(),
-    UpdateTS:        utils.emptyTimeStamp(),
+    updateAt:        moment(),
     isUnread:        false
   }
 

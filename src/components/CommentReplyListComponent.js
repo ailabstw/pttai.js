@@ -10,8 +10,6 @@ import AlertComponent from '../components/AlertComponent'
 import { getStatusClass,
   linkParser,
   isMobile } from '../utils/utils'
-import { epoch2FullTimeFormat,
-  epoch2ReadFormat } from '../utils/utilDatetime'
 
 import * as constants from '../constants/Constants'
 
@@ -180,8 +178,8 @@ export class CommentReplyListItem extends PureComponent {
               }
             </div>
           </div>
-          <div title={epoch2FullTimeFormat(item.createTS.T)} className={styles['comment-creator-id-prefix']}>
-            {epoch2ReadFormat(item.createTS.T)}
+          <div title={item.createAt.toString()} className={styles['comment-creator-id-prefix']}>
+            {item.createAt.fromNow()}
           </div>
         </div>
 

@@ -95,6 +95,8 @@ function html2Array (html) {
   let tags = [/<ol>.*?<\/ol>/g, /<ul>.*?<\/ul>/g, /<iframe.*?<\/iframe>/g, /<img.*?>/g]
   let result = html
 
+  if (result.trim() === '') { return [] }
+
   /*  1. remove all new line character  */
   result = result.replace(/\r?\n|\r/g, ' ')
 
@@ -180,12 +182,14 @@ function isTitleTooLong (title) {
 class PttaiEditor extends PureComponent {
   constructor (props) {
     super(props)
+    let initHTML = props.initHtml || ''
+
     this.state = {
       id: `editor-${uuidv4()}`,
       editor: {},
       title: props.articleTitle,
-      htmlArray: html2Array(props.initHtml) || [],
-      htmlContent: props.initHtml || '',
+      htmlArray: html2Array(initHTML) || [],
+      htmlContent: initHTML,
       attachedObjs: [],
       selection: { index: 0, length: 0 },
       showAlert: false,

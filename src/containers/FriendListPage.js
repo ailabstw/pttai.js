@@ -145,15 +145,9 @@ class FriendListPage extends PureComponent {
 
     let openAddFriendModal = () => {
       doModalContainer.setInput({
-        friend: {
-          data: keyInfo,
-          addFriendAction: modalAddFriend,
-          refreshKeyInfo: refreshKeyInfo
-        },
-        keyInfo: {
-          data: keyInfo,
-          refreshKeyInfo: refreshKeyInfo
-        }
+        refreshKeyInfo: refreshKeyInfo,
+        addFriendUrl: keyInfo.friendJoinKey.URL,
+        addFriendAction: modalAddFriend
       })
       doModalContainer.openModal(constants.ADD_FRIEND_MODAL)
     }
