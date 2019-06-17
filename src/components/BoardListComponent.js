@@ -4,7 +4,6 @@ import { ClipLoader } from 'react-spinners'
 import { FormattedMessage } from 'react-intl'
 
 import { getStatusClass } from '../utils/utils'
-import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import * as constants from '../constants/Constants'
 
 import styles from './BoardListComponent.module.scss'
@@ -50,7 +49,7 @@ class BoardListComponent extends PureComponent {
       return ''
     }
 
-    let activeList = listData.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')).sort((a,b) => b.updateAt.T - a.updateAt.T)
+    let activeList = listData.filter((item) => item.Status < constants.STATUS_ARRAY.indexOf('StatusDeleted')).sort((a,b) => b.updateAt - a.updateAt)
 
     return (
       <div className={styles['root']} ref={(scroller) => { this.scroller = scroller }}>
@@ -91,8 +90,8 @@ class BoardListComponent extends PureComponent {
                       }
                     </div>
                     <div className={styles['list-item-meta']}>
-                      <div title={epoch2FullDate(item.updateAt.T)} className={styles['list-item-time']}>
-                        {epoch2ReadFormat(item.updateAt.T)}
+                      <div title={item.updateAt.toString()} className={styles['list-item-time']}>
+                        {item.updateAt.fromNow()}
                       </div>
                     </div>
                   </Link>

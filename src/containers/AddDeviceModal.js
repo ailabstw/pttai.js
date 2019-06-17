@@ -40,6 +40,7 @@ class AddDeviceModal extends PureComponent {
       onModalSwitch(constants.SHOW_DEVICE_INFO, { device: device, keyInfo: keyInfo })
     }
 
+    // FIXME: change to moment
     const expTimeVal = expiredFormat(keyInfo.data.deviceJoinKey.UpdateTS.T, keyInfo.data.deviceJoinKey.expirePeriod)
 
     return (

@@ -37,7 +37,7 @@ describe('<CommentReplyListComponent />', () => {
       isLoading: true,
       userId: '',
       userImg: null,
-      openCommentSettingMenuModal: jest.fn()
+      openCommentSettingMenuModal: jest.fn(),
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -52,7 +52,8 @@ describe('<CommentReplyListComponent />', () => {
         creatorImg: '',
         creatorName: '',
         contentBlockArray: ['文章內容'],
-        createTS: {},
+        createAt: { fromNow: jest.fn() },
+        updateAt: { fromNow: jest.fn() },
         status: 7
       }],
       isLoading: false,
@@ -97,7 +98,8 @@ describe('<CommentReplyListItem />', () => {
         creatorImg: '',
         creatorName: '',
         contentBlockArray: ['文章內容'],
-        createTS: {},
+        createAt: { fromNow: jest.fn() },
+        updateAt: { fromNow: jest.fn() },
         status: 7
       },
       openMenu: jest.fn()

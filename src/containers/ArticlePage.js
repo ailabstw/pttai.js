@@ -11,8 +11,6 @@ import CommentReplyListComponent from '../components/CommentReplyListComponent'
 import ArticleBar from '../components/ArticleBar'
 
 import { getRoot } from '../utils/utils'
-import { epoch2FullDate,
-  epoch2ReadFormat } from '../utils/utilDatetime'
 import googleAnalytics from '../utils/googleAnalytics'
 
 import * as doArticlePage from '../reducers/ArticlePage'
@@ -306,8 +304,8 @@ class ArticlePage extends PureComponent {
           $.isEmptyObject(articleInfo) ? (
             <div className={styles['time']} />
           ) : (
-            <div title={epoch2FullDate(articleInfo.CreateTS.T)} className={styles['time']}>
-              {epoch2ReadFormat(articleInfo.CreateTS.T)}
+            <div title={articleInfo.createAt.toString()} className={styles['time']}>
+              {articleInfo.createAt.fromNow()}
             </div>
           )
         }

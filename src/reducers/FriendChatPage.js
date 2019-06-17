@@ -1,11 +1,13 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import LRU from 'lru-cache'
+import moment from 'moment'
 
 import $ from 'jquery'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
+import { unixToMoment } from '../utils/utilDatetime'
 
 import { EMPTY_ID,
   STATUS_ARRAY,
@@ -207,14 +209,16 @@ const messageToMessageList = (creatorIds, messageIds, messageBlockList, result, 
         isJoined:      isJoined,
         boardName:     invite.data('board-name'),
         boardJoinKey:  invite.data('join-key'),
-        keyUpdateTS_T: invite.data('update-ts'),
+        keyUpdateAt:   unixToMoment(parseInt(invite.data('update-ts'))),
         keyExpiration: invite.data('expiration')
       }
     }
 
+    let createAt = unixToMoment(result[index].CreateTS)
+
     messageList.push({
       ID:          messageIds[index],
-      CreateTS:    result[index].CreateTS ? result[index].CreateTS : utils.emptyTimeStamp(),
+      createAt:    createAt,
       CreatorID:   creatorIds[index],
       Status:      each.value.S,
       type:        messageObj.type,
@@ -311,14 +315,15 @@ export const _appendMessages = (state, action) => {
   } else {
     /* 1. find earlist start node and save to local lru */
     let localLRU = new LRU(NUM_MESSAGE_PER_REQ)
-
     let startMessage = null
-    let earlistTS = 2147483648 /* year 2038 */
+
+    let earlistAt = unixToMoment(null, 2147483648000) // XXX: year 2038, but don't know why */
+
     messages.forEach((message, index) => {
       localLRU.set(message.ID, message)
-      if (lruCache.get(message.ID) && lruCache.get(message.ID).message.CreateTS.T < earlistTS) {
+      if (lruCache.get(message.ID) && lruCache.get(message.ID).message.createAt < earlistAt) {
         startMessage = lruCache.get(message.ID)
-        earlistTS = startMessage.message.CreateTS.T
+        earlistAt = startMessage.message.createAt
       }
     })
     /* 2. start merge  */
@@ -334,7 +339,7 @@ export const _appendMessages = (state, action) => {
         let oriMessage = messageList[offset + oriIndex]
         let newMessage = messages[newIndex]
         /* both left */
-        if (oriMessage.CreateTS.T <= newMessage.CreateTS.T) {
+        if (oriMessage.createAt <= newMessage.createAt) {
           if (!localLRU.get(oriMessage.ID)) {
             mergedList.push(oriMessage)
             lruCache.set(oriMessage.ID, { index: mergeIndex, message: oriMessage })
@@ -395,7 +400,7 @@ const postprocessPostMessage = (myId, userId, result, message) => {
   const messageObj = JSON.parse(message)
   const newMessage = {
     ID:        result.AID,
-    CreateTS:  utils.emptyTimeStamp(),
+    createAt:  moment(),
     CreatorID: userId,
     Status:    0,
     type:      messageObj.type,

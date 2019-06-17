@@ -146,7 +146,7 @@ export const epoch2MessageTimeFormat = (epochTS) => {
   if (language === 'zh') {
     return moment.unix(epochTS).format('a h:mm')
   } else {
-    return moment.unix(epochTS).format('h:mm a')
+    return moment.unix(epochTS)
   }
 }
 
@@ -154,8 +154,8 @@ export const epoch2MessageDateFormat = (epochTS) => {
   return moment.unix(epochTS).format('MMM Do')
 }
 
-export const doesCrossDay = (epochTS1, epochTS2) => {
-  return moment.unix(epochTS1).format('YYYY-MM-DD') !== moment.unix(epochTS2).format('YYYY-MM-DD')
+export const doesCrossDay = (moment1, moment2) => {
+  return moment1.format('YYYY-MM-DD') !== moment2.format('YYYY-MM-DD')
 }
 
 export const epoch2ReadFormat = (epochTS) => {
@@ -180,10 +180,30 @@ export const epoch2ReadFormat = (epochTS) => {
   return readableTime
 }
 
-export const isValid = (updateTS_T, period) => {
-  let targetTime = moment.unix(updateTS_T)
-  let expiredTime = targetTime.add(period, 'seconds')
+export const isValid = (updateAt, period) => {
+  let expiredTime = updateAt.add(period, 'seconds')
   return moment().isBefore(expiredTime)
+}
+
+export const expiredMomentFormat = (updateAt, period) => {
+  let isZh = language === 'zh'
+  let result = ''
+
+  if (!updateAt.isValid() || !period) {
+    result = isZh ? '日期錯誤' : 'Wrong Date'
+  }
+
+  // updateAt + period - current
+  let expiredTime = updateAt.clone().add(period, 'seconds')
+
+  if (moment().isAfter(expiredTime)) {
+    result = isZh ? '已過期' : 'Expired'
+  } else {
+    let timeleft = expiredTime.toNow(true)
+    result = isZh ? `${timeleft} 後過期` : `Expired in ${timeleft}`
+  }
+
+  return result
 }
 
 export const expiredFormat = (updateTS_T, period) => {
@@ -253,3 +273,15 @@ export const addDay = (theDate, days) => new Date(theDate.getTime() + days * 864
 export const maxDate = (a, b) => new Date(Math.max(a, b))
 
 export const minDate = (a, b) => new Date(Math.min(a, b))
+
+export const unixToMoment = (TS, defaultValue) => {
+  if (TS && TS.T) {
+    return moment.unix(TS.T)
+  }
+
+  if (moment.isMoment(defaultValue)) {
+    return defaultValue
+  }
+
+  return moment(defaultValue)
+}

@@ -42,12 +42,12 @@ class AddFriendModal extends PureComponent {
 
   onScanned (data) {
     if (data) {
-      const { modalInput: { friend } } = this.props
+      const { modalInput: { addFriendAction} } = this.props
 
       this.setState({
         friendReqId: data
       })
-      friend.addFriendAction(data)
+      addFriendAction(data)
     }
   }
 
@@ -56,9 +56,9 @@ class AddFriendModal extends PureComponent {
   }
 
   componentWillMount () {
-    const { modalInput: { friend } } = this.props
+    const { modalInput: { refreshKeyInfo} } = this.props
 
-    this.refreshKeyInfoInterval = setInterval(() => friend.refreshKeyInfo(), constants.REFRESH_INTERVAL)
+    this.refreshKeyInfoInterval = setInterval(() => refreshKeyInfo(), constants.REFRESH_INTERVAL)
   }
 
   componentWillUnmount () {
@@ -69,10 +69,8 @@ class AddFriendModal extends PureComponent {
     const { intl,
       onModalClose,
       modal: { currentModal },
-      modalInput: { friend } } = this.props
+      modalInput: { addFriendAction, addFriendUrl } } = this.props
     const { friendReqId, currentTab, qrCodeCopied } = this.state
-
-    // const expTimeVal = expiredFormat(friend.data.friendJoinKey.UpdateTS.T, friend.data.friendJoinKey.expirePeriod)
 
     return (
       <div>
@@ -124,13 +122,13 @@ class AddFriendModal extends PureComponent {
                   ? <ScannerPage
                     friendReqId={friendReqId}
                     intl={intl}
-                    friend={friend}
+                    addFriendAction={addFriendAction}
                     onModalClose={onModalClose}
                     onScanned={this.onScanned}
                     onFriendIdChange={this.onFriendIdChange}
                   />
                   : <QRCodePage
-                    friend={friend}
+                    addFriendUrl={addFriendUrl}
                     qrCodeCopied={qrCodeCopied}
                     onModalClose={onModalClose}
                     onCopy={() => this.setState({ qrCodeCopied: true })}
@@ -145,11 +143,8 @@ class AddFriendModal extends PureComponent {
 }
 
 const QRCodePage = props => {
-  const { friend, qrCodeCopied, onModalClose, onCopy } = props
-  const addFriendUrl = friend &&
-                        friend.data &&
-                        friend.data.friendJoinKey &&
-                        friend.data.friendJoinKey.URL
+  const { addFriendUrl, qrCodeCopied, onModalClose, onCopy } = props
+
   return (
     <div className={styles['tab-page-container']}>
       <div className={styles['qr-code-container']}>
@@ -185,10 +180,10 @@ const QRCodePage = props => {
 }
 
 const ScannerPage = props => {
-  const { friend, friendReqId, intl, onModalClose, onFriendIdChange, onScanned } = props
+  const { addFriendAction, friendReqId, intl, onModalClose, onFriendIdChange, onScanned } = props
 
   const placeholder = intl.formatMessage({ id: 'add-friend-modal.placeholder' })
-  const onSubmitAndClose = () => friend.addFriendAction(friendReqId)
+  const onSubmitAndClose = () => addFriendAction(friendReqId)
 
   return (
     <div className={styles['tab-page-container']}>

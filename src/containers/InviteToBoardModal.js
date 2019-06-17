@@ -6,8 +6,6 @@ import Immutable from 'immutable'
 import { FormattedMessage } from 'react-intl'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
-import { epoch2ReadFormat } from '../utils/utilDatetime'
-
 import AlertComponent from '../components/AlertComponent'
 import * as doInviteToBoardModal from '../reducers/InviteToBoardModal'
 import * as modalConstants from '../constants/ModalConstants'
@@ -84,8 +82,6 @@ class InviteToBoardModal extends PureComponent {
     //     },
     //   })
     // }
-
-    // const expTimeVal = expiredFormat(boardJoinKey.UpdateTS.T, boardJoinKey.expirePeriod)
 
     return (
       <div>
@@ -170,7 +166,7 @@ class InviteToBoardModal extends PureComponent {
                             <FormattedMessage
                               id='invite-to-board-modal.invite-friend-0'
                               defaultMessage='joined {JOIN_TIME}'
-                              values={{ JOIN_TIME: epoch2ReadFormat(item.memberUpdateTS.T) }}
+                              values={{ JOIN_TIME: item.memberUpdateAt.fromNow() }}
                             />
                           </div>
                         ) : (

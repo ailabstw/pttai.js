@@ -4,7 +4,6 @@ import { ClipLoader } from 'react-spinners'
 import { FormattedMessage } from 'react-intl'
 import ReactDOM from 'react-dom'
 
-import { epoch2FullDate, epoch2ReadFormat } from '../utils/utilDatetime'
 import { getStatusClass } from '../utils/utils'
 import * as constants from '../constants/Constants'
 
@@ -69,7 +68,7 @@ class ArticleListComponent extends PureComponent {
     const { boardId, listData, isLoading, noArticle } = this.props
 
     let aliveArticles = listData.filter((post) => post.Status !== constants.STATUS_ARRAY.indexOf('StatusDeleted')).sort((a,b) => {
-      return a.UpdateTS.T - b.UpdateTS.T;
+      return a.updateAt - b.updateAt;
     })
 
     if (noArticle) {
@@ -129,8 +128,8 @@ export class ArticleItemComponent extends PureComponent {
           <div className={styles['list-item-main']}>
             <div className={styles['list-item-header']}>
               <div title={data.Title} className={styles['list-item-title']}>{data.Title}</div>
-              <div title={epoch2FullDate(data.UpdateTS.T)} className={styles['list-item-time']}>
-                {epoch2ReadFormat(data.UpdateTS.T)}
+              <div title={data.updateAt.toString()} className={styles['list-item-time']}>
+                {data.updateAt.fromNow()}
               </div>
             </div>
             <div className={styles['list-item-content']}>

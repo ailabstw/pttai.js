@@ -74,7 +74,10 @@ describe('<ArticleListComponent />', () => {
       listData: [{
         ID: 1,
         content: 'whatever',
-        UpdateTS: {},
+        updateAt: {
+          toString: jest.fn(),
+          fromNow: jest.fn()
+        },
         CommentCreateTS: {},
         LastSeen: {}
       }],
@@ -116,7 +119,10 @@ describe('<ArticleListComponent />', () => {
       data: {
         ID: 1,
         content: 'whatever',
-        UpdateTS: {},
+        updateAt: {
+          toString: jest.fn(),
+          fromNow: jest.fn()
+        },
         CommentCreateTS: {},
         LastSeen: {}
       },

@@ -6,7 +6,6 @@ import { injectIntl,
   FormattedMessage } from 'react-intl'
 
 import { getStatusClass } from '../utils/utils'
-import { epoch2ReadFormat } from '../utils/utilDatetime'
 
 import * as constants from '../constants/Constants'
 
@@ -69,7 +68,7 @@ class FriendListComponent extends PureComponent {
       )
     }
 
-    let friendSortedList = friendList.sort((a, b) => b.Summary.updateTS.T - a.Summary.updateTS.T)
+    let friendSortedList = friendList.sort((a, b) => b.Summary.updateAt - a.Summary.updateAt)
       .filter((friend) => friend.FriendStatus < constants.STATUS_ARRAY.indexOf('StatusDeleted'))
 
     return (
@@ -110,7 +109,7 @@ class FriendListComponent extends PureComponent {
                         </div>
                         <div className={styles['list-item-time']}>
                           {
-                            Summary.updateTS.T ? epoch2ReadFormat(Summary.updateTS.T) : ''
+                            Summary.updateAt.fromNow()
                           }
                         </div>
                       </div>
