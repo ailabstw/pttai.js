@@ -66,8 +66,6 @@ class FriendListPage extends PureComponent {
     let noFriend = me.get('noFriend', false)
     let allFriendsLoaded = me.get('allFriendsLoaded', false)
 
-    // < start of Add-Friend-Modal
-
     let refreshKeyInfo = () => {
       doFriendListPage.getKeyInfo(myId)
     }
@@ -164,10 +162,6 @@ class FriendListPage extends PureComponent {
       doFriendListPage.getMoreFriendlist(myId, startFriendId, constants.NUM_FRIEND_PER_REQ)
     }
 
-    // end of Add-Friend-Modal >
-
-    // < start of Friend-Setting-Modal
-
     const deleteFriendCallBack = (response) => {
       if (response.error) {
         let that = this
@@ -210,8 +204,6 @@ class FriendListPage extends PureComponent {
       })
       doModalContainer.openModal(constants.FRIEND_SETTING_MENU_MODAL)
     }
-
-    // start of Friend-Setting-Modal >
 
     return (
       <div className={styles['root']}>

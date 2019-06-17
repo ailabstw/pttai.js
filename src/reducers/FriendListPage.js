@@ -1,5 +1,6 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
+import _ from 'lodash'
 import LRU from 'lru-cache'
 
 import * as utils from './utils'
@@ -8,7 +9,6 @@ import { EMPTY_ID,
   NUM_CACHE_FRIEND,
   DEFAULT_USER_NAME,
   DEFAULT_USER_IMAGE,
-  DEFAULT_USER_NAMECARD,
   DEFAULT_USER_COMPANY,
   NUM_FRIEND_PER_REQ,
   MESSAGE_TYPE_TEXT } from '../constants/Constants'
@@ -47,164 +47,63 @@ function getChatSummaries (chatIds) {
     chatIds.map((chatId, index) => {
       return dispatch(serverUtils.getMessageList(chatId, EMPTY_ID, 1))
         .then(({ response: messageResult, type, error, query }) => {
-          let messageId = (messageResult.result && messageResult.result.length) ? messageResult.result[0].ID : null
-          let subContentId = (messageResult.result && messageResult.result.length) ? messageResult.result[0].ContentBlockID : null
-          let creatorId = (messageResult.result && messageResult.result.length) ? messageResult.result[0].CreatorID : null
+          let messageId = _.get(messageResult, 'result[0].ID', null)
+          let subContentId = _.get(messageResult, 'result[0].ContentBlockID', null)
+          let creatorId = _.get(messageResult, 'result[0].CreatorID', null)
+          let updateTS = _.get(messageResult, 'result[0].UpdateTS', utils.emptyTimeStamp())
+
           return dispatch(serverUtils.getMessageBlockList(chatId, messageId, subContentId, 0, 0, 1))
             .then(({ response: { result }, type, query, error }) => {
               if (error) {
                 return { 'error': true, 'key': 'messageBlock', 'value': error }
-              } else {
-                let combinedResult = (result && result.length) ? {
-                  UpdateTS: (messageResult.result && messageResult.result.length) ? messageResult.result[0].UpdateTS : utils.emptyTimeStamp(),
-                  SummaryUserID: creatorId,
-                  ...result[0]
-                } : {}
-                return { 'error': false, 'key': 'messageBlock', 'value': combinedResult }
               }
+
+              let combinedResult = (result && result.length) ? {
+                UpdateTS: updateTS,
+                SummaryUserID: creatorId,
+                ...result[0]
+              } : {}
+              return { 'error': false, 'key': 'messageBlock', 'value': combinedResult }
             })
+
         })
     })
   )
 }
 
-
-const fetchFriendList = (myId, startFriendId, shouldShowLoading, limit) => {
-  return (dispatch, getState) => {
-
-    if (shouldShowLoading) {
-      dispatch(preprocessSetStartLoading(myId))
-    }
-
-    Promise.all([
-      dispatch(serverUtils.getFriends(startFriendId, limit)),
-      dispatch(serverUtils.getFriendRequest(EMPTY_ID))
-    ]).then( async ([ { response: friendResult }, { response: friendReqResult } ]) => {
-      let chatIds = friendResult.result.map(each => each.ID)
-
-      let summaryResult = await dispatch(getChatSummaries(chatIds))
-      let creatorIds = friendResult.result.map(each => each.FID).filter(each => each)
-      let summaries = summaryResult.map(each => each.error ? {} : each.value)
-      let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
-
-
-      dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
-        .then((usersInfo) => {
-          if (startFriendId !== EMPTY_ID) {
-            dispatch(postprocessGetMoreFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
-          }
-          else {
-            dispatch(postprocessGetFriendList(myId, friendResult.result, friendReqResult.result, summaries, usersInfo))
-          }
-          dispatch(postprocessSetFinshLoading(myId))
-        })
-    })
-
+const fetchFriendList = (myId, startFriendId, shouldShowLoading, limit) => (dispatch, getState) => {
+  if (shouldShowLoading) {
+    dispatch(preprocessSetStartLoading(myId))
   }
+
+  Promise.all([
+    dispatch(serverUtils.getFriends(startFriendId, limit)),
+    dispatch(serverUtils.getFriendRequest(EMPTY_ID))
+  ]).then( async ([ { response: {result: friendResult} }, { response: {result: friendReqResult} } ]) => {
+    let chatIds = friendResult.map(each => each.ID)
+    let creatorIds = friendResult.map(each => each.FID).filter(each => each)
+
+    let summaryResult = await dispatch(getChatSummaries(chatIds))
+    let summaries = summaryResult.map(each => each.error ? {} : each.value)
+    let SummaryUserIds = summaries.map(each => each.SummaryUserID).filter(each => each)
+
+    let usersInfo = await dispatch(serverUtils.getUsersInfo([...creatorIds, ...SummaryUserIds]))
+    let postProcessFunc = startFriendId === EMPTY_ID ? postprocessGetFriendList : postprocessGetMoreFriendList
+    dispatch(postProcessFunc(myId, friendResult, friendReqResult, summaries, usersInfo))
+    dispatch(postprocessSetFinshLoading(myId))
+  })
 }
 
-
-export const getFriendList = (myId, isFirstFetch, limit) => {
-  return (dispatch, getState) => {
-    dispatch(fetchFriendList(myId, EMPTY_ID, isFirstFetch, limit))
-  }
+export const getFriendList = (myId, isFirstFetch, limit) => (dispatch, getState) => {
+  dispatch(fetchFriendList(myId, EMPTY_ID, isFirstFetch, limit))
 }
 
-const friendAndJoinResultToFriendList = (result, reqResult, summaries, usersInfo) => {
-  result = result.map(serverUtils.deserialize)
-  // reqResult = reqResult.map(serverUtils.deserialize)
-
-  usersInfo = usersInfo.reduce((acc, each) => {
-    acc[each.key] = each.value
-    return acc
-  }, {})
-
-  const userNameMap = usersInfo['userName'] || {}
-  const userImgMap = usersInfo['userImg'] || {}
-  const userNameCardMap = usersInfo['userNameCard'] || {}
-
-  let friendList = result.map((each, index) => {
-    let userId = each.FID
-    let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-    let userImg = userImgMap[userId] && userImgMap[userId].I ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-    let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
-    let userCompany = userNameCard.company || DEFAULT_USER_COMPANY
-
-    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
-
-    let Summary = (summaries[index].B && summaries[index].B.length > 0) ? toJson(serverUtils.b64decode(summaries[index].B[0])) : { type: MESSAGE_TYPE_TEXT, value: '' }
-    let summaryUserId = Summary.userId = summaries[index].SummaryUserID
-    Summary.userName = userNameMap[summaryUserId] ? serverUtils.b64decode(userNameMap[summaryUserId].N) : DEFAULT_USER_NAME
-    Summary.userImg = userImgMap[summaryUserId] ? userImgMap[summaryUserId].I : DEFAULT_USER_IMAGE
-
-    return {
-      Name:         userName,
-      Img:          userImg,
-      company:      userCompany,
-      friendID:     userId,
-      chatId:       each.ID,
-      FriendStatus: each.S,
-      isUnread:     isUnRead(ArticleCreateTS && ArticleCreateTS.T, each.LT && each.LT.T),
-
-      Summary: {
-        type:     Summary.type,
-        userName: Summary.userName,
-        userID:   Summary.userID,
-        content:  Summary.value,
-        updateTS: summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS
-      },
-      joinStatus: 3 // JoinStatusAccepted
-    }
-  })
-
-  let joinReqs = reqResult.map((eachJoin) => {
-    return {
-      CreatorID: eachJoin.C,
-      NodeID: eachJoin.n,
-      Name: serverUtils.b64decode(eachJoin.N),
-      Status: eachJoin.S
-    }
-  })
-
-  joinReqs.forEach((join, index) => {
-    let joinFriendIndex = friendList.findIndex((e) => e.friendID === join.CreatorID)
-    if (joinFriendIndex >= 0) {
-      friendList[joinFriendIndex].joinStatus = join.Status
-    } else {
-      let userId = join.CreatorID
-      let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : DEFAULT_USER_NAME
-      let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-      let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
-      let userCompany = userNameCard.company || DEFAULT_USER_COMPANY
-
-      friendList.push({
-        Name:         join.Name || userName,
-        Img:          userImg,
-        company:      userCompany,
-        friendID:     userId,
-        chatId:       null,
-        FriendStatus: null,
-        isUnRead:     false,
-
-        Summary: {
-          type:     MESSAGE_TYPE_TEXT,
-          userName: '',
-          userID:   EMPTY_ID,
-          content:  '',
-          updateTS: utils.emptyTimeStamp()
-        },
-
-        joinStatus: join.Status
-      })
-    }
-  })
-
-  return friendList
+export const getMoreFriendlist = (myId, startFriendId, limit) => (dispatch, getState) => {
+  dispatch(fetchFriendList(myId, startFriendId, true, limit))
 }
 
 const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo) => {
-
-  const friendList = friendAndJoinResultToFriendList(result, reqResult, summaries, usersInfo)
+  const friendList = friendAndResultToFriendList(result, reqResult, summaries, usersInfo)
 
   console.log('doFriendListPage.postprocessGetFriendList: friendList:', friendList, reqResult)
 
@@ -226,14 +125,8 @@ const postprocessGetFriendList = (myId, result, reqResult, summaries, usersInfo)
   }
 }
 
-export const getMoreFriendlist = (myId, startFriendId, limit) => {
-  return (dispatch, getState) => {
-    dispatch(fetchFriendList(myId, startFriendId, true, limit))
-  }
-}
-
 const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersInfo) => {
-  const friendList = friendAndJoinResultToFriendList(result, reqResult, summaries, usersInfo)
+  const friendList = friendAndResultToFriendList(result, reqResult, summaries, usersInfo)
 
   console.log('doFriendListPage.postprocessGetMoreFriendList: friendList:', friendList, reqResult)
 
@@ -254,6 +147,76 @@ const postprocessGetMoreFriendList = (myId, result, reqResult, summaries, usersI
       }
     }
   }
+}
+
+const friendAndResultToFriendList = (result, reqResult, summaries, usersInfo) => {
+  usersInfo = usersInfo.reduce((acc, each) => {
+    acc[each.key] = each.value
+    return acc
+  }, {})
+
+  const getNameById = id => serverUtils.b64decode(_.get(usersInfo, ['userName', id, 'N'], '')) || DEFAULT_USER_NAME
+  const getImgById = id => _.get(usersInfo, ['userImg', id, 'I'], '') || DEFAULT_USER_IMAGE
+  const getCompanyById = id => _.get(toJson(serverUtils.b64decode(_.get(usersInfo, ['userNameCard', id, 'C'], ''))), 'company') || DEFAULT_USER_COMPANY
+
+  let friendList = result.map((each, index) => {
+    let userId = each.FID
+    let ArticleCreateTS = each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp()
+
+    let Summary = toJson(serverUtils.b64decode(_.get(summaries, [index, 'B', 0], '')))
+    let summaryUserId = Summary.userId = _.get(summaries, [index, 'SummaryUserID'], '')
+
+    return {
+      Name:         getNameById(userId),
+      Img:          getImgById(userId),
+      company:      getCompanyById(userId),
+      friendID:     userId,
+      chatId:       each.ID,
+      FriendStatus: each.S,
+      isUnread:     isUnRead(ArticleCreateTS && ArticleCreateTS.T, each.LT && each.LT.T),
+
+      Summary: {
+        type:     Summary.type || MESSAGE_TYPE_TEXT,
+        userName: getNameById(summaryUserId),
+        userID:   Summary.userID,
+        content:  Summary.value || '',
+        updateTS: summaries[index].UpdateTS ? summaries[index].UpdateTS : ArticleCreateTS
+      },
+      joinStatus: 3 // JoinStatusAccepted
+    }
+  })
+
+  reqResult.forEach((join, index) => {
+    let joinFriendIndex = friendList.findIndex((e) => e.friendID === join.C)
+    if (joinFriendIndex >= 0) {
+      friendList[joinFriendIndex].joinStatus = join.S
+      return
+    }
+
+    let userId = join.C
+
+    friendList.push({
+      Name:         getNameById(userId),
+      Img:          getImgById(userId),
+      company:      getCompanyById(userId),
+      friendID:     userId,
+      chatId:       null,
+      FriendStatus: null,
+      isUnRead:     false,
+
+      Summary: {
+        type:     MESSAGE_TYPE_TEXT,
+        userName: '',
+        userID:   EMPTY_ID,
+        content:  '',
+        updateTS: utils.emptyTimeStamp()
+      },
+
+      joinStatus: join.S
+    })
+  })
+
+  return friendList
 }
 
 export const _prependFriends = (state, action) => {
@@ -367,14 +330,14 @@ export const addFriend = (myId, name, callBackFunc) => {
     dispatch(serverUtils.addNewFriend(name))
       .then(({ response: { result, error }, type, query }) => {
         if (error) {
-          callBackFunc({ error: true, data: error.message, friendReqUrl: name })
-        } else {
-          callBackFunc({ error: false, data: result })
-          dispatch(serverUtils.getUsersInfo([result.C]))
-            .then((usersInfo) => {
-              dispatch(postprocessAddNewFriend(myId, result, usersInfo))
-            })
+          return callBackFunc({ error: true, data: error.message, friendReqUrl: name })
         }
+
+        callBackFunc({ error: false, data: result })
+        dispatch(serverUtils.getUsersInfo([result.C]))
+          .then((usersInfo) => {
+            dispatch(postprocessAddNewFriend(myId, result, usersInfo))
+          })
       })
   }
 }
@@ -385,33 +348,29 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
     return acc
   }, {})
 
-  // result = serverUtils.deserialize(result)
-
   let userId = result.C
-  let userImgMap = usersInfo['userImg'] || {}
-  let userNameCardMap = usersInfo['userNameCard'] || {}
 
-  let userImg = userImgMap[userId] ? userImgMap[userId].I : DEFAULT_USER_IMAGE
-  let userNameCard = userNameCardMap[userId] && userNameCardMap[userId].C ? JSON.parse(serverUtils.b64decode(userNameCardMap[userId].C)) : DEFAULT_USER_NAMECARD
-  let userCompany = userNameCard.company || DEFAULT_USER_COMPANY
+  const getNameById = id => serverUtils.b64decode(_.get(usersInfo, ['userName', id, 'N'], '')) || DEFAULT_USER_NAME
+  const getImgById = id => _.get(usersInfo, ['userImg', id, 'I'], '') || DEFAULT_USER_IMAGE
+  const getCompanyById = id => _.get(toJson(serverUtils.b64decode(_.get(usersInfo, ['userNameCard', id, 'C'], ''))), 'company') || DEFAULT_USER_COMPANY
 
   const combinedFriend = {
-    Name: serverUtils.b64decode(result.N),
-    Img: userImg,
-    company:      userCompany,
-    friendID: userId,
-    chatId: null,
-    FriendStatus: 0,
-    isUnread: false,
+    Name:          getNameById(userId),
+    Img:           getImgById(userId),
+    company:       getCompanyById(userId),
+    friendID:      userId,
+    chatId:        null,
+    FriendStatus:  0,
+    isUnread:      false,
 
     Summary: {
-      type: MESSAGE_TYPE_TEXT,
-      content: '',
-      userName: '',
-      userID:   null,
-      updateTS: utils.emptyTimeStamp()
+      type:        MESSAGE_TYPE_TEXT,
+      content:     '',
+      userName:    '',
+      userID:      null,
+      updateTS:    utils.emptyTimeStamp()
     },
-    joinStatus: 0
+    joinStatus:    0
   }
 
   console.log('doFriendListPage.postprocessAddNewFriend: combinedFriend:', combinedFriend)
@@ -445,14 +404,14 @@ export const deleteFriend = (myId, chatId, callBackFunc) => {
     dispatch(serverUtils.deleteFriend(chatId))
       .then(({ response: { result, error }, type, query }) => {
         if (error) {
-          callBackFunc({ error: true, data: error.message, chatId: chatId })
-        } else {
-          callBackFunc({ error: false, data: result })
-          dispatch(serverUtils.getUsersInfo([result.C]))
-            .then((usersInfo) => {
-              dispatch(postprocessDeleteFriend(myId, chatId))
-            })
+          return callBackFunc({ error: true, data: error.message, chatId: chatId })
         }
+
+        callBackFunc({ error: false, data: result })
+        dispatch(serverUtils.getUsersInfo([result.C]))
+          .then((usersInfo) => {
+            dispatch(postprocessDeleteFriend(myId, chatId))
+          })
       })
   }
 }
@@ -519,9 +478,9 @@ export const getKeyInfo = (myId) => {
 const postprocessGetKeyInfo = (myId, keyInfo) => {
   console.log('doFriendListPage.postprocessGetKeyInfo: keyInfo: ', keyInfo)
 
-  let deviceJoinKeyInfo = keyInfo.find((key) => key.key === 'deviceJoinKey').value
-  let userPrivateKeyInfo = keyInfo.find((key) => key.key === 'userPrivateKey').value
-  let friendJoinKeyInfo = keyInfo.find((key) => key.key === 'friendJoinKey').value
+  let deviceJoinKeyInfo  = keyInfo.find(({key}) => key === 'deviceJoinKey').value
+  let userPrivateKeyInfo = keyInfo.find(({key}) => key === 'userPrivateKey').value
+  let friendJoinKeyInfo  = keyInfo.find(({key}) => key === 'friendJoinKey').value
 
   const combinedKeyInfo = {
     userPrivateKey: userPrivateKeyInfo,
