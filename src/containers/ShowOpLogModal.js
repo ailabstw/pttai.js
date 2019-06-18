@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Modal from 'react-modal'
 import Immutable from 'immutable'
-import moment from 'moment'
 
 import * as doShowOpLogModal from '../reducers/ShowOpLogModal'
 
@@ -12,15 +11,6 @@ import * as modalConstants from '../constants/ModalConstants'
 import DropdownComponent from '../components/DropdownComponent'
 
 import styles from './ShowOpLogModal.module.scss'
-
-const epoch2FullTimeMsFormat = (epoch) => {
-  let epochTS = epoch.T + epoch.NT * 0.000000001
-  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss.SSS')
-}
-
-const epoch2FullTimeFormat = (epochTS) => {
-  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss')
-}
 
 class ShowOpLogModal extends PureComponent {
   constructor (props) {
@@ -173,10 +163,11 @@ class ShowOpLogModal extends PureComponent {
                       <div className={styles['oplog-item']}>
                         <div className={styles['item']}>
                           <div className={styles['op-title']}>Connect Time</div>
-                          <div className={styles['op-value']}>{epoch2FullTimeFormat(opLog.T)}</div>
+                          <div className={styles['op-value']}>{opLog.connectAt.format('YYYY-MM-DD HH:mm:ss')}</div>
                         </div>
                       </div>
                     ) : tab.indexOf('_PEERS_TAB') !== -1 ? opLog.map((item, index) => {
+
                       return (
                         <div className={styles['oplog-item']} key={index}>
                           <div className={styles['item-index']}>
@@ -188,7 +179,7 @@ class ShowOpLogModal extends PureComponent {
                           </div>
                           <div className={styles['item']}>
                             <div className={styles['op-title']}>Peer Type</div>
-                            <div title={item.T} className={styles['op-value']}>{constants.PEER_TYPE_ARRAY[item.T]}</div>
+                            <div title={item.type} className={styles['op-value']}>{constants.PEER_TYPE_ARRAY[item.type]}</div>
                           </div>
                           <div className={styles['item']}>
                             <div className={styles['op-title']}>Node ID</div>
@@ -236,11 +227,11 @@ class ShowOpLogModal extends PureComponent {
                       return (
                         <div className={styles['oplog-item']} key={index}>
                           <div className={styles['item-index']} onClick={() => this.expandRow(index)}>
-                            <div title={JSON.stringify(itemMeta, null, 4)} className={styles['op-value-index']}>{OplogConst[tab][item.O] + ' @ ' + epoch2FullTimeMsFormat(item.UT)}</div>
+                            <div title={JSON.stringify(itemMeta, null, 4)} className={styles['op-value-index']}>{OplogConst[tab][item.O] + ' @ ' + item.updateAt.format('YYYY-MM-DD HH:mm:ss.SSS')}</div>
                           </div>
                           <div className={styles['item']}>
                             <div className={styles['op-title']}>Creator</div>
-                            <div title={'Creator ID: ' + item.CID} className={styles['op-value']}>{item.creatorName + ' @ ' + epoch2FullTimeMsFormat(item.CT)}</div>
+                            <div title={'Creator ID: ' + item.CID} className={styles['op-value']}>{item.creatorName + ' @ ' + item.createAt.format('YYYY-MM-DD HH:mm:ss.SSS')}</div>
                           </div>
                           {
                             expandIdx === index ? (
@@ -255,7 +246,7 @@ class ShowOpLogModal extends PureComponent {
                                 </div>
                                 <div hidden className={styles['item']}>
                                   <div className={styles['op-title']}>Create TS</div>
-                                  <div title={epoch2FullTimeMsFormat(item.CT)} className={styles['op-value']}>{epoch2FullTimeMsFormat(item.CT)}</div>
+                                  <div title={item.createAt.format('YYYY-MM-DD HH:mm:ss.SSS')} className={styles['op-value']}>{item.createAt.format('YYYY-MM-DD HH:mm:ss.SSS')}</div>
                                 </div>
                                 <div className={styles['item']}>
                                   <div className={styles['op-title']}>Obj ID</div>
@@ -271,7 +262,7 @@ class ShowOpLogModal extends PureComponent {
                                 </div>
                                 <div hidden className={styles['item']}>
                                   <div className={styles['op-title']}>Update TS</div>
-                                  <div title={epoch2FullTimeMsFormat(item.UT)} className={styles['op-value']}>{epoch2FullTimeMsFormat(item.UT)}</div>
+                                  <div title={item.updateAt.format('YYYY-MM-DD HH:mm:ss.SSS')} className={styles['op-value']}>{item.updateAt.format('YYYY-MM-DD HH:mm:ss.SSS')}</div>
                                 </div>
                                 <div className={styles['item']}>
                                   <div className={styles['op-title']}>Master Log ID</div>
