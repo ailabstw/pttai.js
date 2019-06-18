@@ -255,8 +255,6 @@ const postprocessGetDeviceInfo = (myId, result) => {
       NodeID:     device.NID,
       NodeType:   device.NT,
       Status:     device.S,
-      TCP:        device.TCP,
-      UDP:        device.UDP,
       // TODO: change to moment
       createAt: unixToMoment(device.CT, 0),
       LastSeen:   device.L ? device.L : utils.emptyTimeStamp(),

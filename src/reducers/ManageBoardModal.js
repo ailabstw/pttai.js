@@ -56,35 +56,6 @@ const postprocessGetBoardInfo = (myId, result) => {
   }
 }
 
-export const getBoardJoinKey = (myId, boardId) => {
-  return (dispatch, getState) => {
-    dispatch(serverUtils.getBoardUrl(boardId))
-      .then(({ response: { result }, type, query, error }) => {
-        dispatch(postprocessGetBoardJoinKey(myId, result))
-      })
-  }
-}
-
-const postprocessGetBoardJoinKey = (myId, result) => {
-  const boardJoinKey = {
-    C: result.C,
-    ID: result.ID,
-    Pn: result.Pn,
-    T: result.T,
-    URL: result.URL,
-    expirePeriod: result.e
-  }
-
-  console.log('doBoardPage.postprocessGetBoardJoinKey: boardJoinKey:', boardJoinKey)
-
-  return {
-    myId,
-    myClass,
-    type: SET_DATA,
-    data: { boardJoinKey: boardJoinKey }
-  }
-}
-
 // reducers
 const reducer = myDuck.createReducer({
   [INIT]: utils.reduceInit,
