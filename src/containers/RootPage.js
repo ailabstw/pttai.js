@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import Immutable from 'immutable'
 import { ToastContainer, toast } from 'react-toastify'
 import { injectIntl } from 'react-intl'
+import moment from 'moment'
 
 import Empty from '../components/Empty'
 import Navigator from '../components/Navigator'
@@ -33,8 +34,6 @@ import { getUUID,
 import { show as showNotification } from '../utils/notification'
 import googleAnalytics from '../utils/googleAnalytics'
 
-import { emptyTimeStamp } from '../reducers/utils'
-
 import styles from './RootPage.module.scss'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -45,7 +44,7 @@ class RootPage extends PureComponent {
     this.browserTabInterval = null
     this.refreshPageInterval = null
 
-    this.pageLastSeenTS = emptyTimeStamp()
+    this.pageLastSeenAt = moment()
     this.sentNotifications = []
 
     this.resetTitle = this.resetTitle.bind(this)
@@ -196,7 +195,7 @@ class RootPage extends PureComponent {
 
   resetTitle () {
     const { intl } = this.props
-    this.pageLastSeenTS = emptyTimeStamp()
+    this.pageLastSeenAt = moment()
 
     // stop showing tab notification
     if (this.browserTabInterval) {
@@ -211,7 +210,7 @@ class RootPage extends PureComponent {
     // user is browsing current tab
     if (!document.hidden) return this.resetTitle()
 
-    if (isUnRead(latestMessage.createAt, this.pageLastSeenTS && this.pageLastSeenTS.T * 1000)) {
+    if (isUnRead(latestMessage.createAt, this.pageLastSeenAt)) {
       this.browserTabInterval = this.browserTabInterval || setInterval(() => {
         let sender = decodeBase64(latestMessage.creatorName)
         this.refreshBrowserTabTitle(sender)
@@ -225,7 +224,7 @@ class RootPage extends PureComponent {
     if (
       !document.hidden || // user is browsing current tab
       this.sentNotifications.includes(latestMessage.messageID) || // noti has been sent before
-      !isUnRead(latestMessage.createAt, this.pageLastSeenTS && this.pageLastSeenTS.T * 1000) // msg has been read before
+      !isUnRead(latestMessage.createAt, this.pageLastSeenAt) // msg has been read before
     ) { return }
 
     // prepare data for notification
