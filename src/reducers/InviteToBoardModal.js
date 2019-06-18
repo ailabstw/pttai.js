@@ -115,7 +115,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
   friendListResult = friendListResult.map(serverUtils.deserialize)
 
   let memberMap = memeberListResult.reduce((acc, each) => {
-    acc[each.b.ID] = { UT: each.UT, ...each.b }
+    acc[each.b.ID] = { updateAt: unixToMoment(each.UT), ...each.b }
     return acc
   }, {})
 
@@ -144,7 +144,7 @@ const postprocessgetFriends = (myId, friendListResult, memeberListResult, usersI
       LastSeen: each.LT ? each.LT : utils.emptyTimeStamp(),
       isBoardMember: isBoardMember,
       memberStatus: (userId in memberMap) ? memberMap[userId].S : null,
-      memberUpdateAt: (userId in memberMap) ? unixToMoment(memberMap[userId].UT) : moment()
+      memberUpdateAt: (userId in memberMap) ? memberMap[userId].updateAt : moment()
       /* ArticleCreateTS:  each.ArticleCreateTS ? each.ArticleCreateTS : utils.emptyTimeStamp(), */
     }
   })

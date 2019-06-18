@@ -1,6 +1,7 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import { EMPTY_ID } from '../constants/Constants'
+import { unixToMoment } from '../utils/utilDatetime'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -212,8 +213,22 @@ const postprocessGetOpLogs = (myId, maps, usersInfo) => {
         let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
 
         return {
-          ...value,
-          userName: userName
+          UID:        value.UID,
+          ID:         value.ID,
+          Addr:       value.Addr,
+          Port:       value.Port,
+          Zone:       value.Zone,
+          V:          value.V,
+          y:          value.y,
+          O:          value.O,
+          type:       value.T,
+          createAt:   unixToMoment(value.CT),
+          updateAt:   unixToMoment(value.UT),
+          CID:        value.CID,
+          OID:        value.OID,
+          D:          value.D,
+          mID:        value.mID,
+          userName:   userName
         }
       })
     } else if (key !== constants.SHOW_LAST_ANNOUNCE_P2P_TAB) {
@@ -222,7 +237,21 @@ const postprocessGetOpLogs = (myId, maps, usersInfo) => {
         let userName = userNameMap[userId] ? serverUtils.b64decode(userNameMap[userId].N) : constants.DEFAULT_USER_NAME
 
         return {
-          ...value,
+          UID:         value.UID,
+          ID:          value.ID,
+          Addr:        value.Addr,
+          Port:        value.Port,
+          Zone:        value.Zone,
+          V:           value.V,
+          y:           value.y,
+          O:           value.O,
+          connectAt:   unixToMoment(value.T),
+          createAt:    unixToMoment(value.CT),
+          updateAt:    unixToMoment(value.UT),
+          CID:         value.CID,
+          OID:         value.OID,
+          D:           value.D,
+          mID:         value.mID,
           creatorName: userName
         }
       })
