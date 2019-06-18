@@ -65,7 +65,7 @@ class InviteToBoardModal extends PureComponent {
 
     let me = inviteToBoardModal.get(myId, Immutable.Map())
 
-    let boardJoinKey = me.get('boardJoinKey', Immutable.Map()).toJS()
+    let boardJoinURL = me.get('boardJoinURL', '')
     let friendList = me.get('friendList', Immutable.List()).toJS()
 
     // let onOpenOPLogModal = () => {
@@ -110,7 +110,7 @@ class InviteToBoardModal extends PureComponent {
                 />
               </div>
               <div className={styles['copy-space']}>
-                <CopyToClipboard text={boardJoinKey.URL}
+                <CopyToClipboard text={boardJoinURL}
                   onCopy={() => this.setState({ qrCodeCopied: true })}>
                   <button className={styles['manageboard-modal-copy']}>
                     {

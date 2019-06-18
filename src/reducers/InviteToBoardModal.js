@@ -74,22 +74,11 @@ export const getBoardJoinKey = (myId, boardId) => {
 }
 
 const postprocessGetBoardJoinKey = (myId, result) => {
-  const boardJoinKey = {
-    C: result.C,
-    ID: result.ID,
-    Pn: result.Pn,
-    T: result.T,
-    URL: result.URL,
-    expirePeriod: result.e
-  }
-
-  console.log('doBoardPage.postprocessGetBoardJoinKey: boardJoinKey:', boardJoinKey)
-
   return {
     myId,
     myClass,
     type: SET_DATA,
-    data: { boardJoinKey: boardJoinKey }
+    data: { boardJoinURL: result.URL }
   }
 }
 
