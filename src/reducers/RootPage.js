@@ -118,38 +118,36 @@ function getUserInfoById (userId) {
  * @return {Function<Promise<Response|Error>>} function for dispatch
  *
  */
-export const getUserInfo = myId => {
-  return (dispatch, getState) => new Promise(async (resolve, reject) => {
-    const { response: userInfo, error } = await dispatch(serverUtils.showMe())
-    if (error) return reject({ message: 'Backend no response: please try restarting PTT.ai', info: error })
+export const getUserInfo = myId => (dispatch, getState) => new Promise(async (resolve, reject) => {
+  const { response: userInfo, error } = await dispatch(serverUtils.showMe())
+  if (error) return reject({ message: 'Backend no response: please try restarting PTT.ai', info: error })
 
-    let userId = userInfo.result.ID
-    let info = userInfo.result
+  let userId = userInfo.result.ID
+  let info = userInfo.result
 
-    let userMetaInfo = await dispatch(getUserInfoById(userId))
+  let userMetaInfo = await dispatch(getUserInfoById(userId))
 
-    let metaInfo = userMetaInfo.filter((meta) => !meta.error)
-    let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
-    let keyInfo = await dispatch(getAllKeyInfo())
+  let metaInfo = userMetaInfo.filter((meta) => !meta.error)
+  let userNameResult = metaInfo.find((meta) => meta.key === 'userName').value
+  let keyInfo = await dispatch(getAllKeyInfo())
 
-    // user exist
-    if ((userNameResult && userNameResult.N && serverUtils.b64decode(userNameResult.N) !== DEFAULT_USER_NAME)) {
-      resolve({
-        type: 'done',
-        userId: userId,
-        value: keyInfo
-      })
-    } else {
-      resolve({
-        type: 'no_user_name',
-        userId: userId,
-        value: keyInfo
-      })
-    }
+  // user exist
+  if ((userNameResult && userNameResult.N && serverUtils.b64decode(userNameResult.N) !== DEFAULT_USER_NAME)) {
+    resolve({
+      type: 'done',
+      userId: userId,
+      value: keyInfo
+    })
+  } else {
+    resolve({
+      type: 'no_user_name',
+      userId: userId,
+      value: keyInfo
+    })
+  }
 
-    dispatch(postprocessGetUserInfo(myId, info, metaInfo))
-  })
-}
+  dispatch(postprocessGetUserInfo(myId, info, metaInfo))
+})
 
 const postprocessGetUserInfo = (myId, info, metaInfo) => {
   console.log('doRootPage.postprocessGetUserInfo: userInfo: ', info)
