@@ -42,6 +42,7 @@ class AddDeviceModal extends PureComponent {
 
     // FIXME: change to moment
     const expTimeVal = expiredFormat(keyInfo.data.deviceJoinKey.UpdateTS.T, keyInfo.data.deviceJoinKey.expirePeriod)
+    const deviceJoinURL = keyInfo.data.deviceJoinKey.URL
 
     return (
       <div>
@@ -65,7 +66,7 @@ class AddDeviceModal extends PureComponent {
             <div className={styles['content']}>
               <div hidden className={styles['content-title']}>Node ID</div>
               <div className={styles['qr-code']}>
-                <QRCode value={keyInfo.data.deviceJoinKey.URL} size={250} />
+                <QRCode value={deviceJoinURL} size={250} />
               </div>
               <div className={styles['node-id']}>
                 <div className={styles['expiration']}>
@@ -75,7 +76,7 @@ class AddDeviceModal extends PureComponent {
                     values={{ expTimeVal: expTimeVal }}
                   />
                 </div>
-                <CopyToClipboard text={keyInfo.data.deviceJoinKey.URL}
+                <CopyToClipboard text={deviceJoinURL}
                   onCopy={() => this.setState({ copied: true })}>
                   <button className={styles['copy-button']}>
                     {
@@ -96,7 +97,7 @@ class AddDeviceModal extends PureComponent {
                 <div className={styles['text-value']}>
                   <input
                     readOnly
-                    value={keyInfo.data.deviceJoinKey.URL}
+                    value={deviceJoinURL}
                   />
                 </div>
                 <div className={styles['helper-text']}>

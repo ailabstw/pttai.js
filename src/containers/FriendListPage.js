@@ -108,7 +108,7 @@ class FriendListPage extends PureComponent {
 
     let onAddFriend = (name) => {
       let that = this
-      const myURL = keyInfo && keyInfo.friendJoinKey && keyInfo.friendJoinKey.URL
+      const {friendJoinURL} = keyInfo
 
       if (!name || !name.startsWith('pnode://')) {
         this.setState({
@@ -122,7 +122,7 @@ class FriendListPage extends PureComponent {
             onConfirm: () => that.setState({ showAlert: false })
           }
         })
-      } else if (myURL === name) {
+      } else if (friendJoinURL === name) {
         this.setState({
           showAlert: true,
           alertData: {
@@ -146,7 +146,7 @@ class FriendListPage extends PureComponent {
     let openAddFriendModal = () => {
       doModalContainer.setInput({
         refreshKeyInfo: refreshKeyInfo,
-        addFriendUrl: keyInfo.friendJoinKey.URL,
+        addFriendUrl: keyInfo.friendJoinURL,
         addFriendAction: modalAddFriend
       })
       doModalContainer.openModal(constants.ADD_FRIEND_MODAL)

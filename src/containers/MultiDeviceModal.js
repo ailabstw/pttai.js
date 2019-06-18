@@ -5,8 +5,6 @@ import { FormattedMessage } from 'react-intl'
 import Modal from 'react-modal'
 import platform from 'platform'
 
-import { epoch2FullTimeFormat } from '../utils/utilDatetime'
-
 import * as doMultiDeviceModal from '../reducers/MultiDeviceModal'
 import * as constants from '../constants/Constants'
 import * as modalConstants from '../constants/ModalConstants'

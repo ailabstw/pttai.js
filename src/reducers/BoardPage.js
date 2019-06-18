@@ -329,7 +329,7 @@ const articleToArticleList = (myId, result, usersInfo, summaryResult) => {
     let noComment = utils.isNullTimeStamp(each.c)
     let neverSeen = utils.isNullTimeStamp(each.L)
 
-    let updateAt = noComment ? unixToMoment(each.UpdateTS) : unixToMoment(each.c)
+    let updateAt = unixToMoment(noComment ? each.UpdateTS : each.c)
     let lastSeenAt = unixToMoment(each.L)
     let isUnread = neverSeen || isUnRead(updateAt, lastSeenAt)
 

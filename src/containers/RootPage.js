@@ -65,15 +65,15 @@ class RootPage extends PureComponent {
     let myId = getUUID()
 
     let openFirstPopupModal = (userId, keyInfo) => {
-      let deviceJoinKeyInfo = keyInfo.find(({ key }) => key === 'deviceJoinKey').value
+      // let deviceJoinKeyInfo = keyInfo.find(({ key }) => key === 'deviceJoinKey').value
       let userPrivateKeyInfo = keyInfo.find(({ key }) => key === 'userPrivateKey').value
 
       doModalContainer.setInput({
-        deviceJoinKeyInfo: deviceJoinKeyInfo,
         userPrivateKeyInfo: userPrivateKeyInfo,
         userId: userId,
         // TODO: comment this because multidevice function is currenly disable.
         //
+        // deviceJoinKeyInfo: deviceJoinKeyInfo,
         // signIn: (nodeId, pKey, addDeviceCallBackFunc, waitingCallBackFunc, signedInCallBackFunc) => {
         //   doRootPage.addDevice(myId, nodeId, pKey, addDeviceCallBackFunc)
         //   setInterval(() => {

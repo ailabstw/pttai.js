@@ -444,14 +444,14 @@ export const _deleteFriend = (state, action) => {
 
 function getAllKeyInfo (userId) {
   return dispatch => Promise.all([
-    dispatch(serverUtils.showMyURL())
-      .then(({ response: { result }, type, query, error }) => {
-        if (error) {
-          return { 'error': true, 'key': 'deviceJoinKey', 'value': error }
-        } else {
-          return { 'error': false, 'key': 'deviceJoinKey', 'value': result }
-        }
-      }),
+    // dispatch(serverUtils.showMyURL())
+    //   .then(({ response: { result }, type, query, error }) => {
+    //     if (error) {
+    //       return { 'error': true, 'key': 'deviceJoinKey', 'value': error }
+    //     } else {
+    //       return { 'error': false, 'key': 'deviceJoinKey', 'value': result }
+    //     }
+    //   }),
     dispatch(serverUtils.showMyKey())
       .then(({ response: { result }, type, query, error }) => {
         if (error) {
@@ -483,23 +483,19 @@ export const getKeyInfo = (myId) => {
 const postprocessGetKeyInfo = (myId, keyInfo) => {
   console.log('doFriendListPage.postprocessGetKeyInfo: keyInfo: ', keyInfo)
 
-  let deviceJoinKeyInfo  = keyInfo.find(({key}) => key === 'deviceJoinKey').value
+  // let deviceJoinKeyInfo  = keyInfo.find(({key}) => key === 'deviceJoinKey').value
   let userPrivateKeyInfo = keyInfo.find(({key}) => key === 'userPrivateKey').value
   let friendJoinKeyInfo  = keyInfo.find(({key}) => key === 'friendJoinKey').value
 
-  // TODO: to moment
+  // TODO: multi device & to moment
   const combinedKeyInfo = {
     userPrivateKey: userPrivateKeyInfo,
-    deviceJoinKey: {
-      URL: deviceJoinKeyInfo.URL,
-      UpdateTS: deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
-      expirePeriod: deviceJoinKeyInfo.e
-    },
-    friendJoinKey: {
-      URL: friendJoinKeyInfo.URL,
-      UpdateTS: friendJoinKeyInfo.UT ? friendJoinKeyInfo.UT : utils.emptyTimeStamp(),
-      expirePeriod: friendJoinKeyInfo.e
-    }
+    // deviceJoinKey: {
+    //   URL: deviceJoinKeyInfo.URL,
+    //   UpdateTS: deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
+    //   expirePeriod: deviceJoinKeyInfo.e
+    // },
+    friendJoinURL: friendJoinKeyInfo.URL
   }
 
   return {

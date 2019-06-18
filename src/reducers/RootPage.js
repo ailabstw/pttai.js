@@ -184,22 +184,16 @@ const postprocessGetUserInfo = (myId, info, metaInfo) => {
  */
 
 const getAllKeyInfo = () => dispatch => Promise.all([
-  dispatch(serverUtils.showMyURL())
-    .then(({ response: { result }, error }) => ({
-      'error': !!error,
-      'key': 'deviceJoinKey',
-      'value': error || result
-    })),
+  // dispatch(serverUtils.showMyURL())
+  //   .then(({ response: { result }, error }) => ({
+  //     'error': !!error,
+  //     'key': 'deviceJoinKey',
+  //     'value': error || result
+  //   })),
   dispatch(serverUtils.showMyKey())
     .then(({ response: { result }, error }) => ({
       'error': !!error,
       'key': 'userPrivateKey',
-      'value': error || result
-    })),
-  dispatch(serverUtils.showURL())
-    .then(({ response: { result }, error }) => ({
-      'error': !!error,
-      'key': 'friendJoinKey',
       'value': error || result
     }))
 ])
@@ -216,23 +210,17 @@ export const getKeyInfo = (myId) => {
 const postprocessGetKeyInfo = (myId, keyInfo) => {
   console.log('doRootPage.postprocessGetKeyInfo: keyInfo: ', keyInfo)
 
-  let deviceJoinKeyInfo = keyInfo.find(({ key }) => key === 'deviceJoinKey').value
+  // let deviceJoinKeyInfo = keyInfo.find(({ key }) => key === 'deviceJoinKey').value
   let userPrivateKeyInfo = keyInfo.find(({ key }) => key === 'userPrivateKey').value
-  let friendJoinKeyInfo = keyInfo.find(({ key }) => key === 'friendJoinKey').value
 
   // TODO: to moment
   const combinedKeyInfo = {
     userPrivateKey:   userPrivateKeyInfo,
-    deviceJoinKey: {
-      URL:            deviceJoinKeyInfo.URL,
-      UpdateTS:       deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
-      expirePeriod:   deviceJoinKeyInfo.e
-    },
-    friendJoinKey: {
-      URL:            friendJoinKeyInfo.URL,
-      UpdateTS:       friendJoinKeyInfo.UT ? friendJoinKeyInfo.UT : utils.emptyTimeStamp(),
-      expirePeriod:   friendJoinKeyInfo.e
-    }
+    // deviceJoinKey: {
+    //   URL:            deviceJoinKeyInfo.URL,
+    //   UpdateTS:       deviceJoinKeyInfo.UT ? deviceJoinKeyInfo.UT : utils.emptyTimeStamp(),
+    //   expirePeriod:   deviceJoinKeyInfo.e
+    // },
   }
 
   return {
