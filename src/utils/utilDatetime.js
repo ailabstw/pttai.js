@@ -133,51 +133,8 @@ if (language === 'zh') {
   })
 }
 
-export const epoch2FullTimeMsFormat = (epoch) => {
-  let epochTS = epoch.T + epoch.NT * 0.000000001
-  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss.SSS')
-}
-
-export const epoch2FullTimeFormat = (epochTS) => {
-  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss')
-}
-
-export const epoch2MessageTimeFormat = (epochTS) => {
-  if (language === 'zh') {
-    return moment.unix(epochTS).format('a h:mm')
-  } else {
-    return moment.unix(epochTS)
-  }
-}
-
-export const epoch2MessageDateFormat = (epochTS) => {
-  return moment.unix(epochTS).format('MMM Do')
-}
-
 export const doesCrossDay = (moment1, moment2) => {
   return moment1.format('YYYY-MM-DD') !== moment2.format('YYYY-MM-DD')
-}
-
-export const epoch2ReadFormat = (epochTS) => {
-  let targetTime = moment.unix(epochTS)
-  let currentTime = moment()
-  let readableTime = targetTime
-  let A_WEEK_OLD = currentTime.clone().subtract(7, 'days').startOf('day')
-  let A_YEAR_OLD = currentTime.clone().subtract(1, 'years').startOf('day')
-
-  if (!targetTime.isAfter(A_WEEK_OLD) && targetTime.isAfter(A_YEAR_OLD)) {
-    if (language === 'zh') {
-      // Show 月 and 日
-      readableTime = targetTime.format('MoDo')
-      readableTime = (targetTime.year() + 1 === currentTime.year()) ? ('去年' + readableTime) : (readableTime)
-    } else {
-      readableTime = targetTime.format('MMM Do')
-    }
-  } else {
-    readableTime = targetTime.from(currentTime)
-  }
-
-  return readableTime
 }
 
 export const isValid = (updateAt, period) => {
@@ -226,14 +183,6 @@ export const expiredFormat = (updateTS_T, period) => {
   }
 
   return result
-}
-
-export const epoch2FullDate = (epochTS) => {
-  if (language === 'zh') {
-    return moment.unix(epochTS).format('YYYY年MoDo')
-  } else {
-    return moment.unix(epochTS).format('YYYY-MM-D')
-  }
 }
 
 export const milliTimestampToDatetime = (milli_timestamp) => new Date(parseInt(milli_timestamp, 10))

@@ -3,16 +3,24 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Modal from 'react-modal'
 import Immutable from 'immutable'
+import moment from 'moment'
 
 import * as doShowOpLogModal from '../reducers/ShowOpLogModal'
 
 import * as constants from '../constants/Constants'
 import * as modalConstants from '../constants/ModalConstants'
 import DropdownComponent from '../components/DropdownComponent'
-import { epoch2FullTimeFormat,
-  epoch2FullTimeMsFormat } from '../utils/utilDatetime'
 
 import styles from './ShowOpLogModal.module.scss'
+
+const epoch2FullTimeMsFormat = (epoch) => {
+  let epochTS = epoch.T + epoch.NT * 0.000000001
+  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss.SSS')
+}
+
+const epoch2FullTimeFormat = (epochTS) => {
+  return moment.unix(epochTS).format('YYYY-MM-DD HH:mm:ss')
+}
 
 class ShowOpLogModal extends PureComponent {
   constructor (props) {
