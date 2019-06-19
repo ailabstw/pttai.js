@@ -1,6 +1,7 @@
 import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import _ from 'lodash'
+import moment from 'moment'
 
 import { EMPTY_ID,
   STATUS_ARRAY,
@@ -126,7 +127,7 @@ const postprocessGetBoardList = (myId, result, reqResult, usersInfo) => {
         isUnread:    false,
         CreatorID:   join.CreatorID,
         creatorName: DEFAULT_USER_NAME,
-        updateAt:    0,
+        updateAt:    moment(0),
         joinStatus:  join.Status
       })
     }
@@ -313,7 +314,7 @@ const postprocessCreateBoard = (myId, name, result, userName) => {
     isUnread:    false,
     CreatorID:   EMPTY_ID, // FIXME: userId,
     creatorName: userName,
-    updateAt:    0,
+    updateAt:    moment(0),
     joinStatus:  3,
   }
 
@@ -370,7 +371,7 @@ const postprocessJoinBoard = (myId, boardUrl, result, usersInfo) => {
     isUnread:    true,
     CreatorID:   userId,
     creatorName: userName,
-    updateAt:    0,
+    updateAt:    moment(0),
     joinStatus:  0
   }
 
