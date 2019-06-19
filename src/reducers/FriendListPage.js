@@ -2,6 +2,7 @@ import Immutable from 'immutable'
 import { createDuck } from 'redux-duck'
 import _ from 'lodash'
 import LRU from 'lru-cache'
+import moment from 'moment'
 
 import * as utils from './utils'
 import * as serverUtils from './ServerUtils'
@@ -214,7 +215,7 @@ const friendAndResultToFriendList = (result, reqResult, summaries, usersInfo) =>
         userName: '',
         userID:   EMPTY_ID,
         content:  '',
-        updateAt: 0
+        updateAt: moment(0)
       },
 
       joinStatus: join.S
@@ -373,7 +374,7 @@ const postprocessAddNewFriend = (myId, result, usersInfo) => {
       content:     '',
       userName:    '',
       userID:      null,
-      updateAt:    0
+      updateAt:    moment(0)
     },
     joinStatus:    0
   }
